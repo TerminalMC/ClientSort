@@ -5,8 +5,13 @@
   "refmap" : "${mod_id}.refmap.json",
   "compatibilityLevel" : "JAVA_${java_version}",
   "mixins" : [
+    "MixinSlot"
   ],
   "client" : [
+    "KeyMappingAccessor",
+    "MixinClientPacketListener",
+    "MixinCreativeSlot",
+    "MixinLocalPlayer"
   ],
   "server" : [
   ],

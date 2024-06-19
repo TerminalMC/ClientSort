@@ -2,10 +2,8 @@ package dev.terminalmc.clientsort.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.ClientSort;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Items;
+import dev.terminalmc.clientsort.inventory.sort.SortMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 public class Config {
     private static final Path DIR_PATH = Path.of("config");
@@ -27,39 +24,34 @@ public class Config {
     public final Options options = new Options();
 
     public static class Options {
-        // Category 1
-        public static final boolean defaultBooleanExample = true;
-        public boolean booleanExample = defaultBooleanExample;
+        // General
+        public static final int defaultInteractionRateServer = 10;
+        public int interactionRateServer = defaultInteractionRateServer;
 
-        public static final int defaultIntExample = 7;
-        public int intExample = defaultIntExample;
+        public static final int defaultInteractionRateClient = 1;
+        public int interactionRateClient = defaultInteractionRateClient;
 
-        public static final double defaultDoubleExample = 4.5;
-        public double doubleExample = defaultDoubleExample;
+        public static final HotbarMode defaultHotbarMode = HotbarMode.SOFT;
+        public HotbarMode hotbarMode = defaultHotbarMode;
 
-        public static final String defaultItemExample =
-                BuiltInRegistries.ITEM.getKey(Items.STONE).toString();
-        public String itemExample = defaultItemExample;
-
-        public static final TriState defaultObjectExample1 = TriState.Value1;
-        public TriState objectExample1 = defaultObjectExample1;
-
-        public static final TriState defaultObjectExample2 = TriState.Value1;
-        public TriState objectExample2 = defaultObjectExample2;
-
-        public static final int defaultKeyExample = InputConstants.KEY_J;
-        public int keyExample = defaultKeyExample;
-
-        // Category 2
-        public static final List<String> defaultStringListExample = List.of("One");
-        public List<String> stringListExample = defaultStringListExample;
-
-
-        public enum TriState {
-            Value1,
-            Value2,
-            Value3
+        public enum HotbarMode {
+            SOFT,
+            HARD,
+            NONE
         }
+
+        // Sorting
+        public static final SortMode defaultSortMode = SortMode.CREATIVE;
+        public SortMode sortMode = defaultSortMode;
+
+        public static final SortMode defaultShiftSortMode = SortMode.QUANTITY;
+        public SortMode shiftSortMode = defaultShiftSortMode;
+
+        public static final SortMode defaultCtrlSortMode = SortMode.ALPHABET;
+        public SortMode ctrlSortMode = defaultCtrlSortMode;
+
+        public static final boolean defaultOptimizedCreativeSorting = true;
+        public boolean optimizedCreativeSorting = defaultOptimizedCreativeSorting;
     }
 
     // Cleanup

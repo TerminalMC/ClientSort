@@ -1,4 +1,4 @@
-package dev.terminalmc.clientsort.util;
+package dev.terminalmc.clientsort.util.mod;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

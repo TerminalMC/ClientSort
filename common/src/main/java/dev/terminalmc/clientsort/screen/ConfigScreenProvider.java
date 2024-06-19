@@ -1,15 +1,15 @@
-package dev.terminalmc.clientsort.gui.screen;
+package dev.terminalmc.clientsort.screen;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 
-import static dev.terminalmc.clientsort.util.Localization.localized;
+import static dev.terminalmc.framework.util.Localization.localized;
 
 /**
  * <p>Wraps {@link ClothConfigScreenProvider} and provides a backup screen for
