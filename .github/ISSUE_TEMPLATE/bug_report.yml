@@ -1,0 +1,98 @@
+name: Bug Report
+description: "For reporting bugs and other defects"
+labels:
+  - S/needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        **This issue tracker is not intended for support requests!** Unless you are certain that 
+        you have found a defect, and you are able to point to where the problem is, you should not 
+        open an issue. For general support or if you're unsure, please ask on 
+        [Discord](https://terminalmc.dev/discord).
+        <br><br>
+        Additionally, please make check the following:
+        
+        - **Have you used the [search tool](https://github.com/TerminalMC/Framework/issues) to 
+        check whether your issue has already been reported?** If it has been, consider adding more 
+        information to the existing issue instead.
+        
+        - **Have you determined the minimum set of instructions to reproduce the issue?** If your 
+        problem only occurs with other mods installed, then you should narrow down exactly which 
+        mods are causing the issue. Please do not provide your entire list of mods and expect that 
+        we will be able to figure out the problem.
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod Version
+      description: >-
+        Specify the version(s) of the mod in which you have identified this issue.
+        
+        **Example:** `v1.2.0-Fabric-1.20.6`
+    validations:
+      required: true
+  - type: input
+    id: mod-loader
+    attributes:
+      label: Mod Loader
+      description: >-
+        Specify the mod loader(s) in which you have identified this issue.
+
+        **Example:** `Fabric`
+    validations:
+      required: true
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft Version
+      description: >-
+        Specify the Minecraft version(s) in which you have identified this issue.
+
+        **Example:** `1.20.6`
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: >-
+        Describe in detail the issue you are experiencing. The description should explain what 
+        behavior you were expecting, and why you believe the issue to be a bug. If the issue you 
+        are reporting only occurs with specific mods installed, then provide the name and version 
+        of each mod.
+
+        **Hint:** If you have any screenshots, videos, or other information that you feel is 
+        necessary to explain the issue, you can attach them here.
+    validations:
+      required: true
+  - type: textarea
+    id: description-reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: >-
+        Describe the procedure required to reproduce this bug. Make sure your instructions are as 
+        clear and concise as possible, because other people will need to be able to follow your 
+        guide in order to re-create the issue.
+        
+        **Hint:**  A common way to fill this section out is to write a step-by-step guide.
+    validations:
+      required: true
+  - type: textarea
+    id: log-file
+    attributes:
+      label: Log File (optional)
+      description: >-
+        **Hint:** You can usually find the log files within the folder `.minecraft/logs`. Generally
+        you will want the `latest.log` file, since that file belongs to the last played session of 
+        the game.
+      placeholder: >-
+        Drag-and-drop the log file here.
+  - type: textarea
+    id: crash-report-file
+    attributes:
+      label: Crash Report (optional)
+      description: >-
+        **Hint:** You can usually find crash reports (with their date and time) in the folder 
+        `.minecraft/crash-reports`.
+      placeholder: >-
+        Drag-and-drop the crash report file here.

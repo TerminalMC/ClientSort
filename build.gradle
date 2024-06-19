@@ -1,0 +1,190 @@
+import com.modrinth.minotaur.dependencies.ModDependency
+
+plugins {
+    id("java")
+    id("java-library")
+    id("idea")
+    id("maven-publish")
+    id("org.jetbrains.gradle.plugin.idea-ext") version("${ideaext_version}") // Required for NeoGradle
+    id("com.modrinth.minotaur") version("${minotaur_version}")
+    id("com.github.breadmoirai.github-release") version("${githubrelease_version}")
+    id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
+}
+
+subprojects {
+    version = mod_version
+    group = mod_group
+
+    apply(plugin: "java")
+    apply(plugin: "java-library")
+    apply(plugin: "idea")
+    apply(plugin: "maven-publish")
+
+    if (project.name != "common") {
+        apply(plugin: "com.modrinth.minotaur")
+        apply(plugin: "com.github.breadmoirai.github-release")
+        apply(plugin: "org.ajoberstar.grgit.service")
+    }
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(Integer.valueOf(java_version))
+
+    jar {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${mod_name}" }
+        }
+        manifest {
+            attributes([
+                "Specification-Title"     : mod_name,
+                "Specification-Vendor"    : mod_owner,
+                "Specification-Version"   : project.jar.archiveVersion,
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_owner,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Timestamp"               : System.currentTimeMillis(),
+                "Built-On-Java"           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                "Built-On-Minecraft"      : minecraft_version
+            ])
+        }
+    }
+    java.withSourcesJar()
+    sourcesJar {
+        from(rootProject.file("LICENSE")) {
+            rename { "${it}_${mod_name}" }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
+        maven {
+            name = "Shedaniel"
+            url = "https://maven.shedaniel.me/"
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = "UTF-8"
+        it.options.getRelease().set(Integer.valueOf(java_version))
+    }
+
+    processResources {
+        def expandProps = [
+                "project_group": project.group,
+                "mod_version": mod_version,
+                "mod_group": mod_group,
+                "mod_id": mod_id,
+                "mod_name": mod_name,
+                "mod_description": mod_description,
+                "mod_icon": "assets/" + mod_id + "/icon.png",
+                "mod_owner": mod_owner,
+                "mod_authors_list": asJsonList(mod_authors),
+                "mod_contributors_list": asJsonList(mod_contributors),
+                "mod_authors_string": mod_authors.replace(",", ", "),
+                "mod_contributors_string": mod_contributors.replace(",", ", "),
+                "mod_license": mod_license,
+                "mod_environment": mod_environment,
+                "java_version": java_version,
+                "java_versions_fabric_list": asJsonList(java_versions_fabric),
+                "java_versions_neoforge": java_versions_neoforge,
+                "minecraft_version": minecraft_version,
+                "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
+                "minecraft_versions_neoforge": minecraft_versions_neoforge,
+                "fabric_loader_version": fabric_loader_version,
+                "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
+                "fabric_api_version": fabric_api_version,
+                "fabric_api_versions_list": asJsonList(fabric_api_versions),
+                "neoforge_loader_versions": neoforge_loader_versions,
+                "neoforge_version": neoforge_version,
+                "neoforge_versions": neoforge_versions,
+                "clothconfig_version": clothconfig_version,
+                "clothconfig_versions_fabric_list": asJsonList(clothconfig_versions_fabric),
+                "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
+                "modmenu_version": modmenu_version,
+                "modmenu_versions_list": asJsonList(modmenu_versions),
+                "homepage_url": homepage_url,
+                "sources_url": sources_url,
+                "issues_url": issues_url,
+                "contact_url": contact_url
+        ]
+
+        filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json", "assets/"+mod_id+"/lang/*.json"]) {
+            expand expandProps
+        }
+        inputs.properties(expandProps)
+    }
+
+    tasks.withType(GenerateModuleMetadata).configureEach {
+        enabled = false
+    }
+
+    afterEvaluate {
+        if (name != "common") {
+            modrinth {
+                token = System.getenv().MODRINTH_TOKEN ? System.getenv().MODRINTH_TOKEN : "empty"
+                projectId = modrinth_id
+                versionNumber = mod_version
+                versionType = release_type
+                versionName = "v${mod_version}-${capsLoader(name)}-${minecraft_version}"
+                changelog = rootProject.file("changelog.md").text
+                uploadFile = name == "fabric" ? remapJar : jar
+                loaders = project.property("release_mod_loaders_${name}").split(",") as List
+                gameVersions = project.property("release_game_versions_${name}").split(",") as List
+
+                def deps = []
+                if (project.hasProperty("release_required_dep_ids_${name}")) {
+                    project.property("release_required_dep_ids_${name}").split(",").each { String id ->
+                        deps << new ModDependency(id, "required")
+                    }
+                }
+                if (project.hasProperty("release_optional_dep_ids_${name}")) {
+                    project.property("release_optional_dep_ids_${name}").split(",").each { String id ->
+                        deps << new ModDependency(id, "optional")
+                    }
+                }
+                if (project.hasProperty("release_incompatible_dep_ids_${name}")) {
+                    project.property("release_incompatible_dep_ids_${name}").split(",").each { String id ->
+                        deps << new ModDependency(id, "incompatible")
+                    }
+                }
+                dependencies = deps
+                syncBodyFrom = rootProject.file("README.md").text
+            }
+            tasks.modrinth.onlyIf { System.getenv().MODRINTH_TOKEN }
+            tasks.modrinth.dependsOn(build, tasks.modrinthSyncBody)
+            tasks.modrinthSyncBody.onlyIf { System.getenv().MODRINTH_TOKEN }
+
+            githubRelease {
+                token = System.getenv().GITHUB_TOKEN ? System.getenv().GITHUB_TOKEN : "empty"
+                owner = github_repo_owner
+                repo = github_repo
+                tagName = "v${mod_version}"
+                prerelease = release_type == "alpha" || release_type == "beta"
+                releaseName = "v${mod_version} for ${minecraft_version}"
+                body = rootProject.file("changelog.md").text
+                targetCommitish = grgitService.service.get().grgit.branch.current().name
+                overwrite = false
+                allowUploadToExisting = true
+                releaseAssets = List.of(name == "fabric" ? remapJar : jar, sourcesJar)
+            }
+            tasks.githubRelease.onlyIf { System.getenv().GITHUB_TOKEN }
+            tasks.githubRelease.dependsOn(build)
+        }
+    }
+}
+
+static asJsonList(String versions) {
+    return versions.split(",").collect { "\"$it\"" }.join(',')
+}
+
+static String capsLoader(String loader) {
+    switch(loader) {
+        case "fabric": return "Fabric"
+        case "quilt": return "Quilt"
+        case "forge": return "Forge"
+        case "neoforge": return "NeoForge"
+        default: return loader
+    }
+}

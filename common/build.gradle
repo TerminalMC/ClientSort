@@ -1,0 +1,24 @@
+plugins {
+    id("org.spongepowered.gradle.vanilla") version("${vanillagradle_version}")
+}
+
+base {
+    archivesName = "${mod_name}-Common-${minecraft_version}"
+}
+
+dependencies {
+    compileOnly("org.spongepowered:mixin:${mixin_version}")
+
+    compileOnly("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
+    annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
+
+    // Using NeoForge version here to avoid having to remap
+    implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+}
+
+minecraft {
+    version(minecraft_version)
+    if (file("src/main/resources/${mod_id}.accesswidener").exists()) {
+        accessWideners(file("src/main/resources/${mod_id}.accesswidener"))
+    }
+}

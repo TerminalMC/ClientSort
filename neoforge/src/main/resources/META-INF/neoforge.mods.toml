@@ -1,0 +1,50 @@
+modLoader="javafml"
+loaderVersion="${neoforge_loader_versions}"
+license="${mod_license}"
+#showAsResourcePack=true #optional:false
+#services=[] #optional:none
+#properties={} #optional:none
+issueTrackerURL="${issues_url}" #optional:none
+
+[[mods]]
+  modId="${mod_id}"
+  version="${mod_version}" #optional:"1"
+  displayName="${mod_name}" #optional:modId
+  description='''${mod_description}''' #optional:'''MISSING DESCRIPTION'''
+  logoFile="${mod_icon}" #optional:none
+  #logoBlur=false #optional:true
+  #updateJSONURL="" #optional:none
+  features={java_version="${java_versions_neoforge}"} #optional:none
+  #modproperties={} #optional:none
+  credits="${mod_contributors_string}" #optional:none
+  authors="${mod_authors_string}" #optional:none
+  displayURL="${homepage_url}" #optional: none
+  #displayTest="" #optional:"MATCH_VERSION"
+
+[[mixins]]
+  config="${mod_id}.mixins.json"
+[[mixins]]
+  config="${mod_id}.neoforge.mixins.json"
+
+[[dependencies."${mod_id}"]]
+  modId="minecraft"
+  #type="" #optional:"required" #options:"required","optional","incompatible","discouraged"
+  #reason="" #optional:none
+  versionRange="${minecraft_versions_neoforge}" #optional:any
+  #ordering="" #optional:"NONE" #options:"BEFORE","AFTER"
+  #side="" #optional:"BOTH" #options:"CLIENT","SERVER","BOTH"
+  #referralUrl="" #optional:none
+
+[[dependencies."${mod_id}"]]
+  modId="neoforge"
+  versionRange="${neoforge_versions}"
+  side="CLIENT"
+
+[[dependencies."${mod_id}"]]
+  modId="cloth_config"
+  type="optional"
+  versionRange="${clothconfig_versions_neoforge}"
+  side="CLIENT"
+
+# https://docs.neoforged.net/docs/gettingstarted/modfiles/#modstoml
+# https://docs.neoforged.net/docs/misc/updatechecker/

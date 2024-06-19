@@ -1,0 +1,24 @@
+name: Feature Request
+description: "For requesting new features or improvements"
+labels:
+  - S/needs-triage
+  - T/enhancement
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        This form is for requesting new features or improvements, and should not be used for bug 
+        reports, port requests, or other issues.
+  - type: markdown
+    attributes:
+      value: >-
+        Make sure you have used the [search tool](https://github.com/TerminalMC/Framework/issues) 
+        to see if a similar request already exists (either open or closed).
+  - type: textarea
+    id: description
+    attributes:
+      label: Request Description
+      description: >-
+        Use this section to describe the feature or improvement that you are looking for. The 
+        description should explain what problem you are trying to solve, what alternatives you have
+        tried, and describe clearly and concisely what you would like changed.

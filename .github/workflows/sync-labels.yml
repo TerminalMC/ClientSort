@@ -1,0 +1,28 @@
+# Synchronizes the repo's labels with labels.yml
+# Requires GITHUB_TOKEN to have write permissions; if not, replace it with a custom token
+name: Sync Labels
+
+on:
+  push:
+    paths: ['.github/labels.yml', '.github/workflows/sync-labels.yml']
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/labels.yml
+          sparse-checkout-cone-mode: false
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx github-label-sync -a '${{ secrets.GITHUB_TOKEN }}' -l '.github/labels.yml' ${{ github.repository }}

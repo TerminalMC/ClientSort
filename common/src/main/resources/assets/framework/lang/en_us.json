@@ -1,0 +1,32 @@
+{
+  "screen.${mod_id}.default": "Framework",
+  "screen.${mod_id}.options": "Framework Options",
+
+  "message.${mod_id}.install_cloth": "Install Cloth Config API to access mod options.",
+  "message.${mod_id}.go_modrinth": "View on Modrinth",
+
+  "${mod_id}.key_group": "Framework",
+  "key.${mod_id}.example": "Example Key",
+
+  "config.${mod_id}.options": "Main Options",
+  "config.${mod_id}.options.val1": "Example value 1",
+  "config.${mod_id}.options.val2": "Example value 2",
+
+  "option.${mod_id}.category.category1": "Category 1",
+  "option.${mod_id}.boolean_example": "Boolean example",
+  "option.${mod_id}.boolean_example.tooltip": "Boolean example tooltip",
+  "option.${mod_id}.int_example": "Integer example",
+  "option.${mod_id}.int_example.value": "%d m",
+  "option.${mod_id}.double_example": "Double example",
+  "option.${mod_id}.double_example.error.low": "Too low!",
+  "option.${mod_id}.double_example.error.high": "Too high!",
+  "option.${mod_id}.item_example": "Item example",
+  "option.${mod_id}.item_example.error": "Invalid item",
+  "option.${mod_id}.object_example_1": "Object example 1",
+  "option.${mod_id}.object_example_2": "Object example 2",
+  "option.${mod_id}.subcategory1": "Subcategory 1",
+  "option.${mod_id}.subcategory1.description": "Subcategory 1 description",
+  "option.${mod_id}.string_list_example": "String list example",
+  "option.${mod_id}.category.category2": "Category 2",
+  "option.${mod_id}.key_example": "Key example"
+}
