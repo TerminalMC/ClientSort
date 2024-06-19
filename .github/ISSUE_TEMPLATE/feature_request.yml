@@ -12,7 +12,7 @@ body:
   - type: markdown
     attributes:
       value: >-
-        Make sure you have used the [search tool](https://github.com/TerminalMC/Framework/issues) 
+        Make sure you have used the [search tool](https://github.com/TerminalMC/ClientSort/issues) 
         to see if a similar request already exists (either open or closed).
   - type: textarea
     id: description

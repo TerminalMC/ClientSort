@@ -24,7 +24,7 @@ plugins {
 }
 
 // This should match the folder name of the project, else IDEA may complain (https://youtrack.jetbrains.com/issue/IDEA-317606)
-rootProject.name = "Framework"
+rootProject.name = "ClientSort"
 include("common")
 include("fabric")
 include("neoforge")

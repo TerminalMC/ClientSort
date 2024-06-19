@@ -1,4 +1,4 @@
-package dev.terminalmc.framework.gui.screen;
+package dev.terminalmc.clientsort.gui.screen;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

@@ -1,19 +1,19 @@
-package dev.terminalmc.framework;
+package dev.terminalmc.clientsort;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.framework.config.Config;
-import dev.terminalmc.framework.gui.screen.ConfigScreenProvider;
-import dev.terminalmc.framework.util.ModLogger;
+import dev.terminalmc.clientsort.config.Config;
+import dev.terminalmc.clientsort.gui.screen.ConfigScreenProvider;
+import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-import static dev.terminalmc.framework.util.Localization.translationKey;
+import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
-public class Framework {
-    public static final String MOD_ID = "framework";
-    public static final String MOD_NAME = "Framework";
+public class ClientSort {
+    public static final String MOD_ID = "clientsort";
+    public static final String MOD_NAME = "ClientSort";
     public static final ModLogger LOG = new ModLogger(MOD_NAME);
     public static final Component PREFIX = Component.empty()
             .append(Component.literal("[").withStyle(ChatFormatting.DARK_GRAY))

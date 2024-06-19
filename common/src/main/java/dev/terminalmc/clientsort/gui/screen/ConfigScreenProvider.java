@@ -1,4 +1,4 @@
-package dev.terminalmc.framework.gui.screen;
+package dev.terminalmc.clientsort.gui.screen;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 
-import static dev.terminalmc.framework.util.Localization.localized;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 /**
  * <p>Wraps {@link ClothConfigScreenProvider} and provides a backup screen for

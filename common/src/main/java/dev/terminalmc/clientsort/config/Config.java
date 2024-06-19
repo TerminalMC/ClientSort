@@ -1,9 +1,9 @@
-package dev.terminalmc.framework.config;
+package dev.terminalmc.clientsort.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.framework.Framework;
+import dev.terminalmc.clientsort.ClientSort;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class Config {
     private static final Path DIR_PATH = Path.of("config");
-    private static final String FILE_NAME = Framework.MOD_ID + ".json";
+    private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     // Options
@@ -111,7 +111,7 @@ public class Config {
         } catch (Exception e) {
             // Catch Exception as errors in deserialization may not fall under
             // IOException or JsonParseException, but should not crash the game.
-            Framework.LOG.error("Unable to load config.", e);
+            ClientSort.LOG.error("Unable to load config.", e);
             return null;
         }
     }
@@ -131,9 +131,9 @@ public class Config {
             }
             Files.move(tempFile, file, StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING);
-            Framework.onConfigSaved(instance);
+            ClientSort.onConfigSaved(instance);
         } catch (IOException e) {
-            Framework.LOG.error("Unable to save config.", e);
+            ClientSort.LOG.error("Unable to save config.", e);
         }
     }
 }

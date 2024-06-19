@@ -1,11 +1,11 @@
 {
-  "screen.${mod_id}.default": "Framework",
-  "screen.${mod_id}.options": "Framework Options",
+  "screen.${mod_id}.default": "ClientSort",
+  "screen.${mod_id}.options": "ClientSort Options",
 
   "message.${mod_id}.install_cloth": "Install Cloth Config API to access mod options.",
   "message.${mod_id}.go_modrinth": "View on Modrinth",
 
-  "${mod_id}.key_group": "Framework",
+  "${mod_id}.key_group": "ClientSort",
   "key.${mod_id}.example": "Example Key",
 
   "config.${mod_id}.options": "Main Options",

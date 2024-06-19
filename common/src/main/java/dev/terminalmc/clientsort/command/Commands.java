@@ -1,10 +1,10 @@
-package dev.terminalmc.framework.command;
+package dev.terminalmc.clientsort.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.terminalmc.framework.Framework;
+import dev.terminalmc.clientsort.ClientSort;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
@@ -23,7 +23,7 @@ import static net.minecraft.commands.Commands.literal;
 @SuppressWarnings("unchecked")
 public class Commands<S> extends CommandDispatcher<S> {
     public void register(Minecraft mc, CommandDispatcher<S> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register((LiteralArgumentBuilder<S>)literal(Framework.MOD_ID)
+        dispatcher.register((LiteralArgumentBuilder<S>)literal(ClientSort.MOD_ID)
                 .then(literal("quote")
                         .then(argument("word", StringArgumentType.word())
                                 .suggests(((ctx, builder) -> SharedSuggestionProvider.suggest(
@@ -31,7 +31,7 @@ public class Commands<S> extends CommandDispatcher<S> {
                                 .executes(ctx -> {
                                     String word = StringArgumentType.getString(ctx, "word");
 
-                                    MutableComponent msg = Framework.PREFIX.copy();
+                                    MutableComponent msg = ClientSort.PREFIX.copy();
                                     msg.append(word);
 
                                     mc.player.sendSystemMessage(msg);
@@ -45,7 +45,7 @@ public class Commands<S> extends CommandDispatcher<S> {
                                         .executes(ctx -> {
                                             Item item = ItemArgument.getItem(ctx, "item").getItem();
 
-                                            MutableComponent msg = Framework.PREFIX.copy();
+                                            MutableComponent msg = ClientSort.PREFIX.copy();
                                             msg.append(item.getDescription());
 
                                             mc.player.sendSystemMessage(msg);
@@ -58,7 +58,7 @@ public class Commands<S> extends CommandDispatcher<S> {
                                         .executes(ctx -> {
                                             ChatFormatting color = ColorArgument.getColor(ctx, "color");
 
-                                            MutableComponent msg = Framework.PREFIX.copy();
+                                            MutableComponent msg = ClientSort.PREFIX.copy();
                                             msg.append(Component.literal(color.getName()).withStyle(color));
 
                                             mc.player.sendSystemMessage(msg);

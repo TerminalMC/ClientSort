@@ -1,7 +1,7 @@
-package dev.terminalmc.framework;
+package dev.terminalmc.clientsort;
 
-import dev.terminalmc.framework.command.Commands;
-import dev.terminalmc.framework.gui.screen.ConfigScreenProvider;
+import dev.terminalmc.clientsort.command.Commands;
+import dev.terminalmc.clientsort.gui.screen.ConfigScreenProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
@@ -15,25 +15,25 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 
-@Mod(Framework.MOD_ID)
-@EventBusSubscriber(modid = Framework.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class FrameworkNeoForge {
-    public FrameworkNeoForge() {
+@Mod(ClientSort.MOD_ID)
+@EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public class ClientSortNeoForge {
+    public ClientSortNeoForge() {
         // Config screen
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
                 () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent));
 
         // Main initialization
-        Framework.init();
+        ClientSort.init();
     }
 
     // Keybindings
     @SubscribeEvent
     static void registerKeyMappingsEvent(RegisterKeyMappingsEvent event) {
-        event.register(Framework.EXAMPLE_KEY);
+        event.register(ClientSort.EXAMPLE_KEY);
     }
 
-    @EventBusSubscriber(modid = Framework.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
     static class ClientEventHandler {
         // Commands
         @SubscribeEvent
@@ -44,7 +44,7 @@ public class FrameworkNeoForge {
         // Tick events
         @SubscribeEvent
         public static void clientTickEvent(ClientTickEvent.Post event) {
-            Framework.onEndTick(Minecraft.getInstance());
+            ClientSort.onEndTick(Minecraft.getInstance());
         }
     }
 }

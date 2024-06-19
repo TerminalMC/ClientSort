@@ -1,8 +1,8 @@
-package dev.terminalmc.framework.gui.screen;
+package dev.terminalmc.clientsort.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.framework.Framework;
-import dev.terminalmc.framework.config.Config;
+import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.config.Config;
 import me.shedaniel.clothconfig2.api.*;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static dev.terminalmc.framework.util.Localization.localized;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClothConfigScreenProvider {
     /**
@@ -30,7 +30,7 @@ public class ClothConfigScreenProvider {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(localized("screen", "options"))
-                .setSavingRunnable(() -> Framework.onConfigSaved(Config.getAndSave()));
+                .setSavingRunnable(() -> ClientSort.onConfigSaved(Config.getAndSave()));
 
         ConfigEntryBuilder eb = builder.entryBuilder();
         ConfigCategory cat1 = builder.getOrCreateCategory(localized("option", "category.category1"));
