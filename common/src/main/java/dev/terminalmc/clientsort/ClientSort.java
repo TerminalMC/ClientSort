@@ -1,24 +1,11 @@
 /*
- * Copyright 2020-2022 Siphalor
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied.
- * See the License for the specific language governing
- * permissions and limitations under the License.
+ * Copyright 2024 NotRyken
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package dev.terminalmc.clientsort;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.logging.LogUtils;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.mixin.KeyMappingAccessor;
 import dev.terminalmc.clientsort.network.InteractionManager;
@@ -26,6 +13,7 @@ import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.mod.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 
 import static dev.terminalmc.clientsort.util.mod.Localization.translationKey;
 
@@ -47,14 +35,21 @@ public class ClientSort {
 
 	public static void onEndTick(Minecraft mc) {
 		if (cooldown == 0) {
-			if (InputConstants.isKeyDown(mc.getWindow().getWindow(),
-					((KeyMappingAccessor) SORT_KEY).getKey().getValue())) {
-				if (mc.screen instanceof IContainerScreen screen) {
-					LogUtils.getLogger().info("good screen");
-					screen.mouseWheelie_triggerSort();
-					cooldown = 11;
-				}
-			}
+            int key = ((KeyMappingAccessor) SORT_KEY).getKey().getValue();
+            if (key != GLFW.GLFW_KEY_UNKNOWN) {
+                boolean down;
+                if (key <= 7) {
+                    down = GLFW.glfwGetMouseButton(mc.getWindow().getWindow(), key) == GLFW.GLFW_PRESS;
+                } else {
+                    down = GLFW.glfwGetKey(mc.getWindow().getWindow(), key) == GLFW.GLFW_PRESS;
+                }
+                if (down) {
+                    if (mc.screen instanceof IContainerScreen screen) {
+                        screen.mouseWheelie_triggerSort();
+                        cooldown = 11;
+                    }
+                }
+            }
 		}
 		if (cooldown > 0) cooldown--;
 	}

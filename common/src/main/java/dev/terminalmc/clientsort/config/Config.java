@@ -1,3 +1,8 @@
+/*
+ * Copyright 2024 NotRyken
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.terminalmc.clientsort.config;
 
 import com.google.gson.Gson;

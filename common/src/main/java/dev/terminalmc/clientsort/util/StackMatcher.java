@@ -1,5 +1,6 @@
 /*
  * Copyright 2020-2022 Siphalor
+ * Copyright 2024 NotRyken
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +19,20 @@
 package dev.terminalmc.clientsort.util;
 
 import com.google.common.base.Objects;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// FIXME modified
+// TODO: This appears to work but needs more testing.
 public class StackMatcher {
 	private final @NotNull Item item;
-	private final @Nullable CompoundTag nbt;
+	private final @Nullable DataComponentMap components;
 
-	private StackMatcher(@NotNull Item item, @Nullable CompoundTag nbt) {
+	private StackMatcher(@NotNull Item item, @Nullable DataComponentMap components) {
 		this.item = item;
-		this.nbt = nbt;
+		this.components = components;
 	}
 
 	public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
@@ -39,18 +40,16 @@ public class StackMatcher {
 	}
 
 	public static StackMatcher of(@NotNull ItemStack stack) {
-		return new StackMatcher(stack.getItem(), stack.getTag());
+		return new StackMatcher(stack.getItem(), stack.getComponents());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof StackMatcher matcher) {
-			return item == matcher.item && Objects.equal(nbt, matcher.nbt);
+			return ItemStack.isSameItemSameComponents(item.getDefaultInstance(), matcher.item.getDefaultInstance());
 		}
 		else if (obj instanceof ItemStack stack) {
-
-			return item == stack.getItem() && ItemStack.isSameItemSameComponents(
-                    item.getDefaultInstance(), stack);
+			return ItemStack.isSameItem(item.getDefaultInstance(), stack);
 		}
 		else if (obj instanceof Item objItem) {
 			return item == objItem;
@@ -60,6 +59,6 @@ public class StackMatcher {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(item, nbt);
+		return Objects.hashCode(item, components);
 	}
 }

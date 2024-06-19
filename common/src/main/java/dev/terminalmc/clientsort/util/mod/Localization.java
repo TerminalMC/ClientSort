@@ -1,16 +1,21 @@
+/*
+ * Copyright 2024 NotRyken
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.terminalmc.clientsort.util.mod;
 
-import dev.terminalmc.framework.Framework;
+import dev.terminalmc.clientsort.ClientSort;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public final class Localization {
     public static String translationKey(String path) {
-        return Framework.MOD_ID + "." + path;
+        return ClientSort.MOD_ID + "." + path;
     }
 
     public static String translationKey(String domain, String path) {
-        return domain + "." + Framework.MOD_ID + "." + path;
+        return domain + "." + ClientSort.MOD_ID + "." + path;
     }
 
     public static MutableComponent localized(String path, Object... args) {

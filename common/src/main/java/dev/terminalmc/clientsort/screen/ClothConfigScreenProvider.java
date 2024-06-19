@@ -1,3 +1,8 @@
+/*
+ * Copyright 2024 NotRyken
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.terminalmc.clientsort.screen;
 
 import dev.terminalmc.clientsort.config.Config;
@@ -6,8 +11,8 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 import static dev.terminalmc.clientsort.util.mod.Localization.localized;
@@ -59,14 +64,6 @@ public class ClothConfigScreenProvider {
                 .setSaveConsumer(val -> options.interactionRateClient = val)
                 .build());
 
-        general.addEntry(eb.startDropdownMenu(localized("option", "hotbar_mode"), options.hotbarMode,
-                        Config.Options.HotbarMode::valueOf)
-                .setSuggestionMode(false)
-                .setSelections(List.of(Config.Options.HotbarMode.values()))
-                .setDefaultValue(Config.Options.defaultHotbarMode)
-                .setSaveConsumer(val -> options.hotbarMode = val)
-                .build());
-
         general.addEntry(eb.startEnumSelector(localized("option", "hotbar_mode"),
                         Config.Options.HotbarMode.class, options.hotbarMode)
                 .setDefaultValue(Config.Options.defaultHotbarMode)
@@ -74,22 +71,25 @@ public class ClothConfigScreenProvider {
                 .build());
 
 
-        ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sort"));
+        ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
         sort.addEntry(eb.startSelector(localized("option", "sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.sortMode)
+                .setNameProvider(val -> Component.literal(((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultSortMode)
                 .setSaveConsumer(val -> options.sortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "shift_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.shiftSortMode)
+                .setNameProvider(val -> Component.literal(((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultShiftSortMode)
                 .setSaveConsumer(val -> options.shiftSortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "ctrl_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.ctrlSortMode)
+                .setNameProvider(val -> Component.literal(((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
                 .setSaveConsumer(val -> options.ctrlSortMode = (SortMode)val)
                 .build());

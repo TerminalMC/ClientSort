@@ -1,3 +1,8 @@
+/*
+ * Copyright 2024 NotRyken
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package dev.terminalmc.clientsort.screen;
 
 import net.minecraft.Util;
@@ -9,7 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 
-import static dev.terminalmc.framework.util.Localization.localized;
+import static dev.terminalmc.clientsort.util.mod.Localization.localized;
 
 /**
  * <p>Wraps {@link ClothConfigScreenProvider} and provides a backup screen for

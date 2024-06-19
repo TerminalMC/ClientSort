@@ -1,5 +1,6 @@
 /*
  * Copyright 2020-2022 Siphalor
+ * Copyright 2024 NotRyken
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,7 @@ public class SortContext {
 	AbstractContainerScreen<?> screen;
 	/**
 	 * The slots that are the target of the current sort action.
-	 * These slots are usually in the same scope (see {@link de.siphalor.mousewheelie.client.inventory.ContainerScreenHelper#getScope(Slot)}).
+	 * These slots are usually in the same scope (see {@link dev.terminalmc.clientsort.inventory.ContainerScreenHelper.getScope(Slot)}).
 	 */
 	List<Slot> relevantSlots;
 

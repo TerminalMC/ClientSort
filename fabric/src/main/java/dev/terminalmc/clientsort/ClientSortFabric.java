@@ -1,6 +1,5 @@
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.util.CreativeSearchOrder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,9 +16,8 @@ public class ClientSortFabric implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::onEndTick);
 
         // Game join events
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            CreativeSearchOrder.refreshItemSearchPositionLookup();
-        });
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+                CreativeSearchOrder.refreshItemSearchPositionLookup());
 
         // Main initialization
         ClientSort.init();

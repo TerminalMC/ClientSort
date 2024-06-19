@@ -1,5 +1,6 @@
 /*
  * Copyright 2020-2022 Siphalor
+ * Copyright 2024 NotRyken
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ import java.util.concurrent.locks.Lock;
 
 public abstract class SortMode {
 	public static final Map<String, SortMode> SORT_MODES = new HashMap<>();
-	private final String name;
+	public final String name;
 
 	public static final SortMode NONE;
 	public static final SortMode ALPHABET;

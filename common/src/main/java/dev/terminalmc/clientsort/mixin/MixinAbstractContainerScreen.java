@@ -1,5 +1,6 @@
 /*
  * Copyright 2020-2022 Siphalor
+ * Copyright 2024 NotRyken
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +27,6 @@ import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,6 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.function.Supplier;
 
-@SuppressWarnings("WeakerAccess")
 @Mixin(AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen extends Screen implements IContainerScreen {
 	protected MixinAbstractContainerScreen(Component textComponent_1) {
@@ -61,7 +60,7 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 
 	@SuppressWarnings({"ConstantConditions", "unchecked"})
 	@Unique
-	private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> screenHelper = Suppliers.memoize(
+	private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
 			() -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType) -> new InteractionManager.CallbackEvent(() -> {
 				slotClicked(slot, ((ISlot) slot).mouseWheelie_getIdInContainer(), data, slotActionType);
 				return InteractionManager.TICK_WAITER;
@@ -78,7 +77,7 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 				&& GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW.GLFW_MOUSE_BUTTON_MIDDLE) != 0
 				&& (!hoveredSlot.getItem().isEmpty() == menu.getCarried().isEmpty()))
 			return false;
-		InventorySorter sorter = new InventorySorter(screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
+		InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
         Config.Options options = Config.get().options;
 		SortMode sortMode;
 		if (hasShiftDown()) {
