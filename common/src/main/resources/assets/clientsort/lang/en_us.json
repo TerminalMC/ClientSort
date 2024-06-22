@@ -10,16 +10,16 @@
 
   "option.${mod_id}.general": "General",
   "option.${mod_id}.interaction_rate_server": "Multiplayer Interaction Rate",
-  "option.${mod_id}.interaction_rate_server.error.low": "Too low",
-  "option.${mod_id}.interaction_rate_server.error.high": "Too high",
   "option.${mod_id}.interaction_rate_client": "Singleplayer Interaction Rate",
-  "option.${mod_id}.interaction_rate_client.error.low": "Too low",
-  "option.${mod_id}.interaction_rate_client.error.high": "Too high",
   "option.${mod_id}.hotbar_mode": "Hotbar Mode",
 
   "option.${mod_id}.sorting": "Sorting",
   "option.${mod_id}.sort_mode": "Sort Mode",
   "option.${mod_id}.shift_sort_mode": "Shift Sort Mode",
   "option.${mod_id}.ctrl_sort_mode": "Ctrl Sort Mode",
-  "option.${mod_id}.optimized_creative_sorting": "Optimized Creative Sorting"
+  "option.${mod_id}.alt_sort_mode": "Alt Sort Mode",
+  "option.${mod_id}.optimized_creative_sorting": "Optimized Creative Sorting",
+
+  "option.${mod_id}.error.low": "Too low",
+  "option.${mod_id}.error.high": "Too high"
 }

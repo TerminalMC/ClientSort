@@ -42,9 +42,9 @@ public class ClothConfigScreenProvider {
                         options.interactionRateServer)
                 .setErrorSupplier(val -> {
                     if (val < 0) return Optional.of(
-                            localized("option", "interaction_rate_server.error.low"));
+                            localized("option", "error.low"));
                     else if (val > 100) return Optional.of(
-                            localized("option", "interaction_rate_server.error.high"));
+                            localized("option", "error.high"));
                     else return Optional.empty();
                 })
                 .setDefaultValue(Config.Options.defaultInteractionRateServer)
@@ -55,9 +55,9 @@ public class ClothConfigScreenProvider {
                         options.interactionRateClient)
                 .setErrorSupplier(val -> {
                     if (val < 0) return Optional.of(
-                            localized("option", "interaction_rate_client.error.low"));
+                            localized("option", "error.low"));
                     else if (val > 100) return Optional.of(
-                            localized("option", "interaction_rate_client.error.high"));
+                            localized("option", "error.high"));
                     else return Optional.empty();
                 })
                 .setDefaultValue(Config.Options.defaultInteractionRateClient)
@@ -92,6 +92,13 @@ public class ClothConfigScreenProvider {
                 .setNameProvider(val -> Component.literal(((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
                 .setSaveConsumer(val -> options.ctrlSortMode = (SortMode)val)
+                .build());
+
+        sort.addEntry(eb.startSelector(localized("option", "alt_sort_mode"),
+                        SortMode.SORT_MODES.values().toArray(), options.altSortMode)
+                .setNameProvider(val -> Component.literal(((SortMode)val).name))
+                .setDefaultValue(Config.Options.defaultAltSortMode)
+                .setSaveConsumer(val -> options.altSortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startBooleanToggle(localized("option", "optimized_creative_sorting"),

@@ -84,7 +84,9 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 			sortMode = options.shiftSortMode;
 		} else if (hasControlDown()) {
 			sortMode = options.ctrlSortMode;
-		} else {
+		} else if (hasAltDown()) {
+            sortMode = options.altSortMode;
+        } else {
 			sortMode = options.sortMode;
 		}
 		if (sortMode == null) return false;

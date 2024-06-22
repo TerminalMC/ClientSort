@@ -55,6 +55,9 @@ public class Config {
         public static final SortMode defaultCtrlSortMode = SortMode.ALPHABET;
         public SortMode ctrlSortMode = defaultCtrlSortMode;
 
+        public static final SortMode defaultAltSortMode = SortMode.RAW_ID;
+        public SortMode altSortMode = defaultAltSortMode;
+
         public static final boolean defaultOptimizedCreativeSorting = true;
         public boolean optimizedCreativeSorting = defaultOptimizedCreativeSorting;
     }
