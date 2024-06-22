@@ -25,9 +25,11 @@ You can hold `Shift` or `Control` when pressing the sort button to use a differe
 
 ### Dependencies
 
-- [Fabric API](https://modrinth.com/mod/P7dR8mSH) (required)
-- [ModMenu](https://modrinth.com/mod/mOgUt4GM) (required for configuration)
-- [Cloth Config API](https://modrinth.com/mod/9s6osm5g) (required for configuration)
+Fabric: [Fabric API](https://modrinth.com/mod/P7dR8mSH), 
+[ModMenu](https://modrinth.com/mod/mOgUt4GM), 
+[Cloth Config API](https://modrinth.com/mod/9s6osm5g)
+
+NeoForge: [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
 ### Credits
 
