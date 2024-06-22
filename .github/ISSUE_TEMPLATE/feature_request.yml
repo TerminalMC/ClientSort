@@ -8,7 +8,8 @@ body:
     attributes:
       value: >-
         This form is for requesting new features or improvements, and should not be used for bug 
-        reports, port requests, or other issues.
+        reports, port requests, or other issues. For general support or if you're unsure, please 
+        ask on [Discord](https://discord.terminalmc.dev).
   - type: markdown
     attributes:
       value: >-

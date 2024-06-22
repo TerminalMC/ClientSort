@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Support enquiry, Question or Discussion
-    url: https://terminalmc.dev/discord
+    url: https://discord.terminalmc.dev
     about: For any issue that isn't specifically a bug report or feature request, please use Discord

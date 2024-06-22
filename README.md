@@ -42,6 +42,6 @@ Mouse Wheelie is available on [Modrinth](https://modrinth.com/mod/u5Ic2U1u) and
 
 ### Contact
 
-[![Discord Server](https://img.shields.io/discord/1103153365216669797?logo=discord&label=Discord%20Server&color=%235865F2)](https://terminalmc.dev/discord)
+[![Discord Server](https://img.shields.io/discord/1103153365216669797?logo=discord&label=Discord%20Server&color=%235865F2)](https://discord.terminalmc.dev)
 
 [![GitHub Issues](https://img.shields.io/github/issues/TerminalMC/ClientSort?logo=github&label=GitHub%20Issues)](https://github.com/TerminalMC/ClientSort/issues)
