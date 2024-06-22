@@ -22,7 +22,7 @@ A standalone implementation of Siphalor's [Mouse Wheelie](https://github.com/Sip
 
 To sort an inventory, simply hover over it with your mouse and press the keybind (default: middle mouse button).
 
-You can hold `Shift` or `Control` when pressing the sort button to use a different sorting order.
+You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a different sorting order.
 
 ### Dependencies
 
