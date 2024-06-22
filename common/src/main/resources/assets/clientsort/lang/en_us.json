@@ -11,6 +11,7 @@
   "option.${mod_id}.general": "General",
   "option.${mod_id}.interaction_rate_server": "Multiplayer Interaction Rate",
   "option.${mod_id}.interaction_rate_client": "Singleplayer Interaction Rate",
+  "option.${mod_id}.interaction_rate.tooltip": "Reduce to sort faster, increase if you are experiencing packet rate issues",
   "option.${mod_id}.hotbar_mode": "Hotbar Mode",
 
   "option.${mod_id}.sorting": "Sorting",

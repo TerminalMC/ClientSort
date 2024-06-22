@@ -40,6 +40,7 @@ public class ClothConfigScreenProvider {
 
         general.addEntry(eb.startIntField(localized("option", "interaction_rate_server"),
                         options.interactionRateServer)
+                .setTooltip(localized("option", "interaction_rate.tooltip"))
                 .setErrorSupplier(val -> {
                     if (val < 0) return Optional.of(
                             localized("option", "error.low"));
@@ -53,6 +54,7 @@ public class ClothConfigScreenProvider {
 
         general.addEntry(eb.startIntField(localized("option", "interaction_rate_client"),
                         options.interactionRateClient)
+                .setTooltip(localized("option", "interaction_rate.tooltip"))
                 .setErrorSupplier(val -> {
                     if (val < 0) return Optional.of(
                             localized("option", "error.low"));
