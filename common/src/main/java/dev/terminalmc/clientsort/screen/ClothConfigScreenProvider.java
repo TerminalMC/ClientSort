@@ -42,7 +42,7 @@ public class ClothConfigScreenProvider {
                         options.interactionRateServer)
                 .setTooltip(localized("option", "interaction_rate.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 0) return Optional.of(
+                    if (val < 1) return Optional.of(
                             localized("option", "error.low"));
                     else if (val > 100) return Optional.of(
                             localized("option", "error.high"));
@@ -56,7 +56,7 @@ public class ClothConfigScreenProvider {
                         options.interactionRateClient)
                 .setTooltip(localized("option", "interaction_rate.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 0) return Optional.of(
+                    if (val < 1) return Optional.of(
                             localized("option", "error.low"));
                     else if (val > 100) return Optional.of(
                             localized("option", "error.high"));
