@@ -6,12 +6,14 @@
 package dev.terminalmc.clientsort;
 
 import dev.terminalmc.clientsort.screen.ConfigScreenProvider;
+import dev.terminalmc.clientsort.util.CreativeSearchOrder;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -36,6 +38,12 @@ public class ClientSortNeoForge {
 
     @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
     static class ClientEventHandler {
+        // Game join events
+        @SubscribeEvent
+        public static void loginEvent(ClientPlayerNetworkEvent.LoggingIn event) {
+            CreativeSearchOrder.refreshItemSearchPositionLookup();
+        }
+
         // Tick events
         @SubscribeEvent
         public static void clientTickEvent(ClientTickEvent.Post event) {
