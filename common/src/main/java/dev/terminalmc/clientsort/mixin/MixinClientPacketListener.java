@@ -26,6 +26,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,13 +39,18 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
 		super(client, connection, connectionState);
 	}
 
+    @Inject(method = "handleLogin", at = @At("HEAD"))
+    private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
+        ClientSort.searchOrderUpdated = false;
+    }
+
 	@Inject(method = "handleSetCarriedItem", at = @At("HEAD"))
-	public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo callbackInfo) {
+	public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
 		InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
 	}
 
 	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"))
-	public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo callbackInfo) {
+	public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
 		ClientSort.lastUpdatedSlot = packet.getSlot();
 		InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
 	}

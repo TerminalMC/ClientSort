@@ -7,6 +7,7 @@ package dev.terminalmc.clientsort.screen;
 
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.util.CreativeSearchOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -106,7 +107,10 @@ public class ClothConfigScreenProvider {
         sort.addEntry(eb.startBooleanToggle(localized("option", "optimized_creative_sorting"),
                         options.optimizedCreativeSorting)
                 .setDefaultValue(Config.Options.defaultOptimizedCreativeSorting)
-                .setSaveConsumer(val -> options.optimizedCreativeSorting = val)
+                .setSaveConsumer(val -> {
+                    options.optimizedCreativeSorting = val;
+                    CreativeSearchOrder.refreshItemSearchPositionLookup();
+                })
                 .build());
 
         return builder.build();

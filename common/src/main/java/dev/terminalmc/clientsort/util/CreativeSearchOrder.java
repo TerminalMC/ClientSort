@@ -22,19 +22,18 @@ import dev.terminalmc.clientsort.config.Config;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CreativeSearchOrder {
-	private static FeatureFlagSet lastFeatureSet = null;
 	private static final Object2IntMap<StackMatcher> stackToSearchPositionLookup = new Object2IntOpenHashMap<>();
 	static {
 		stackToSearchPositionLookup.defaultReturnValue(Integer.MAX_VALUE);
@@ -53,40 +52,42 @@ public class CreativeSearchOrder {
 		return pos;
 	}
 
-	// Called on config change and when the feature set changes (on world join)
+	// Called when the feature set changes (on world join)
 	public static void refreshItemSearchPositionLookup() {
 		if (Config.get().options.optimizedCreativeSorting) {
-			Minecraft client = Minecraft.getInstance();
-			if (client.level == null) {
+			Minecraft mc = Minecraft.getInstance();
+			if (mc.level == null || mc.player == null) {
 				return;
 			}
-			FeatureFlagSet enabledFeatures = client.level.enabledFeatures();
+			FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
 
-			if (stackToSearchPositionLookup.isEmpty() || !Objects.equals(enabledFeatures, lastFeatureSet)) {
-				CreativeModeTabs.tryRebuildTabContents(enabledFeatures, true, client.level.registryAccess());
-				Collection<ItemStack> displayStacks = new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
-				new Thread(() -> {
-					Lock lock = stackToSearchPositionLookupLock.writeLock();
-					lock.lock();
-					stackToSearchPositionLookup.clear();
-					if (displayStacks.isEmpty()) {
-						lock.unlock();
-						return;
-					}
+            LocalPlayer player = mc.player;
+            boolean op = mc.options.operatorItemsTab().get() && player.canUseGameMasterBlocks();
 
-					int i = 0;
-					for (ItemStack stack : displayStacks) {
-						StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-						if (!stack.hasFoil() || !stackToSearchPositionLookup.containsKey(plainMatcher)) {
-							stackToSearchPositionLookup.put(plainMatcher, i);
-							i++;
-						}
-						stackToSearchPositionLookup.put(StackMatcher.of(stack), i);
-						i++;
-					}
-					lock.unlock();
-				}, "Mouse Wheelie: creative search stack position lookup builder").start();
-			}
+            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !op, mc.level.registryAccess());
+
+            Collection<ItemStack> displayStacks = new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
+            new Thread(() -> {
+                Lock lock = stackToSearchPositionLookupLock.writeLock();
+                lock.lock();
+                stackToSearchPositionLookup.clear();
+                if (displayStacks.isEmpty()) {
+                    lock.unlock();
+                    return;
+                }
+
+                int i = 0;
+                for (ItemStack stack : displayStacks) {
+                    StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                    if (!stack.hasFoil() || !stackToSearchPositionLookup.containsKey(plainMatcher)) {
+                        stackToSearchPositionLookup.put(plainMatcher, i);
+                        i++;
+                    }
+                    stackToSearchPositionLookup.put(StackMatcher.of(stack), i);
+                    i++;
+                }
+                lock.unlock();
+            }, "Mouse Wheelie: creative search stack position lookup builder").start();
 
 		} else {
 			Lock lock = stackToSearchPositionLookupLock.writeLock();
