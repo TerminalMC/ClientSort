@@ -19,6 +19,7 @@
 package dev.terminalmc.clientsort.mixin;
 
 import com.mojang.authlib.GameProfile;
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.CreativeSearchOrder;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -28,8 +29,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static dev.terminalmc.clientsort.ClientSort.searchOrderUpdated;
 
 @Mixin(LocalPlayer.class)
 public abstract class MixinLocalPlayer extends AbstractClientPlayer {
@@ -44,9 +43,11 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
 
     @Inject(method = "setPermissionLevel", at = @At("RETURN"))
     public void onSetPermissionLevel(int level, CallbackInfo ci) {
-        if (!searchOrderUpdated) {
+        if (ClientSort.lastPermLevel == Integer.MIN_VALUE) {
+            ClientSort.lastPermLevel = level;
             CreativeSearchOrder.refreshItemSearchPositionLookup();
-            searchOrderUpdated = true;
+        } else {
+            ClientSort.lastPermLevel = level;
         }
     }
 }

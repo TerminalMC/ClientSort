@@ -25,7 +25,7 @@ public class ClientSort {
             translationKey("key", "sort"), InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key_group"));
 
-    public static boolean searchOrderUpdated = false;
+    public static int lastPermLevel = Integer.MIN_VALUE;
 
 	public static int lastUpdatedSlot = -1;
 

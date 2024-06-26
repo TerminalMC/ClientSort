@@ -18,11 +18,11 @@
 
 package dev.terminalmc.clientsort.util;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.Config;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -61,10 +61,9 @@ public class CreativeSearchOrder {
 			}
 			FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
 
-            LocalPlayer player = mc.player;
-            boolean op = mc.options.operatorItemsTab().get() && player.canUseGameMasterBlocks();
+            boolean opTab = mc.options.operatorItemsTab().get() && ClientSort.lastPermLevel >= 2;
 
-            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !op, mc.level.registryAccess());
+            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
 
             Collection<ItemStack> displayStacks = new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
             new Thread(() -> {
