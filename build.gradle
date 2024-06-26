@@ -1,5 +1,3 @@
-import com.modrinth.minotaur.dependencies.ModDependency
-
 plugins {
     id("java")
     id("java-library")
@@ -7,6 +5,7 @@ plugins {
     id("maven-publish")
     id("org.jetbrains.gradle.plugin.idea-ext") version("${ideaext_version}") // Required for NeoGradle
     id("com.modrinth.minotaur") version("${minotaur_version}")
+    id("net.darkhax.curseforgegradle") version("${curseforgegradle_version}")
     id("com.github.breadmoirai.github-release") version("${githubrelease_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
 }
@@ -134,19 +133,19 @@ subprojects {
                 gameVersions = project.property("release_game_versions_${name}").split(",") as List
 
                 def deps = []
-                if (project.hasProperty("release_required_dep_ids_${name}")) {
-                    project.property("release_required_dep_ids_${name}").split(",").each { String id ->
-                        deps << new ModDependency(id, "required")
+                if (project.hasProperty("release_required_dep_ids_${name}_mr")) {
+                    project.property("release_required_dep_ids_${name}_mr").split(",").each { String id ->
+                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "required")
                     }
                 }
-                if (project.hasProperty("release_optional_dep_ids_${name}")) {
-                    project.property("release_optional_dep_ids_${name}").split(",").each { String id ->
-                        deps << new ModDependency(id, "optional")
+                if (project.hasProperty("release_optional_dep_ids_${name}_mr")) {
+                    project.property("release_optional_dep_ids_${name}_mr").split(",").each { String id ->
+                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "optional")
                     }
                 }
-                if (project.hasProperty("release_incompatible_dep_ids_${name}")) {
-                    project.property("release_incompatible_dep_ids_${name}").split(",").each { String id ->
-                        deps << new ModDependency(id, "incompatible")
+                if (project.hasProperty("release_incompatible_dep_ids_${name}_mr")) {
+                    project.property("release_incompatible_dep_ids_${name}_mr").split(",").each { String id ->
+                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "incompatible")
                     }
                 }
                 dependencies = deps
@@ -155,6 +154,44 @@ subprojects {
             tasks.modrinth.onlyIf { System.getenv().MODRINTH_TOKEN }
             tasks.modrinth.dependsOn(build, tasks.modrinthSyncBody)
             tasks.modrinthSyncBody.onlyIf { System.getenv().MODRINTH_TOKEN }
+
+            task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+                apiToken = System.getenv().CURSEFORGE_TOKEN ? System.getenv().CURSEFORGE_TOKEN : ""
+                if (apiToken.isBlank()) return
+
+                disableVersionDetection()
+                String module = project.name
+
+                def file = upload(833352, module == "fabric" ? remapJar : jar)
+                file.displayName = "v${mod_version}-${capsLoader(module)}-${minecraft_version}"
+                file.releaseType = release_type
+                file.changelog = rootProject.file("changelog.md").text
+                file.changelogType = 'markdown'
+                project.property("release_mod_loaders_${module}").split(",").each { String id ->
+                    file.addModLoader(id)
+                }
+                project.property("release_game_versions_${module}").split(",").each { String id ->
+                    file.addGameVersion(id, module)
+                }
+
+                if (project.hasProperty("release_required_dep_ids_${module}_cf")) {
+                    project.property("release_required_dep_ids_${module}_cf").split(",").each { String id ->
+                        file.addRequirement(id)
+                    }
+                }
+                if (project.hasProperty("release_optional_dep_ids_${module}_cf")) {
+                    project.property("release_optional_dep_ids_${module}_cf").split(",").each { String id ->
+                        file.addOptional(id)
+                    }
+                }
+                if (project.hasProperty("release_incompatible_dep_ids_${module}_cf")) {
+                    project.property("release_incompatible_dep_ids_${module}_cf").split(",").each { String id ->
+                        file.addIncompatibility(id)
+                    }
+                }
+            }
+            tasks.modrinth.onlyIf { System.getenv().CURSEFORGE_TOKEN }
+            tasks.curseforge.dependsOn(build)
 
             githubRelease {
                 token = System.getenv().GITHUB_TOKEN ? System.getenv().GITHUB_TOKEN : "empty"
