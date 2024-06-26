@@ -162,7 +162,7 @@ subprojects {
                 disableVersionDetection()
                 String module = project.name
 
-                def file = upload(833352, module == "fabric" ? remapJar : jar)
+                def file = upload(curseforge_id, module == "fabric" ? remapJar : jar)
                 file.displayName = "v${mod_version}-${capsLoader(module)}-${minecraft_version}"
                 file.releaseType = release_type
                 file.changelog = rootProject.file("changelog.md").text
@@ -190,7 +190,7 @@ subprojects {
                     }
                 }
             }
-            tasks.modrinth.onlyIf { System.getenv().CURSEFORGE_TOKEN }
+            tasks.curseforge.onlyIf { System.getenv().CURSEFORGE_TOKEN }
             tasks.curseforge.dependsOn(build)
 
             githubRelease {
