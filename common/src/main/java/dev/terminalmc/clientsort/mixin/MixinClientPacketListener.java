@@ -41,7 +41,7 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
 
     @Inject(method = "handleLogin", at = @At("HEAD"))
     private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
-        ClientSort.lastPermLevel = Integer.MIN_VALUE;
+        ClientSort.searchOrderUpdated = false;
     }
 
 	@Inject(method = "handleSetCarriedItem", at = @At("HEAD"))

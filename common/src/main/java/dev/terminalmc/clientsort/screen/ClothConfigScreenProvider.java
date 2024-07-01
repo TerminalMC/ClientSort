@@ -109,7 +109,7 @@ public class ClothConfigScreenProvider {
                 .setDefaultValue(Config.Options.defaultOptimizedCreativeSorting)
                 .setSaveConsumer(val -> {
                     options.optimizedCreativeSorting = val;
-                    CreativeSearchOrder.refreshItemSearchPositionLookup();
+                    if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
                 })
                 .build());
 

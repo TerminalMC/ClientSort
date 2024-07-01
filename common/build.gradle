@@ -14,6 +14,8 @@ dependencies {
 
     // Using NeoForge version here to avoid having to remap
     implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+
+    implementation("maven.modrinth:fRiHVvU7:${emi_version_neoforge}")
 }
 
 minecraft {

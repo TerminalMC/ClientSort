@@ -14,6 +14,8 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")
 
     implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+
+    implementation("maven.modrinth:fRiHVvU7:${emi_version_neoforge}")
 }
 
 // Temporary workaround for a NeoGradle bug
