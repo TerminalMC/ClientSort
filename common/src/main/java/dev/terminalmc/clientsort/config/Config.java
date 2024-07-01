@@ -36,13 +36,21 @@ public class Config {
         public static final int defaultInteractionRateClient = 1;
         public int interactionRateClient = defaultInteractionRateClient;
 
-        public static final HotbarMode defaultHotbarMode = HotbarMode.SOFT;
+        public static final HotbarMode defaultHotbarMode = HotbarMode.HARD;
         public HotbarMode hotbarMode = defaultHotbarMode;
 
         public enum HotbarMode {
-            SOFT,
+            NONE,
             HARD,
-            NONE
+            SOFT;
+
+            public String lowerName() {
+                return switch(this) {
+                    case NONE -> "merge";
+                    case HARD -> "split";
+                    case SOFT -> "off";
+                };
+            }
         }
 
         // Sorting

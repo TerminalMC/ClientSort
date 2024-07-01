@@ -67,12 +67,15 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
 		if (screen instanceof EffectRenderingInventoryScreen) {
 			if (slot.container instanceof Inventory) {
 				if (isHotbarSlot(slot)) {
-					return 0;
+                    Config.Options options = Config.get().options;
+                    if (options.hotbarMode == Config.Options.HotbarMode.HARD
+                            || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
+                        return -1;
+                    }
 				} else if (((ISlot) slot).mouseWheelie_getIndexInInv() >= 40) {
 					return -1;
-				} else {
-					return 1;
 				}
+                return 0;
 			} else {
 				return 2;
 			}
