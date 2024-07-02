@@ -13,13 +13,25 @@
   "option.${mod_id}.interaction_rate_client": "Скорость локального взаимодействия",
   "option.${mod_id}.interaction_rate.tooltip": "Уменьшите, чтобы ускорить сортировку, увеличьте, если у вас возникли проблемы со скоростью передачи пакетов",
   "option.${mod_id}.hotbar_mode": "Режим горячей панели",
-
   "option.${mod_id}.sorting": "Сортировка",
   "option.${mod_id}.sort_mode": "Режим сортировки",
   "option.${mod_id}.shift_sort_mode": "Режим сортировки по Shift",
   "option.${mod_id}.ctrl_sort_mode": "Режим сортировки по Ctrl",
   "option.${mod_id}.alt_sort_mode": "Режим сортировки по Alt",
   "option.${mod_id}.optimized_creative_sorting": "Оптимизированная творческая сортировка",
+
+  "hotbar_mode.${mod_id}.merge": "Слияние",
+  "hotbar_mode.${mod_id}.merge.tooltip": "Горячая панель будет рассматриваться как часть основного инвентаря",
+  "hotbar_mode.${mod_id}.split": "Разделение",
+  "hotbar_mode.${mod_id}.split.tooltip": "Горячая панель будет рассматриваться как другой инвентарь",
+  "hotbar_mode.${mod_id}.off": "Выключено",
+  "hotbar_mode.${mod_id}.off.tooltip": "Горячая панель не может быть отсортирована",
+
+  "sort_order.${mod_id}.none": "Никакая",
+  "sort_order.${mod_id}.alphabet": "Алфавитная",
+  "sort_order.${mod_id}.creative": "Творческая",
+  "sort_order.${mod_id}.quantity": "По количеству",
+  "sort_order.${mod_id}.raw_id": "Необработанные идентификаторы",
 
   "option.${mod_id}.error.low": "Слишком низко",
   "option.${mod_id}.error.high": "Слишком высоко"
