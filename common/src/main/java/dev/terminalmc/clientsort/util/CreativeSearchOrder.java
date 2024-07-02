@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.util;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.Config;
+import dev.terminalmc.clientsort.mixin.accessor.LocalPlayerAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -51,8 +52,15 @@ public class CreativeSearchOrder {
 		}
 		return pos;
 	}
+    
+    public static void tryRefreshItemSearchPositionLookup() {
+        if (ClientSort.emiReloading) {
+            ClientSort.updateBlockedByEmi = true;
+        } else {
+            refreshItemSearchPositionLookup();
+        }
+    }
 
-	// Called when the feature set changes (on world join)
 	public static void refreshItemSearchPositionLookup() {
 		if (Config.get().options.optimizedCreativeSorting) {
 			Minecraft mc = Minecraft.getInstance();
@@ -60,8 +68,8 @@ public class CreativeSearchOrder {
 				return;
 			}
 			FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
-
-            boolean opTab = mc.options.operatorItemsTab().get() && ClientSort.lastPermLevel >= 2;
+            boolean opTab = mc.options.operatorItemsTab().get()
+                    && ((LocalPlayerAccessor)mc.player).getPermissionLevel() >= 2;
 
             CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
 

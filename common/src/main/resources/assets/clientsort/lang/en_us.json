@@ -13,13 +13,25 @@
   "option.${mod_id}.interaction_rate_client": "Singleplayer Interaction Rate",
   "option.${mod_id}.interaction_rate.tooltip": "Reduce to sort faster, increase if you are experiencing packet rate issues",
   "option.${mod_id}.hotbar_mode": "Hotbar Mode",
-
   "option.${mod_id}.sorting": "Sorting",
   "option.${mod_id}.sort_mode": "Sort Mode",
   "option.${mod_id}.shift_sort_mode": "Shift Sort Mode",
   "option.${mod_id}.ctrl_sort_mode": "Ctrl Sort Mode",
   "option.${mod_id}.alt_sort_mode": "Alt Sort Mode",
   "option.${mod_id}.optimized_creative_sorting": "Optimized Creative Sorting",
+
+  "hotbar_mode.${mod_id}.merge": "Merge",
+  "hotbar_mode.${mod_id}.merge.tooltip": "Hotbar will be treated as part of the main inventory",
+  "hotbar_mode.${mod_id}.split": "Split",
+  "hotbar_mode.${mod_id}.split.tooltip": "Hotbar will be treated as a different inventory",
+  "hotbar_mode.${mod_id}.off": "Off",
+  "hotbar_mode.${mod_id}.off.tooltip": "Hotbar cannot be sorted",
+
+  "sort_order.${mod_id}.none": "None",
+  "sort_order.${mod_id}.alphabet": "Alphabet",
+  "sort_order.${mod_id}.creative": "Creative",
+  "sort_order.${mod_id}.quantity": "Quantity",
+  "sort_order.${mod_id}.raw_id": "Raw ID",
 
   "option.${mod_id}.error.low": "Too low",
   "option.${mod_id}.error.high": "Too high"

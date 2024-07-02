@@ -7,7 +7,7 @@ package dev.terminalmc.clientsort;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.mixin.KeyMappingAccessor;
+import dev.terminalmc.clientsort.mixin.accessor.KeyMappingAccessor;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.mod.ModLogger;
@@ -25,7 +25,10 @@ public class ClientSort {
             translationKey("key", "sort"), InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key_group"));
 
-    public static int lastPermLevel = Integer.MIN_VALUE;
+    public static boolean searchOrderUpdated = false;
+
+    public static boolean emiReloading = false;
+    public static boolean updateBlockedByEmi = false;
 
 	public static int lastUpdatedSlot = -1;
 

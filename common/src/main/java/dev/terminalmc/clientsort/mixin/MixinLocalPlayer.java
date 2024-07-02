@@ -43,11 +43,9 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
 
     @Inject(method = "setPermissionLevel", at = @At("RETURN"))
     public void onSetPermissionLevel(int level, CallbackInfo ci) {
-        if (ClientSort.lastPermLevel == Integer.MIN_VALUE) {
-            ClientSort.lastPermLevel = level;
-            CreativeSearchOrder.refreshItemSearchPositionLookup();
-        } else {
-            ClientSort.lastPermLevel = level;
+        if (!ClientSort.searchOrderUpdated) {
+            ClientSort.searchOrderUpdated = true;
+            CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
         }
     }
 }

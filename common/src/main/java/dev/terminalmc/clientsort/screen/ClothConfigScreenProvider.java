@@ -69,37 +69,41 @@ public class ClothConfigScreenProvider {
 
         general.addEntry(eb.startEnumSelector(localized("option", "hotbar_mode"),
                         Config.Options.HotbarMode.class, options.hotbarMode)
+                .setEnumNameProvider(val -> localized("hotbar_mode",
+                        ((Config.Options.HotbarMode)val).lowerName()))
+                .setTooltipSupplier(val -> Optional.of(new Component[]{
+                        localized("hotbar_mode", val.lowerName() + ".tooltip")
+                }))
                 .setDefaultValue(Config.Options.defaultHotbarMode)
                 .setSaveConsumer(val -> options.hotbarMode = val)
                 .build());
-
 
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
         sort.addEntry(eb.startSelector(localized("option", "sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.sortMode)
-                .setNameProvider(val -> Component.literal(((SortMode)val).name))
+                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultSortMode)
                 .setSaveConsumer(val -> options.sortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "shift_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.shiftSortMode)
-                .setNameProvider(val -> Component.literal(((SortMode)val).name))
+                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultShiftSortMode)
                 .setSaveConsumer(val -> options.shiftSortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "ctrl_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.ctrlSortMode)
-                .setNameProvider(val -> Component.literal(((SortMode)val).name))
+                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
                 .setSaveConsumer(val -> options.ctrlSortMode = (SortMode)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "alt_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.altSortMode)
-                .setNameProvider(val -> Component.literal(((SortMode)val).name))
+                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultAltSortMode)
                 .setSaveConsumer(val -> options.altSortMode = (SortMode)val)
                 .build());
@@ -109,7 +113,7 @@ public class ClothConfigScreenProvider {
                 .setDefaultValue(Config.Options.defaultOptimizedCreativeSorting)
                 .setSaveConsumer(val -> {
                     options.optimizedCreativeSorting = val;
-                    CreativeSearchOrder.refreshItemSearchPositionLookup();
+                    if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
                 })
                 .build());
 
