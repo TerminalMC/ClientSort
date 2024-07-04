@@ -1,3 +1,1 @@
-- Fix compatibility with EMI
-- Improve hotbar handling
-- Add Russian translation (mpustovoi)
+- Add Taiwanese translation (notlin4)
