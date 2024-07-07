@@ -7,6 +7,7 @@ package dev.terminalmc.clientsort;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
+import dev.terminalmc.clientsort.inventory.sort.SortMode;
 import dev.terminalmc.clientsort.mixin.accessor.KeyMappingAccessor;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.IContainerScreen;
@@ -62,6 +63,10 @@ public class ClientSort {
     public static void onConfigSaved(Config config) {
         if (Minecraft.getInstance().getSingleplayerServer() == null) {
             InteractionManager.setTickRate(config.options.interactionRateServer);
+            config.options.sortMode = SortMode.SORT_MODES.get(config.options.sortModeStr);
+            config.options.shiftSortMode = SortMode.SORT_MODES.get(config.options.shiftSortModeStr);
+            config.options.ctrlSortMode = SortMode.SORT_MODES.get(config.options.ctrlSortModeStr);
+            config.options.altSortMode = SortMode.SORT_MODES.get(config.options.altSortModeStr);
         } else {
             InteractionManager.setTickRate(config.options.interactionRateClient);
         }

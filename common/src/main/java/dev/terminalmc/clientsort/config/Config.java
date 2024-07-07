@@ -54,17 +54,21 @@ public class Config {
         }
 
         // Sorting
-        public static final SortMode defaultSortMode = SortMode.CREATIVE;
-        public SortMode sortMode = defaultSortMode;
+        public static final String defaultSortMode = SortMode.CREATIVE.name;
+        public String sortModeStr = defaultSortMode;
+        public transient SortMode sortMode;
 
-        public static final SortMode defaultShiftSortMode = SortMode.QUANTITY;
-        public SortMode shiftSortMode = defaultShiftSortMode;
+        public static final String defaultShiftSortMode = SortMode.QUANTITY.name;
+        public String shiftSortModeStr = defaultShiftSortMode;
+        public transient SortMode shiftSortMode;
 
-        public static final SortMode defaultCtrlSortMode = SortMode.ALPHABET;
-        public SortMode ctrlSortMode = defaultCtrlSortMode;
+        public static final String defaultCtrlSortMode = SortMode.ALPHABET.name;
+        public String ctrlSortModeStr = defaultCtrlSortMode;
+        public transient SortMode ctrlSortMode;
 
-        public static final SortMode defaultAltSortMode = SortMode.RAW_ID;
-        public SortMode altSortMode = defaultAltSortMode;
+        public static final String defaultAltSortMode = SortMode.RAW_ID.name;
+        public String altSortModeStr = defaultAltSortMode;
+        public transient SortMode altSortMode;
 
         public static final boolean defaultOptimizedCreativeSorting = true;
         public boolean optimizedCreativeSorting = defaultOptimizedCreativeSorting;

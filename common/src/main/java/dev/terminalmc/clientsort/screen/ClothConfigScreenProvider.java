@@ -84,28 +84,28 @@ public class ClothConfigScreenProvider {
                         SortMode.SORT_MODES.values().toArray(), options.sortMode)
                 .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultSortMode)
-                .setSaveConsumer(val -> options.sortMode = (SortMode)val)
+                .setSaveConsumer(val -> options.sortModeStr = ((SortMode) val).name)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "shift_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.shiftSortMode)
                 .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultShiftSortMode)
-                .setSaveConsumer(val -> options.shiftSortMode = (SortMode)val)
+                .setSaveConsumer(val -> options.shiftSortModeStr = ((SortMode) val).name)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "ctrl_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.ctrlSortMode)
                 .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
-                .setSaveConsumer(val -> options.ctrlSortMode = (SortMode)val)
+                .setSaveConsumer(val -> options.ctrlSortModeStr = ((SortMode) val).name)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "alt_sort_mode"),
                         SortMode.SORT_MODES.values().toArray(), options.altSortMode)
                 .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
                 .setDefaultValue(Config.Options.defaultAltSortMode)
-                .setSaveConsumer(val -> options.altSortMode = (SortMode)val)
+                .setSaveConsumer(val -> options.altSortModeStr = ((SortMode) val).name)
                 .build());
 
         sort.addEntry(eb.startBooleanToggle(localized("option", "optimized_creative_sorting"),
