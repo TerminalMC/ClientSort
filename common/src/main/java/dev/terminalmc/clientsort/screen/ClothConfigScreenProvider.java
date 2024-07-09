@@ -81,31 +81,31 @@ public class ClothConfigScreenProvider {
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
         sort.addEntry(eb.startSelector(localized("option", "sort_mode"),
-                        SortMode.SORT_MODES.values().toArray(), options.sortMode)
-                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
+                        SortMode.SORT_MODES.keySet().toArray(), options.sortModeStr)
+                .setNameProvider(val -> localized("sort_order", (String) val))
                 .setDefaultValue(Config.Options.defaultSortMode)
-                .setSaveConsumer(val -> options.sortModeStr = ((SortMode) val).name)
+                .setSaveConsumer(val -> options.sortModeStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "shift_sort_mode"),
-                        SortMode.SORT_MODES.values().toArray(), options.shiftSortMode)
-                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
+                        SortMode.SORT_MODES.keySet().toArray(), options.shiftSortModeStr)
+                .setNameProvider(val -> localized("sort_order", (String) val))
                 .setDefaultValue(Config.Options.defaultShiftSortMode)
-                .setSaveConsumer(val -> options.shiftSortModeStr = ((SortMode) val).name)
+                .setSaveConsumer(val -> options.shiftSortModeStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "ctrl_sort_mode"),
-                        SortMode.SORT_MODES.values().toArray(), options.ctrlSortMode)
-                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
+                        SortMode.SORT_MODES.keySet().toArray(), options.ctrlSortModeStr)
+                .setNameProvider(val -> localized("sort_order", (String) val))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
-                .setSaveConsumer(val -> options.ctrlSortModeStr = ((SortMode) val).name)
+                .setSaveConsumer(val -> options.ctrlSortModeStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "alt_sort_mode"),
-                        SortMode.SORT_MODES.values().toArray(), options.altSortMode)
-                .setNameProvider(val -> localized("sort_order", ((SortMode)val).name))
+                        SortMode.SORT_MODES.keySet().toArray(), options.altSortModeStr)
+                .setNameProvider(val -> localized("sort_order", (String) val))
                 .setDefaultValue(Config.Options.defaultAltSortMode)
-                .setSaveConsumer(val -> options.altSortModeStr = ((SortMode) val).name)
+                .setSaveConsumer(val -> options.altSortModeStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startBooleanToggle(localized("option", "optimized_creative_sorting"),

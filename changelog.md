@@ -1,2 +1,1 @@
-- Add Taiwanese translation (notlin4)
-- Fix sort mode configuration not saving
+- Fix sort mode defaults
