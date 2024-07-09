@@ -19,6 +19,7 @@
 package dev.terminalmc.clientsort.mixin;
 
 import com.google.common.base.Suppliers;
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.inventory.sort.InventorySorter;
@@ -27,6 +28,7 @@ import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -39,6 +41,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Supplier;
 
@@ -57,6 +62,38 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 
 	@Shadow
 	protected Slot hoveredSlot;
+
+    @Inject(
+            method = "mouseClicked",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
+    private void onMouseClicked(double mouseX, double mouseY, int button,
+                                CallbackInfoReturnable<Boolean> cir) {
+        if (this.hoveredSlot != null
+                && ClientSort.SORT_KEY.matchesMouse(button)
+                && !clientSort$specialOperation(button)) {
+            mouseWheelie_triggerSort();
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
+    }
+
+    @Inject(
+            method = "keyPressed",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
+    private void onKeyPressed(int keyCode, int scanCode, int modifiers,
+                              CallbackInfoReturnable<Boolean> cir) {
+        if (this.hoveredSlot != null
+                && ClientSort.SORT_KEY.matches(keyCode, scanCode)
+                && !clientSort$specialOperation(keyCode, scanCode)) {
+            mouseWheelie_triggerSort();
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
+    }
 
 	@SuppressWarnings({"ConstantConditions", "unchecked"})
 	@Unique
@@ -93,4 +130,50 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 		sorter.sort(sortMode);
 		return true;
 	}
+
+    @SuppressWarnings("ConstantConditions")
+    @Unique
+    private boolean clientSort$specialOperation(int button) {
+        Options options = this.minecraft.options;
+        if (this.hoveredSlot.hasItem() &&
+                ((options.keyPickItem.matchesMouse(button)
+                            && this.minecraft.gameMode.hasInfiniteItems())
+                        || options.keyDrop.matchesMouse(button))) {
+            return true;
+        }
+        else if (options.keySwapOffhand.matchesMouse(button)) {
+            return true;
+        }
+        else {
+            for(int i = 0; i < 9; i++) {
+                if (options.keyHotbarSlots[i].matchesMouse(button)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Unique
+    private boolean clientSort$specialOperation(int keyCode, int scanCode) {
+        Options options = this.minecraft.options;
+        if (this.hoveredSlot.hasItem() &&
+                ((options.keyPickItem.matches(keyCode, scanCode)
+                            && this.minecraft.gameMode.hasInfiniteItems())
+                        || options.keyDrop.matches(keyCode, scanCode))) {
+            return true;
+        }
+        else if (options.keySwapOffhand.matches(keyCode, scanCode)) {
+            return true;
+        }
+        else {
+            for(int i = 0; i < 9; i++) {
+                if (options.keyHotbarSlots[i].matches(keyCode, scanCode)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

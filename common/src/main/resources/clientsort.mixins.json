@@ -13,7 +13,6 @@
     "MixinClientPacketListener",
     "MixinCreativeSlot",
     "MixinLocalPlayer",
-    "accessor.KeyMappingAccessor",
     "accessor.LocalPlayerAccessor"
   ],
   "server" : [

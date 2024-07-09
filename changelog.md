@@ -1,1 +1,2 @@
 - Fix sort mode defaults
+- Fix sort keybind overlapping with vanilla operations

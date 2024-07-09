@@ -51,7 +51,6 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
 
 	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"))
 	public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
-		ClientSort.lastUpdatedSlot = packet.getSlot();
 		InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
 	}
 }

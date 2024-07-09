@@ -8,13 +8,10 @@ package dev.terminalmc.clientsort;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
-import dev.terminalmc.clientsort.mixin.accessor.KeyMappingAccessor;
 import dev.terminalmc.clientsort.network.InteractionManager;
-import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.mod.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 
 import static dev.terminalmc.clientsort.util.mod.Localization.translationKey;
 
@@ -31,33 +28,11 @@ public class ClientSort {
     public static boolean emiReloading = false;
     public static boolean updateBlockedByEmi = false;
 
-	public static int lastUpdatedSlot = -1;
-
-	public static int cooldown = 0;
-
     public static void init() {
         Config.getAndSave();
     }
 
 	public static void onEndTick(Minecraft mc) {
-		if (cooldown == 0) {
-            int key = ((KeyMappingAccessor) SORT_KEY).getKey().getValue();
-            if (key != GLFW.GLFW_KEY_UNKNOWN) {
-                boolean down;
-                if (key <= 7) {
-                    down = GLFW.glfwGetMouseButton(mc.getWindow().getWindow(), key) == GLFW.GLFW_PRESS;
-                } else {
-                    down = GLFW.glfwGetKey(mc.getWindow().getWindow(), key) == GLFW.GLFW_PRESS;
-                }
-                if (down) {
-                    if (mc.screen instanceof IContainerScreen screen) {
-                        screen.mouseWheelie_triggerSort();
-                        cooldown = 11;
-                    }
-                }
-            }
-		}
-		if (cooldown > 0) cooldown--;
 	}
 
     public static void onConfigSaved(Config config) {
