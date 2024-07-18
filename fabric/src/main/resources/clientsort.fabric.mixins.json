@@ -1,16 +1,16 @@
 {
-  "required" : true,
-  "minVersion" : "0.8",
-  "package" : "dev.terminalmc.clientsort.mixin",
-  "refmap" : "${mod_id}.refmap.json",
-  "compatibilityLevel" : "JAVA_${java_version}",
-  "mixins" : [
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.terminalmc.clientsort.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_${java_version}",
+  "mixins": [
   ],
-  "client" : [
+  "client": [
   ],
-  "server" : [
+  "server": [
   ],
-  "injectors" : {
-    "defaultRequire" : 1
+  "injectors": {
+    "defaultRequire": 1
   }
 }
