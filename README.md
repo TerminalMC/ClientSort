@@ -26,9 +26,7 @@ You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a 
 
 ### Dependencies
 
-Fabric: [Fabric API](https://modrinth.com/mod/P7dR8mSH), 
-[ModMenu](https://modrinth.com/mod/mOgUt4GM), 
-[Cloth Config API](https://modrinth.com/mod/9s6osm5g)
+Fabric: [Fabric API](https://modrinth.com/mod/P7dR8mSH), [ModMenu](https://modrinth.com/mod/mOgUt4GM), [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
 NeoForge: [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
