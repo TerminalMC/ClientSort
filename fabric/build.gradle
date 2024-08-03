@@ -33,6 +33,20 @@ loom {
     mixin {
         defaultRefmapName = "${mod_id}.refmap.json"
     }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
