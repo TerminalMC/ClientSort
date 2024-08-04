@@ -11,7 +11,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.gui.screens.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 
 import static dev.terminalmc.clientsort.util.mod.Localization.localized;
@@ -65,8 +65,5 @@ public class ConfigScreenProvider {
                     .build();
             addRenderableWidget(exitButton);
         }
-
-        @Override
-        protected void addOptions() {}
     }
 }
