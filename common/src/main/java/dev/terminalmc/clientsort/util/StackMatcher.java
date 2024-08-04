@@ -19,7 +19,7 @@
 package dev.terminalmc.clientsort.util;
 
 import com.google.common.base.Objects;
-import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +28,11 @@ import org.jetbrains.annotations.Nullable;
 // TODO: This appears to work but needs more testing.
 public class StackMatcher {
 	private final @NotNull Item item;
-	private final @Nullable DataComponentMap components;
+	private final @Nullable CompoundTag nbt;
 
-	private StackMatcher(@NotNull Item item, @Nullable DataComponentMap components) {
+	private StackMatcher(@NotNull Item item, @Nullable CompoundTag nbt) {
 		this.item = item;
-		this.components = components;
+		this.nbt = nbt;
 	}
 
 	public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
@@ -40,16 +40,17 @@ public class StackMatcher {
 	}
 
 	public static StackMatcher of(@NotNull ItemStack stack) {
-		return new StackMatcher(stack.getItem(), stack.getComponents());
+		return new StackMatcher(stack.getItem(), stack.getTag());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof StackMatcher matcher) {
-			return ItemStack.isSameItemSameComponents(item.getDefaultInstance(), matcher.item.getDefaultInstance());
+            return item == matcher.item && Objects.equal(nbt, matcher.nbt);
 		}
 		else if (obj instanceof ItemStack stack) {
-			return ItemStack.isSameItem(item.getDefaultInstance(), stack);
+            return item == stack.getItem() && ItemStack.isSameItemSameTags(
+                    item.getDefaultInstance(), stack);
 		}
 		else if (obj instanceof Item objItem) {
 			return item == objItem;
@@ -59,6 +60,6 @@ public class StackMatcher {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(item, components);
+		return Objects.hashCode(item, nbt);
 	}
 }

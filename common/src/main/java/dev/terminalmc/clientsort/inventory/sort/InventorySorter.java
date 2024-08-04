@@ -70,14 +70,14 @@ public class InventorySorter {
 			stack = stacks[i];
 			if (stack.isEmpty()) continue;
 			int stackSize = stack.getCount();
-			if (stackSize >= stack.getItem().getDefaultMaxStackSize()) continue;
+			if (stackSize >= stack.getItem().getMaxStackSize()) continue;
 			clickEvents.add(screenHelper.createClickEvent(inventorySlots[i], 0, ClickType.PICKUP));
 			for (int j = 0; j < i; j++) {
 				ItemStack targetStack = stacks[j];
 				if (targetStack.isEmpty()) continue;
-				if (targetStack.getCount() >= targetStack.getItem().getDefaultMaxStackSize()) continue;
-				if (ItemStack.isSameItemSameComponents(stack, targetStack)) {
-					int delta = targetStack.getItem().getDefaultMaxStackSize() - targetStack.getCount();
+				if (targetStack.getCount() >= targetStack.getItem().getMaxStackSize()) continue;
+				if (ItemStack.isSameItemSameTags(stack, targetStack)) {
+					int delta = targetStack.getItem().getMaxStackSize() - targetStack.getCount();
 					delta = Math.min(delta, stackSize);
 					stackSize -= delta;
 					targetStack.setCount(targetStack.getCount() + delta);
@@ -160,7 +160,7 @@ public class InventorySorter {
 						stacks[id].getItem() == currentStack.getItem()
 								//&& stacks[id].getCount() == currentStack.getCount()
 								&& !doneSlashEmpty.get(slotCount + id)
-								&& ItemStack.isSameItemSameComponents(stacks[id], currentStack)
+								&& ItemStack.isSameItemSameTags(stacks[id], currentStack)
 				) {
 					// If the current stack and the target stack are completely equal, then we can skip this step in the chain
 					if (stacks[id].getCount() == currentStack.getCount()) {

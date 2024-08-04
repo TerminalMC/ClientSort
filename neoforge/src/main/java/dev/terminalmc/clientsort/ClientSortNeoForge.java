@@ -10,19 +10,20 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.TickEvent;
 
-@Mod(value = ClientSort.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod(value = ClientSort.MOD_ID)
+@Mod.EventBusSubscriber(modid = ClientSort.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSortNeoForge {
     public ClientSortNeoForge() {
         // Config screen
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-                () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent));
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory(
+                        (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent)
+                ));
 
         // Main initialization
         ClientSort.init();
@@ -34,12 +35,14 @@ public class ClientSortNeoForge {
         event.register(ClientSort.SORT_KEY);
     }
 
-    @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
     static class ClientEventHandler {
         // Tick events
         @SubscribeEvent
-        public static void clientTickEvent(ClientTickEvent.Post event) {
-            ClientSort.onEndTick(Minecraft.getInstance());
+        public static void clientTickEvent(TickEvent.ClientTickEvent event) {
+            if (event.phase.equals(TickEvent.Phase.END)) {
+                ClientSort.onEndTick(Minecraft.getInstance());
+            }
         }
     }
 }
