@@ -1,1 +1,1 @@
-- Add Simplified Chinese translation (SnowCutieOwO)
+- Fix a bug breaking middle-click drag in creative mode

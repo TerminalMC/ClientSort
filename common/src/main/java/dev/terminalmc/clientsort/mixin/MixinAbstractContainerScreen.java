@@ -36,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,6 +63,9 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
 
 	@Shadow
 	protected Slot hoveredSlot;
+
+    @Shadow
+    private ItemStack draggingItem;
 
     @Inject(
             method = "mouseClicked",
@@ -135,10 +139,13 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     @Unique
     private boolean clientSort$specialOperation(int button) {
         Options options = this.minecraft.options;
-        if (this.hoveredSlot.hasItem() &&
-                ((options.keyPickItem.matchesMouse(button)
-                            && this.minecraft.gameMode.hasInfiniteItems())
-                        || options.keyDrop.matchesMouse(button))) {
+        if (((options.keyPickItem.matchesMouse(button)
+                && this.minecraft.gameMode.hasInfiniteItems()
+                && (this.hoveredSlot.hasItem()
+                    || !this.draggingItem.isEmpty()
+                    || !this.menu.getCarried().isEmpty())))
+            || (options.keyDrop.matchesMouse(button)
+                && this.hoveredSlot.hasItem())) {
             return true;
         }
         else if (options.keySwapOffhand.matchesMouse(button)) {
@@ -158,10 +165,13 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     @Unique
     private boolean clientSort$specialOperation(int keyCode, int scanCode) {
         Options options = this.minecraft.options;
-        if (this.hoveredSlot.hasItem() &&
-                ((options.keyPickItem.matches(keyCode, scanCode)
-                            && this.minecraft.gameMode.hasInfiniteItems())
-                        || options.keyDrop.matches(keyCode, scanCode))) {
+        if (((options.keyPickItem.matches(keyCode, scanCode)
+                && this.minecraft.gameMode.hasInfiniteItems()
+                && (this.hoveredSlot.hasItem()
+                    || !this.draggingItem.isEmpty()
+                    || !this.menu.getCarried().isEmpty())))
+            || (options.keyDrop.matches(keyCode, scanCode)
+                && this.hoveredSlot.hasItem())) {
             return true;
         }
         else if (options.keySwapOffhand.matches(keyCode, scanCode)) {
