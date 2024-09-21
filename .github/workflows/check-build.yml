@@ -1,4 +1,4 @@
-# Builds the project on Linux and Windows as a partial defence against bad commits
+# Builds the project on Linux and Windows as a partial defense against bad commits
 name: Check Build
 
 on:

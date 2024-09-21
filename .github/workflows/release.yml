@@ -1,9 +1,12 @@
-# Builds the project and publishes the artifacts to GitHub and Modrinth
-# Requires GITHUB_TOKEN to have write permissions; if not, replace it with a custom token
-# Requires a Modrinth PAT MODRINTH_TOKEN
+# Builds the project and publishes the artifacts to GitHub, Modrinth and CurseForge
+# Modrinth publishing requires a Modrinth PAT MODRINTH_TOKEN
+#   Will skip without error if not present
+# CurseForge publishing requires a CurseForge API token CURSEFORGE_TOKEN
+#   Will skip without error if not present
 name: Release
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
 
 permissions:
   contents: write

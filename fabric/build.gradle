@@ -1,60 +1,42 @@
 plugins {
-    id("fabric-loom") version("${loom_version}")
-}
-
-base {
-    archivesName = "${mod_name}-Fabric-${minecraft_version}"
+    id("multiloader-loader")
+    id("fabric-loom")
 }
 
 dependencies {
-    compileOnly(project(":common"))
     minecraft("com.mojang:minecraft:${minecraft_version}")
-    mappings(loom.officialMojangMappings())
-
-    compileOnly("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")
-    annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
+    }
 
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
-    modImplementation("maven.modrinth:modmenu:${modmenu_version}")
-
+    modImplementation("maven.modrinth:mOgUt4GM:${modmenu_version}")
     modImplementation("me.shedaniel.cloth:cloth-config-fabric:${clothconfig_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-
-    modImplementation("maven.modrinth:fRiHVvU7:${emi_version_fabric}")
 }
 
 loom {
-    if (project(":common").file("src/main/resources/${mod_id}.accesswidener").exists()) {
-        accessWidenerPath = project(":common").file("src/main/resources/${mod_id}.accesswidener")
-    }
+    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) accessWidenerPath.set(aw)
     mixin {
-        defaultRefmapName = "${mod_id}.refmap.json"
+        defaultRefmapName.set("${mod_id}.refmap.json")
     }
     runs {
         client {
             client()
-            setConfigName('Fabric Client')
+            setConfigName("Fabric Client")
             ideConfigGenerated(true)
-            runDir('runs/client')
+            runDir("runs/client")
         }
         server {
             server()
-            setConfigName('Fabric Server')
+            setConfigName("Fabric Server")
             ideConfigGenerated(true)
-            runDir('runs/server')
+            runDir("runs/server")
         }
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    source(project(":common").sourceSets.main.allSource)
-}
-tasks.named("sourcesJar", Jar) {
-    from(project(":common").sourceSets.main.allSource)
-}
-processResources {
-    from project(":common").sourceSets.main.resources
 }

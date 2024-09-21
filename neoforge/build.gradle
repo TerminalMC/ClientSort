@@ -1,40 +1,42 @@
 plugins {
-    id("net.neoforged.gradle.userdev") version("${userdev_version}")
-}
-
-base {
-    archivesName = "${mod_name}-NeoForge-${minecraft_version}"
+    id("multiloader-loader")
+    id("net.neoforged.moddev")
 }
 
 dependencies {
-    compileOnly(project(":common"))
-    implementation("net.neoforged:neoforge:${neoforge_version}")
-
-    compileOnly("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")
-    annotationProcessor("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")
-
     implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
-
-    implementation("maven.modrinth:fRiHVvU7:${emi_version_neoforge}")
 }
 
-// Temporary workaround for a NeoGradle bug
-tasks.named("test").configure {
-    enabled = false
+neoForge {
+    version = neoforge_version
+    // Automatically enable neoforge AccessTransformers if the file exists
+    def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    if (at.exists()) accessTransformers.from(at.absolutePath)
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_version
+    }
+    runs {
+        configureEach {
+            systemProperty("neoforge.enabledGameTestNamespaces", "${mod_id}")
+            // Unify the run config names with fabric
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+        }
+        data {
+            data()
+        }
+        server {
+            server()
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
 }
 
-if (file("src/main/resources/META-INF/accesstransformer.cfg").exists()) {
-    minecraft.accessTransformers.file(file("src/main/resources/META-INF/accesstransformer.cfg"))
-}
-
-Spec<Task> notNeoTask = { Task it -> !it.name.startsWith("neo") } as Spec<Task>
-
-tasks.withType(JavaCompile).matching(notNeoTask).configureEach {
-    source(project(":common").sourceSets.main.allSource)
-}
-tasks.named("sourcesJar", Jar) {
-    from(project(":common").sourceSets.main.allSource)
-}
-tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
-    from project(":common").sourceSets.main.resources
-}
+sourceSets.main.resources { srcDir "src/generated/resources" }

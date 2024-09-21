@@ -1,1 +1,1 @@
-- Fix a bug breaking middle-click drag in creative mode
+- Fix config on recent NeoForge versions

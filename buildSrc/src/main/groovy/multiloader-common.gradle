@@ -1,0 +1,152 @@
+plugins {
+    id("java-library")
+    id("maven-publish")
+}
+
+base {
+    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+//    withJavadocJar() // Also uncomment javadocElements in capabilities below
+}
+
+repositories {
+    mavenCentral()
+    // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter { includeGroupAndSubgroups('org.spongepowered') }
+    }
+    exclusiveContent {
+        forRepositories(
+                maven {
+                    name = 'ParchmentMC'
+                    url = 'https://maven.parchmentmc.org/'
+                },
+                maven {
+                    name = "NeoForge"
+                    url = 'https://maven.neoforged.net/releases'
+                }
+        )
+        filter { includeGroup('org.parchmentmc.data') }
+    }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+    maven {
+        name = "Shedaniel"
+        url = "https://maven.shedaniel.me/"
+    }
+}
+
+// Declare capabilities on the outgoing configurations.
+// Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
+["apiElements", "runtimeElements", "sourcesElements", /*"javadocElements"*/].each { variant ->
+    configurations."$variant".outgoing {
+        capability("$group:${base.archivesName.get()}:$version")
+        capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
+        capability("$group:$mod_id:$version")
+    }
+    publishing.publications.configureEach {
+        suppressPomMetadataWarningsFor(variant)
+    }
+}
+
+sourcesJar {
+    from(rootProject.file("LICENSE")) {
+        rename { "${it}_${mod_name}" }
+    }
+}
+
+jar {
+    from(rootProject.file("LICENSE")) {
+        rename { "${it}_${mod_name}" }
+    }
+
+    manifest {
+        attributes([
+                "Specification-Title"     : mod_name,
+                "Specification-Vendor"    : mod_owner,
+                "Specification-Version"   : project.jar.archiveVersion,
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_owner,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Timestamp"               : System.currentTimeMillis(),
+                "Built-On-Java"           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                "Built-On-Minecraft"      : minecraft_version
+        ])
+    }
+}
+
+processResources {
+    def expandProps = [
+            // Mod info
+            "mod_version": mod_version,
+            "mod_group": mod_group,
+            "mod_id": mod_id,
+            "mod_name": mod_name,
+            "mod_description": mod_description,
+            "mod_icon": "assets/" + mod_id + "/icon.png",
+            "mod_owner": mod_owner,
+            "mod_authors_list": asJsonList(mod_authors),
+            "mod_contributors_list": asJsonList(mod_contributors),
+            "mod_authors_string": mod_authors.replace(",", ", "),
+            "mod_contributors_string": mod_contributors.replace(",", ", "),
+            "mod_license": mod_license,
+            "mod_environment": mod_environment,
+            // Links
+            "homepage_url": homepage_url,
+            "sources_url": sources_url,
+            "issues_url": issues_url,
+            "contact_url": contact_url,
+            // Java
+            "java_version": java_version,
+            "java_versions_fabric_list": asJsonList(java_versions_fabric),
+            "java_versions_neoforge": java_versions_neoforge,
+            // Minecraft
+            "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
+            "minecraft_versions_neoforge": minecraft_versions_neoforge,
+            // Fabric
+            "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
+            "fabric_api_versions_list": asJsonList(fabric_api_versions),
+            // NeoForge
+            "neoforge_loader_versions": neoforge_loader_versions,
+            "neoforge_versions": neoforge_versions,
+            // Dependencies
+            "clothconfig_versions_fabric_list": asJsonList(clothconfig_versions_fabric),
+            "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
+            "modmenu_versions_fabric_list": asJsonList(modmenu_versions),
+    ]
+    filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json"]) {
+        expand expandProps
+    }
+    inputs.properties(expandProps)
+}
+
+publishing {
+    publications {
+        register("mavenJava", MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url System.getenv("local_maven_url")
+        }
+    }
+}
+
+static asJsonList(String versions) {
+    return versions.split(",").collect { "\"$it\"" }.join(",")
+}

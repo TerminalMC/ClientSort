@@ -35,7 +35,7 @@
   },
 
   "recommends": {
-    "modmenu": [$modmenu_versions_list],
+    "modmenu": [$modmenu_versions_fabric_list],
     "cloth-config": [$clothconfig_versions_fabric_list]
   },
 
