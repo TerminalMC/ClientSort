@@ -103,7 +103,6 @@ processResources {
             "mod_authors_string": mod_authors.replace(",", ", "),
             "mod_contributors_string": mod_contributors.replace(",", ", "),
             "mod_license": mod_license,
-            "mod_environment": mod_environment,
             // Links
             "homepage_url": homepage_url,
             "sources_url": sources_url,

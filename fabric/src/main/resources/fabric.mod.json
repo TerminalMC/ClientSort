@@ -9,7 +9,7 @@
   "contributors": [$mod_contributors_list],
   "license": "${mod_license}",
 
-  "environment": "${mod_environment}",
+  "environment": "client",
 
   "provides": [],
 
