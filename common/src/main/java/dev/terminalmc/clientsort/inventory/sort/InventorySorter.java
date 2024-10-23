@@ -23,7 +23,7 @@ import dev.terminalmc.clientsort.network.InteractionManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -137,6 +137,17 @@ public class InventorySorter {
 			}
 			if (stacks[i].isEmpty()) doneSlashEmpty.set(slotCount + i); // mark if it's empty
 		}
+
+        // Bundles require special handling. Specifically, to perform a swap between the carried
+        // item and the target slot, you normally use left-click (0), but if holding a bundle
+        // you must use right-click (1).
+        // It isn't possible to always use right-click because right-clicking a bundle on an empty
+        // slot does nothing, and right-clicking on a stack while carrying nothing takes half.
+        // The current workaround is to maintain a copy of the theoretical inventory state to inform
+        // the click decision. This will break if items enter or leave the inventory unexpectedly.
+        Item carriedItem = Items.AIR;
+        Item[] backingStacks = Arrays.stream(stacks.clone()).map(ItemStack::getItem).toArray(Item[]::new);
+
 		// Iterate all slots, with i as the target slot index
 		// sortedIds[i] is therefore the origin slot
 		for (int i = 0; i < slotCount; i++) {
@@ -150,8 +161,11 @@ public class InventorySorter {
 
 			// This is where the action happens.
 			// Pick up the stack at the origin slot.
-			InteractionManager.push(screenHelper.createClickEvent(inventorySlots[sortedIds[i]], 0, ClickType.PICKUP));
-			doneSlashEmpty.set(slotCount + sortedIds[i]); // Mark the origin slot as empty (because we picked the stack up, duh)
+            Item temp = backingStacks[sortedIds[i]];
+            backingStacks[sortedIds[i]] = carriedItem;
+            carriedItem = temp;
+            InteractionManager.push(screenHelper.createClickEvent(inventorySlots[sortedIds[i]], 0, ClickType.PICKUP));
+            doneSlashEmpty.set(slotCount + sortedIds[i]); // Mark the origin slot as empty (because we picked the stack up, duh)
 			currentStack = stacks[sortedIds[i]]; // Save the stack we're currently working with
 			Slot workingSlot = inventorySlots[sortedIds[i]]; // A slot that we can use when fiddling around with swapping stacks
 			int id = i; // id will reflect the target slot in the following loop
@@ -171,6 +185,9 @@ public class InventorySorter {
 					if (currentStack.getCount() < stacks[id].getCount()) { // Clicking with a low stack on a full stack does nothing
 						// The workaround is: click working slot, click target slot, click working slot, click target slot, click working slot
 						Slot targetSlot = inventorySlots[id];
+                        temp = backingStacks[id];
+                        backingStacks[id] = carriedItem;
+                        carriedItem = temp;
 						InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP));
 						InteractionManager.push(screenHelper.createClickEvent(targetSlot, 0, ClickType.PICKUP));
 						InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP));
@@ -185,7 +202,18 @@ public class InventorySorter {
 				}
 
 				// swap the current stack with the target stack
-				InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 0, ClickType.PICKUP));
+                if ((backingStacks[id] instanceof BundleItem && !(carriedItem instanceof AirItem))
+                        || (carriedItem instanceof BundleItem && !(backingStacks[id] instanceof AirItem))) {
+                    temp = backingStacks[id];
+                    backingStacks[id] = carriedItem;
+                    carriedItem = temp;
+                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 1, ClickType.PICKUP));
+                } else {
+                    temp = backingStacks[id];
+                    backingStacks[id] = carriedItem;
+                    carriedItem = temp;
+                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 0, ClickType.PICKUP));
+                }
 				currentStack = stacks[id];
 				doneSlashEmpty.set(id); // mark the current target as done
 				// If the target that we just swapped with was empty before, then this breaks the chain.
