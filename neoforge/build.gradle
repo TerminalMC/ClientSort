@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
 }
 
 neoForge {

@@ -14,7 +14,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
     modImplementation("maven.modrinth:mOgUt4GM:${modmenu_version}")
-    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${clothconfig_version}") {
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${clothconfig_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 }

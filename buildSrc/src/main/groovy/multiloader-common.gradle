@@ -4,7 +4,7 @@ plugins {
 }
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_id}-${project.name}"
 }
 
 java {
@@ -19,24 +19,24 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
+                name = "Sponge"
+                url = "https://repo.spongepowered.org/repository/maven-public"
             }
         }
-        filter { includeGroupAndSubgroups('org.spongepowered') }
+        filter { includeGroupAndSubgroups("org.spongepowered") }
     }
     exclusiveContent {
         forRepositories(
-                maven {
-                    name = 'ParchmentMC'
-                    url = 'https://maven.parchmentmc.org/'
-                },
-                maven {
-                    name = "NeoForge"
-                    url = 'https://maven.neoforged.net/releases'
-                }
+            maven {
+                name = "ParchmentMC"
+                url = "https://maven.parchmentmc.org"
+            },
+            maven {
+                name = "NeoForge"
+                url = "https://maven.neoforged.net/releases"
+            }
         )
-        filter { includeGroup('org.parchmentmc.data') }
+        filter { includeGroup("org.parchmentmc.data") }
     }
     maven {
         name = "Modrinth"
@@ -44,7 +44,7 @@ repositories {
     }
     maven {
         name = "Shedaniel"
-        url = "https://maven.shedaniel.me/"
+        url = "https://maven.shedaniel.me"
     }
 }
 
@@ -103,7 +103,6 @@ processResources {
             "mod_authors_string": mod_authors.replace(",", ", "),
             "mod_contributors_string": mod_contributors.replace(",", ", "),
             "mod_license": mod_license,
-            "mod_environment": mod_environment,
             // Links
             "homepage_url": homepage_url,
             "sources_url": sources_url,
@@ -125,7 +124,7 @@ processResources {
             // Dependencies
             "clothconfig_versions_fabric_list": asJsonList(clothconfig_versions_fabric),
             "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
-            "modmenu_versions_fabric_list": asJsonList(modmenu_versions),
+            "modmenu_versions_fabric_list": asJsonList(modmenu_versions_fabric),
     ]
     filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json"]) {
         expand expandProps

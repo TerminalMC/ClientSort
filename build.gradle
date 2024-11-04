@@ -5,11 +5,27 @@ plugins {
     id("net.darkhax.curseforgegradle") version("${curseforgegradle_version}")
     id("com.github.breadmoirai.github-release") version("${githubrelease_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
+    id("org.cadixdev.licenser") version("${licenser_version}")
 }
 
 subprojects {
     version = mod_version
     group = mod_group
+
+    // License headers
+    apply(plugin: "org.cadixdev.licenser")
+    license {
+        // This can be done in multiloader-common.gradle but only if the
+        // "matching" method is not used (throws a pile of weird errors).
+        // Also, NeoForge's update of the plugin can't handle matching at all.
+        include("**/*.java") // Java files only
+        header = rootProject.file("NOTICE")
+        properties {
+            project_name = mod_name
+            owner_name = mod_owner
+            year = java.time.LocalDate.now().getYear().toString()
+        }
+    }
 
     // Publishing
     if (name != "common") {
@@ -63,7 +79,7 @@ subprojects {
                 file.displayName = "v${mod_version}-${capsLoader(module)}-${minecraft_version}"
                 file.releaseType = release_type
                 file.changelog = rootProject.file("changelog.md").text
-                file.changelogType = 'markdown'
+                file.changelogType = "markdown"
                 project.property("release_mod_loaders_${module}").split(",").each { String id ->
                     file.addModLoader(id)
                 }

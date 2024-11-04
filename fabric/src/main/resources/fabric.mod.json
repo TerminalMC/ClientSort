@@ -9,7 +9,7 @@
   "contributors": [$mod_contributors_list],
   "license": "${mod_license}",
 
-  "environment": "${mod_environment}",
+  "environment": "client",
 
   "provides": [],
 
@@ -54,7 +54,7 @@
   "custom": {
     "modmenu": {
       "links": {
-          "Contact": "${contact_url}"
+        "Contact": "${contact_url}"
       }
     },
     "formatSpec": {

@@ -47,4 +47,4 @@ issueTrackerURL="${issues_url}" #optional:none
   side="CLIENT"
 
 # https://docs.neoforged.net/docs/gettingstarted/modfiles/#modstoml
-# https://docs.neoforged.net/docs/misc/updatechecker/
+# https://docs.neoforged.net/docs/misc/updatechecker

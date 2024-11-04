@@ -5,10 +5,10 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
-    "MixinSlot",
-    "emi.MixinReloadWorker"
   ],
   "client": [
+    "MixinSlot",
+    "emi.MixinReloadWorker",
     "MixinAbstractContainerScreen",
     "MixinClientPacketListener",
     "MixinCreativeSlot",

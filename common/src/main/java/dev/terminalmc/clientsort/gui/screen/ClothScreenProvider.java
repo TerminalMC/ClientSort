@@ -1,9 +1,21 @@
 /*
- * Copyright 2024 NotRyken
- * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2022 Siphalor
+ * Copyright 2024 TerminalMC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.screen;
+package dev.terminalmc.clientsort.gui.screen;
 
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
@@ -18,7 +30,7 @@ import java.util.Optional;
 
 import static dev.terminalmc.clientsort.util.mod.Localization.localized;
 
-public class ClothConfigScreenProvider {
+public class ClothScreenProvider {
     /**
      * Builds and returns a Cloth Config options screen.
      * @param parent the current screen.
@@ -31,7 +43,7 @@ public class ClothConfigScreenProvider {
 
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
-                .setTitle(localized("screen", "options"))
+                .setTitle(localized("name"))
                 .setSavingRunnable(Config::getAndSave);
 
         ConfigEntryBuilder eb = builder.entryBuilder();
@@ -39,9 +51,9 @@ public class ClothConfigScreenProvider {
 
         ConfigCategory general = builder.getOrCreateCategory(localized("option", "general"));
 
-        general.addEntry(eb.startIntField(localized("option", "interaction_rate_server"),
+        general.addEntry(eb.startIntField(localized("option", "interactionRateServer"),
                         options.interactionRateServer)
-                .setTooltip(localized("option", "interaction_rate.tooltip"))
+                .setTooltip(localized("option", "interactionRate.tooltip"))
                 .setErrorSupplier(val -> {
                     if (val < 1) return Optional.of(
                             localized("option", "error.low"));
@@ -53,9 +65,9 @@ public class ClothConfigScreenProvider {
                 .setSaveConsumer(val -> options.interactionRateServer = val)
                 .build());
 
-        general.addEntry(eb.startIntField(localized("option", "interaction_rate_client"),
+        general.addEntry(eb.startIntField(localized("option", "interactionRateClient"),
                         options.interactionRateClient)
-                .setTooltip(localized("option", "interaction_rate.tooltip"))
+                .setTooltip(localized("option", "interactionRate.tooltip"))
                 .setErrorSupplier(val -> {
                     if (val < 1) return Optional.of(
                             localized("option", "error.low"));
@@ -67,12 +79,12 @@ public class ClothConfigScreenProvider {
                 .setSaveConsumer(val -> options.interactionRateClient = val)
                 .build());
 
-        general.addEntry(eb.startEnumSelector(localized("option", "hotbar_mode"),
+        general.addEntry(eb.startEnumSelector(localized("option", "hotbarMode"),
                         Config.Options.HotbarMode.class, options.hotbarMode)
-                .setEnumNameProvider(val -> localized("hotbar_mode",
+                .setEnumNameProvider(val -> localized("hotbarMode",
                         ((Config.Options.HotbarMode)val).lowerName()))
                 .setTooltipSupplier(val -> Optional.of(new Component[]{
-                        localized("hotbar_mode", val.lowerName() + ".tooltip")
+                        localized("hotbarMode", val.lowerName() + ".tooltip")
                 }))
                 .setDefaultValue(Config.Options.defaultHotbarMode)
                 .setSaveConsumer(val -> options.hotbarMode = val)
@@ -80,35 +92,35 @@ public class ClothConfigScreenProvider {
 
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
-        sort.addEntry(eb.startSelector(localized("option", "sort_mode"),
+        sort.addEntry(eb.startSelector(localized("option", "sortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.sortModeStr)
-                .setNameProvider(val -> localized("sort_order", (String) val))
+                .setNameProvider(val -> localized("sortOrder", (String)val))
                 .setDefaultValue(Config.Options.defaultSortMode)
-                .setSaveConsumer(val -> options.sortModeStr = (String) val)
+                .setSaveConsumer(val -> options.sortModeStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "shift_sort_mode"),
+        sort.addEntry(eb.startSelector(localized("option", "shiftSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.shiftSortModeStr)
-                .setNameProvider(val -> localized("sort_order", (String) val))
+                .setNameProvider(val -> localized("sortOrder", (String)val))
                 .setDefaultValue(Config.Options.defaultShiftSortMode)
-                .setSaveConsumer(val -> options.shiftSortModeStr = (String) val)
+                .setSaveConsumer(val -> options.shiftSortModeStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "ctrl_sort_mode"),
+        sort.addEntry(eb.startSelector(localized("option", "ctrlSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.ctrlSortModeStr)
-                .setNameProvider(val -> localized("sort_order", (String) val))
+                .setNameProvider(val -> localized("sortOrder", (String)val))
                 .setDefaultValue(Config.Options.defaultCtrlSortMode)
-                .setSaveConsumer(val -> options.ctrlSortModeStr = (String) val)
+                .setSaveConsumer(val -> options.ctrlSortModeStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "alt_sort_mode"),
+        sort.addEntry(eb.startSelector(localized("option", "altSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.altSortModeStr)
-                .setNameProvider(val -> localized("sort_order", (String) val))
+                .setNameProvider(val -> localized("sortOrder", (String)val))
                 .setDefaultValue(Config.Options.defaultAltSortMode)
-                .setSaveConsumer(val -> options.altSortModeStr = (String) val)
+                .setSaveConsumer(val -> options.altSortModeStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startBooleanToggle(localized("option", "optimized_creative_sorting"),
+        sort.addEntry(eb.startBooleanToggle(localized("option", "optimizedCreativeSorting"),
                         options.optimizedCreativeSorting)
                 .setDefaultValue(Config.Options.defaultOptimizedCreativeSorting)
                 .setSaveConsumer(val -> {

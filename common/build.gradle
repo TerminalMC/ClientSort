@@ -9,7 +9,7 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
 
     // Mod dependencies use NeoForge version to avoid remapping complications
-    implementation("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
 }
 
 neoForge {
