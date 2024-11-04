@@ -3,6 +3,16 @@ plugins {
     id("net.neoforged.moddev")
 }
 
+// Workaround for NeoForge transitive deps conflict
+configurations.all {
+    resolutionStrategy {
+        force "org.ow2.asm:asm:9.7"
+        force "org.ow2.asm:asm-commons:9.7"
+        force "org.ow2.asm:asm-tree:9.7"
+        force "org.ow2.asm:asm-util:9.7"
+    }
+}
+
 dependencies {
     compileOnly("org.spongepowered:mixin:${mixin_version}")
     compileOnly("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
