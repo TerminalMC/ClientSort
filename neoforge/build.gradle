@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    implementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
 }
 
 neoForge {
