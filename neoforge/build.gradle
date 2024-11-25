@@ -4,6 +4,10 @@ plugins {
 }
 
 dependencies {
+    // JiJ MixinExtras if required to be newer than minimum loader-provided version
+//    implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}"))
+    
+    // Cloth Config API
     api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
 }
 

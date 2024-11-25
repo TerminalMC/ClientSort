@@ -11,24 +11,35 @@ plugins {
 subprojects {
     version = mod_version
     group = mod_group
-
-    // License headers
-    apply(plugin: "org.cadixdev.licenser")
-    license {
-        // This can be done in multiloader-common.gradle but only if the
-        // "matching" method is not used (throws a pile of weird errors).
-        // Also, NeoForge's update of the plugin can't handle matching at all.
-        include("**/*.java") // Java files only
-        header = rootProject.file("NOTICE")
-        properties {
-            project_name = mod_name
-            owner_name = mod_owner
-            year = java.time.LocalDate.now().getYear().toString()
+    
+    if (name == "common") {
+        // License headers
+        apply(plugin: "org.cadixdev.licenser")
+        String licenseDir = "src/main/resources/assets/${mod_id}/license/"
+        license {
+            // This can be done in multiloader-common.gradle but only if the
+            // "matching" method is not used (throws a pile of weird errors).
+            // Also, NeoForge's update of the plugin can't handle matching at all.
+            include("**/*.java") // Java files only
+            header = project.file(licenseDir + "HEADER.txt")
+            properties {
+                project_name = mod_name
+                owner_name = mod_owner
+                year = java.time.LocalDate.now().getYear().toString()
+            }
+            // Alternate license
+            matching(includes: [
+                    "**/inventory/**", 
+                    "**/mixin/**",
+                    "**/network/**",
+                    "**/util/inject/**",
+                    "**/util/item/**",
+            ]) {
+                header = project.file(licenseDir + "mouse-wheelie/HEADER.txt")
+            }
         }
-    }
-
-    // Publishing
-    if (name != "common") {
+    } else {
+        // Publishing
         apply(plugin: "com.modrinth.minotaur")
         apply(plugin: "net.darkhax.curseforgegradle")
         apply(plugin: "com.github.breadmoirai.github-release")
@@ -40,8 +51,8 @@ subprojects {
                 projectId = modrinth_id
                 versionNumber = mod_version
                 versionType = release_type
-                versionName = "v${mod_version}-${capsLoader(name)}-${minecraft_version}"
-                changelog = rootProject.file("changelog.md").text
+                versionName = "v${mod_version}-${capsLoader(name)}"
+                changelog = versionChangelog()
                 uploadFile = name == "fabric" ? remapJar : jar
                 loaders = project.property("release_mod_loaders_${name}").split(",") as List
                 gameVersions = project.property("release_game_versions_${name}").split(",") as List
@@ -76,9 +87,9 @@ subprojects {
                 String module = project.name
 
                 def file = upload(curseforge_id, module == "fabric" ? remapJar : jar)
-                file.displayName = "v${mod_version}-${capsLoader(module)}-${minecraft_version}"
+                file.displayName = "v${mod_version}-${capsLoader(module)}"
                 file.releaseType = release_type
-                file.changelog = rootProject.file("changelog.md").text
+                file.changelog = versionChangelog()
                 file.changelogType = "markdown"
                 project.property("release_mod_loaders_${module}").split(",").each { String id ->
                     file.addModLoader(id)
@@ -112,8 +123,18 @@ subprojects {
                 repo = github_repo
                 tagName = "v${mod_version}"
                 prerelease = release_type == "alpha" || release_type == "beta"
-                releaseName = "v${mod_version} for ${minecraft_version}"
-                body = rootProject.file("changelog.md").text
+                releaseName = "v${mod_version}"
+
+                String changelog = "\n\n## Changelog\n\n" + versionChangelog()
+                String versions = "## MC versions\n\n"
+                if (project.hasProperty("release_game_versions_fabric"))
+                    versions = String.format("%s - Fabric: %s\n", versions,
+                            project.property("release_game_versions_fabric"))
+                if (project.hasProperty("release_game_versions_neoforge"))
+                    versions = String.format("%s - NeoForge: %s\n", versions,
+                            project.property("release_game_versions_neoforge"))
+                body = versions + changelog
+                
                 targetCommitish = grgitService.service.get().grgit.branch.current().name
                 overwrite = false
                 allowUploadToExisting = true
@@ -122,6 +143,28 @@ subprojects {
             tasks.githubRelease.onlyIf { System.getenv().GITHUB_TOKEN }
             tasks.githubRelease.dependsOn(build)
         }
+    }
+}
+
+String versionChangelog() {
+    List<String> lines = rootProject.file("CHANGELOG.md").readLines()
+    if ("${mod_version}".startsWith(lines.get(2).substring(3))) {
+        StringBuilder builder = new StringBuilder()
+        for (int i = 4; i < lines.size(); i++) {
+            String line = lines.get(i)
+            if (line.isBlank()) {
+                // pass
+            } else if (line.startsWith("## ")) {
+                break
+            } 
+            else {
+                if (!builder.isEmpty()) builder.append("\n")
+                builder.append(line)
+            }
+        }
+        return builder.toString()
+    } else {
+        return "Error creating changelog"
     }
 }
 

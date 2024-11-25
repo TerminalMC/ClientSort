@@ -20,7 +20,7 @@ package dev.terminalmc.clientsort.mixin;
 import com.mojang.authlib.GameProfile;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.network.InteractionManager;
-import dev.terminalmc.clientsort.util.CreativeSearchOrder;
+import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;

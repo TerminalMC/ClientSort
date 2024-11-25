@@ -18,7 +18,7 @@
 package dev.terminalmc.clientsort.mixin.emi;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.util.CreativeSearchOrder;
+import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;

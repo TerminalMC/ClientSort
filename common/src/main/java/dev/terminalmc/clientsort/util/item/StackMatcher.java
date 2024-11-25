@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.util;
+package dev.terminalmc.clientsort.util.item;
 
 import com.google.common.base.Objects;
 import net.minecraft.core.component.DataComponentMap;

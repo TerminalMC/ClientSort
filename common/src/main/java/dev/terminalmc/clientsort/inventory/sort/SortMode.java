@@ -18,9 +18,9 @@
 package dev.terminalmc.clientsort.inventory.sort;
 
 import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.util.CreativeSearchOrder;
-import dev.terminalmc.clientsort.util.ItemStackUtils;
-import dev.terminalmc.clientsort.util.StackMatcher;
+import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
+import dev.terminalmc.clientsort.util.item.ItemStackUtils;
+import dev.terminalmc.clientsort.util.item.StackMatcher;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;

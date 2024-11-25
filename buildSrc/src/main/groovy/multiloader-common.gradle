@@ -62,13 +62,13 @@ repositories {
 }
 
 sourcesJar {
-    from(rootProject.file("LICENSE")) {
+    from(rootProject.file("LICENSE.txt")) {
         rename { "${it}_${mod_name}" }
     }
 }
 
 jar {
-    from(rootProject.file("LICENSE")) {
+    from(rootProject.file("LICENSE.txt")) {
         rename { "${it}_${mod_name}" }
     }
 
@@ -126,7 +126,7 @@ processResources {
             "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
             "modmenu_versions_fabric_list": asJsonList(modmenu_versions_fabric),
     ]
-    filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json"]) {
+    filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json", "assets/"+mod_id+"/lang/*.json"]) {
         expand expandProps
     }
     inputs.properties(expandProps)

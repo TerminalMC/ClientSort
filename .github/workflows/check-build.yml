@@ -5,14 +5,12 @@ on:
   push:
     paths: [
       '**src/**',
-      '**/*gradle*',
-      LICENSE
+      '**/*gradle*'
     ]
   pull_request:
     paths: [
       '**src/**',
-      '**/*gradle*',
-      LICENSE
+      '**/*gradle*'
     ]
   workflow_dispatch:
 

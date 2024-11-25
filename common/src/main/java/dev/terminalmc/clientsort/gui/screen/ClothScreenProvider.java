@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2024 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +18,7 @@ package dev.terminalmc.clientsort.gui.screen;
 
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
-import dev.terminalmc.clientsort.util.CreativeSearchOrder;
+import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.util;
+package dev.terminalmc.clientsort.util.item;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.Config;
