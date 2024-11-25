@@ -64,8 +64,8 @@ public class Config {
             }
         }
 
-        public static final boolean defaultRmbBundle = false;
-        public boolean rmbBundle = defaultRmbBundle;
+        public static final boolean defaultLmbBundle = false;
+        public boolean lmbBundle = defaultLmbBundle;
 
         // Sorting
         public static final String defaultSortMode = SortMode.CREATIVE.name;

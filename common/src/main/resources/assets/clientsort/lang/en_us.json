@@ -12,8 +12,8 @@
   "option.clientsort.interactionRateClient": "Singleplayer Interaction Rate",
   "option.clientsort.interactionRate.tooltip": "Reduce to sort faster, increase if you are experiencing packet rate issues",
   "option.clientsort.hotbarMode": "Hotbar Mode",
-  "option.clientsort.rmbBundle": "Bundles use Right Click",
-  "option.clientsort.rmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  "option.clientsort.lmbBundle": "Bundles use Left Click",
+  "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
   
   "option.clientsort.sorting": "Sorting",
   "option.clientsort.sortMode": "Sort Mode",
