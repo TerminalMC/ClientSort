@@ -2,4 +2,4 @@
 
 ## 1.0.2
 
-- Updated bundle fix
+- Updated bundle handling
