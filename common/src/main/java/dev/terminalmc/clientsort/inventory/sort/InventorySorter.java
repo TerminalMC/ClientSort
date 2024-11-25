@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.inventory.sort;
 
+import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -201,18 +202,20 @@ public class InventorySorter {
                 }
 
                 // swap the current stack with the target stack
-                if ((backingStacks[id] instanceof BundleItem && !(carriedItem instanceof AirItem))
-                        || (carriedItem instanceof BundleItem && !(backingStacks[id] instanceof AirItem))) {
-                    temp = backingStacks[id];
-                    backingStacks[id] = carriedItem;
-                    carriedItem = temp;
+                if (
+                        Config.get().options.rmbBundle
+                        && (
+                                (backingStacks[id] instanceof BundleItem && !(carriedItem instanceof AirItem))
+                                || (carriedItem instanceof BundleItem && !(backingStacks[id] instanceof AirItem))
+                        )
+                ) {
                     InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 1, ClickType.PICKUP));
                 } else {
-                    temp = backingStacks[id];
-                    backingStacks[id] = carriedItem;
-                    carriedItem = temp;
                     InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 0, ClickType.PICKUP));
                 }
+                temp = backingStacks[id];
+                backingStacks[id] = carriedItem;
+                carriedItem = temp;
                 currentStack = stacks[id];
                 doneSlashEmpty.set(id); // mark the current target as done
                 // If the target that we just swapped with was empty before, then this breaks the chain.

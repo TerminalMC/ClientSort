@@ -89,6 +89,16 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.hotbarMode = val)
                 .build());
 
+        general.addEntry(eb.startBooleanToggle(localized("option", "rmbBundle"),
+                        options.rmbBundle)
+                .setTooltip(localized("option", "rmbBundle.tooltip"))
+                .setDefaultValue(Config.Options.defaultRmbBundle)
+                .setSaveConsumer(val -> {
+                    options.rmbBundle = val;
+                    if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
+                })
+                .build());
+
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
         sort.addEntry(eb.startSelector(localized("option", "sortMode"),

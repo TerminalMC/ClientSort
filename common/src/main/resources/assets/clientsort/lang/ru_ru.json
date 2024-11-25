@@ -12,6 +12,9 @@
   "option.clientsort.interactionRateClient": "Скорость локального взаимодействия",
   "option.clientsort.interactionRate.tooltip": "Уменьшите, чтобы ускорить сортировку, увеличьте, если у вас возникли проблемы со скоростью передачи пакетов",
   "option.clientsort.hotbarMode": "Режим горячей панели",
+  "option.clientsort.rmbBundle": "Bundles use Right Click",
+  "option.clientsort.rmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  
   "option.clientsort.sorting": "Сортировка",
   "option.clientsort.sortMode": "Режим сортировки",
   "option.clientsort.shiftSortMode": "Режим сортировки по Shift",
