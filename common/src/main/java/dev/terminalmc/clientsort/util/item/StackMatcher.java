@@ -26,38 +26,38 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: This appears to work but needs more testing.
 public class StackMatcher {
-	private final @NotNull Item item;
-	private final @Nullable DataComponentMap components;
+    private final @NotNull Item item;
+    private final @Nullable DataComponentMap components;
 
-	private StackMatcher(@NotNull Item item, @Nullable DataComponentMap components) {
-		this.item = item;
-		this.components = components;
-	}
+    private StackMatcher(@NotNull Item item, @Nullable DataComponentMap components) {
+        this.item = item;
+        this.components = components;
+    }
 
-	public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
-		return new StackMatcher(stack.getItem(), null);
-	}
+    public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
+        return new StackMatcher(stack.getItem(), null);
+    }
 
-	public static StackMatcher of(@NotNull ItemStack stack) {
-		return new StackMatcher(stack.getItem(), stack.getComponents());
-	}
+    public static StackMatcher of(@NotNull ItemStack stack) {
+        return new StackMatcher(stack.getItem(), stack.getComponents());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof StackMatcher matcher) {
-			return ItemStack.isSameItemSameComponents(item.getDefaultInstance(), matcher.item.getDefaultInstance());
-		}
-		else if (obj instanceof ItemStack stack) {
-			return ItemStack.isSameItem(item.getDefaultInstance(), stack);
-		}
-		else if (obj instanceof Item objItem) {
-			return item == objItem;
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof StackMatcher matcher) {
+            return ItemStack.isSameItemSameComponents(item.getDefaultInstance(), matcher.item.getDefaultInstance());
+        }
+        else if (obj instanceof ItemStack stack) {
+            return ItemStack.isSameItem(item.getDefaultInstance(), stack);
+        }
+        else if (obj instanceof Item objItem) {
+            return item == objItem;
+        }
+        return false;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(item, components);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(item, components);
+    }
 }

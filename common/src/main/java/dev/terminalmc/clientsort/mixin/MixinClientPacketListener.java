@@ -34,22 +34,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener extends ClientCommonPacketListenerImpl {
-	protected MixinClientPacketListener(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
-		super(client, connection, connectionState);
-	}
+    protected MixinClientPacketListener(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
+        super(client, connection, connectionState);
+    }
 
     @Inject(method = "handleLogin", at = @At("HEAD"))
     private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         ClientSort.searchOrderUpdated = false;
     }
 
-	@Inject(method = "handleSetCarriedItem", at = @At("HEAD"))
-	public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
-		InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
-	}
+    @Inject(method = "handleSetCarriedItem", at = @At("HEAD"))
+    public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
+        InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
+    }
 
-	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"))
-	public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
-		InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
-	}
+    @Inject(method = "handleContainerSetSlot", at = @At("RETURN"))
+    public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
+        InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
+    }
 }

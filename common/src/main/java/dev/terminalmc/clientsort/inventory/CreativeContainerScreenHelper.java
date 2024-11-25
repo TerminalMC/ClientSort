@@ -23,20 +23,20 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
 public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen> extends ContainerScreenHelper<T> {
-	public CreativeContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
-		super(screen, clickEventFactory);
-	}
+    public CreativeContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
+        super(screen, clickEventFactory);
+    }
 
-	@Override
-	public int getScope(Slot slot, boolean preferSmallerScopes) {
-		if (screen.isInventoryOpen()) {
-			return super.getScope(slot, preferSmallerScopes);
-		}
-		if (slot.container instanceof Inventory) {
-			if (isHotbarSlot(slot)) {
-				return 0;
-			}
-		}
-		return INVALID_SCOPE;
-	}
+    @Override
+    public int getScope(Slot slot, boolean preferSmallerScopes) {
+        if (screen.isInventoryOpen()) {
+            return super.getScope(slot, preferSmallerScopes);
+        }
+        if (slot.container instanceof Inventory) {
+            if (isHotbarSlot(slot)) {
+                return 0;
+            }
+        }
+        return INVALID_SCOPE;
+    }
 }

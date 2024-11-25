@@ -30,66 +30,66 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
-	protected final T screen;
-	protected final ClickEventFactory clickEventFactory;
-	public static final int INVALID_SCOPE = Integer.MAX_VALUE;
+    protected final T screen;
+    protected final ClickEventFactory clickEventFactory;
+    public static final int INVALID_SCOPE = Integer.MAX_VALUE;
 
-	protected ContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
-		this.screen = screen;
-		this.clickEventFactory = clickEventFactory;
-	}
+    protected ContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
+        this.screen = screen;
+        this.clickEventFactory = clickEventFactory;
+    }
 
-	@SuppressWarnings("unchecked")
-	public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen, ClickEventFactory clickEventFactory) {
-		if (screen instanceof CreativeModeInventoryScreen) {
-			return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>((CreativeModeInventoryScreen) screen, clickEventFactory);
-		}
-		return new ContainerScreenHelper<>(screen, clickEventFactory);
-	}
+    @SuppressWarnings("unchecked")
+    public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen, ClickEventFactory clickEventFactory) {
+        if (screen instanceof CreativeModeInventoryScreen) {
+            return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>((CreativeModeInventoryScreen) screen, clickEventFactory);
+        }
+        return new ContainerScreenHelper<>(screen, clickEventFactory);
+    }
 
-	public InteractionManager.InteractionEvent createClickEvent(Slot slot, int action, ClickType actionType) {
-		return clickEventFactory.create(slot, action, actionType);
-	}
+    public InteractionManager.InteractionEvent createClickEvent(Slot slot, int action, ClickType actionType) {
+        return clickEventFactory.create(slot, action, actionType);
+    }
 
-	public boolean isHotbarSlot(Slot slot) {
-		return ((ISlot) slot).mouseWheelie_getIndexInInv() < 9;
-	}
+    public boolean isHotbarSlot(Slot slot) {
+        return ((ISlot) slot).mouseWheelie_getIndexInInv() < 9;
+    }
 
-	public int getScope(Slot slot) {
-		return getScope(slot, false);
-	}
+    public int getScope(Slot slot) {
+        return getScope(slot, false);
+    }
 
-	public int getScope(Slot slot, boolean preferSmallerScopes) {
-		if (slot.container == null || ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize() || !slot.mayPlace(ItemStack.EMPTY)) {
-			return INVALID_SCOPE;
-		}
-		if (screen instanceof EffectRenderingInventoryScreen) {
-			if (slot.container instanceof Inventory) {
-				if (isHotbarSlot(slot)) {
+    public int getScope(Slot slot, boolean preferSmallerScopes) {
+        if (slot.container == null || ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize() || !slot.mayPlace(ItemStack.EMPTY)) {
+            return INVALID_SCOPE;
+        }
+        if (screen instanceof EffectRenderingInventoryScreen) {
+            if (slot.container instanceof Inventory) {
+                if (isHotbarSlot(slot)) {
                     Config.Options options = Config.get().options;
                     if (options.hotbarMode == Config.Options.HotbarMode.HARD
                             || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
                         return -1;
                     }
-				} else if (((ISlot) slot).mouseWheelie_getIndexInInv() >= 40) {
-					return -1;
-				}
+                } else if (((ISlot) slot).mouseWheelie_getIndexInInv() >= 40) {
+                    return -1;
+                }
                 return 0;
-			} else {
-				return 2;
-			}
-		} else {
-			if (slot.container instanceof Inventory) {
-				if (isHotbarSlot(slot)) {
+            } else {
+                return 2;
+            }
+        } else {
+            if (slot.container instanceof Inventory) {
+                if (isHotbarSlot(slot)) {
                     Config.Options options = Config.get().options;
-					if (options.hotbarMode == Config.Options.HotbarMode.HARD
+                    if (options.hotbarMode == Config.Options.HotbarMode.HARD
                             || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
-						return -1;
-					}
-				}
-				return 0;
-			}
-			return 1;
-		}
-	}
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+            return 1;
+        }
+    }
 }

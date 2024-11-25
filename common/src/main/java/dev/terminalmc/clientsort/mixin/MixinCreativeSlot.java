@@ -26,17 +26,17 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(targets = "net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper")
 public class MixinCreativeSlot implements ISlot {
 
-	@Shadow
-	@Final
+    @Shadow
+    @Final
     Slot target;
 
-	@Override
-	public int mouseWheelie_getIndexInInv() {
-		return ((ISlot) target).mouseWheelie_getIndexInInv();
-	}
+    @Override
+    public int mouseWheelie_getIndexInInv() {
+        return ((ISlot) target).mouseWheelie_getIndexInInv();
+    }
 
-	@Override
-	public int mouseWheelie_getIdInContainer() {
-		return ((ISlot) target).mouseWheelie_getIdInContainer();
-	}
+    @Override
+    public int mouseWheelie_getIdInContainer() {
+        return ((ISlot) target).mouseWheelie_getIdInContainer();
+    }
 }

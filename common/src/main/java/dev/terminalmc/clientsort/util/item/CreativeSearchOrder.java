@@ -34,23 +34,23 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CreativeSearchOrder {
-	private static final Object2IntMap<StackMatcher> stackToSearchPositionLookup = new Object2IntOpenHashMap<>();
-	static {
-		stackToSearchPositionLookup.defaultReturnValue(Integer.MAX_VALUE);
-	}
-	private static final ReadWriteLock stackToSearchPositionLookupLock = new ReentrantReadWriteLock();
+    private static final Object2IntMap<StackMatcher> stackToSearchPositionLookup = new Object2IntOpenHashMap<>();
+    static {
+        stackToSearchPositionLookup.defaultReturnValue(Integer.MAX_VALUE);
+    }
+    private static final ReadWriteLock stackToSearchPositionLookupLock = new ReentrantReadWriteLock();
 
-	public static Lock getReadLock() {
-		return stackToSearchPositionLookupLock.readLock();
-	}
+    public static Lock getReadLock() {
+        return stackToSearchPositionLookupLock.readLock();
+    }
 
-	public static int getStackSearchPosition(ItemStack stack) {
-		int pos = stackToSearchPositionLookup.getInt(StackMatcher.of(stack));
-		if (pos == Integer.MAX_VALUE) {
-			pos = stackToSearchPositionLookup.getInt(StackMatcher.ignoreNbt(stack));
-		}
-		return pos;
-	}
+    public static int getStackSearchPosition(ItemStack stack) {
+        int pos = stackToSearchPositionLookup.getInt(StackMatcher.of(stack));
+        if (pos == Integer.MAX_VALUE) {
+            pos = stackToSearchPositionLookup.getInt(StackMatcher.ignoreNbt(stack));
+        }
+        return pos;
+    }
     
     public static void tryRefreshItemSearchPositionLookup() {
         if (ClientSort.emiReloading) {
@@ -60,13 +60,13 @@ public class CreativeSearchOrder {
         }
     }
 
-	public static void refreshItemSearchPositionLookup() {
-		if (Config.get().options.optimizedCreativeSorting) {
-			Minecraft mc = Minecraft.getInstance();
-			if (mc.level == null || mc.player == null) {
-				return;
-			}
-			FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
+    public static void refreshItemSearchPositionLookup() {
+        if (Config.get().options.optimizedCreativeSorting) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level == null || mc.player == null) {
+                return;
+            }
+            FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
             boolean opTab = mc.options.operatorItemsTab().get()
                     && ((LocalPlayerAccessor)mc.player).getPermissionLevel() >= 2;
 
@@ -95,11 +95,11 @@ public class CreativeSearchOrder {
                 lock.unlock();
             }, "Mouse Wheelie: creative search stack position lookup builder").start();
 
-		} else {
-			Lock lock = stackToSearchPositionLookupLock.writeLock();
-			lock.lock();
-			stackToSearchPositionLookup.clear();
-			lock.unlock();
-		}
-	}
+        } else {
+            Lock lock = stackToSearchPositionLookupLock.writeLock();
+            lock.lock();
+            stackToSearchPositionLookup.clear();
+            lock.unlock();
+        }
+    }
 }

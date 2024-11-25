@@ -29,18 +29,18 @@ import java.util.List;
  * @see SortMode#sort(int[], ItemStack[], SortContext)
  */
 public class SortContext {
-	/**
-	 * The screen that is currently sorted on.
-	 */
-	AbstractContainerScreen<?> screen;
-	/**
-	 * The slots that are the target of the current sort action.
-	 * These slots are usually in the same scope (see {@link dev.terminalmc.clientsort.inventory.ContainerScreenHelper.getScope(Slot)}).
-	 */
-	List<Slot> relevantSlots;
+    /**
+     * The screen that is currently sorted on.
+     */
+    AbstractContainerScreen<?> screen;
+    /**
+     * The slots that are the target of the current sort action.
+     * These slots are usually in the same scope (see {@link dev.terminalmc.clientsort.inventory.ContainerScreenHelper.getScope(Slot)}).
+     */
+    List<Slot> relevantSlots;
 
-	public <T> SortContext(AbstractContainerScreen<?> containerScreen, List<Slot> list) {
-		this.screen = containerScreen;
-		this.relevantSlots = list;
-	}
+    public <T> SortContext(AbstractContainerScreen<?> containerScreen, List<Slot> list) {
+        this.screen = containerScreen;
+        this.relevantSlots = list;
+    }
 }

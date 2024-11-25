@@ -21,5 +21,5 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public interface IContainerScreen {
-	boolean mouseWheelie_triggerSort();
+    boolean mouseWheelie_triggerSort();
 }

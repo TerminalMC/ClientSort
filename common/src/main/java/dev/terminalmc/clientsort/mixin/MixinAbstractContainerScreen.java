@@ -49,19 +49,19 @@ import java.util.function.Supplier;
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen extends Screen implements IContainerScreen {
-	protected MixinAbstractContainerScreen(Component textComponent_1) {
-		super(textComponent_1);
-	}
+    protected MixinAbstractContainerScreen(Component textComponent_1) {
+        super(textComponent_1);
+    }
 
-	@Shadow
-	protected abstract void slotClicked(Slot slot_1, int int_1, int int_2, ClickType slotActionType_1);
+    @Shadow
+    protected abstract void slotClicked(Slot slot_1, int int_1, int int_2, ClickType slotActionType_1);
 
-	@Shadow
-	@Final
-	protected AbstractContainerMenu menu;
+    @Shadow
+    @Final
+    protected AbstractContainerMenu menu;
 
-	@Shadow
-	protected Slot hoveredSlot;
+    @Shadow
+    protected Slot hoveredSlot;
 
     @Shadow
     private ItemStack draggingItem;
@@ -98,41 +98,41 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
         }
     }
 
-	@SuppressWarnings({"ConstantConditions", "unchecked"})
-	@Unique
-	private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
-			() -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType) -> new InteractionManager.CallbackEvent(() -> {
-				slotClicked(slot, ((ISlot) slot).mouseWheelie_getIdInContainer(), data, slotActionType);
-				return InteractionManager.TICK_WAITER;
-			}, true))
-	);
+    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @Unique
+    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
+            () -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType) -> new InteractionManager.CallbackEvent(() -> {
+                slotClicked(slot, ((ISlot) slot).mouseWheelie_getIdInContainer(), data, slotActionType);
+                return InteractionManager.TICK_WAITER;
+            }, true))
+    );
 
-	@SuppressWarnings("ConstantConditions")
-	@Override
-	public boolean mouseWheelie_triggerSort() {
-		if (hoveredSlot == null)
-			return false;
-		Player player = Minecraft.getInstance().player;
-		if (player.getAbilities().instabuild
-				&& GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW.GLFW_MOUSE_BUTTON_MIDDLE) != 0
-				&& (!hoveredSlot.getItem().isEmpty() == menu.getCarried().isEmpty()))
-			return false;
-		InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public boolean mouseWheelie_triggerSort() {
+        if (hoveredSlot == null)
+            return false;
+        Player player = Minecraft.getInstance().player;
+        if (player.getAbilities().instabuild
+                && GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW.GLFW_MOUSE_BUTTON_MIDDLE) != 0
+                && (!hoveredSlot.getItem().isEmpty() == menu.getCarried().isEmpty()))
+            return false;
+        InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
         Config.Options options = Config.get().options;
-		SortMode sortMode;
-		if (hasShiftDown()) {
-			sortMode = options.shiftSortMode;
-		} else if (hasControlDown()) {
-			sortMode = options.ctrlSortMode;
-		} else if (hasAltDown()) {
+        SortMode sortMode;
+        if (hasShiftDown()) {
+            sortMode = options.shiftSortMode;
+        } else if (hasControlDown()) {
+            sortMode = options.ctrlSortMode;
+        } else if (hasAltDown()) {
             sortMode = options.altSortMode;
         } else {
-			sortMode = options.sortMode;
-		}
-		if (sortMode == null) return false;
-		sorter.sort(sortMode);
-		return true;
-	}
+            sortMode = options.sortMode;
+        }
+        if (sortMode == null) return false;
+        sorter.sort(sortMode);
+        return true;
+    }
 
     @SuppressWarnings("ConstantConditions")
     @Unique
