@@ -12,6 +12,7 @@
   "option.clientsort.interactionRateClient": "Singleplayer Interaction Rate",
   "option.clientsort.interactionRate.tooltip": "Reduce to sort faster, increase if you are experiencing packet rate issues",
   "option.clientsort.hotbarMode": "Hotbar Mode",
+  "option.clientsort.extraSlotMode": "Extra Slot Mode",
   "option.clientsort.lmbBundle": "Bundles use Left Click",
   "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
   
@@ -28,6 +29,13 @@
   "hotbarMode.clientsort.split.tooltip": "Hotbar will be treated as a different inventory",
   "hotbarMode.clientsort.off": "Off",
   "hotbarMode.clientsort.off.tooltip": "Hotbar cannot be sorted",
+
+  "extraSlotMode.clientsort.none": "None",
+  "extraSlotMode.clientsort.none.tooltip": "Extra slots will not be sortable",
+  "extraSlotMode.clientsort.hotbar": "Hotbar",
+  "extraSlotMode.clientsort.hotbar.tooltip": "Extra slots will be sorted with the hotbar",
+  "extraSlotMode.clientsort.inventory": "Inventory",
+  "extraSlotMode.clientsort.inventory.tooltip": "Extra slots will be sorted with the main inventory",
 
   "sortOrder.clientsort.none": "None",
   "sortOrder.clientsort.alphabet": "Alphabet",

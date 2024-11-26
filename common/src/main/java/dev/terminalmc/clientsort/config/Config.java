@@ -50,6 +50,9 @@ public class Config {
         public static final HotbarMode defaultHotbarMode = HotbarMode.HARD;
         public HotbarMode hotbarMode = defaultHotbarMode;
 
+        public static final ExtraSlotMode defaultExtraSlotMode = ExtraSlotMode.NONE;
+        public ExtraSlotMode extraSlotMode = defaultExtraSlotMode;
+
         public enum HotbarMode {
             NONE,
             HARD,
@@ -60,6 +63,20 @@ public class Config {
                     case NONE -> "merge";
                     case HARD -> "split";
                     case SOFT -> "off";
+                };
+            }
+        }
+
+        public enum ExtraSlotMode {
+            NONE,
+            HOTBAR,
+            INVENTORY;
+
+            public String lowerName() {
+                return switch(this) {
+                    case NONE -> "none";
+                    case HOTBAR -> "hotbar";
+                    case INVENTORY -> "inventory";
                 };
             }
         }

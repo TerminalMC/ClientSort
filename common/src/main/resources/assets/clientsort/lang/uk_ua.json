@@ -12,6 +12,7 @@
   "option.clientsort.interactionRateClient": "Частота взаємодії в одиночній грі",
   "option.clientsort.interactionRate.tooltip": "Зменшіть для швидшого сортування, збільшіть якщо виникають проблеми з частотою пакетів",
   "option.clientsort.hotbarMode": "Режим панелі швидкого доступу",
+  "option.clientsort.extraSlotMode": "Extra Slot Mode",
   "option.clientsort.lmbBundle": "Bundles use Left Click",
   "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
   
@@ -28,6 +29,13 @@
   "hotbarMode.clientsort.split.tooltip": "Панель швидкого доступу буде вважатися окремим інвентарем",
   "hotbarMode.clientsort.off": "Вимкнено",
   "hotbarMode.clientsort.off.tooltip": "Панель швидкого доступу не може бути відсортована",
+
+  "extraSlotMode.clientsort.none": "None",
+  "extraSlotMode.clientsort.none.tooltip": "Extra slots will not be sortable",
+  "extraSlotMode.clientsort.hotbar": "Hotbar",
+  "extraSlotMode.clientsort.hotbar.tooltip": "Extra slots will be sorted with the hotbar",
+  "extraSlotMode.clientsort.inventory": "Inventory",
+  "extraSlotMode.clientsort.inventory.tooltip": "Extra slots will be sorted with the main inventory",
 
   "sortOrder.clientsort.none": "Немає",
   "sortOrder.clientsort.alphabet": "За алфавітом",

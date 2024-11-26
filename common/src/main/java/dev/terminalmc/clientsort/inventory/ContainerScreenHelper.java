@@ -65,14 +65,20 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         }
         if (screen instanceof EffectRenderingInventoryScreen) {
             if (slot.container instanceof Inventory) {
+                Config.Options options = Config.get().options;
                 if (isHotbarSlot(slot)) {
-                    Config.Options options = Config.get().options;
                     if (options.hotbarMode == Config.Options.HotbarMode.HARD
                             || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
                         return -1;
                     }
                 } else if (((ISlot) slot).mouseWheelie_getIndexInInv() >= 40) {
-                    return -1;
+                    if (options.extraSlotMode == Config.Options.ExtraSlotMode.NONE) {
+                        return -2;
+                    } else if (options.extraSlotMode == Config.Options.ExtraSlotMode.HOTBAR 
+                            && (options.hotbarMode == Config.Options.HotbarMode.HARD 
+                            || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes)) {
+                        return -1;
+                    }
                 }
                 return 0;
             } else {

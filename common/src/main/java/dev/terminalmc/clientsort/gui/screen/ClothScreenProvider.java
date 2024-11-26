@@ -89,6 +89,17 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.hotbarMode = val)
                 .build());
 
+        general.addEntry(eb.startEnumSelector(localized("option", "extraSlotMode"),
+                        Config.Options.ExtraSlotMode.class, options.extraSlotMode)
+                .setEnumNameProvider(val -> localized("extraSlotMode",
+                        ((Config.Options.ExtraSlotMode)val).lowerName()))
+                .setTooltipSupplier(val -> Optional.of(new Component[]{
+                        localized("extraSlotMode", val.lowerName() + ".tooltip")
+                }))
+                .setDefaultValue(Config.Options.defaultExtraSlotMode)
+                .setSaveConsumer(val -> options.extraSlotMode = val)
+                .build());
+
         general.addEntry(eb.startBooleanToggle(localized("option", "lmbBundle"),
                         options.lmbBundle)
                 .setTooltip(localized("option", "lmbBundle.tooltip"))

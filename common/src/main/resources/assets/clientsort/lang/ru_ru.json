@@ -12,6 +12,7 @@
   "option.clientsort.interactionRateClient": "Скорость локального взаимодействия",
   "option.clientsort.interactionRate.tooltip": "Уменьшите, чтобы ускорить сортировку, увеличьте, если у вас возникли проблемы со скоростью передачи пакетов",
   "option.clientsort.hotbarMode": "Режим горячей панели",
+  "option.clientsort.extraSlotMode": "Extra Slot Mode",
   "option.clientsort.lmbBundle": "Bundles use Right Click",
   "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
   
@@ -28,6 +29,13 @@
   "hotbarMode.clientsort.split.tooltip": "Горячая панель будет рассматриваться как другой инвентарь",
   "hotbarMode.clientsort.off": "Выключено",
   "hotbarMode.clientsort.off.tooltip": "Горячая панель не может быть отсортирована",
+
+  "extraSlotMode.clientsort.none": "None",
+  "extraSlotMode.clientsort.none.tooltip": "Extra slots will not be sortable",
+  "extraSlotMode.clientsort.hotbar": "Hotbar",
+  "extraSlotMode.clientsort.hotbar.tooltip": "Extra slots will be sorted with the hotbar",
+  "extraSlotMode.clientsort.inventory": "Inventory",
+  "extraSlotMode.clientsort.inventory.tooltip": "Extra slots will be sorted with the main inventory",
 
   "sortOrder.clientsort.none": "Никакая",
   "sortOrder.clientsort.alphabet": "Алфавитная",
