@@ -12,6 +12,9 @@
   "option.clientsort.interactionRateClient": "Частота взаємодії в одиночній грі",
   "option.clientsort.interactionRate.tooltip": "Зменшіть для швидшого сортування, збільшіть якщо виникають проблеми з частотою пакетів",
   "option.clientsort.hotbarMode": "Режим панелі швидкого доступу",
+  "option.clientsort.lmbBundle": "Bundles use Left Click",
+  "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  
   "option.clientsort.sorting": "Сортування",
   "option.clientsort.sortMode": "Режим сортування",
   "option.clientsort.shiftSortMode": "Режим сортування з Shift",
