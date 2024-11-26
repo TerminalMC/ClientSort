@@ -1,0 +1,37 @@
+{
+  "clientsort.name": "ClientSort",
+
+  "message.clientsort.installCloth": "Встановіть Cloth Config API для доступу до налаштувань моду.",
+  "message.clientsort.viewModrinth": "Переглянути на Modrinth",
+
+  "key.clientsort.group": "ClientSort",
+  "key.clientsort.group.sort": "Сортувати інвентар",
+
+  "option.clientsort.general": "Загальні",
+  "option.clientsort.interactionRateServer": "Частота взаємодії в багатокористувацькій грі",
+  "option.clientsort.interactionRateClient": "Частота взаємодії в одиночній грі",
+  "option.clientsort.interactionRate.tooltip": "Зменшіть для швидшого сортування, збільшіть якщо виникають проблеми з частотою пакетів",
+  "option.clientsort.hotbarMode": "Режим панелі швидкого доступу",
+  "option.clientsort.sorting": "Сортування",
+  "option.clientsort.sortMode": "Режим сортування",
+  "option.clientsort.shiftSortMode": "Режим сортування з Shift",
+  "option.clientsort.ctrlSortMode": "Режим сортування з Ctrl",
+  "option.clientsort.altSortMode": "Режим сортування з Alt",
+  "option.clientsort.optimizedCreativeSorting": "Оптимізоване сортування в творчому режимі",
+
+  "hotbarMode.clientsort.merge": "Об'єднати",
+  "hotbarMode.clientsort.merge.tooltip": "Панель швидкого доступу буде вважатися частиною основного інвентаря",
+  "hotbarMode.clientsort.split": "Розділити",
+  "hotbarMode.clientsort.split.tooltip": "Панель швидкого доступу буде вважатися окремим інвентарем",
+  "hotbarMode.clientsort.off": "Вимкнено",
+  "hotbarMode.clientsort.off.tooltip": "Панель швидкого доступу не може бути відсортована",
+
+  "sortOrder.clientsort.none": "Немає",
+  "sortOrder.clientsort.alphabet": "За алфавітом",
+  "sortOrder.clientsort.creative": "Творчий режим",
+  "sortOrder.clientsort.quantity": "За кількістю",
+  "sortOrder.clientsort.rawId": "За Raw ID",
+
+  "option.clientsort.error.low": "Занадто низько",
+  "option.clientsort.error.high": "Занадто високо"
+}
