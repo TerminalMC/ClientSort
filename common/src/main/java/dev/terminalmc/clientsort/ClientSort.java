@@ -31,8 +31,8 @@ public class ClientSort {
     public static final String MOD_NAME = "ClientSort";
     public static final ModLogger LOG = new ModLogger(MOD_NAME);
     public static final KeyMapping SORT_KEY = new KeyMapping(
-            translationKey("key", "sort"), InputConstants.Type.MOUSE,
-            InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key_group"));
+            translationKey("key", "group.sort"), InputConstants.Type.MOUSE,
+            InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
 
     public static boolean searchOrderUpdated = false;
 

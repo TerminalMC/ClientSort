@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Fixed keybind translation
+
 ## 1.1.0
 
 - Updated bundle handling
