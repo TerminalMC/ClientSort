@@ -42,4 +42,4 @@ Mouse Wheelie is available on [Modrinth](https://modrinth.com/mod/u5Ic2U1u) and
 
 [![GitHub Issues](https://img.shields.io/github/issues/TerminalMC/ClientSort?logo=github&label=GitHub%20Issues)](https://github.com/TerminalMC/ClientSort/issues)
 
-[![License](https://img.shields.io/github/license/TerminalMC/ChatNotify?label=License&logo=github&logoColor=white)](https://github.com/TerminalMC/ChatNotify/blob/HEAD/LICENSE.txt)
+[![License](https://img.shields.io/github/license/TerminalMC/ClientSort?label=License&logo=github&logoColor=white)](https://github.com/TerminalMC/ClientSort/blob/HEAD/LICENSE.txt)
