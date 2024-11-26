@@ -13,8 +13,8 @@
   "option.clientsort.interactionRate.tooltip": "降低值可更快整理, 若遇到发包速率问题, 请将该值增加",
   "option.clientsort.hotbarMode": "快捷栏模式",
   "option.clientsort.extraSlotMode": "Extra Slot Mode",
-  "option.clientsort.lmbBundle": "Bundles use Right Click",
-  "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  "option.clientsort.rmbBundle": "Bundles use Right Click",
+  "option.clientsort.rmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
   
   "option.clientsort.sorting": "整理",
   "option.clientsort.sortMode": "整理模式",
