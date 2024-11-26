@@ -36,12 +36,10 @@ ClientSort uses Siphalor's sorting algorithm from Mouse Wheelie, under license.
 Mouse Wheelie is available on [Modrinth](https://modrinth.com/mod/u5Ic2U1u) and 
 [GitHub](https://github.com/Siphalor/mouse-wheelie/releases).
 
-### License
-
-[Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
 ### Contact
 
 [![Discord Server](https://img.shields.io/discord/1103153365216669797?logo=discord&label=Discord%20Server&color=%235865F2)](https://discord.terminalmc.dev)
 
 [![GitHub Issues](https://img.shields.io/github/issues/TerminalMC/ClientSort?logo=github&label=GitHub%20Issues)](https://github.com/TerminalMC/ClientSort/issues)
+
+[![License](https://img.shields.io/github/license/TerminalMC/ChatNotify?label=License&logo=github&logoColor=white)](https://github.com/TerminalMC/ChatNotify/blob/HEAD/LICENSE.txt)

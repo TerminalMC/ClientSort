@@ -148,24 +148,20 @@ subprojects {
 
 String versionChangelog() {
     List<String> lines = rootProject.file("CHANGELOG.md").readLines()
-    if ("${mod_version}".startsWith(lines.get(2).substring(3))) {
-        StringBuilder builder = new StringBuilder()
-        for (int i = 4; i < lines.size(); i++) {
-            String line = lines.get(i)
-            if (line.isBlank()) {
-                // pass
-            } else if (line.startsWith("## ")) {
-                break
-            } 
-            else {
-                if (!builder.isEmpty()) builder.append("\n")
-                builder.append(line)
-            }
+    StringBuilder builder = new StringBuilder()
+    for (int i = 4; i < lines.size(); i++) {
+        String line = lines.get(i)
+        if (line.isBlank()) {
+            // pass
+        } else if (line.startsWith("## ")) {
+            break
+        } 
+        else {
+            if (!builder.isEmpty()) builder.append("\n")
+            builder.append(line)
         }
-        return builder.toString()
-    } else {
-        return "Error creating changelog"
     }
+    return builder.toString()
 }
 
 static String capsLoader(String loader) {
