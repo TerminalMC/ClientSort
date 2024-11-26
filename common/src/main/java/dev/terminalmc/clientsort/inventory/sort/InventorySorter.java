@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.inventory.sort;
 
+import dev.terminalmc.clientsort.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.network.InteractionManager;
@@ -57,7 +58,9 @@ public class InventorySorter {
         ArrayList<Slot> slotsInScope = new ArrayList<>();
         for (Slot slot : containerScreen.getMenu().slots) {
             if (originScope == screenHelper.getScope(slot, true)) {
-                slotsInScope.add(slot);
+                if (!ItemLocksWrapper.isLocked(slot)) {
+                    slotsInScope.add(slot);
+                }
             }
         }
         this.inventorySlots = slotsInScope.toArray(new Slot[0]);

@@ -24,6 +24,9 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:${clothconfig_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // ItemLocks
+    modImplementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
 }
 
 loom {

@@ -4,3 +4,4 @@
 
 - Updated bundle handling
 - Added Ukrainian translation (ttrafford7)
+- Added support for ItemLocks
