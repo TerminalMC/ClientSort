@@ -1,9 +1,7 @@
 plugins {
     id("fabric-loom") version("${loom_version}") apply(false)
     id("net.neoforged.moddev") version("${moddev_version}") apply(false)
-    id("com.modrinth.minotaur") version("${minotaur_version}")
-    id("net.darkhax.curseforgegradle") version("${curseforgegradle_version}")
-    id("com.github.breadmoirai.github-release") version("${githubrelease_version}")
+    id("me.modmuss50.mod-publish-plugin") version("${mpp_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
     id("org.cadixdev.licenser") version("${licenser_version}")
 }
@@ -40,126 +38,129 @@ subprojects {
         }
     } else {
         // Publishing
-        apply(plugin: "com.modrinth.minotaur")
-        apply(plugin: "net.darkhax.curseforgegradle")
-        apply(plugin: "com.github.breadmoirai.github-release")
+        apply(plugin: "me.modmuss50.mod-publish-plugin")
         apply(plugin: "org.ajoberstar.grgit.service")
 
         afterEvaluate {
-            modrinth {
-                token = System.getenv().MODRINTH_TOKEN ? System.getenv().MODRINTH_TOKEN : "empty"
-                projectId = modrinth_id
-                versionNumber = mod_version
-                versionType = release_type
-                versionName = "v${mod_version}-${capsLoader(name)}"
-                changelog = versionChangelog()
-                uploadFile = name == "fabric" ? remapJar : jar
-                loaders = project.property("release_mod_loaders_${name}").split(",") as List
-                gameVersions = project.property("release_game_versions_${name}").split(",") as List
-
-                def deps = []
-                if (project.hasProperty("release_required_dep_ids_${name}_mr")) {
-                    project.property("release_required_dep_ids_${name}_mr").split(",").each { String id ->
-                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "required")
+            publishMods {
+                file = project.name == "fabric" ? remapJar.archiveFile : jar.archiveFile
+                version = mod_version
+                type = me.modmuss50.mpp.ReleaseType.of(release_type)
+                displayName = "v${mod_version}-${capsLoader(project.name)}"
+                modLoaders.addAll(project.property("release_mod_loaders_${project.name}").split(","))
+                maxRetries = 5
+                github {
+                    dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null
+                    accessToken = providers.environmentVariable("GITHUB_TOKEN")
+                    parent project(":").tasks.named("publishGithub")
+                    additionalFiles.from(sourcesJar.archiveFile)
+                }
+                modrinth {
+                    dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
+                    accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+                    projectId = modrinth_id
+                    minecraftVersions.addAll(project.property("release_game_versions_${project.name}").split(","))
+                    changelog = versionChangelog()
+                    if (project.hasProperty("release_required_dep_ids_${project.name}_mr")) {
+                        project.property("release_required_dep_ids_${project.name}_mr").split(",").each { String mrId ->
+                            requires { id = mrId }
+                        }
+                    }
+                    if (project.hasProperty("release_optional_dep_ids_${project.name}_mr")) {
+                        project.property("release_optional_dep_ids_${project.name}_mr").split(",").each { String mrId ->
+                            optional { id = mrId }
+                        }
+                    }
+                    if (project.hasProperty("release_incompatible_dep_ids_${project.name}_mr")) {
+                        project.property("release_incompatible_dep_ids_${project.name}_mr").split(",").each { String mrId ->
+                            incompatible { id = mrId }
+                        }
+                    }
+                    if (project.hasProperty("release_embedded_dep_ids_${project.name}_mr")) {
+                        project.property("release_embedded_dep_ids_${project.name}_mr").split(",").each { String mrId ->
+                            embeds { id = mrId }
+                        }
+                    }
+                    // Sync Modrinth description with GitHub README
+                    projectDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText
+                }
+                curseforge {
+                    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+                    accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+                    projectId = curseforge_id
+                    projectSlug = curseforge_slug
+                    minecraftVersions.addAll(project.property("release_game_versions_${project.name}").split(","))
+                    changelog = versionChangelog()
+                    if (project.hasProperty("release_required_dep_ids_${project.name}_cf")) {
+                        project.property("release_required_dep_ids_${project.name}_cf").split(",").each { String slug ->
+                            requires(slug)
+                        }
+                    }
+                    if (project.hasProperty("release_optional_dep_ids_${project.name}_cf")) {
+                        project.property("release_optional_dep_ids_${project.name}_cf").split(",").each { String slug ->
+                            optional(slug)
+                        }
+                    }
+                    if (project.hasProperty("release_incompatible_dep_ids_${project.name}_cf")) {
+                        project.property("release_incompatible_dep_ids_${project.name}_cf").split(",").each { String slug ->
+                            incompatible(slug)
+                        }
+                    }
+                    if (project.hasProperty("release_embedded_dep_ids_${project.name}_cf")) {
+                        project.property("release_embedded_dep_ids_${project.name}_cf").split(",").each { String slug ->
+                            embeds(slug)
+                        }
                     }
                 }
-                if (project.hasProperty("release_optional_dep_ids_${name}_mr")) {
-                    project.property("release_optional_dep_ids_${name}_mr").split(",").each { String id ->
-                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "optional")
-                    }
-                }
-                if (project.hasProperty("release_incompatible_dep_ids_${name}_mr")) {
-                    project.property("release_incompatible_dep_ids_${name}_mr").split(",").each { String id ->
-                        deps << new com.modrinth.minotaur.dependencies.ModDependency(id, "incompatible")
-                    }
-                }
-                dependencies = deps
-                syncBodyFrom = rootProject.file("README.md").text
             }
-            tasks.modrinth.onlyIf { System.getenv().MODRINTH_TOKEN }
-            tasks.modrinth.dependsOn(build, tasks.modrinthSyncBody)
-            tasks.modrinthSyncBody.onlyIf { System.getenv().MODRINTH_TOKEN }
-
-            task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
-                apiToken = System.getenv().CURSEFORGE_TOKEN ? System.getenv().CURSEFORGE_TOKEN : "empty"
-
-                disableVersionDetection()
-                String module = project.name
-
-                def file = upload(curseforge_id, module == "fabric" ? remapJar : jar)
-                file.displayName = "v${mod_version}-${capsLoader(module)}"
-                file.releaseType = release_type
-                file.changelog = versionChangelog()
-                file.changelogType = "markdown"
-                project.property("release_mod_loaders_${module}").split(",").each { String id ->
-                    file.addModLoader(id)
-                }
-                project.property("release_game_versions_${module}").split(",").each { String id ->
-                    file.addGameVersion(id, module)
-                }
-
-                if (project.hasProperty("release_required_dep_ids_${module}_cf")) {
-                    project.property("release_required_dep_ids_${module}_cf").split(",").each { String id ->
-                        file.addRequirement(id)
-                    }
-                }
-                if (project.hasProperty("release_optional_dep_ids_${module}_cf")) {
-                    project.property("release_optional_dep_ids_${module}_cf").split(",").each { String id ->
-                        file.addOptional(id)
-                    }
-                }
-                if (project.hasProperty("release_incompatible_dep_ids_${module}_cf")) {
-                    project.property("release_incompatible_dep_ids_${module}_cf").split(",").each { String id ->
-                        file.addIncompatibility(id)
-                    }
-                }
-            }
-            tasks.curseforge.onlyIf { System.getenv().CURSEFORGE_TOKEN }
-            tasks.curseforge.dependsOn(build)
-
-            githubRelease {
-                token = System.getenv().GITHUB_TOKEN ? System.getenv().GITHUB_TOKEN : "empty"
-                owner = github_repo_owner
-                repo = github_repo
-                tagName = "v${mod_version}"
-                prerelease = release_type == "alpha" || release_type == "beta"
-                releaseName = "v${mod_version}"
-
-                String changelog = "\n\n## Changelog\n\n" + versionChangelog()
-                String versions = "## MC versions\n\n"
-                if (project.hasProperty("release_game_versions_fabric"))
-                    versions = String.format("%s - Fabric: %s\n", versions,
-                            project.property("release_game_versions_fabric"))
-                if (project.hasProperty("release_game_versions_neoforge"))
-                    versions = String.format("%s - NeoForge: %s\n", versions,
-                            project.property("release_game_versions_neoforge"))
-                body = versions + changelog
-                
-                targetCommitish = grgitService.service.get().grgit.branch.current().name
-                overwrite = false
-                allowUploadToExisting = true
-                releaseAssets = List.of(name == "fabric" ? remapJar : jar, sourcesJar)
-            }
-            tasks.githubRelease.onlyIf { System.getenv().GITHUB_TOKEN }
-            tasks.githubRelease.dependsOn(build)
         }
+    }
+}
+
+publishMods {
+    // This task is necessary to allow publishing files from multiple 
+    // subprojects to a single GitHub release.
+    version = mod_version
+    type = me.modmuss50.mpp.ReleaseType.of(release_type)
+    github {
+        dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = github_repo
+        commitish = grgitService.service.get().grgit.branch.current().name
+        tagName = "v${mod_version}"
+        allowEmptyFiles = true
+        // Include compatible MC version lists in description
+        String versions = "## MC versions\n\n"
+        if (project.hasProperty("release_game_versions_fabric"))
+            versions = String.format("%s - Fabric: %s\n", versions,
+                    project.property("release_game_versions_fabric"))
+        if (project.hasProperty("release_game_versions_neoforge"))
+            versions = String.format("%s - NeoForge: %s\n", versions,
+                    project.property("release_game_versions_neoforge"))
+        changelog = versions + "\n\n## Changelog\n\n" + versionChangelog()
     }
 }
 
 String versionChangelog() {
     List<String> lines = rootProject.file("CHANGELOG.md").readLines()
     StringBuilder builder = new StringBuilder()
-    for (int i = 4; i < lines.size(); i++) {
-        String line = lines.get(i)
-        if (line.isBlank()) {
-            // pass
-        } else if (line.startsWith("## ")) {
-            break
-        } 
-        else {
-            if (!builder.isEmpty()) builder.append("\n")
-            builder.append(line)
+    if ("${mod_version}".startsWith(lines.get(2).substring(3))) {
+        for (int i = 4; i < lines.size(); i++) {
+            String line = lines.get(i)
+            if (line.isBlank()) {
+                // pass
+            } else if (line.startsWith("## ")) {
+                break
+            }
+            else {
+                if (!builder.isEmpty()) builder.append("\n")
+                builder.append(line)
+            }
         }
+    } else {
+        throw new IllegalArgumentException(
+                String.format("Mod version '%s' does not start with changelog version '%s'", 
+                        mod_version, lines.get(2).substring(3)))
     }
     return builder.toString()
 }

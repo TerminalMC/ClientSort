@@ -108,7 +108,7 @@ public abstract class SortMode {
             @Override
             public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
                 int[] sortValues = new int[sortIds.length];
-                if (Config.get().options.optimizedCreativeSorting) {
+                if (Config.options().optimizedCreativeSorting) {
                     Lock lock = CreativeSearchOrder.getReadLock();
                     lock.lock();
                     for (int i = 0; i < stacks.length; i++) {

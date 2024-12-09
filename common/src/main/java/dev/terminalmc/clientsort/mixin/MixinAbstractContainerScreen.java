@@ -118,7 +118,7 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
                 && (!hoveredSlot.getItem().isEmpty() == menu.getCarried().isEmpty()))
             return false;
         InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
-        Config.Options options = Config.get().options;
+        Config.Options options = Config.options();
         SortMode sortMode;
         if (hasShiftDown()) {
             sortMode = options.shiftSortMode;

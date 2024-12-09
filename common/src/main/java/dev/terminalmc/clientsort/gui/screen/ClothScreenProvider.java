@@ -38,7 +38,7 @@ public class ClothScreenProvider {
      * available.
      */
     static Screen getConfigScreen(Screen parent) {
-        Config.Options options = Config.get().options;
+        Config.Options options = Config.options();
 
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)

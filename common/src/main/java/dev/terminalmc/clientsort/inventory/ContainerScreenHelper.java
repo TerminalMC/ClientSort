@@ -65,7 +65,7 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         }
         if (screen instanceof EffectRenderingInventoryScreen) {
             if (slot.container instanceof Inventory) {
-                Config.Options options = Config.get().options;
+                Config.Options options = Config.options();
                 if (isHotbarSlot(slot)) {
                     if (options.hotbarMode == Config.Options.HotbarMode.HARD
                             || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
@@ -87,7 +87,7 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         } else {
             if (slot.container instanceof Inventory) {
                 if (isHotbarSlot(slot)) {
-                    Config.Options options = Config.get().options;
+                    Config.Options options = Config.options();
                     if (options.hotbarMode == Config.Options.HotbarMode.HARD
                             || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
                         return -1;

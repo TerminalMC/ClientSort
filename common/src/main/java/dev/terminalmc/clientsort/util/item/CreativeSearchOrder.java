@@ -61,7 +61,7 @@ public class CreativeSearchOrder {
     }
 
     public static void refreshItemSearchPositionLookup() {
-        if (Config.get().options.optimizedCreativeSorting) {
+        if (Config.options().optimizedCreativeSorting) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null || mc.player == null) {
                 return;
