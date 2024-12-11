@@ -1,42 +1,39 @@
 plugins {
     id("fabric-loom") version("${loom_version}") apply(false)
     id("net.neoforged.moddev") version("${moddev_version}") apply(false)
+    id("org.cadixdev.licenser") version("${licenser_version}") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("${mpp_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
-    id("org.cadixdev.licenser") version("${licenser_version}")
 }
 
 subprojects {
     version = mod_version
     group = mod_group
-    
-    if (name == "common") {
-        // License headers
-        apply(plugin: "org.cadixdev.licenser")
-        String licenseDir = "src/main/resources/assets/${mod_id}/license/"
-        license {
-            // This can be done in multiloader-common.gradle but only if the
-            // "matching" method is not used (throws a pile of weird errors).
-            // Also, NeoForge's update of the plugin can't handle matching at all.
-            include("**/*.java") // Java files only
-            header = project.file(licenseDir + "HEADER.txt")
-            properties {
-                project_name = mod_name
-                owner_name = mod_owner
-                year = java.time.LocalDate.now().getYear().toString()
-            }
-            // Alternate license
-            matching(includes: [
-                    "**/inventory/**", 
-                    "**/mixin/**",
-                    "**/network/**",
-                    "**/util/inject/**",
-                    "**/util/item/**",
-            ]) {
-                header = project.file(licenseDir + "mouse-wheelie/HEADER.txt")
-            }
+
+    // License headers
+    apply(plugin: "org.cadixdev.licenser")
+    String licenseDir = "src/main/resources/assets/${mod_id}/license/"
+    license {
+        include("**/*.java") // Java files only
+        header = rootProject.project("common").file(licenseDir + "HEADER.txt")
+        properties {
+            project_name = mod_name
+            owner_name = mod_owner
+            year = java.time.LocalDate.now().getYear().toString()
         }
-    } else {
+        // Alternate license
+        matching(includes: [
+                "**/inventory/**",
+                "**/mixin/**",
+                "**/network/**",
+                "**/util/inject/**",
+                "**/util/item/**",
+        ]) {
+            header = rootProject.project("common").file(licenseDir + "mouse-wheelie/HEADER.txt")
+        }
+    }
+
+    if (name != "common") {
         // Publishing
         apply(plugin: "me.modmuss50.mod-publish-plugin")
         apply(plugin: "org.ajoberstar.grgit.service")
