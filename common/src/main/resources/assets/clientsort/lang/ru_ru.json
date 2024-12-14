@@ -24,16 +24,16 @@
   "option.clientsort.optimizedCreativeSorting": "Оптимизированная творческая сортировка",
 
   "hotbarMode.clientsort.merge": "Слияние",
-  "hotbarMode.clientsort.merge.tooltip": "Горячая панель будет рассматриваться как часть основного инвентаря",
+  "hotbarMode.clientsort.merge.tooltip": "Панель быстрого доступа будет рассматриваться как часть основного инвентаря",
   "hotbarMode.clientsort.split": "Разделение",
-  "hotbarMode.clientsort.split.tooltip": "Горячая панель будет рассматриваться как другой инвентарь",
+  "hotbarMode.clientsort.split.tooltip": "Панель быстрого доступа будет рассматриваться как другой инвентарь",
   "hotbarMode.clientsort.off": "Выключено",
-  "hotbarMode.clientsort.off.tooltip": "Горячая панель не может быть отсортирована",
+  "hotbarMode.clientsort.off.tooltip": "Панель быстрого доступа не может быть отсортирована",
 
   "extraSlotMode.clientsort.none": "Нет",
   "extraSlotMode.clientsort.none.tooltip": "Дополнительные слоты не будут сортироваться",
-  "extraSlotMode.clientsort.hotbar": "Горячая панель",
-  "extraSlotMode.clientsort.hotbar.tooltip": "Дополнительные слоты будут сортироваться вместе с горячей панелью",
+  "extraSlotMode.clientsort.hotbar": "Панель быстрого доступа",
+  "extraSlotMode.clientsort.hotbar.tooltip": "Дополнительные слоты будут сортироваться с помощью панели быстрого доступа",
   "extraSlotMode.clientsort.inventory": "Инвентарь",
   "extraSlotMode.clientsort.inventory.tooltip": "Дополнительные слоты будут сортироваться вместе с основным инвентарём",
 
