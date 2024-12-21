@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- Updated Russian translation (rfin0)
+
 ## 1.1.1
 
 - Fixed keybind translation
