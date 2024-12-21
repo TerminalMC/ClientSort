@@ -235,7 +235,7 @@ public class InventorySorter {
 
                 // swap the current stack with the target stack
                 if (
-                        options().lmbBundle
+                        !options().rmbBundle
                         && (
                                 (backingStacks[id] instanceof BundleItem && !(carriedItem instanceof AirItem))
                                 || (carriedItem instanceof BundleItem && !(backingStacks[id] instanceof AirItem))

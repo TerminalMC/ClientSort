@@ -101,12 +101,12 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.extraSlotMode = val)
                 .build());
 
-        general.addEntry(eb.startBooleanToggle(localized("option", "lmbBundle"),
-                        options.lmbBundle)
-                .setTooltip(localized("option", "lmbBundle.tooltip"))
-                .setDefaultValue(Config.Options.lmbBundleDefault)
+        general.addEntry(eb.startBooleanToggle(localized("option", "rmbBundle"),
+                        options.rmbBundle)
+                .setTooltip(localized("option", "rmbBundle.tooltip"))
+                .setDefaultValue(Config.Options.rmbBundleDefault)
                 .setSaveConsumer(val -> {
-                    options.lmbBundle = val;
+                    options.rmbBundle = val;
                     if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
                 })
                 .build());

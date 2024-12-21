@@ -27,7 +27,7 @@ import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -45,8 +45,8 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
         ClientSort.setInteractionManagerTickRate(Config.get());
     }
 
-    @Inject(method = "handleSetCarriedItem", at = @At("HEAD"))
-    public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
+    @Inject(method = "handleSetCursorItem", at = @At("HEAD"))
+    public void onHeldItemChangeBegin(ClientboundSetCursorItemPacket packet, CallbackInfo ci) {
         InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
     }
 

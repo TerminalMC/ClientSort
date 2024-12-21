@@ -23,7 +23,6 @@ import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -68,7 +67,7 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
             //     (prevents compatibility with Traveler's Backpack)
             return INVALID_SCOPE;
         }
-        if (screen instanceof EffectRenderingInventoryScreen) {
+        if (screen instanceof AbstractContainerScreen) {
             if (slot.container instanceof Inventory) {
                 Config.Options options = Config.options();
                 if (isHotbarSlot(slot)) {
