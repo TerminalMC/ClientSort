@@ -3,7 +3,24 @@ plugins {
     id("net.neoforged.moddev")
 }
 
+// Vanilla depends on ASM 9.3, MDG makes that a 'strict' version constraint,
+// but Mixin and MixinExtras needs newer ASM so we override that here.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "org.ow2.asm") {
+            details.useVersion(asm_version)
+            details.because("Mixin requires new ASM")
+        }
+    }
+}
+
 dependencies {
+    compileOnly "org.ow2.asm:asm:${asm_version}"
+    compileOnly "org.ow2.asm:asm-analysis:${asm_version}"
+    compileOnly "org.ow2.asm:asm-commons:${asm_version}"
+    compileOnly "org.ow2.asm:asm-tree:${asm_version}"
+    compileOnly "org.ow2.asm:asm-util:${asm_version}"
+    
     compileOnly("org.spongepowered:mixin:${mixin_version}")
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
