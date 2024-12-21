@@ -13,8 +13,8 @@
   "option.clientsort.interactionRate.tooltip": "Уменьшите, чтобы ускорить сортировку, увеличьте, если у вас возникли проблемы со скоростью передачи пакетов",
   "option.clientsort.hotbarMode": "Режим горячей панели",
   "option.clientsort.extraSlotMode": "Режим дополнительных слоёв",
-  "option.clientsort.lmbBundle": "Пакеты используют ПКМ",
-  "option.clientsort.lmbBundle.tooltip": "В версии 1.21.2+ пакеты используют ПКМ для загрузки и выгрузки, что нарушает сортировку. Если вы играете на сервере версии 1.21.2+, включите эту опцию.",
+  "option.clientsort.lmbBundle": "Пакеты используют ЛКМ",
+  "option.clientsort.lmbBundle.tooltip": "С версии 1.21.2+ для загрузки пакетов используется ЛКМ, что нарушает сортировку. Если вы играете на сервере 1.21.2+, включите эту опцию.",
   
   "option.clientsort.sorting": "Сортировка",
   "option.clientsort.sortMode": "Режим сортировки",
