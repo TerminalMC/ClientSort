@@ -46,15 +46,24 @@ subprojects {
                 displayName = "v${mod_version}-${capsLoader(project.name)}"
                 modLoaders.addAll(project.property("release_mod_loaders_${project.name}").split(","))
                 maxRetries = 5
+                dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrElse("").isBlank()
+                        && providers.environmentVariable("MODRINTH_TOKEN").getOrElse("").isBlank()
+                        && providers.environmentVariable("CURSEFORGE_TOKEN").getOrElse("").isBlank()
+
                 github {
-                    dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null
-                    accessToken = providers.environmentVariable("GITHUB_TOKEN")
-                    parent project(":").tasks.named("publishGithub")
+                    accessToken = providers.environmentVariable("GITHUB_TOKEN").getOrElse("")
+                    repository = github_repo
+                    commitish = grgitService.service.get().grgit.branch.current().name
+                    tagName = "v${mod_version}-${project.name}"
                     additionalFiles.from(sourcesJar.archiveFile)
+                    String versions = "## Minecraft Versions\n"
+                    project.property("release_game_versions_${project.name}").split(",").each {
+                        versions = "${versions}\n- ${it}"
+                    }
+                    changelog = versions + "\n\n## Changelog\n\n" + versionChangelog()
                 }
                 modrinth {
-                    dryRun = providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
-                    accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+                    accessToken = providers.environmentVariable("MODRINTH_TOKEN").getOrElse("")
                     projectId = modrinth_id
                     minecraftVersions.addAll(project.property("release_game_versions_${project.name}").split(","))
                     changelog = versionChangelog()
@@ -78,12 +87,11 @@ subprojects {
                             embeds { id = mrId }
                         }
                     }
-                    // Sync Modrinth description with GitHub README
-                    projectDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText
+                    // Sync Modrinth description with README
+                    projectDescription = rootProject.file("README.md").text
                 }
                 curseforge {
-                    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
-                    accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+                    accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").getOrElse("")
                     projectId = curseforge_id
                     projectSlug = curseforge_slug
                     minecraftVersions.addAll(project.property("release_game_versions_${project.name}").split(","))
@@ -110,31 +118,22 @@ subprojects {
                     }
                 }
             }
+            tasks.named("publishGithub") {
+                it.onlyIf {
+                    return it["dryRun"].get() || !providers.environmentVariable("GITHUB_TOKEN").getOrElse("").isBlank()
+                }
+            }
+            tasks.named("publishModrinth") {
+                it.onlyIf {
+                    return it["dryRun"].get() || !providers.environmentVariable("MODRINTH_TOKEN").getOrElse("").isBlank()
+                }
+            }
+            tasks.named("publishCurseforge") {
+                it.onlyIf {
+                    return it["dryRun"].get() || !providers.environmentVariable("CURSEFORGE_TOKEN").getOrElse("").isBlank()
+                }
+            }
         }
-    }
-}
-
-publishMods {
-    // This task is necessary to allow publishing files from multiple 
-    // subprojects to a single GitHub release.
-    version = mod_version
-    type = me.modmuss50.mpp.ReleaseType.of(release_type)
-    github {
-        dryRun = providers.environmentVariable("GITHUB_TOKEN").getOrNull() == null
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        repository = github_repo
-        commitish = grgitService.service.get().grgit.branch.current().name
-        tagName = "v${mod_version}"
-        allowEmptyFiles = true
-        // Include compatible MC version lists in description
-        String versions = "## MC versions\n\n"
-        if (project.hasProperty("release_game_versions_fabric"))
-            versions = String.format("%s - Fabric: %s\n", versions,
-                    project.property("release_game_versions_fabric"))
-        if (project.hasProperty("release_game_versions_neoforge"))
-            versions = String.format("%s - NeoForge: %s\n", versions,
-                    project.property("release_game_versions_neoforge"))
-        changelog = versions + "\n\n## Changelog\n\n" + versionChangelog()
     }
 }
 
@@ -144,19 +143,16 @@ String versionChangelog() {
     if ("${mod_version}".startsWith(lines.get(2).substring(3))) {
         for (int i = 4; i < lines.size(); i++) {
             String line = lines.get(i)
-            if (line.isBlank()) {
-                // pass
-            } else if (line.startsWith("## ")) {
+            if (line.startsWith("## ")) {
                 break
-            }
-            else {
+            } else if (!line.isBlank()) {
                 if (!builder.isEmpty()) builder.append("\n")
                 builder.append(line)
             }
         }
     } else {
         throw new IllegalArgumentException(
-                String.format("Mod version '%s' does not start with changelog version '%s'", 
+                String.format("Mod version '%s' does not start with changelog version '%s'",
                         mod_version, lines.get(2).substring(3)))
     }
     return builder.toString()

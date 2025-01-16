@@ -126,7 +126,7 @@ processResources {
             "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
             "modmenu_versions_fabric_list": asJsonList(modmenu_versions_fabric),
     ]
-    filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json", "assets/"+mod_id+"/lang/*.json"]) {
+    filesMatching(["pack.mcmeta", "*.mod.json", "META-INF/*mods.toml", "*.mixins.json"]) {
         expand expandProps
     }
     inputs.properties(expandProps)
