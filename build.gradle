@@ -7,6 +7,7 @@ plugins {
 }
 
 subprojects {
+    mod_version = "${mod_version}+${minecraft_version}"
     version = mod_version
     group = mod_group
 
@@ -140,7 +141,7 @@ subprojects {
 String versionChangelog() {
     List<String> lines = rootProject.file("CHANGELOG.md").readLines()
     StringBuilder builder = new StringBuilder()
-    if ("${mod_version}".startsWith(lines.get(2).substring(3))) {
+    if ("${mod_version}" == lines.get(2).substring(3)) {
         for (int i = 4; i < lines.size(); i++) {
             String line = lines.get(i)
             if (line.startsWith("## ")) {
@@ -152,7 +153,7 @@ String versionChangelog() {
         }
     } else {
         throw new IllegalArgumentException(
-                String.format("Mod version '%s' does not start with changelog version '%s'",
+                String.format("Mod version '%s' does not match changelog version '%s'",
                         mod_version, lines.get(2).substring(3)))
     }
     return builder.toString()

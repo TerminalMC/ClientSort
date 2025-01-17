@@ -91,12 +91,12 @@ jar {
 processResources {
     def expandProps = [
             // Mod info
-            "mod_version": mod_version,
+            "mod_version": "${mod_version}+${minecraft_version}",
             "mod_group": mod_group,
             "mod_id": mod_id,
             "mod_name": mod_name,
             "mod_description": mod_description,
-            "mod_icon": "assets/" + mod_id + "/icon.png",
+            "mod_icon": "assets/${mod_id}/icon.png",
             "mod_owner": mod_owner,
             "mod_authors_list": asJsonList(mod_authors),
             "mod_contributors_list": asJsonList(mod_contributors),
