@@ -60,7 +60,12 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     }
 
     public int getScope(Slot slot, boolean preferSmallerScopes) {
-        if (slot.container == null || ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize() || !slot.mayPlace(ItemStack.EMPTY)) {
+        if (!slot.mayPlace(ItemStack.EMPTY)) {
+            // Removed checks:
+            // slot.container == null 
+            // (always false)
+            // ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize()
+            // (prevents compatibility with Traveler's Backpack)
             return INVALID_SCOPE;
         }
         if (screen instanceof EffectRenderingInventoryScreen) {
