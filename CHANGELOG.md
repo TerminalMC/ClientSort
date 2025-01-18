@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3-beta.2
+
+- Fixed version metadata
+
 ## 1.1.3-beta.1
 
 - Removed a guard condition preventing compatibility with Traveler's Backpack
