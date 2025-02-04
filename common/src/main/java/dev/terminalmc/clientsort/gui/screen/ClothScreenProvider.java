@@ -60,7 +60,7 @@ public class ClothScreenProvider {
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.defaultInteractionRateServer)
+                .setDefaultValue(Config.Options.interactionRateServerDefault)
                 .setSaveConsumer(val -> options.interactionRateServer = val)
                 .build());
 
@@ -74,7 +74,7 @@ public class ClothScreenProvider {
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.defaultInteractionRateClient)
+                .setDefaultValue(Config.Options.interactionRateClientDefault)
                 .setSaveConsumer(val -> options.interactionRateClient = val)
                 .build());
 
@@ -85,7 +85,7 @@ public class ClothScreenProvider {
                 .setTooltipSupplier(val -> Optional.of(new Component[]{
                         localized("hotbarMode", val.lowerName() + ".tooltip")
                 }))
-                .setDefaultValue(Config.Options.defaultHotbarMode)
+                .setDefaultValue(Config.Options.hotbarModeDefault)
                 .setSaveConsumer(val -> options.hotbarMode = val)
                 .build());
 
@@ -96,14 +96,14 @@ public class ClothScreenProvider {
                 .setTooltipSupplier(val -> Optional.of(new Component[]{
                         localized("extraSlotMode", val.lowerName() + ".tooltip")
                 }))
-                .setDefaultValue(Config.Options.defaultExtraSlotMode)
+                .setDefaultValue(Config.Options.extraSlotModeDefault)
                 .setSaveConsumer(val -> options.extraSlotMode = val)
                 .build());
 
         general.addEntry(eb.startBooleanToggle(localized("option", "lmbBundle"),
                         options.lmbBundle)
                 .setTooltip(localized("option", "lmbBundle.tooltip"))
-                .setDefaultValue(Config.Options.defaultLmbBundle)
+                .setDefaultValue(Config.Options.lmbBundleDefault)
                 .setSaveConsumer(val -> {
                     options.lmbBundle = val;
                     if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
@@ -115,34 +115,34 @@ public class ClothScreenProvider {
         sort.addEntry(eb.startSelector(localized("option", "sortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.sortModeStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.defaultSortMode)
+                .setDefaultValue(Config.Options.sortModeDefault)
                 .setSaveConsumer(val -> options.sortModeStr = (String)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "shiftSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.shiftSortModeStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.defaultShiftSortMode)
+                .setDefaultValue(Config.Options.shiftSortModeDefault)
                 .setSaveConsumer(val -> options.shiftSortModeStr = (String)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "ctrlSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.ctrlSortModeStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.defaultCtrlSortMode)
+                .setDefaultValue(Config.Options.ctrlSortModeDefault)
                 .setSaveConsumer(val -> options.ctrlSortModeStr = (String)val)
                 .build());
 
         sort.addEntry(eb.startSelector(localized("option", "altSortMode"),
                         SortMode.SORT_MODES.keySet().toArray(), options.altSortModeStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.defaultAltSortMode)
+                .setDefaultValue(Config.Options.altSortModeDefault)
                 .setSaveConsumer(val -> options.altSortModeStr = (String)val)
                 .build());
 
         sort.addEntry(eb.startBooleanToggle(localized("option", "optimizedCreativeSorting"),
                         options.optimizedCreativeSorting)
-                .setDefaultValue(Config.Options.defaultOptimizedCreativeSorting)
+                .setDefaultValue(Config.Options.optimizedCreativeSortingDefault)
                 .setSaveConsumer(val -> {
                     options.optimizedCreativeSorting = val;
                     if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();

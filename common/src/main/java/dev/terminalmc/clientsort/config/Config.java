@@ -45,17 +45,17 @@ public class Config {
 
     public static class Options {
         // General
-        public static final int defaultInteractionRateServer = 10;
-        public int interactionRateServer = defaultInteractionRateServer;
+        public static final int interactionRateServerDefault = 10;
+        public int interactionRateServer = interactionRateServerDefault;
 
-        public static final int defaultInteractionRateClient = 1;
-        public int interactionRateClient = defaultInteractionRateClient;
+        public static final int interactionRateClientDefault = 1;
+        public int interactionRateClient = interactionRateClientDefault;
 
-        public static final HotbarMode defaultHotbarMode = HotbarMode.HARD;
-        public HotbarMode hotbarMode = defaultHotbarMode;
+        public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
+        public HotbarMode hotbarMode = hotbarModeDefault;
 
-        public static final ExtraSlotMode defaultExtraSlotMode = ExtraSlotMode.NONE;
-        public ExtraSlotMode extraSlotMode = defaultExtraSlotMode;
+        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
+        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
 
         public enum HotbarMode {
             NONE,
@@ -85,28 +85,28 @@ public class Config {
             }
         }
 
-        public static final boolean defaultLmbBundle = false;
-        public boolean lmbBundle = defaultLmbBundle;
+        public static final boolean lmbBundleDefault = false;
+        public boolean lmbBundle = lmbBundleDefault;
 
         // Sorting
-        public static final String defaultSortMode = SortMode.CREATIVE.name;
-        public String sortModeStr = defaultSortMode;
+        public static final String sortModeDefault = SortMode.CREATIVE.name;
+        public String sortModeStr = sortModeDefault;
         public transient SortMode sortMode;
 
-        public static final String defaultShiftSortMode = SortMode.QUANTITY.name;
-        public String shiftSortModeStr = defaultShiftSortMode;
+        public static final String shiftSortModeDefault = SortMode.QUANTITY.name;
+        public String shiftSortModeStr = shiftSortModeDefault;
         public transient SortMode shiftSortMode;
 
-        public static final String defaultCtrlSortMode = SortMode.ALPHABET.name;
-        public String ctrlSortModeStr = defaultCtrlSortMode;
+        public static final String ctrlSortModeDefault = SortMode.ALPHABET.name;
+        public String ctrlSortModeStr = ctrlSortModeDefault;
         public transient SortMode ctrlSortMode;
 
-        public static final String defaultAltSortMode = SortMode.RAW_ID.name;
-        public String altSortModeStr = defaultAltSortMode;
+        public static final String altSortModeDefault = SortMode.RAW_ID.name;
+        public String altSortModeStr = altSortModeDefault;
         public transient SortMode altSortMode;
 
-        public static final boolean defaultOptimizedCreativeSorting = true;
-        public boolean optimizedCreativeSorting = defaultOptimizedCreativeSorting;
+        public static final boolean optimizedCreativeSortingDefault = true;
+        public boolean optimizedCreativeSorting = optimizedCreativeSortingDefault;
     }
 
     // Cleanup
