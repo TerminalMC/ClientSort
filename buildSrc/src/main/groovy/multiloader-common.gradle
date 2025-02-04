@@ -100,8 +100,8 @@ processResources {
             "mod_owner": mod_owner,
             "mod_authors_list": asJsonList(mod_authors),
             "mod_authors_string": mod_authors.split(",").join(", "),
-            "mod_contributors_list": asJsonList("${mod_contributors},${mod_translators}"),
-            "mod_contributors_string": "${mod_contributors},${mod_translators}".split(",").join(", "),
+            "mod_contributors_list": asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_contributors_string": "${mod_contributors},${mod_translators},${mod_credits}".split(",").join(", "),
             "mod_license": mod_license,
             // Links
             "homepage_url": homepage_url,
