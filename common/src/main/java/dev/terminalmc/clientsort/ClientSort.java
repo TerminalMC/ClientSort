@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -32,7 +33,7 @@ public class ClientSort {
     public static final KeyMapping SORT_KEY = new KeyMapping(
             translationKey("key", "group.sort"), InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
-
+    
     public static boolean searchOrderUpdated = false;
 
     public static boolean emiReloading = false;
@@ -51,5 +52,10 @@ public class ClientSort {
         options.shiftSortMode = SortMode.SORT_MODES.get(options.shiftSortModeStr);
         options.ctrlSortMode = SortMode.SORT_MODES.get(options.ctrlSortModeStr);
         options.altSortMode = SortMode.SORT_MODES.get(options.altSortModeStr);
+        if (Minecraft.getInstance().getSingleplayerServer() == null) {
+            InteractionManager.setTickRate(options.interactionRateServer);
+        } else {
+            InteractionManager.setTickRate(options.interactionRateClient);
+        }
     }
 }
