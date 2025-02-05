@@ -17,10 +17,11 @@
 
 package dev.terminalmc.clientsort.inventory.sort;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.compat.itemlocks.ItemLocksWrapper;
-import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.network.InteractionManager;
+import dev.terminalmc.clientsort.util.SoundUtil;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -30,6 +31,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+
+import static dev.terminalmc.clientsort.config.Config.options;
 
 public class InventorySorter {
     private final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
@@ -74,7 +77,7 @@ public class InventorySorter {
             if (stack.isEmpty()) continue;
             int stackSize = stack.getCount();
             if (stackSize >= stack.getItem().getDefaultMaxStackSize()) continue;
-            clickEvents.add(screenHelper.createClickEvent(inventorySlots[i], 0, ClickType.PICKUP));
+            clickEvents.add(screenHelper.createClickEvent(inventorySlots[i], 0, ClickType.PICKUP, false));
             for (int j = 0; j < i; j++) {
                 ItemStack targetStack = stacks[j];
                 if (targetStack.isEmpty()) continue;
@@ -84,7 +87,7 @@ public class InventorySorter {
                     delta = Math.min(delta, stackSize);
                     stackSize -= delta;
                     targetStack.setCount(targetStack.getCount() + delta);
-                    clickEvents.add(screenHelper.createClickEvent(inventorySlots[j], 0, ClickType.PICKUP));
+                    clickEvents.add(screenHelper.createClickEvent(inventorySlots[j], 0, ClickType.PICKUP, false));
                     if (stackSize <= 0) break;
                 }
             }
@@ -96,7 +99,7 @@ public class InventorySorter {
             InteractionManager.triggerSend(InteractionManager.TriggerType.GUI_CONFIRM);
             clickEvents.clear();
             if (stackSize > 0) {
-                InteractionManager.push(screenHelper.createClickEvent(inventorySlots[i], 0, ClickType.PICKUP));
+                InteractionManager.push(screenHelper.createClickEvent(inventorySlots[i], 0, ClickType.PICKUP, false));
                 stack.setCount(stackSize);
             } else {
                 stacks[i] = ItemStack.EMPTY;
@@ -116,11 +119,37 @@ public class InventorySorter {
         }
 
         sortIds = sortMode.sort(sortIds, stacks, new SortContext(containerScreen, Arrays.asList(inventorySlots)));
-
-        this.sortOnClient(sortIds);
+        
+        boolean playSound = options().soundEnabled && options().soundVolume > 0;
+        if (playSound) SoundUtil.reset(getSoundCount());
+        
+        this.sortOnClient(sortIds, playSound);
+    }
+    
+    private int getSoundCount() {
+        // We want the pitch to reach maximum as sorting finishes, so we
+        // do a quick calculation to estimate the rough number of operations
+        int stackCount = 0;
+        for (ItemStack stack : stacks) {
+            if (stack != ItemStack.EMPTY) {
+                stackCount++;
+            }
+        }
+        int compaction = 0;
+        for (int i = 0; i < stackCount; i++) {
+            if (stacks[i] == ItemStack.EMPTY) {
+                compaction++;
+            }
+        }
+        int size = stackCount + compaction;
+        
+        // Roughly compensate for swaps requiring multiple operations
+        size += size / 15;
+        
+        return size;
     }
 
-    protected void sortOnClient(int[] sortedIds) {
+    protected void sortOnClient(int[] sortedIds, boolean playSound) {
         ItemStack currentStack;
         final int slotCount = stacks.length;
 
@@ -167,7 +196,7 @@ public class InventorySorter {
             Item temp = backingStacks[sortedIds[i]];
             backingStacks[sortedIds[i]] = carriedItem;
             carriedItem = temp;
-            InteractionManager.push(screenHelper.createClickEvent(inventorySlots[sortedIds[i]], 0, ClickType.PICKUP));
+            InteractionManager.push(screenHelper.createClickEvent(inventorySlots[sortedIds[i]], 0, ClickType.PICKUP, playSound));
             doneSlashEmpty.set(slotCount + sortedIds[i]); // Mark the origin slot as empty (because we picked the stack up, duh)
             currentStack = stacks[sortedIds[i]]; // Save the stack we're currently working with
             Slot workingSlot = inventorySlots[sortedIds[i]]; // A slot that we can use when fiddling around with swapping stacks
@@ -191,11 +220,11 @@ public class InventorySorter {
                         temp = backingStacks[id];
                         backingStacks[id] = carriedItem;
                         carriedItem = temp;
-                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP));
-                        InteractionManager.push(screenHelper.createClickEvent(targetSlot, 0, ClickType.PICKUP));
-                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP));
-                        InteractionManager.push(screenHelper.createClickEvent(targetSlot, 0, ClickType.PICKUP));
-                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP));
+                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP, playSound));
+                        InteractionManager.push(screenHelper.createClickEvent(targetSlot, 0, ClickType.PICKUP, playSound));
+                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP, playSound));
+                        InteractionManager.push(screenHelper.createClickEvent(targetSlot, 0, ClickType.PICKUP, playSound));
+                        InteractionManager.push(screenHelper.createClickEvent(workingSlot, 0, ClickType.PICKUP, playSound));
 
                         currentStack = stacks[id];
                         doneSlashEmpty.set(id); // mark the current target as done
@@ -206,15 +235,15 @@ public class InventorySorter {
 
                 // swap the current stack with the target stack
                 if (
-                        Config.options().lmbBundle
+                        options().lmbBundle
                         && (
                                 (backingStacks[id] instanceof BundleItem && !(carriedItem instanceof AirItem))
                                 || (carriedItem instanceof BundleItem && !(backingStacks[id] instanceof AirItem))
                         )
                 ) {
-                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 1, ClickType.PICKUP));
+                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 1, ClickType.PICKUP, playSound));
                 } else {
-                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 0, ClickType.PICKUP));
+                    InteractionManager.push(screenHelper.createClickEvent(inventorySlots[id], 0, ClickType.PICKUP, playSound));
                 }
                 temp = backingStacks[id];
                 backingStacks[id] = carriedItem;

@@ -47,8 +47,8 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         return new ContainerScreenHelper<>(screen, clickEventFactory);
     }
 
-    public InteractionManager.InteractionEvent createClickEvent(Slot slot, int action, ClickType actionType) {
-        return clickEventFactory.create(slot, action, actionType);
+    public InteractionManager.InteractionEvent createClickEvent(Slot slot, int action, ClickType actionType, boolean playSound) {
+        return clickEventFactory.create(slot, action, actionType, playSound);
     }
 
     public boolean isHotbarSlot(Slot slot) {
@@ -63,9 +63,9 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         if (!slot.mayPlace(ItemStack.EMPTY)) {
             // Removed checks:
             // slot.container == null 
-            // (always false)
+            //     (always false)
             // ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize()
-            // (prevents compatibility with Traveler's Backpack)
+            //     (prevents compatibility with Traveler's Backpack)
             return INVALID_SCOPE;
         }
         if (screen instanceof EffectRenderingInventoryScreen) {

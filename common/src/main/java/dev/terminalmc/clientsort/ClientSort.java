@@ -23,6 +23,7 @@ import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 
 import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
@@ -52,10 +53,15 @@ public class ClientSort {
         options.shiftSortMode = SortMode.SORT_MODES.get(options.shiftSortModeStr);
         options.ctrlSortMode = SortMode.SORT_MODES.get(options.ctrlSortModeStr);
         options.altSortMode = SortMode.SORT_MODES.get(options.altSortModeStr);
+        options.sortSoundLoc = ResourceLocation.tryParse(options.sortSound);
+        setInteractionManagerTickRate(config);
+    }
+    
+    public static void setInteractionManagerTickRate(Config config) {
         if (Minecraft.getInstance().getSingleplayerServer() == null) {
-            InteractionManager.setTickRate(options.interactionRateServer);
+            InteractionManager.setTickRate(config.options.interactionRateServer);
         } else {
-            InteractionManager.setTickRate(options.interactionRateClient);
+            InteractionManager.setTickRate(config.options.interactionRateClient);
         }
     }
 }

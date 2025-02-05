@@ -4,6 +4,7 @@
 
 - Fixed version metadata
 - Fixed a bug causing multiplayer sort rate to be used in singleplayer
+- Added optional sorting sounds
 
 ## 1.1.3-beta.1
 

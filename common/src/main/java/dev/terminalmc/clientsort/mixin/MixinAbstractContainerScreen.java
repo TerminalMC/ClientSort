@@ -24,6 +24,7 @@ import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.inventory.sort.InventorySorter;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
 import dev.terminalmc.clientsort.network.InteractionManager;
+import dev.terminalmc.clientsort.util.SoundUtil;
 import dev.terminalmc.clientsort.util.inject.IContainerScreen;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
@@ -101,10 +102,11 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Unique
     private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
-            () -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType) -> new InteractionManager.CallbackEvent(() -> {
+            () -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType, sound) -> new InteractionManager.CallbackEvent(() -> {
                 slotClicked(slot, ((ISlot) slot).mouseWheelie_getIdInContainer(), data, slotActionType);
+                if (sound) SoundUtil.play();
                 return InteractionManager.TICK_WAITER;
-            }, true))
+            }))
     );
 
     @SuppressWarnings("ConstantConditions")

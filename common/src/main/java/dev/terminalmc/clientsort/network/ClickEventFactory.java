@@ -21,5 +21,5 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 
 public interface ClickEventFactory {
-    InteractionManager.InteractionEvent create(Slot slot, int action, ClickType slotActionType);
+    InteractionManager.InteractionEvent create(Slot slot, int action, ClickType slotActionType, boolean playSound);
 }

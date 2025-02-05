@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,6 +108,26 @@ public class Config {
 
         public static final boolean optimizedCreativeSortingDefault = true;
         public boolean optimizedCreativeSorting = optimizedCreativeSortingDefault;
+        
+        // Sounds
+        public static final boolean soundEnabledDefault = false;
+        public boolean soundEnabled = soundEnabledDefault;
+        
+        public static final String sortSoundDefault = "minecraft:block.note_block.xylophone";
+        public String sortSound = sortSoundDefault;
+        public transient @Nullable ResourceLocation sortSoundLoc = null;
+        
+        public static final int soundRateDefault = 1;
+        public int soundRate = soundRateDefault;
+        
+        public static final float soundMinPitchDefault = 0.5F;
+        public float soundMinPitch = soundMinPitchDefault;
+
+        public static final float soundMaxPitchDefault = 2.0F;
+        public float soundMaxPitch = soundMaxPitchDefault;
+        
+        public static final float soundVolumeDefault = 0.2F;
+        public float soundVolume = soundVolumeDefault;
     }
 
     // Cleanup

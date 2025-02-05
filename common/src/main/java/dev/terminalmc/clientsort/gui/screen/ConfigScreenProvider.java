@@ -23,7 +23,7 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 
-import static dev.terminalmc.clientsort.util.mod.Localization.localized;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 /**
  * Wraps the config screen implementation and provides a backup screen for

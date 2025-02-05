@@ -22,12 +22,14 @@ import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
-import static dev.terminalmc.clientsort.util.mod.Localization.localized;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClothScreenProvider {
     /**
@@ -147,6 +149,80 @@ public class ClothScreenProvider {
                     options.optimizedCreativeSorting = val;
                     if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
                 })
+                .build());
+
+        ConfigCategory sound = builder.getOrCreateCategory(localized("option", "sound"));
+
+        sound.addEntry(eb.startBooleanToggle(localized("option", "soundEnabled"),
+                        options.soundEnabled)
+                .setDefaultValue(Config.Options.soundEnabledDefault)
+                .setSaveConsumer(val -> options.soundEnabled = val)
+                .build());
+
+        sound.addEntry(eb.startStrField(localized("option", "sortSound"), 
+                        options.sortSound)
+                .setDefaultValue(Config.Options.sortSoundDefault)
+                .setSaveConsumer(val -> options.sortSound = val)
+                .setErrorSupplier(val -> {
+                    if (ResourceLocation.tryParse(val) == null) return Optional.of(
+                            localized("option", "error.resourceLocation.parse"));
+                    else return Optional.empty();
+                })
+                .build());
+
+        sound.addEntry(eb.startIntField(localized("option", "soundRate"), 
+                        options.soundRate)
+                .setTooltip(localized("option", "soundRate.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < 1) return Optional.of(
+                            localized("option", "error.low"));
+                    else if (val > 100) return Optional.of(
+                            localized("option", "error.high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.soundRateDefault)
+                .setSaveConsumer(val -> options.soundRate = val)
+                .build());
+
+        sound.addEntry(eb.startFloatField(localized("option", "soundMinPitch"),
+                        options.soundMinPitch)
+                .setTooltip(localized("option", "soundMinPitch.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < 0.5) return Optional.of(
+                            localized("option", "error.low"));
+                    else if (val > options.soundMaxPitch) return Optional.of(
+                            localized("option", "error.high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.soundMinPitchDefault)
+                .setSaveConsumer(val -> options.soundMinPitch = val)
+                .build());
+
+        sound.addEntry(eb.startFloatField(localized("option", "soundMaxPitch"),
+                        options.soundMaxPitch)
+                .setTooltip(localized("option", "soundMaxPitch.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < options.soundMinPitch) return Optional.of(
+                            localized("option", "error.low"));
+                    else if (val > 2) return Optional.of(
+                            localized("option", "error.high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.soundMaxPitchDefault)
+                .setSaveConsumer(val -> options.soundMaxPitch = val)
+                .build());
+
+        sound.addEntry(eb.startFloatField(localized("option", "soundVolume"),
+                        options.soundVolume)
+                .setErrorSupplier(val -> {
+                    if (val < 0.0F) return Optional.of(
+                            localized("option", "error.low"));
+                    else if (val > 1.0F) return Optional.of(
+                            localized("option", "error.high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.soundVolumeDefault)
+                .setSaveConsumer(val -> options.soundVolume = val)
                 .build());
 
         return builder.build();

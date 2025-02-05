@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.util.mod;
+package dev.terminalmc.clientsort.util;
 
 import dev.terminalmc.clientsort.ClientSort;
 import net.minecraft.network.chat.Component;

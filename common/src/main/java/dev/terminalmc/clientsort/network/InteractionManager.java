@@ -34,7 +34,6 @@ public class InteractionManager {
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
     private static ScheduledFuture<?> tickFuture;
 
-
     public static final Waiter TICK_WAITER = (TriggerType triggerType) -> triggerType == TriggerType.TICK;
 
 
@@ -80,14 +79,6 @@ public class InteractionManager {
     }
 
     private static void doSendEvent(InteractionEvent event) {
-        if (event.shouldRunOnMainThread()) {
-            runOnMainThread(event);
-        } else {
-            waiter = event.send();
-        }
-    }
-
-    private static void runOnMainThread(InteractionEvent event) {
         Waiter blockingWaiter = tt -> false;
         waiter = blockingWaiter;
         Minecraft.getInstance().execute(() -> {
@@ -156,9 +147,6 @@ public class InteractionManager {
          * @return the number of inventory packets to wait for
          */
         Waiter send();
-        default boolean shouldRunOnMainThread() {
-            return false;
-        }
     }
 
     public static class ClickEvent implements InteractionEvent {
@@ -185,30 +173,18 @@ public class InteractionManager {
             Minecraft.getInstance().gameMode.handleInventoryMouseClick(containerSyncId, slotId, buttonId, slotAction, Minecraft.getInstance().player);
             return waiter;
         }
-
-        @Override
-        public boolean shouldRunOnMainThread() {
-            return true;
-        }
     }
 
     public static class CallbackEvent implements InteractionEvent {
         private final Supplier<Waiter> callback;
-        private final boolean shouldRunOnMainThread;
 
-        public CallbackEvent(Supplier<Waiter> callback, boolean shouldRunOnMainThread) {
+        public CallbackEvent(Supplier<Waiter> callback) {
             this.callback = callback;
-            this.shouldRunOnMainThread = shouldRunOnMainThread;
         }
 
         @Override
         public Waiter send() {
             return callback.get();
-        }
-
-        @Override
-        public boolean shouldRunOnMainThread() {
-            return shouldRunOnMainThread;
         }
     }
 }

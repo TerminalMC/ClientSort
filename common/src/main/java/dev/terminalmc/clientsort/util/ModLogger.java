@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.util.mod;
+package dev.terminalmc.clientsort.util;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

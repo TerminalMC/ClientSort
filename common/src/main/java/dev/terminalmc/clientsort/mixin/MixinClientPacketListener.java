@@ -18,6 +18,7 @@
 package dev.terminalmc.clientsort.mixin;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
@@ -32,8 +33,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static dev.terminalmc.clientsort.config.Config.options;
-
 @Mixin(ClientPacketListener.class)
 public abstract class MixinClientPacketListener extends ClientCommonPacketListenerImpl {
     protected MixinClientPacketListener(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
@@ -43,11 +42,7 @@ public abstract class MixinClientPacketListener extends ClientCommonPacketListen
     @Inject(method = "handleLogin", at = @At("HEAD"))
     private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         ClientSort.searchOrderUpdated = false;
-        if (Minecraft.getInstance().getSingleplayerServer() == null) {
-            InteractionManager.setTickRate(options().interactionRateServer);
-        } else {
-            InteractionManager.setTickRate(options().interactionRateClient);
-        }
+        ClientSort.setInteractionManagerTickRate(Config.get());
     }
 
     @Inject(method = "handleSetCarriedItem", at = @At("HEAD"))

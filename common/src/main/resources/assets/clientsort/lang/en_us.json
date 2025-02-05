@@ -23,6 +23,17 @@
   "option.clientsort.altSortMode": "Alt Sort Mode",
   "option.clientsort.optimizedCreativeSorting": "Optimized Creative Sorting",
 
+  "option.clientsort.sound": "Sound",
+  "option.clientsort.soundEnabled": "Sound Enabled",
+  "option.clientsort.sortSound": "Sorting Sound",
+  "option.clientsort.soundRate": "Sound Rate",
+  "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
+  "option.clientsort.soundMinPitch": "Minimum Pitch",
+  "option.clientsort.soundMaxPitch": "Maximum Pitch",
+  "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
+  "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
+  "option.clientsort.soundVolume": "Volume",
+
   "hotbarMode.clientsort.merge": "Merge",
   "hotbarMode.clientsort.merge.tooltip": "Hotbar will be treated as part of the main inventory",
   "hotbarMode.clientsort.split": "Split",
@@ -44,5 +55,6 @@
   "sortOrder.clientsort.rawId": "Raw ID",
 
   "option.clientsort.error.low": "Too low",
-  "option.clientsort.error.high": "Too high"
+  "option.clientsort.error.high": "Too high",
+  "option.clientsort.error.resourceLocation.parse": "Invalid resource location"
 }
