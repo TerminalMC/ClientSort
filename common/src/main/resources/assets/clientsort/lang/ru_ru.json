@@ -23,6 +23,17 @@
   "option.clientsort.altSortMode": "Режим сортировки по Alt",
   "option.clientsort.optimizedCreativeSorting": "Оптимизированная творческая сортировка",
 
+  "option.clientsort.sound": "Sound",
+  "option.clientsort.soundEnabled": "Sound Enabled",
+  "option.clientsort.sortSound": "Sorting Sound",
+  "option.clientsort.soundRate": "Sound Rate",
+  "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
+  "option.clientsort.soundMinPitch": "Minimum Pitch",
+  "option.clientsort.soundMaxPitch": "Maximum Pitch",
+  "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
+  "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
+  "option.clientsort.soundVolume": "Volume",
+
   "hotbarMode.clientsort.merge": "Слияние",
   "hotbarMode.clientsort.merge.tooltip": "Панель быстрого доступа будет рассматриваться как часть основного инвентаря",
   "hotbarMode.clientsort.split": "Разделение",
@@ -44,5 +55,6 @@
   "sortOrder.clientsort.rawId": "Необработанные идентификаторы",
 
   "option.clientsort.error.low": "Слишком низко",
-  "option.clientsort.error.high": "Слишком высоко"
+  "option.clientsort.error.high": "Слишком высоко",
+  "option.clientsort.error.resourceLocation.parse": "Invalid resource location"
 }

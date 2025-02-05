@@ -23,6 +23,17 @@
   "option.clientsort.altSortMode": "Alt 键整理模式",
   "option.clientsort.optimizedCreativeSorting": "优化创造模式排序",
 
+  "option.clientsort.sound": "Sound",
+  "option.clientsort.soundEnabled": "Sound Enabled",
+  "option.clientsort.sortSound": "Sorting Sound",
+  "option.clientsort.soundRate": "Sound Rate",
+  "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
+  "option.clientsort.soundMinPitch": "Minimum Pitch",
+  "option.clientsort.soundMaxPitch": "Maximum Pitch",
+  "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
+  "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
+  "option.clientsort.soundVolume": "Volume",
+
   "hotbarMode.clientsort.merge": "合并",
   "hotbarMode.clientsort.merge.tooltip": "快捷栏会被视作背包的一部分",
   "hotbarMode.clientsort.split": "分离",
@@ -44,5 +55,6 @@
   "sortOrder.clientsort.rawId": "原 ID",
 
   "option.clientsort.error.low": "过低",
-  "option.clientsort.error.high": "过高"
+  "option.clientsort.error.high": "过高",
+  "option.clientsort.error.resourceLocation.parse": "Invalid resource location"
 }

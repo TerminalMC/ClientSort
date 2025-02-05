@@ -23,6 +23,17 @@
   "option.clientsort.altSortMode": "Режим сортування з Alt",
   "option.clientsort.optimizedCreativeSorting": "Оптимізоване сортування в творчому режимі",
 
+  "option.clientsort.sound": "Sound",
+  "option.clientsort.soundEnabled": "Sound Enabled",
+  "option.clientsort.sortSound": "Sorting Sound",
+  "option.clientsort.soundRate": "Sound Rate",
+  "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
+  "option.clientsort.soundMinPitch": "Minimum Pitch",
+  "option.clientsort.soundMaxPitch": "Maximum Pitch",
+  "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
+  "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
+  "option.clientsort.soundVolume": "Volume",
+
   "hotbarMode.clientsort.merge": "Об'єднати",
   "hotbarMode.clientsort.merge.tooltip": "Панель швидкого доступу буде вважатися частиною основного інвентаря",
   "hotbarMode.clientsort.split": "Розділити",
@@ -44,5 +55,6 @@
   "sortOrder.clientsort.rawId": "За Raw ID",
 
   "option.clientsort.error.low": "Занадто низько",
-  "option.clientsort.error.high": "Занадто високо"
+  "option.clientsort.error.high": "Занадто високо",
+  "option.clientsort.error.resourceLocation.parse": "Invalid resource location"
 }
