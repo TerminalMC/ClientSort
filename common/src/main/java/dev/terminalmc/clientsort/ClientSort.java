@@ -19,12 +19,11 @@ package dev.terminalmc.clientsort;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.sort.SortMode;
-import dev.terminalmc.clientsort.network.InteractionManager;
-import dev.terminalmc.clientsort.util.mod.ModLogger;
+import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
-import static dev.terminalmc.clientsort.util.mod.Localization.translationKey;
+import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
 public class ClientSort {
     public static final String MOD_ID = "clientsort";
@@ -47,14 +46,10 @@ public class ClientSort {
     }
 
     public static void onConfigSaved(Config config) {
-        if (Minecraft.getInstance().getSingleplayerServer() == null) {
-            InteractionManager.setTickRate(config.options.interactionRateServer);
-            config.options.sortMode = SortMode.SORT_MODES.get(config.options.sortModeStr);
-            config.options.shiftSortMode = SortMode.SORT_MODES.get(config.options.shiftSortModeStr);
-            config.options.ctrlSortMode = SortMode.SORT_MODES.get(config.options.ctrlSortModeStr);
-            config.options.altSortMode = SortMode.SORT_MODES.get(config.options.altSortModeStr);
-        } else {
-            InteractionManager.setTickRate(config.options.interactionRateClient);
-        }
+        Config.Options options = config.options;
+        options.sortMode = SortMode.SORT_MODES.get(options.sortModeStr);
+        options.shiftSortMode = SortMode.SORT_MODES.get(options.shiftSortModeStr);
+        options.ctrlSortMode = SortMode.SORT_MODES.get(options.ctrlSortModeStr);
+        options.altSortMode = SortMode.SORT_MODES.get(options.altSortModeStr);
     }
 }

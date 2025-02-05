@@ -3,6 +3,7 @@
 ## 1.1.3-beta.2
 
 - Fixed version metadata
+- Fixed a bug causing multiplayer sort rate to be used in singleplayer
 
 ## 1.1.3-beta.1
 
