@@ -23,18 +23,18 @@
   "option.clientsort.altSortMode": "Режим сортировки по Alt",
   "option.clientsort.optimizedCreativeSorting": "Оптимизированная творческая сортировка",
 
-  "option.clientsort.sound": "Sound",
-  "option.clientsort.soundEnabled": "Sound Enabled",
-  "option.clientsort.sortSound": "Sorting Sound",
-  "option.clientsort.soundRate": "Sound Rate",
-  "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
-  "option.clientsort.soundMinPitch": "Minimum Pitch",
-  "option.clientsort.soundMaxPitch": "Maximum Pitch",
-  "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
-  "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
-  "option.clientsort.soundVolume": "Volume",
-  "option.clientsort.soundAllowOverlap": "Allow Overlap",
-  "option.clientsort.soundAllowOverlap.tooltip": "Whether to allow the previous sound to continue when starting a new sound",
+  "option.clientsort.sound": "Звук",
+  "option.clientsort.soundEnabled": "Звук включён",
+  "option.clientsort.sortSound": "Сортировка звука",
+  "option.clientsort.soundRate": "Частота звука",
+  "option.clientsort.soundRate.tooltip": "Уменьшите, если нужно воспроизводить звуки быстрее",
+  "option.clientsort.soundMinPitch": "Минимальная высота звука",
+  "option.clientsort.soundMaxPitch": "Максимальная высота звука",
+  "option.clientsort.soundMaxPitch.tooltip": "Конечная высота звука сортировки",
+  "option.clientsort.soundMinPitch.tooltip": "Начальная высота звука сортировки",
+  "option.clientsort.soundVolume": "Громкость",
+  "option.clientsort.soundAllowOverlap": "Разрешить наложение",
+  "option.clientsort.soundAllowOverlap.tooltip": "Разрешить ли воспроизведение предыдущего звука при запуске нового звука",
 
   "hotbarMode.clientsort.merge": "Слияние",
   "hotbarMode.clientsort.merge.tooltip": "Панель быстрого доступа будет рассматриваться как часть основного инвентаря",
@@ -58,5 +58,5 @@
 
   "option.clientsort.error.low": "Слишком низко",
   "option.clientsort.error.high": "Слишком высоко",
-  "option.clientsort.error.resourceLocation.parse": "Invalid resource location"
+  "option.clientsort.error.resourceLocation.parse": "Недопустимое местоположение ресурса"
 }
