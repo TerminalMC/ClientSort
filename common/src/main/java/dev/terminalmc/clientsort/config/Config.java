@@ -46,6 +46,8 @@ public class Config {
 
     public static class Options {
         // General
+        public static final int interactionRateMin = 1;
+        public static final int interactionRateMax = 100;
         public static final int interactionRateServerDefault = 10;
         public int interactionRateServer = interactionRateServerDefault;
 
@@ -54,10 +56,6 @@ public class Config {
 
         public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
         public HotbarMode hotbarMode = hotbarModeDefault;
-
-        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
-        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
-
         public enum HotbarMode {
             NONE,
             HARD,
@@ -72,6 +70,8 @@ public class Config {
             }
         }
 
+        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
+        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
         public enum ExtraSlotMode {
             NONE,
             HOTBAR,
@@ -119,13 +119,17 @@ public class Config {
         
         public static final int soundRateDefault = 1;
         public int soundRate = soundRateDefault;
-        
+
+        public static final float soundPitchMin = 0.5F;
+        public static final float soundPitchMax = 2.0F;
         public static final float soundMinPitchDefault = 0.5F;
         public float soundMinPitch = soundMinPitchDefault;
 
         public static final float soundMaxPitchDefault = 2.0F;
         public float soundMaxPitch = soundMaxPitchDefault;
-        
+
+        public static final float soundVolumeMin = 0.0F;
+        public static final float soundVolumeMax = 1.0F;
         public static final float soundVolumeDefault = 0.2F;
         public float soundVolume = soundVolumeDefault;
 
@@ -136,7 +140,39 @@ public class Config {
     // Cleanup
 
     private void cleanup() {
-        // Called before config is saved
+        // interactionRateServer
+        if (options.interactionRateServer < Options.interactionRateMin)
+            options.interactionRateServer = Options.interactionRateMin;
+        if (options.interactionRateServer > Options.interactionRateMax)
+            options.interactionRateServer = Options.interactionRateMax;
+        // interactionRateClient
+        if (options.interactionRateClient < Options.interactionRateMin)
+            options.interactionRateClient = Options.interactionRateMin;
+        if (options.interactionRateClient > Options.interactionRateMax)
+            options.interactionRateClient = Options.interactionRateMax;
+        // soundRate
+        if (options.soundRate < Options.interactionRateMin)
+            options.soundRate = Options.interactionRateMin;
+        if (options.soundRate > Options.interactionRateMax)
+            options.soundRate = Options.interactionRateMax;
+        // soundMinPitch
+        if (options.soundMinPitch < Options.soundPitchMin)
+            options.soundMinPitch = Options.soundPitchMin;
+        if (options.soundMinPitch > Options.soundPitchMax)
+            options.soundMinPitch = Options.soundPitchMax;
+        // soundMaxPitch
+        if (options.soundMaxPitch < Options.soundPitchMin)
+            options.soundMaxPitch = Options.soundPitchMin;
+        if (options.soundMaxPitch > Options.soundPitchMax)
+            options.soundMaxPitch = Options.soundPitchMax;
+        // also validate against min pitch
+        if (options.soundMaxPitch < options.soundMinPitch)
+            options.soundMaxPitch = options.soundMinPitch;
+        // soundVolume
+        if (options.soundVolume < Options.soundVolumeMin)
+            options.soundVolume = Options.soundVolumeMin;
+        if (options.soundVolume > Options.soundVolumeMax)
+            options.soundVolume = Options.soundVolumeMax;
     }
 
     // Instance management

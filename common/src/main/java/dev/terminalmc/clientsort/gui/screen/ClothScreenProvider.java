@@ -55,9 +55,9 @@ public class ClothScreenProvider {
                         options.interactionRateServer)
                 .setTooltip(localized("option", "interactionRate.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 1) return Optional.of(
+                    if (val < Config.Options.interactionRateMin) return Optional.of(
                             localized("option", "error.low"));
-                    else if (val > 100) return Optional.of(
+                    else if (val > Config.Options.interactionRateMax) return Optional.of(
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
@@ -69,9 +69,9 @@ public class ClothScreenProvider {
                         options.interactionRateClient)
                 .setTooltip(localized("option", "interactionRate.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 1) return Optional.of(
+                    if (val < Config.Options.interactionRateMin) return Optional.of(
                             localized("option", "error.low"));
-                    else if (val > 100) return Optional.of(
+                    else if (val > Config.Options.interactionRateMax) return Optional.of(
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
@@ -173,9 +173,9 @@ public class ClothScreenProvider {
                         options.soundRate)
                 .setTooltip(localized("option", "soundRate.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 1) return Optional.of(
+                    if (val < Config.Options.interactionRateMin) return Optional.of(
                             localized("option", "error.low"));
-                    else if (val > 100) return Optional.of(
+                    else if (val > Config.Options.interactionRateMax) return Optional.of(
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
@@ -187,7 +187,7 @@ public class ClothScreenProvider {
                         options.soundMinPitch)
                 .setTooltip(localized("option", "soundMinPitch.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < 0.5) return Optional.of(
+                    if (val < Config.Options.soundPitchMin) return Optional.of(
                             localized("option", "error.low"));
                     else if (val > options.soundMaxPitch) return Optional.of(
                             localized("option", "error.high"));
@@ -203,7 +203,7 @@ public class ClothScreenProvider {
                 .setErrorSupplier(val -> {
                     if (val < options.soundMinPitch) return Optional.of(
                             localized("option", "error.low"));
-                    else if (val > 2) return Optional.of(
+                    else if (val > Config.Options.soundPitchMax) return Optional.of(
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
@@ -214,9 +214,9 @@ public class ClothScreenProvider {
         sound.addEntry(eb.startFloatField(localized("option", "soundVolume"),
                         options.soundVolume)
                 .setErrorSupplier(val -> {
-                    if (val < 0.0F) return Optional.of(
+                    if (val < Config.Options.soundVolumeMin) return Optional.of(
                             localized("option", "error.low"));
-                    else if (val > 1.0F) return Optional.of(
+                    else if (val > Config.Options.soundVolumeMax) return Optional.of(
                             localized("option", "error.high"));
                     else return Optional.empty();
                 })
