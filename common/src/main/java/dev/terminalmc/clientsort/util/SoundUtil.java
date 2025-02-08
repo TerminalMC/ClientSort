@@ -22,6 +22,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.config.Config.options;
 
@@ -29,6 +30,7 @@ public class SoundUtil {
     private static long time = Long.MIN_VALUE;
     private static float pitch = 1.0F;
     private static float increment = 0.01F;
+    private static @Nullable SoundInstance sound;
     
     public static void reset(int size) {
         increment = (options().soundMaxPitch - options().soundMinPitch) / size;
@@ -51,10 +53,14 @@ public class SoundUtil {
             time = now + options().soundRate;
             ResourceLocation location = options().sortSoundLoc;
             if (location != null) {
-                Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(
+                if (sound != null && !options().soundAllowOverlap) {
+                    Minecraft.getInstance().getSoundManager().stop(sound);
+                }
+                sound = new SimpleSoundInstance(
                         location, SoundSource.MASTER, options().soundVolume, soundPitch,
                         SoundInstance.createUnseededRandom(), false, 0,
-                        SoundInstance.Attenuation.NONE, 0, 0, 0, true));
+                        SoundInstance.Attenuation.NONE, 0, 0, 0, true);
+                Minecraft.getInstance().getSoundManager().play(sound);
             }
         }
     }
