@@ -33,6 +33,8 @@
   "option.clientsort.soundMaxPitch.tooltip": "Final pitch of the sorting sound",
   "option.clientsort.soundMinPitch.tooltip": "Initial pitch of the sorting sound",
   "option.clientsort.soundVolume": "Volume",
+  "option.clientsort.soundAllowOverlap": "Allow Overlap",
+  "option.clientsort.soundAllowOverlap.tooltip": "Whether to allow the previous sound to continue when starting a new sound",
 
   "hotbarMode.clientsort.merge": "Слияние",
   "hotbarMode.clientsort.merge.tooltip": "Панель быстрого доступа будет рассматриваться как часть основного инвентаря",

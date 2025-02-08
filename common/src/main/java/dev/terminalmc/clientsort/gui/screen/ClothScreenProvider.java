@@ -22,7 +22,6 @@ import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -223,6 +222,13 @@ public class ClothScreenProvider {
                 })
                 .setDefaultValue(Config.Options.soundVolumeDefault)
                 .setSaveConsumer(val -> options.soundVolume = val)
+                .build());
+
+        sound.addEntry(eb.startBooleanToggle(localized("option", "soundAllowOverlap"),
+                        options.soundAllowOverlap)
+                .setTooltip(localized("option", "soundAllowOverlap.tooltip"))
+                .setDefaultValue(Config.Options.soundAllowOverlapDefault)
+                .setSaveConsumer(val -> options.soundAllowOverlap = val)
                 .build());
 
         return builder.build();

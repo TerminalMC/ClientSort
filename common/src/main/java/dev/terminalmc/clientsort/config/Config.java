@@ -128,6 +128,9 @@ public class Config {
         
         public static final float soundVolumeDefault = 0.2F;
         public float soundVolume = soundVolumeDefault;
+
+        public static final boolean soundAllowOverlapDefault = true;
+        public boolean soundAllowOverlap = soundAllowOverlapDefault;
     }
 
     // Cleanup
