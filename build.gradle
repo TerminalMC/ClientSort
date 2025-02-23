@@ -140,7 +140,7 @@ subprojects {
 }
 
 String versionChangelog() {
-    List<String> lines = rootProject.file("CHANGELOG.md").readLines()
+    List<String> lines = rootProject.file("changelog.md").readLines()
     StringBuilder builder = new StringBuilder()
     if ("${mod_version}" == lines.get(2).substring(3)) {
         for (int i = 4; i < lines.size(); i++) {
