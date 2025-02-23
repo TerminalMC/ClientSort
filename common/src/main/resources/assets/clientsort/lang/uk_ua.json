@@ -17,8 +17,8 @@
   "option.clientsort.optimizedCreativeSorting.tooltip": "Whether to improve performance of creative-order sorting by storing the order in memory",
   "option.clientsort.hotbarScope": "Режим панелі швидкого доступу",
   "option.clientsort.extraSlotScope": "Extra Slot Scope",
-  "option.clientsort.lmbBundle": "Bundles use Left Click",
-  "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  "option.clientsort.rmbBundle": "Bundles use Right Click",
+  "option.clientsort.rmbBundle.tooltip": "Before 1.21.2, bundles used right-click to load, which breaks sorting. If playing on a 1.21.1 or earlier server, enable this option.",
   
   "option.clientsort.sorting": "Сортування",
   "option.clientsort.sortOrder": "Режим сортування",
