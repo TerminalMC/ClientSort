@@ -17,8 +17,8 @@
   "option.clientsort.optimizedCreativeSorting.tooltip": "Стоит ли улучшать производительность сортировки в творческой сортировке, сохраняя порядок в памяти",
   "option.clientsort.hotbarScope": "Режим панели быстрого доступа",
   "option.clientsort.extraSlotScope": "Режим дополнительных слотов",
-  "option.clientsort.lmbBundle": "Пакеты используют ЛКМ",
-  "option.clientsort.lmbBundle.tooltip": "С версии 1.21.2+ для загрузки пакетов используется ЛКМ, что нарушает сортировку. Если вы играете на сервере 1.21.2+, включите эту опцию.",
+  "option.clientsort.rmbBundle": "Пакеты используют ПКМ",
+  "option.clientsort.rmbBundle.tooltip": "До версии 1.21.2 для загрузки пакетов использовалась ПКМ, что нарушало сортировку. Если вы играете на сервере 1.21.1 или более ранней версии, включите эту опцию.",
   
   "option.clientsort.sorting": "Сортировка",
   "option.clientsort.sortOrder": "Режим сортировки",
