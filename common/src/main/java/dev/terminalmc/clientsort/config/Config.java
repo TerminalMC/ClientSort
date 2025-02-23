@@ -81,8 +81,8 @@ public class Config {
             NONE
         }
 
-        public static final boolean lmbBundleDefault = false;
-        public boolean lmbBundle = lmbBundleDefault;
+        public static final boolean rmbBundleDefault = false;
+        public boolean rmbBundle = rmbBundleDefault;
 
         // Sort mode options
         
