@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="${neoforge_loader_versions}"
+loaderVersion="${forge_loader_versions}"
 license="${mod_license}"
 #showAsResourcePack=true #optional:false
 #services=[] #optional:none
@@ -14,7 +14,7 @@ issueTrackerURL="${issues_url}" #optional:none
   logoFile="${mod_icon}" #optional:none
   #logoBlur=false #optional:true
   #updateJSONURL="" #optional:none
-  features={java_version="${java_versions_neoforge}"} #optional:none
+  features={java_version="${java_versions_forge}"} #optional:none
   #modproperties={} #optional:none
   credits="${mod_contributors_string}" #optional:none
   authors="${mod_authors_string}" #optional:none
@@ -24,26 +24,25 @@ issueTrackerURL="${issues_url}" #optional:none
 [[mixins]]
   config="${mod_id}.mixins.json"
 [[mixins]]
-  config="${mod_id}.neoforge.mixins.json"
+  config="${mod_id}.forge.mixins.json"
 
 [[dependencies."${mod_id}"]]
   modId="minecraft"
-  #type="" #optional:"required" #options:"required","optional","incompatible","discouraged"
-  #reason="" #optional:none
-  versionRange="${minecraft_versions_neoforge}" #optional:any
+  mandatory=true
+  versionRange="${minecraft_versions_forge}" #optional:any
   #ordering="" #optional:"NONE" #options:"BEFORE","AFTER"
   #side="" #optional:"BOTH" #options:"CLIENT","SERVER","BOTH"
-  #referralUrl="" #optional:none
 
 [[dependencies."${mod_id}"]]
-  modId="neoforge"
-  versionRange="${neoforge_versions}"
+  modId="forge"
+  mandatory=true
+  versionRange="${forge_versions}"
 
 [[dependencies."${mod_id}"]]
   modId="cloth_config"
-  type="optional"
-  versionRange="${clothconfig_versions_neoforge}"
+  mandatory=false
+  versionRange="${clothconfig_versions_forge}"
   side="CLIENT"
 
-# https://docs.neoforged.net/docs/gettingstarted/modfiles/#modstoml
-# https://docs.neoforged.net/docs/misc/updatechecker
+# https://docs.minecraftforge.net/en/latest/gettingstarted/modfiles
+# https://docs.minecraftforge.net/en/latest/misc/updatechecker

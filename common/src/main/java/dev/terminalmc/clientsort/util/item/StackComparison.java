@@ -17,12 +17,8 @@
 
 package dev.terminalmc.clientsort.util.item;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.DyedItemColor;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -42,30 +38,22 @@ public class StackComparison {
 
     private static int compareEqualItems2(ItemStack a, ItemStack b) {
         // Compare names
-        if (hasCustomHoverName(a)) {
-            if (!hasCustomHoverName(b)) {
+        if (a.hasCustomHoverName()) {
+            if (!b.hasCustomHoverName()) {
                 return -1;
             }
             return compareEqualItems3(a, b);
         }
-        if (hasCustomHoverName(b)) {
+        if (b.hasCustomHoverName()) {
             return 1;
         }
         return compareEqualItems3(a, b);
     }
 
-    private static boolean hasCustomHoverName(ItemStack itemStack) {
-        return itemStack.get(DataComponents.CUSTOM_NAME) != null;
-    }
-
     private static int compareEqualItems3(ItemStack a, ItemStack b) {
         // Compare tooltips
-        Iterator<Component> tooltipsA = a.getTooltipLines(
-                Item.TooltipContext.of(Minecraft.getInstance().level),
-                null, TooltipFlag.Default.NORMAL).iterator();
-        Iterator<Component> tooltipsB = b.getTooltipLines(
-                Item.TooltipContext.of(Minecraft.getInstance().level),
-                null, TooltipFlag.Default.NORMAL).iterator();
+        Iterator<Component> tooltipsA = a.getTooltipLines(null, TooltipFlag.Default.NORMAL).iterator();
+        Iterator<Component> tooltipsB = b.getTooltipLines(null, TooltipFlag.Default.NORMAL).iterator();
 
         while (tooltipsA.hasNext()) {
             if (!tooltipsB.hasNext()) {
@@ -86,9 +74,9 @@ public class StackComparison {
     private static int compareEqualItems4(ItemStack a, ItemStack b) {
         // Compare special item properties
         Item item = a.getItem();
-        if ((item.getDefaultInstance()).is(ItemTags.DYEABLE)) {
-            int colorA = DyedItemColor.getOrDefault(a, -6265536);
-            int colorB = DyedItemColor.getOrDefault(b, -6265536);
+        if (item instanceof DyeableLeatherItem) {
+            int colorA = ((DyeableLeatherItem) item).getColor(a);
+            int colorB = ((DyeableLeatherItem) item).getColor(b);
             float[] hsbA = Color.RGBtoHSB(colorA >> 16 & 0xFF, colorA >> 8 & 0xFF, colorA & 0xFF, null);
             float[] hsbB = Color.RGBtoHSB(colorB >> 16 & 0xFF, colorB >> 8 & 0xFF, colorB & 0xFF, null);
             int cmp = Float.compare(hsbA[0], hsbB[0]);

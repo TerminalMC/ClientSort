@@ -1,28 +1,28 @@
+buildscript {
+    dependencies.add("classpath", "org.spongepowered:vanillagradle:${vanillagradle_version}")
+}
+
 plugins {
     id("multiloader-common")
-    id("net.neoforged.moddev")
+    id("org.spongepowered.gradle.vanilla")
 }
 
 dependencies {
+    // Mixin and MixinExtras
     compileOnly("org.spongepowered:mixin:${mixin_version}")
 //    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
     // Cloth Config API
-    api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    api("me.shedaniel.cloth:cloth-config-forge:${clothconfig_version}")
 
     // ItemLocks
     implementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
 }
 
-neoForge {
-    version = neoforge_version // Shut up
-    neoFormVersion = neoform_version
-    // Automatically enable AccessTransformers if the file exists
-    def at = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_version
+minecraft {
+    version(minecraft_version)
+    if (file("src/main/resources/${mod_id}.accesswidener").exists()) {
+        accessWideners(file("src/main/resources/${mod_id}.accesswidener"))
     }
 }
 
