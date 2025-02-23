@@ -17,8 +17,8 @@
   "option.clientsort.optimizedCreativeSorting.tooltip": "Whether to improve performance of creative-order sorting by storing the order in memory",
   "option.clientsort.hotbarScope": "快捷栏模式",
   "option.clientsort.extraSlotScope": "Extra Slot Scope",
-  "option.clientsort.lmbBundle": "Bundles use Right Click",
-  "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use right-click to load and unload, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
+  "option.clientsort.rmbBundle": "Bundles use Right Click",
+  "option.clientsort.rmbBundle.tooltip": "Before 1.21.2, bundles used right-click to load, which breaks sorting. If playing on a 1.21.1 or earlier server, enable this option.",
   
   "option.clientsort.sorting": "整理",
   "option.clientsort.sortOrder": "整理模式",
