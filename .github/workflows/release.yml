@@ -15,7 +15,7 @@ jobs:
   release:
     strategy:
       matrix:
-        java: [21]
+        java: [17]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,15 +34,15 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-#        run: ./gradlew build neoforge:publishGithub fabric:publishGithub --stacktrace
-#        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth fabric:publishGithub fabric:publishModrinth --stacktrace
-        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth neoforge:publishCurseforge fabric:publishGithub fabric:publishModrinth fabric:publishCurseforge --stacktrace
+#        run: ./gradlew build forge:publishGithub fabric:publishGithub --stacktrace
+#        run: ./gradlew build forge:publishGithub forge:publishModrinth fabric:publishGithub fabric:publishModrinth --stacktrace
+        run: ./gradlew build forge:publishGithub forge:publishModrinth forge:publishCurseforge fabric:publishGithub fabric:publishModrinth fabric:publishCurseforge --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
       - name: Capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
+        if: ${{ runner.os == 'Linux' && matrix.java == '17' }}
         uses: actions/upload-artifact@v4
         with:
           name: artifacts

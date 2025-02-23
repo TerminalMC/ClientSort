@@ -31,29 +31,35 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 /**
- * Handles sorting via a {@link SortPayload} on the logical server side.
+ * Handles sorting via a {@link ServerboundSortPacket} on the logical server
+ * side.
  */
 public class LogicalServerNetworking {
 	private LogicalServerNetworking() {}
 
     /**
-     * Handles a {@link SortPayload} sent by a client.
+     * Handles a {@link ServerboundSortPacket} sent by a client.
      */
     @SuppressWarnings("ConstantConditions")
-	public static void onSortPayload(SortPayload payload, MinecraftServer server,
+	public static void onSortPayload(ServerboundSortPacket packet, MinecraftServer server,
                                      ServerPlayer player) {
+        if (packet == null) {
+            MainSort.LOG.warn("Failed to read sort packet from player {}!", player);
+            return;
+        }
+        
 		if (player.containerMenu == null) {
 			MainSort.LOG.warn("Player {} tried to sort inventory without having an " +
                     "open container!", player);
 			return;
 		}
 
-		if (payload.syncId() == player.inventoryMenu.containerId) {
+		if (packet.syncId == player.inventoryMenu.containerId) {
             // Sort inventory
-			server.execute(() -> sort(player, player.inventoryMenu, payload.slotMapping()));
-		} else if (payload.syncId() == player.containerMenu.containerId) {
+			server.execute(() -> sort(player, player.inventoryMenu, packet.slotMapping));
+		} else if (packet.syncId == player.containerMenu.containerId) {
             // Sort container
-			server.execute(() -> sort(player, player.containerMenu, payload.slotMapping()));
+			server.execute(() -> sort(player, player.containerMenu, packet.slotMapping));
 		}
 	}
 

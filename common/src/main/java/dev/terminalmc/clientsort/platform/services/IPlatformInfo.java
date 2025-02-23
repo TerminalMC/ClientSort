@@ -16,7 +16,9 @@
 
 package dev.terminalmc.clientsort.platform.services;
 
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 
 import java.nio.file.Path;
 
@@ -31,10 +33,10 @@ public interface IPlatformInfo {
      * @return {@code true} if the payload type can be sent from the client to
      * the server.
      */
-    boolean canSendToServer(CustomPacketPayload.Type<?> type);
-    
+    boolean canSendToServer(ResourceLocation channel);
+
     /**
      * Sends the payload to the server.
      */
-    void sendToServer(CustomPacketPayload payload);
+    void sendToServer(ResourceLocation channel, Packet<ServerGamePacketListener> packet);
 }

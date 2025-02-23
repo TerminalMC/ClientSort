@@ -24,8 +24,8 @@ pluginManagement {
             filter { includeGroupAndSubgroups("org.spongepowered") }
         }
         maven {
-            name = "NeoForge"
-            url = "https://maven.neoforged.net/releases"
+            name = "Forge"
+            url = "https://maven.minecraftforge.net"
         }
     }
 }
@@ -38,4 +38,4 @@ plugins {
 rootProject.name = "ClientSort"
 include("common")
 include("fabric")
-include("neoforge")
+include("forge")

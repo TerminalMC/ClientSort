@@ -25,18 +25,9 @@ repositories {
         }
         filter { includeGroupAndSubgroups("org.spongepowered") }
     }
-    exclusiveContent {
-        forRepositories(
-            maven {
-                name = "ParchmentMC"
-                url = "https://maven.parchmentmc.org"
-            },
-            maven {
-                name = "NeoForge"
-                url = "https://maven.neoforged.net/releases"
-            }
-        )
-        filter { includeGroup("org.parchmentmc.data") }
+    maven {
+        name = "ParchmentMC"
+        url = "https://maven.parchmentmc.org"
     }
     maven {
         name = "Modrinth"
@@ -111,19 +102,19 @@ processResources {
             // Java
             "java_version": java_version,
             "java_versions_fabric_list": asJsonList(java_versions_fabric),
-            "java_versions_neoforge": java_versions_neoforge,
+            "java_versions_forge": java_versions_forge,
             // Minecraft
             "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
-            "minecraft_versions_neoforge": minecraft_versions_neoforge,
+            "minecraft_versions_forge": minecraft_versions_forge,
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
             "fabric_api_versions_list": asJsonList(fabric_api_versions),
             // NeoForge
-            "neoforge_loader_versions": neoforge_loader_versions,
-            "neoforge_versions": neoforge_versions,
+            "forge_loader_versions": forge_loader_versions,
+            "forge_versions": forge_versions,
             // Dependencies
             "clothconfig_versions_fabric_list": asJsonList(clothconfig_versions_fabric),
-            "clothconfig_versions_neoforge": clothconfig_versions_neoforge,
+            "clothconfig_versions_forge": clothconfig_versions_forge,
             "modmenu_versions_fabric_list": asJsonList(modmenu_versions_fabric),
     ]
 

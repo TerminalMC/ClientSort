@@ -18,9 +18,8 @@
 package dev.terminalmc.clientsort.main;
 
 import dev.terminalmc.clientsort.main.network.LogicalServerNetworking;
-import dev.terminalmc.clientsort.main.network.SortPayload;
+import dev.terminalmc.clientsort.main.network.ServerboundSortPacket;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 @SuppressWarnings("unused")
@@ -28,14 +27,13 @@ public class MainSortFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         // Server networking
-        PayloadTypeRegistry.playC2S().register(
-                SortPayload.TYPE,
-                SortPayload.STREAM_CODEC
-        );
-        ServerPlayNetworking.registerGlobalReceiver(
-                SortPayload.TYPE,
-                (payload, context) -> LogicalServerNetworking.onSortPayload(
-                        payload, context.server(), context.player())
+        ServerPlayNetworking.registerGlobalReceiver(ServerboundSortPacket.ID, 
+                (server, player, listener, byteBuf, sender) ->
+                        LogicalServerNetworking.onSortPayload(
+                                ServerboundSortPacket.read(byteBuf),
+                                server,
+                                player
+                        )
         );
     }
 }

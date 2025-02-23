@@ -1,0 +1,88 @@
+plugins {
+    id("multiloader-loader")
+    id("net.minecraftforge.gradle")
+    id("org.spongepowered.mixin")
+}
+
+dependencies {
+    minecraft("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+    annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
+//    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+
+//    // JiJ MixinExtras
+//    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
+//        jarJar.ranged(it, "[${mixinextras_version},)")
+//    }
+    
+    // Cloth Config API
+    api("me.shedaniel.cloth:cloth-config-forge:${clothconfig_version}")
+
+    // ItemLocks
+    implementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
+}
+
+mixin {
+    add(sourceSets.main, "${mod_id}.refmap.json")
+    config("${mod_id}.mixins.json")
+    config("${mod_id}.forge.mixins.json")
+}
+
+sourceSets.main.resources.srcDir "src/generated/resources"
+
+jarJar.enable()
+
+tasks.jar.configure {
+    archiveClassifier.set("pure")
+    finalizedBy("reobfJar")
+}
+
+tasks.jarJar.configure {
+    archiveClassifier.set("")
+    finalizedBy("reobfJarJar")
+}
+
+afterEvaluate {
+    // Required due to direct reference to fat jar file in root build.gradle publish task
+    tasks.named("publishGithub").configure { it.dependsOn(tasks.named("jarJar")) }
+    tasks.named("publishModrinth").configure { it.dependsOn(tasks.named("jarJar")) }
+    tasks.named("publishCurseforge").configure { it.dependsOn(tasks.named("jarJar")) }
+}
+
+minecraft {
+    mappings channel: "official", version: minecraft_version
+    copyIdeResources = true // Calls processResources when in dev
+
+    if (file("src/main/resources/META-INF/accesstransformer.cfg").exists()) {
+        accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+    }
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+    }
+}
