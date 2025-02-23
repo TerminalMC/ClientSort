@@ -26,18 +26,22 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/*
-If ClientSort's CreativeSearchOrder::refreshItemSearchPositionLookup calls
-CreativeModeTabs::tryRebuildTabContents while EMI is reloading, it can cause
-an error.
-
-To prevent this, the flag ClientSort::emiReloading is used. While it is true,
-any calls to CreativeSearchOrder::refreshItemSearchPositionLookup will be
-cancelled and ClientSort::updateBlockedByEmi will be set true to indicate that
-CreativeSearchOrder::refreshItemSearchPositionLookup should be called once the
-EMI reload is finished.
+/**
+ * <p>If {@link CreativeSearchOrder#refreshStackPositionMap} calls
+ * {@link net.minecraft.world.item.CreativeModeTabs#tryRebuildTabContents} while
+ * EMI is reloading, it can cause an error.</p>
+ * 
+ * <p>To prevent this, {@link ClientSort#emiReloadLock} is acquired here while
+ * EMI is reloading. If {@link CreativeSearchOrder#tryRefreshStackPositionMap}
+ * is called while the lock is held, the call is blocked and
+ * {@link ClientSort#updateBlockedByEmi} is set to {@code true}.</p>
+ * 
+ * <p>When the EMI reload finishes, if {@link ClientSort#updateBlockedByEmi}
+ * is {@code true}, {@link CreativeSearchOrder#tryRefreshStackPositionMap} is
+ * called one time.
+ * </p>
  */
-
+@SuppressWarnings("JavadocReference")
 @Pseudo
 @Mixin(targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker", remap = false)
 public class MixinReloadWorker {
