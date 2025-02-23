@@ -19,7 +19,9 @@ package dev.terminalmc.clientsort.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.inventory.sort.SortOrder;
+import dev.terminalmc.clientsort.main.MainSort;
+import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,9 +33,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class Config {
-    private static final Path DIR_PATH = Path.of("config");
-    private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
-    private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
+    private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
+    private static final String FILE_NAME = MainSort.MOD_ID + ".json";
+    private static final String BACKUP_FILE_NAME = MainSort.MOD_ID + ".unreadable.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     // Options
@@ -45,7 +47,9 @@ public class Config {
     }
 
     public static class Options {
-        // General
+        
+        // General options
+        
         public static final int interactionRateMin = 1;
         public static final int interactionRateMax = 100;
         public static final int interactionRateServerDefault = 10;
@@ -53,63 +57,53 @@ public class Config {
 
         public static final int interactionRateClientDefault = 1;
         public int interactionRateClient = interactionRateClientDefault;
+        
+        public static final boolean serverAcceleratedSortingDefault = true;
+        public boolean serverAcceleratedSorting = serverAcceleratedSortingDefault;
 
-        public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
-        public HotbarMode hotbarMode = hotbarModeDefault;
-        public enum HotbarMode {
-            NONE,
-            HARD,
-            SOFT;
+        public static final boolean optimizedCreativeSortingDefault = true;
+        public boolean optimizedCreativeSorting = optimizedCreativeSortingDefault;
 
-            public String lowerName() {
-                return switch(this) {
-                    case NONE -> "merge";
-                    case HARD -> "split";
-                    case SOFT -> "off";
-                };
-            }
+        public static final HotbarScope hotbarScopeDefault = HotbarScope.HOTBAR;
+        public HotbarScope hotbarScope = hotbarScopeDefault;
+        public enum HotbarScope {
+            HOTBAR,
+            INVENTORY,
+            NONE
         }
 
-        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
-        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
-        public enum ExtraSlotMode {
-            NONE,
+        public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.EXTRA;
+        public ExtraSlotScope extraSlotScope = extraSlotScopeDefault;
+        public enum ExtraSlotScope {
+            EXTRA,
             HOTBAR,
-            INVENTORY;
-
-            public String lowerName() {
-                return switch(this) {
-                    case NONE -> "none";
-                    case HOTBAR -> "hotbar";
-                    case INVENTORY -> "inventory";
-                };
-            }
+            INVENTORY,
+            NONE
         }
 
         public static final boolean lmbBundleDefault = false;
         public boolean lmbBundle = lmbBundleDefault;
 
-        // Sorting
-        public static final String sortModeDefault = SortMode.CREATIVE.name;
-        public String sortModeStr = sortModeDefault;
-        public transient SortMode sortMode;
-
-        public static final String shiftSortModeDefault = SortMode.QUANTITY.name;
-        public String shiftSortModeStr = shiftSortModeDefault;
-        public transient SortMode shiftSortMode;
-
-        public static final String ctrlSortModeDefault = SortMode.ALPHABET.name;
-        public String ctrlSortModeStr = ctrlSortModeDefault;
-        public transient SortMode ctrlSortMode;
-
-        public static final String altSortModeDefault = SortMode.RAW_ID.name;
-        public String altSortModeStr = altSortModeDefault;
-        public transient SortMode altSortMode;
-
-        public static final boolean optimizedCreativeSortingDefault = true;
-        public boolean optimizedCreativeSorting = optimizedCreativeSortingDefault;
+        // Sort mode options
         
-        // Sounds
+        public static final String sortOrderDefault = SortOrder.CREATIVE.name;
+        public String sortOrderStr = sortOrderDefault;
+        public transient SortOrder sortOrder;
+
+        public static final String shiftSortOrderDefault = SortOrder.QUANTITY.name;
+        public String shiftSortOrderStr = shiftSortOrderDefault;
+        public transient SortOrder shiftSortOrder;
+
+        public static final String ctrlSortOrderDefault = SortOrder.ALPHABET.name;
+        public String ctrlSortOrderStr = ctrlSortOrderDefault;
+        public transient SortOrder ctrlSortOrder;
+
+        public static final String altSortOrderDefault = SortOrder.RAW_ID.name;
+        public String altSortOrderStr = altSortOrderDefault;
+        public transient SortOrder altSortOrder;
+        
+        // Sorting sound options
+        
         public static final boolean soundEnabledDefault = false;
         public boolean soundEnabled = soundEnabledDefault;
         
@@ -135,11 +129,54 @@ public class Config {
 
         public static final boolean soundAllowOverlapDefault = true;
         public boolean soundAllowOverlap = soundAllowOverlapDefault;
+        
+        // Legacy from pre v1.3.0
+
+        public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
+        public HotbarMode hotbarMode = hotbarModeDefault;
+        public enum HotbarMode {
+            NONE,
+            HARD,
+            SOFT;
+
+            public HotbarScope update() {
+                return switch(this) {
+                    case NONE -> HotbarScope.INVENTORY;
+                    case HARD -> HotbarScope.HOTBAR;
+                    case SOFT -> HotbarScope.NONE;
+                };
+            }
+        }
+
+        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
+        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
+        public enum ExtraSlotMode {
+            NONE,
+            HOTBAR,
+            INVENTORY;
+
+            public ExtraSlotScope update() {
+                return switch(this) {
+                    case NONE -> ExtraSlotScope.NONE;
+                    case HOTBAR -> ExtraSlotScope.HOTBAR;
+                    case INVENTORY -> ExtraSlotScope.INVENTORY;
+                };
+            }
+        }
+        
+        public String sortModeStr = sortOrderDefault;
+        public String shiftSortModeStr = shiftSortOrderDefault;
+        public String ctrlSortModeStr = ctrlSortOrderDefault;
+        public String altSortModeStr = altSortOrderDefault;
     }
 
-    // Cleanup
+    // Validation
 
-    private void cleanup() {
+    /**
+     * Ensures that all config values are valid.
+     */
+    private void validate() {
+        update();
         // interactionRateServer
         if (options.interactionRateServer < Options.interactionRateMin)
             options.interactionRateServer = Options.interactionRateMin;
@@ -175,6 +212,36 @@ public class Config {
             options.soundVolume = Options.soundVolumeMax;
     }
 
+    /**
+     * Updates legacy (pre v1.3.0) config values.
+     */
+    private void update() {
+        if (options.hotbarMode != Options.hotbarModeDefault) {
+            options.hotbarScope = options.hotbarMode.update();
+            options.hotbarMode = Options.hotbarModeDefault;
+        }
+        if (options.extraSlotMode != Options.extraSlotModeDefault) {
+            options.extraSlotScope = options.extraSlotMode.update();
+            options.extraSlotMode = Options.extraSlotModeDefault;
+        }
+        if (!Options.sortOrderDefault.equals(options.sortModeStr)) {
+            options.sortOrderStr = options.sortModeStr;
+            options.sortModeStr = Options.sortOrderDefault;
+        }
+        if (!Options.shiftSortOrderDefault.equals(options.shiftSortModeStr)) {
+            options.shiftSortOrderStr = options.shiftSortModeStr;
+            options.shiftSortModeStr = Options.shiftSortOrderDefault;
+        }
+        if (!Options.ctrlSortOrderDefault.equals(options.ctrlSortModeStr)) {
+            options.ctrlSortOrderStr = options.ctrlSortModeStr;
+            options.ctrlSortModeStr = Options.ctrlSortOrderDefault;
+        }
+        if (!Options.altSortOrderDefault.equals(options.altSortModeStr)) {
+            options.altSortOrderStr = options.altSortModeStr;
+            options.altSortModeStr = Options.altSortOrderDefault;
+        }
+    }
+    
     // Instance management
 
     private static Config instance = null;
@@ -201,13 +268,13 @@ public class Config {
     // Load and save
 
     public static @NotNull Config load() {
-        Path file = DIR_PATH.resolve(FILE_NAME);
+        Path file = CONFIG_DIR.resolve(FILE_NAME);
         Config config = null;
         if (Files.exists(file)) {
             config = load(file, GSON);
             if (config == null) {
                 backup();
-                ClientSort.LOG.warn("Resetting config");
+                MainSort.LOG.warn("Resetting config");
             }
         }
         return config != null ? config : new Config();
@@ -220,30 +287,30 @@ public class Config {
         } catch (Exception e) {
             // Catch Exception as errors in deserialization may not fall under
             // IOException or JsonParseException, but should not crash the game.
-            ClientSort.LOG.error("Unable to load config", e);
+            MainSort.LOG.error("Unable to load config", e);
             return null;
         }
     }
 
     private static void backup() {
         try {
-            ClientSort.LOG.warn("Copying {} to {}", FILE_NAME, BACKUP_FILE_NAME);
-            if (!Files.isDirectory(DIR_PATH)) Files.createDirectories(DIR_PATH);
-            Path file = DIR_PATH.resolve(FILE_NAME);
+            MainSort.LOG.warn("Copying {} to {}", FILE_NAME, BACKUP_FILE_NAME);
+            if (!Files.isDirectory(CONFIG_DIR)) Files.createDirectories(CONFIG_DIR);
+            Path file = CONFIG_DIR.resolve(FILE_NAME);
             Path backupFile = file.resolveSibling(BACKUP_FILE_NAME);
             Files.move(file, backupFile, StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            ClientSort.LOG.error("Unable to copy config file", e);
+            MainSort.LOG.error("Unable to copy config file", e);
         }
     }
 
     public static void save() {
         if (instance == null) return;
-        instance.cleanup();
+        instance.validate();
         try {
-            if (!Files.isDirectory(DIR_PATH)) Files.createDirectories(DIR_PATH);
-            Path file = DIR_PATH.resolve(FILE_NAME);
+            if (!Files.isDirectory(CONFIG_DIR)) Files.createDirectories(CONFIG_DIR);
+            Path file = CONFIG_DIR.resolve(FILE_NAME);
             Path tempFile = file.resolveSibling(file.getFileName() + ".tmp");
             try (OutputStreamWriter writer = new OutputStreamWriter(
                     new FileOutputStream(tempFile.toFile()), StandardCharsets.UTF_8)) {
@@ -255,7 +322,7 @@ public class Config {
                     StandardCopyOption.REPLACE_EXISTING);
             ClientSort.onConfigSaved(instance);
         } catch (IOException e) {
-            ClientSort.LOG.error("Unable to save config", e);
+            MainSort.LOG.error("Unable to save config", e);
         }
     }
 }

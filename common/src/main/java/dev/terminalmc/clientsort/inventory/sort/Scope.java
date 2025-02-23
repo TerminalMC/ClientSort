@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.util.inject;
+package dev.terminalmc.clientsort.inventory.sort;
 
-import org.jetbrains.annotations.ApiStatus;
-
-@ApiStatus.Internal
-public interface IContainerScreen {
-    boolean mouseWheelie_triggerSort();
+public enum Scope {
+    PLAYER_INV,
+    PLAYER_INV_HOTBAR,
+    PLAYER_INV_EXTRA,
+    PLAYER_OTHER,
+    CONTAINER_INV,
+    INVALID
 }

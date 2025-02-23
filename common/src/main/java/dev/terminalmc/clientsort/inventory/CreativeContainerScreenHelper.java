@@ -17,26 +17,48 @@
 
 package dev.terminalmc.clientsort.inventory;
 
-import dev.terminalmc.clientsort.network.ClickEventFactory;
+import dev.terminalmc.clientsort.inventory.sort.Scope;
+import dev.terminalmc.clientsort.network.InteractionManager;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen> extends ContainerScreenHelper<T> {
-    public CreativeContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
+import static dev.terminalmc.clientsort.config.Config.options;
+
+public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen>
+        extends ContainerScreenHelper<T> {
+    
+    public CreativeContainerScreenHelper(T screen,
+                                         InteractionManager.ClickEventFactory clickEventFactory) {
         super(screen, clickEventFactory);
     }
 
     @Override
-    public int getScope(Slot slot, boolean preferSmallerScopes) {
+    public Scope getScope(Slot slot) {
+        // Full inventory visible
         if (screen.isInventoryOpen()) {
-            return super.getScope(slot, preferSmallerScopes);
+            return super.getScope(slot);
         }
+        // Only hotbar visible
         if (slot.container instanceof Inventory) {
             if (isHotbarSlot(slot)) {
-                return 0;
+                return switch (options().hotbarScope) {
+                    case HOTBAR, INVENTORY -> Scope.PLAYER_INV_HOTBAR;
+                    case NONE -> Scope.INVALID;
+                };
             }
         }
-        return INVALID_SCOPE;
+        return Scope.INVALID;
+    }
+    
+    @Override
+    public void translateSlotMapping(int[] slotMapping) {
+        if (!screen.isInventoryOpen()) {
+            // Workaround for server ignoring armor and 2x2 crafting grid when
+            // only hotbar is visible on client
+            for (int i = 0; i < slotMapping.length; i++) {
+                slotMapping[i] -= 9;
+            }
+        }
     }
 }

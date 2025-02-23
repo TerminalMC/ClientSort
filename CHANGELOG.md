@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Enabled server accelerated sorting
+
 ## 1.2.0-beta.1
 
 - Fixed version metadata

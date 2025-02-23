@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.network;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -29,17 +30,23 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+/**
+ * Manages rate-limited transmission of interaction events for client-side
+ * manual inventory operations.
+ */
 public class InteractionManager {
+    public static final Waiter TICK_WAITER = 
+            (TriggerType triggerType) -> triggerType == TriggerType.TICK;
+    
     private static final Queue<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+
     private static ScheduledFuture<?> tickFuture;
-
-    public static final Waiter TICK_WAITER = (TriggerType triggerType) -> triggerType == TriggerType.TICK;
-
-
     private static Waiter waiter = null;
 
-
+    /**
+     * Queues the specified event.
+     */
     public static void push(InteractionEvent interactionEvent) {
         if (interactionEvent == null) {
             return;
@@ -51,6 +58,9 @@ public class InteractionManager {
         }
     }
 
+    /**
+     * Queues the specified events.
+     */
     public static void pushAll(Collection<InteractionEvent> interactionEvents) {
         if (interactionEvents == null) {
             return;
@@ -62,6 +72,19 @@ public class InteractionManager {
         }
     }
 
+    /**
+     * Clears the event queue.
+     */
+    public static void clear() {
+        synchronized (interactionEventQueue) {
+            interactionEventQueue.clear();
+            waiter = null;
+        }
+    }
+
+    /**
+     * Initiates sending of all queued events.
+     */
     public static void triggerSend(TriggerType triggerType) {
         synchronized (interactionEventQueue) {
             if (waiter == null || waiter.trigger(triggerType)) {
@@ -78,6 +101,9 @@ public class InteractionManager {
         }
     }
 
+    /**
+     * Sends the specified event.
+     */
     private static void doSendEvent(InteractionEvent event) {
         Waiter blockingWaiter = tt -> false;
         waiter = blockingWaiter;
@@ -90,25 +116,23 @@ public class InteractionManager {
         });
     }
 
+    /**
+     * Sets the tick rate of the interaction manager.
+     * @param milliSeconds the time, in milliseconds, between ticks.
+     */
     public static void setTickRate(long milliSeconds) {
         if (tickFuture != null) {
             tickFuture.cancel(false);
         }
-        tickFuture = scheduledExecutor.scheduleAtFixedRate(InteractionManager::tick, milliSeconds, milliSeconds, TimeUnit.MILLISECONDS);
+        tickFuture = scheduledExecutor.scheduleAtFixedRate(InteractionManager::tick,
+                milliSeconds, milliSeconds, TimeUnit.MILLISECONDS);
     }
-
-    public static void tick() {
+    
+    private static void tick() {
         try {
             triggerSend(TriggerType.TICK);
         } catch (Exception e) {
             LogUtils.getLogger().error("Error while ticking InteractionManager", e);
-        }
-    }
-
-    public static void clear() {
-        synchronized (interactionEventQueue) {
-            interactionEventQueue.clear();
-            waiter = null;
         }
     }
 
@@ -149,30 +173,12 @@ public class InteractionManager {
         Waiter send();
     }
 
-    public static class ClickEvent implements InteractionEvent {
-        private final Waiter waiter;
-        private final int containerSyncId;
-        private final int slotId;
-        private final int buttonId;
-        private final ClickType slotAction;
-
-        public ClickEvent(int containerSyncId, int slotId, int buttonId, ClickType slotAction) {
-            this(containerSyncId, slotId, buttonId, slotAction, TICK_WAITER);
-        }
-
-        public ClickEvent(int containerSyncId, int slotId, int buttonId, ClickType slotAction, Waiter waiter) {
-            this.containerSyncId = containerSyncId;
-            this.slotId = slotId;
-            this.buttonId = buttonId;
-            this.slotAction = slotAction;
-            this.waiter = waiter;
-        }
-
-        @Override
-        public Waiter send() {
-            Minecraft.getInstance().gameMode.handleInventoryMouseClick(containerSyncId, slotId, buttonId, slotAction, Minecraft.getInstance().player);
-            return waiter;
-        }
+    @FunctionalInterface
+    public interface ClickEventFactory {
+        /**
+         * Creates an interaction event based on a click.
+         */
+        InteractionEvent create(Slot slot, int action, ClickType clickType, boolean playSound);
     }
 
     public static class CallbackEvent implements InteractionEvent {

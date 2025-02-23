@@ -15,14 +15,30 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.mixin.accessor;
+package dev.terminalmc.clientsort.mixin.slot;
 
-import net.minecraft.client.player.LocalPlayer;
+import dev.terminalmc.clientsort.util.inject.ISlot;
+import net.minecraft.world.inventory.Slot;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(LocalPlayer.class)
-public interface LocalPlayerAccessor {
-    @Accessor
-    int getPermissionLevel();
+@Mixin(Slot.class)
+public class MixinSlot implements ISlot {
+    @Shadow
+    @Final
+    private int slot;
+
+    @Shadow
+    public int index;
+
+    @Override
+    public int clientSort$getIndexInInv() {
+        return slot;
+    }
+
+    @Override
+    public int clientSort$getIdInContainer() {
+        return index;
+    }
 }

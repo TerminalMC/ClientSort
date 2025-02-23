@@ -26,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.config.Config.options;
 
-public class SoundUtil {
+public class SoundManager {
     private static long time = Long.MIN_VALUE;
     private static float pitch = 1.0F;
     private static float increment = 0.01F;
     private static @Nullable SoundInstance sound;
     
-    public static void reset(int size) {
+    public static void resetForCount(int size) {
         increment = (options().soundMaxPitch - options().soundMinPitch) / size;
         pitch = options().soundMinPitch;
     }

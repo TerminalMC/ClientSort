@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.mixin;
+package dev.terminalmc.clientsort.mixin.slot;
 
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.inventory.Slot;
@@ -31,12 +31,12 @@ public class MixinCreativeSlot implements ISlot {
     Slot target;
 
     @Override
-    public int mouseWheelie_getIndexInInv() {
-        return ((ISlot) target).mouseWheelie_getIndexInInv();
+    public int clientSort$getIndexInInv() {
+        return ((ISlot) target).clientSort$getIndexInInv();
     }
 
     @Override
-    public int mouseWheelie_getIdInContainer() {
-        return ((ISlot) target).mouseWheelie_getIdInContainer();
+    public int clientSort$getIdInContainer() {
+        return ((ISlot) target).clientSort$getIdInContainer();
     }
 }

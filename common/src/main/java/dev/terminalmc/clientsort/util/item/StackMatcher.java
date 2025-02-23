@@ -24,7 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: This appears to work but needs more testing.
+/**
+ * {@link ItemStack} matching.
+ */
 public class StackMatcher {
     private final @NotNull Item item;
     private final @Nullable DataComponentMap components;

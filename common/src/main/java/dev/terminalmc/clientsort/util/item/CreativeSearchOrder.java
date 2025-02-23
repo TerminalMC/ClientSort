@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.util.item;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.mixin.accessor.LocalPlayerAccessor;
+import dev.terminalmc.clientsort.main.MainSort;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -33,73 +33,96 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Allows storing the creative inventory item order in memory to reduce compute
+ * load for creative-order sort operations.
+ */
 public class CreativeSearchOrder {
-    private static final Object2IntMap<StackMatcher> stackToSearchPositionLookup = new Object2IntOpenHashMap<>();
+    // Item order map
+    private static final Object2IntMap<StackMatcher> stackPositionMap =
+            new Object2IntOpenHashMap<>();
     static {
-        stackToSearchPositionLookup.defaultReturnValue(Integer.MAX_VALUE);
+        stackPositionMap.defaultReturnValue(Integer.MAX_VALUE);
     }
-    private static final ReadWriteLock stackToSearchPositionLookupLock = new ReentrantReadWriteLock();
+    
+    // Item order map lock
+    private static final ReadWriteLock stackPositionMapLock =
+            new ReentrantReadWriteLock();
 
     public static Lock getReadLock() {
-        return stackToSearchPositionLookupLock.readLock();
+        return stackPositionMapLock.readLock();
     }
 
-    public static int getStackSearchPosition(ItemStack stack) {
-        int pos = stackToSearchPositionLookup.getInt(StackMatcher.of(stack));
+    /**
+     * @return the creative inventory search order position of the specified
+     * item.
+     */
+    public static int getPosition(ItemStack stack) {
+        int pos = stackPositionMap.getInt(StackMatcher.of(stack));
         if (pos == Integer.MAX_VALUE) {
-            pos = stackToSearchPositionLookup.getInt(StackMatcher.ignoreNbt(stack));
+            pos = stackPositionMap.getInt(StackMatcher.ignoreNbt(stack));
         }
         return pos;
     }
-    
-    public static void tryRefreshItemSearchPositionLookup() {
-        if (ClientSort.emiReloading) {
-            ClientSort.updateBlockedByEmi = true;
+
+    /**
+     * Clears {@link CreativeSearchOrder#stackPositionMap}, and re-populates it
+     * if possible and configured to do so.
+     */
+    public static void tryRefreshStackPositionMap() {
+        if (Config.options().optimizedCreativeSorting) {
+            if (ClientSort.emiReloadLock.tryLock()) {
+                refreshStackPositionMap();
+                ClientSort.emiReloadLock.unlock();
+            } else {
+                MainSort.LOG.info("Search order update blocked by EMI reload, waiting...");
+                ClientSort.updateBlockedByEmi = true;
+            }
         } else {
-            refreshItemSearchPositionLookup();
+            Lock lock = stackPositionMapLock.writeLock();
+            lock.lock();
+            stackPositionMap.clear();
+            lock.unlock();
         }
     }
 
-    public static void refreshItemSearchPositionLookup() {
-        if (Config.options().optimizedCreativeSorting) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null || mc.player == null) {
+    /**
+     * Clears and re-populates {@link CreativeSearchOrder#stackPositionMap} by
+     * looking up the creative inventory.
+     */
+    private static void refreshStackPositionMap() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null) {
+            return;
+        }
+        FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
+        boolean opTab = mc.player.canUseGameMasterBlocks()
+                && mc.options.operatorItemsTab().get();
+
+        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
+
+        Collection<ItemStack> displayStacks = new ArrayList<>(
+                CreativeModeTabs.searchTab().getDisplayItems());
+        new Thread(() -> {
+            Lock lock = stackPositionMapLock.writeLock();
+            lock.lock();
+            stackPositionMap.clear();
+            if (displayStacks.isEmpty()) {
+                lock.unlock();
                 return;
             }
-            FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
-            boolean opTab = mc.options.operatorItemsTab().get()
-                    && ((LocalPlayerAccessor)mc.player).getPermissionLevel() >= 2;
 
-            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
-
-            Collection<ItemStack> displayStacks = new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
-            new Thread(() -> {
-                Lock lock = stackToSearchPositionLookupLock.writeLock();
-                lock.lock();
-                stackToSearchPositionLookup.clear();
-                if (displayStacks.isEmpty()) {
-                    lock.unlock();
-                    return;
-                }
-
-                int i = 0;
-                for (ItemStack stack : displayStacks) {
-                    StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                    if (!stack.hasFoil() || !stackToSearchPositionLookup.containsKey(plainMatcher)) {
-                        stackToSearchPositionLookup.put(plainMatcher, i);
-                        i++;
-                    }
-                    stackToSearchPositionLookup.put(StackMatcher.of(stack), i);
+            int i = 0;
+            for (ItemStack stack : displayStacks) {
+                StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
+                    stackPositionMap.put(plainMatcher, i);
                     i++;
                 }
-                lock.unlock();
-            }, "Mouse Wheelie: creative search stack position lookup builder").start();
-
-        } else {
-            Lock lock = stackToSearchPositionLookupLock.writeLock();
-            lock.lock();
-            stackToSearchPositionLookup.clear();
+                stackPositionMap.put(StackMatcher.of(stack), i);
+                i++;
+            }
             lock.unlock();
-        }
+        },  MainSort.MOD_NAME + ": creative search stack position lookup builder").start();
     }
 }

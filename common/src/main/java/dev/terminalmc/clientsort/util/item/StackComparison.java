@@ -27,9 +27,12 @@ import net.minecraft.world.item.component.DyedItemColor;
 import java.awt.*;
 import java.util.Iterator;
 
-public class ItemStackUtils {
+/**
+ * {@link ItemStack} comparison methods.
+ */
+public class StackComparison {
     public static int compareEqualItems(ItemStack a, ItemStack b) {
-        // compare counts
+        // Compare counts
         int cmp = Integer.compare(b.getCount(), a.getCount());
         if (cmp != 0) {
             return cmp;
@@ -38,7 +41,7 @@ public class ItemStackUtils {
     }
 
     private static int compareEqualItems2(ItemStack a, ItemStack b) {
-        // compare names
+        // Compare names
         if (hasCustomHoverName(a)) {
             if (!hasCustomHoverName(b)) {
                 return -1;
@@ -56,7 +59,7 @@ public class ItemStackUtils {
     }
 
     private static int compareEqualItems3(ItemStack a, ItemStack b) {
-        // compare tooltips
+        // Compare tooltips
         Iterator<Component> tooltipsA = a.getTooltipLines(
                 Item.TooltipContext.of(Minecraft.getInstance().level),
                 null, TooltipFlag.Default.NORMAL).iterator();
@@ -81,7 +84,7 @@ public class ItemStackUtils {
     }
 
     private static int compareEqualItems4(ItemStack a, ItemStack b) {
-        // compare special item properties
+        // Compare special item properties
         Item item = a.getItem();
         if ((item.getDefaultInstance()).is(ItemTags.DYEABLE)) {
             int colorA = DyedItemColor.getOrDefault(a, -6265536);
@@ -105,7 +108,7 @@ public class ItemStackUtils {
     }
 
     private static int compareEqualItems5(ItemStack a, ItemStack b) {
-        // compare damage
+        // Compare damage
         return Integer.compare(a.getDamageValue(), b.getDamageValue());
     }
 }

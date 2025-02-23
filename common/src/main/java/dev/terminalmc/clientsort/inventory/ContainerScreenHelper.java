@@ -17,8 +17,7 @@
 
 package dev.terminalmc.clientsort.inventory;
 
-import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.network.ClickEventFactory;
+import dev.terminalmc.clientsort.inventory.sort.Scope;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,78 +28,149 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.config.Config.options;
+
+/**
+ * Provides slot scope information and interaction methods for 
+ * {@link AbstractContainerScreen}s.
+ */
 public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     protected final T screen;
-    protected final ClickEventFactory clickEventFactory;
-    public static final int INVALID_SCOPE = Integer.MAX_VALUE;
+    protected final InteractionManager.ClickEventFactory clickEventFactory;
 
-    protected ContainerScreenHelper(T screen, ClickEventFactory clickEventFactory) {
+    protected ContainerScreenHelper(T screen,
+                                    InteractionManager.ClickEventFactory clickEventFactory) {
         this.screen = screen;
         this.clickEventFactory = clickEventFactory;
     }
 
+    /**
+     * Creates a {@link ContainerScreenHelper} for the specified 
+     * {@link AbstractContainerScreen}.
+     */
     @SuppressWarnings("unchecked")
-    public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen, ClickEventFactory clickEventFactory) {
+    public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(
+            T screen, InteractionManager.ClickEventFactory clickEventFactory) {
         if (screen instanceof CreativeModeInventoryScreen) {
-            return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>((CreativeModeInventoryScreen) screen, clickEventFactory);
+            // Creative inventory screen helper
+            return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>(
+                    (CreativeModeInventoryScreen) screen, clickEventFactory);
         }
+        // Normal inventory screen helper
         return new ContainerScreenHelper<>(screen, clickEventFactory);
     }
 
-    public InteractionManager.InteractionEvent createClickEvent(Slot slot, int action, ClickType actionType, boolean playSound) {
+    /**
+     * Creates a click event in the {@link ContainerScreenHelper}'s
+     * {@link AbstractContainerScreen}.
+     */
+    public InteractionManager.InteractionEvent createClickEvent(
+            Slot slot, int action, ClickType actionType, boolean playSound) {
         return clickEventFactory.create(slot, action, actionType, playSound);
     }
 
+    /**
+     * @return {@code true} if the index of the slot in its inventory is less
+     * than 9.
+     */
     public boolean isHotbarSlot(Slot slot) {
-        return ((ISlot) slot).mouseWheelie_getIndexInInv() < 9;
+        return ((ISlot) slot).clientSort$getIndexInInv() < 9;
     }
 
-    public int getScope(Slot slot) {
-        return getScope(slot, false);
+    /**
+     * @return {@code true} if the index of the slot in its inventory is less
+     * than 9.
+     */
+    public boolean isExtraSlot(Slot slot) {
+        return ((ISlot) slot).clientSort$getIndexInInv() >= 40;
     }
-
-    public int getScope(Slot slot, boolean preferSmallerScopes) {
+    
+    /**
+     * Gets the scope of the specified {@link Slot}.
+     * 
+     * <p>Scope is a way of grouping slots together based on their location in
+     * the inventory.</p>
+     * 
+     * @param slot the slot for which to get the scope.
+     * @return the scope of the slot, or {@link Scope#INVALID} if the slot is
+     * not accessible.
+     */
+    public Scope getScope(Slot slot) {
+        // If the slot is not accessible, consider the scope invalid
         if (!slot.mayPlace(ItemStack.EMPTY)) {
-            // Removed checks:
-            // slot.container == null 
-            //     (always false)
-            // ((ISlot) slot).mouseWheelie_getIndexInInv() >= slot.container.getContainerSize()
-            //     (prevents compatibility with Traveler's Backpack)
-            return INVALID_SCOPE;
+            return Scope.INVALID;
         }
+        
+        // Player inventory only screen
         if (screen instanceof EffectRenderingInventoryScreen) {
+            // Player inventory
             if (slot.container instanceof Inventory) {
-                Config.Options options = Config.options();
-                if (isHotbarSlot(slot)) {
-                    if (options.hotbarMode == Config.Options.HotbarMode.HARD
-                            || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
-                        return -1;
-                    }
-                } else if (((ISlot) slot).mouseWheelie_getIndexInInv() >= 40) {
-                    if (options.extraSlotMode == Config.Options.ExtraSlotMode.NONE) {
-                        return -2;
-                    } else if (options.extraSlotMode == Config.Options.ExtraSlotMode.HOTBAR 
-                            && (options.hotbarMode == Config.Options.HotbarMode.HARD 
-                            || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes)) {
-                        return -1;
+                boolean mergeWithHotbar = false;
+                
+                // Extra inventory slots e.g. offhand
+                if (isExtraSlot(slot)) {
+                    switch (options().extraSlotScope) {
+                        case HOTBAR -> mergeWithHotbar = true;
+                        case EXTRA -> {
+                            return Scope.PLAYER_INV_EXTRA;
+                        }
+                        case NONE -> {
+                            return Scope.INVALID;
+                        }
                     }
                 }
-                return 0;
-            } else {
-                return 2;
-            }
-        } else {
-            if (slot.container instanceof Inventory) {
-                if (isHotbarSlot(slot)) {
-                    Config.Options options = Config.options();
-                    if (options.hotbarMode == Config.Options.HotbarMode.HARD
-                            || options.hotbarMode == Config.Options.HotbarMode.SOFT && preferSmallerScopes) {
-                        return -1;
+                
+                // Hotbar
+                if (mergeWithHotbar || isHotbarSlot(slot)) {
+                    switch (options().hotbarScope) {
+                        case HOTBAR -> {
+                            return Scope.PLAYER_INV_HOTBAR;
+                        }
+                        case NONE -> {
+                            return Scope.INVALID;
+                        }
                     }
                 }
-                return 0;
+                
+                return Scope.PLAYER_INV;
             }
-            return 1;
+            
+            // Out of inventory e.g. 2x2 crafting grid
+            else {
+                return Scope.PLAYER_OTHER;
+            }
         }
+        
+        // Container screen, probably with player inventory attached
+        else {
+            // Player inventory
+            if (slot.container instanceof Inventory) {
+                // Hotbar
+                if (isHotbarSlot(slot)) {
+                    switch (options().hotbarScope) {
+                        case HOTBAR -> {
+                            return Scope.PLAYER_INV_HOTBAR;
+                        }
+                        case NONE -> {
+                            return Scope.INVALID;
+                        }
+                    }
+                }
+
+                return Scope.PLAYER_INV;
+            }
+            
+            // Container
+            else {
+                return Scope.CONTAINER_INV;
+            }
+        }
+    }
+
+    /**
+     * Workaround for inconsistency between client-side and server-side
+     * inventory sizes.
+     */
+    public void translateSlotMapping(int[] slotMapping) {
     }
 }

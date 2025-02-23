@@ -18,50 +18,46 @@ package dev.terminalmc.clientsort;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.inventory.sort.SortOrder;
 import dev.terminalmc.clientsort.network.InteractionManager;
-import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
 public class ClientSort {
-    public static final String MOD_ID = "clientsort";
-    public static final String MOD_NAME = "ClientSort";
-    public static final ModLogger LOG = new ModLogger(MOD_NAME);
     public static final KeyMapping SORT_KEY = new KeyMapping(
             translationKey("key", "group.sort"), InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
     
     public static boolean searchOrderUpdated = false;
 
-    public static boolean emiReloading = false;
+    public static Lock emiReloadLock = new ReentrantLock();
     public static boolean updateBlockedByEmi = false;
 
     public static void init() {
         Config.getAndSave();
     }
-
-    public static void onEndTick(Minecraft mc) {
-    }
-
+    
     public static void onConfigSaved(Config config) {
         Config.Options options = config.options;
-        options.sortMode = SortMode.SORT_MODES.get(options.sortModeStr);
-        options.shiftSortMode = SortMode.SORT_MODES.get(options.shiftSortModeStr);
-        options.ctrlSortMode = SortMode.SORT_MODES.get(options.ctrlSortModeStr);
-        options.altSortMode = SortMode.SORT_MODES.get(options.altSortModeStr);
+        options.sortOrder = SortOrder.SORT_MODES.get(options.sortOrderStr);
+        options.shiftSortOrder = SortOrder.SORT_MODES.get(options.shiftSortOrderStr);
+        options.ctrlSortOrder = SortOrder.SORT_MODES.get(options.ctrlSortOrderStr);
+        options.altSortOrder = SortOrder.SORT_MODES.get(options.altSortOrderStr);
         options.sortSoundLoc = ResourceLocation.tryParse(options.sortSound);
-        setInteractionManagerTickRate(config);
+        setInteractionManagerTickRate(config.options);
     }
-    
-    public static void setInteractionManagerTickRate(Config config) {
+
+    public static void setInteractionManagerTickRate(Config.Options options) {
         if (Minecraft.getInstance().getSingleplayerServer() == null) {
-            InteractionManager.setTickRate(config.options.interactionRateServer);
+            InteractionManager.setTickRate(options.interactionRateServer);
         } else {
-            InteractionManager.setTickRate(config.options.interactionRateClient);
+            InteractionManager.setTickRate(options.interactionRateClient);
         }
     }
 }

@@ -24,10 +24,15 @@ import net.minecraft.world.inventory.Slot;
 import static com.kirdow.itemlocks.client.input.KeyBindings.isBypass;
 import static com.kirdow.itemlocks.proxy.Components.getComponent;
 
-public class ItemLocks {
+public class ItemLocksCompat {
+    /**
+     * @param slot the slot to check.
+     * @return {@code true} if the slot is valid, locked, and the bypass is not
+     * active.
+     */
     static boolean isLocked(Slot slot) {
         if (!(slot.container instanceof Inventory)) return false;
-        int index = adjustForInventory(((ISlot) slot).mouseWheelie_getIndexInInv());
+        int index = adjustForInventory(((ISlot) slot).clientSort$getIndexInInv());
         return getComponent(LockManager.class).isLockedSlotRaw(index) && !isBypass();
     }
 
@@ -35,7 +40,6 @@ public class ItemLocks {
      * Moves the hotbar from 0-8 to 27-35.
      */
     private static int adjustForInventory(int slot) {
-        // 
         if (0 <= slot && slot <= 8) {
             return slot + 27;
         } else if (9 <= slot && slot <= 35) {

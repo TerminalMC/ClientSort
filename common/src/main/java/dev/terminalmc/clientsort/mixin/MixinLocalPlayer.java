@@ -29,6 +29,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Player-related events.
+ */
 @Mixin(LocalPlayer.class)
 public abstract class MixinLocalPlayer extends AbstractClientPlayer {
     public MixinLocalPlayer(ClientLevel world, GameProfile profile) {
@@ -44,7 +47,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
     public void onSetPermissionLevel(int level, CallbackInfo ci) {
         if (!ClientSort.searchOrderUpdated) {
             ClientSort.searchOrderUpdated = true;
-            CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
+            CreativeSearchOrder.tryRefreshStackPositionMap();
         }
     }
 }

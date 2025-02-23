@@ -18,6 +18,7 @@
 package dev.terminalmc.clientsort.mixin.emi;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.main.MainSort;
 import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -47,7 +48,7 @@ public class MixinReloadWorker {
     )
     private void onRunHead(CallbackInfo ci) {
         ClientSort.updateBlockedByEmi = false;
-        ClientSort.emiReloading = true;
+        ClientSort.emiReloadLock.tryLock();
     }
 
     @Inject(
@@ -55,10 +56,11 @@ public class MixinReloadWorker {
             at = @At("RETURN")
     )
     private void onRunReturn(CallbackInfo ci) {
+        ClientSort.emiReloadLock.unlock();
         if (ClientSort.updateBlockedByEmi) {
-            CreativeSearchOrder.refreshItemSearchPositionLookup();
+            MainSort.LOG.info("EMI reload finished; updating search order");
+            CreativeSearchOrder.tryRefreshStackPositionMap();
+            ClientSort.updateBlockedByEmi = false;
         }
-        ClientSort.emiReloading = false;
-        ClientSort.updateBlockedByEmi = false;
     }
 }

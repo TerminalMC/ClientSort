@@ -25,6 +25,7 @@ subprojects {
         // Alternate license
         matching(includes: [
                 "**/inventory/**",
+                "**/main/**",
                 "**/mixin/**",
                 "**/network/**",
                 "**/util/inject/**",
@@ -160,7 +161,7 @@ String versionChangelog() {
 }
 
 static String capsLoader(String loader) {
-    switch(loader) {
+    switch (loader) {
         case "fabric": return "Fabric"
         case "quilt": return "Quilt"
         case "forge": return "Forge"

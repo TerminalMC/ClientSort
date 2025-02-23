@@ -19,25 +19,21 @@ package dev.terminalmc.clientsort.mixin;
 
 import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.config.Config;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import dev.terminalmc.clientsort.inventory.sort.InventorySorter;
-import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.inventory.sort.SortOrder;
 import dev.terminalmc.clientsort.network.InteractionManager;
-import dev.terminalmc.clientsort.util.SoundUtil;
-import dev.terminalmc.clientsort.util.inject.IContainerScreen;
+import dev.terminalmc.clientsort.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,16 +42,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-@Mixin(AbstractContainerScreen.class)
-public abstract class MixinAbstractContainerScreen extends Screen implements IContainerScreen {
-    protected MixinAbstractContainerScreen(Component textComponent_1) {
-        super(textComponent_1);
-    }
+import static dev.terminalmc.clientsort.config.Config.options;
 
-    @Shadow
-    protected abstract void slotClicked(Slot slot_1, int int_1, int int_2, ClickType slotActionType_1);
+/**
+ * Enables sorting via mouseclick or keypress.
+ */
+@Mixin(AbstractContainerScreen.class)
+public abstract class MixinAbstractContainerScreen extends Screen {
+    protected MixinAbstractContainerScreen(Component title) {
+        super(title);
+    }
 
     @Shadow
     @Final
@@ -67,6 +66,31 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     @Shadow
     private ItemStack draggingItem;
 
+    @Shadow
+    protected abstract void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
+
+    /**
+     * Supplies a {@link ContainerScreenHelper} for this screen.
+     */
+    @SuppressWarnings("unchecked")
+    @Unique
+    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>>
+            clientSort$screenHelper = Suppliers.memoize(
+            () -> ContainerScreenHelper.of(
+                    (AbstractContainerScreen<AbstractContainerMenu>) (Object) this,
+                    (slot, data, slotActionType, sound) ->
+                            new InteractionManager.CallbackEvent(() -> {
+                                slotClicked(slot, ((ISlot) slot).clientSort$getIdInContainer(),
+                                        data, slotActionType);
+                                if (sound) SoundManager.play();
+                                return InteractionManager.TICK_WAITER;
+                            })
+            )
+    );
+
+    /**
+     * Allows triggering sort via mouse click.
+     */
     @Inject(
             method = "mouseClicked",
             at = @At(value = "HEAD"),
@@ -74,15 +98,16 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     )
     private void onMouseClicked(double mouseX, double mouseY, int button,
                                 CallbackInfoReturnable<Boolean> cir) {
-        if (this.hoveredSlot != null
-                && ClientSort.SORT_KEY.matchesMouse(button)
-                && !clientSort$specialOperation(button)) {
-            mouseWheelie_triggerSort();
+        if (clientSort$shouldSort((keyMapping) -> keyMapping.matchesMouse(button))) {
+            clientSort$triggerSort();
             cir.setReturnValue(true);
             cir.cancel();
         }
     }
 
+    /**
+     * Allows triggering sort via key press.
+     */
     @Inject(
             method = "keyPressed",
             at = @At(value = "HEAD"),
@@ -90,100 +115,73 @@ public abstract class MixinAbstractContainerScreen extends Screen implements ICo
     )
     private void onKeyPressed(int keyCode, int scanCode, int modifiers,
                               CallbackInfoReturnable<Boolean> cir) {
-        if (this.hoveredSlot != null
-                && ClientSort.SORT_KEY.matches(keyCode, scanCode)
-                && !clientSort$specialOperation(keyCode, scanCode)) {
-            mouseWheelie_triggerSort();
+        if (clientSort$shouldSort((keyMapping) -> keyMapping.matches(keyCode, scanCode))) {
+            clientSort$triggerSort();
             cir.setReturnValue(true);
             cir.cancel();
         }
     }
 
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
-    @Unique
-    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
-            () -> ContainerScreenHelper.of((AbstractContainerScreen<AbstractContainerMenu>) (Object) this, (slot, data, slotActionType, sound) -> new InteractionManager.CallbackEvent(() -> {
-                slotClicked(slot, ((ISlot) slot).mouseWheelie_getIdInContainer(), data, slotActionType);
-                if (sound) SoundUtil.play();
-                return InteractionManager.TICK_WAITER;
-            }))
-    );
-
+    /**
+     * @return {@code true} if the specified input should trigger sorting and
+     * also should not trigger a vanilla operation.
+     */
     @SuppressWarnings("ConstantConditions")
-    @Override
-    public boolean mouseWheelie_triggerSort() {
-        if (hoveredSlot == null)
+    @Unique
+    private boolean clientSort$shouldSort(Function<KeyMapping, Boolean> inputMatcher) {
+        // Check that we're hovering a slot
+        if (hoveredSlot == null) return false;
+        
+        // Check that the input matches the sort key
+        if (!inputMatcher.apply(ClientSort.SORT_KEY)) return false;
+        
+        // Check that the input will not trigger a vanilla operation
+        Options options = this.minecraft.options;
+        // Pick
+        if (((inputMatcher.apply(options.keyPickItem) 
+            && this.minecraft.gameMode.hasInfiniteItems()
+            && (this.hoveredSlot.hasItem()
+                || !this.draggingItem.isEmpty()
+                || !this.menu.getCarried().isEmpty())))) {
             return false;
-        Player player = Minecraft.getInstance().player;
-        if (player.getAbilities().instabuild
-                && GLFW.glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW.GLFW_MOUSE_BUTTON_MIDDLE) != 0
-                && (!hoveredSlot.getItem().isEmpty() == menu.getCarried().isEmpty()))
-            return false;
-        InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(), (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
-        Config.Options options = Config.options();
-        SortMode sortMode;
-        if (hasShiftDown()) {
-            sortMode = options.shiftSortMode;
-        } else if (hasControlDown()) {
-            sortMode = options.ctrlSortMode;
-        } else if (hasAltDown()) {
-            sortMode = options.altSortMode;
-        } else {
-            sortMode = options.sortMode;
         }
-        if (sortMode == null) return false;
-        sorter.sort(sortMode);
+        // Drop
+        if (inputMatcher.apply(options.keyDrop) && this.hoveredSlot.hasItem()) return false;
+        // Offhand swap
+        if (inputMatcher.apply(options.keySwapOffhand)) return false;
+        // Hotbar swap
+        for (int i = 0; i < 9; i++) {
+            if (inputMatcher.apply(options.keyHotbarSlots[i])) return false;
+        }
+        // No operations
         return true;
     }
 
-    @SuppressWarnings("ConstantConditions")
+    /**
+     * Triggers sorting of this screen's inventory.
+     * @return {@code true} if sorting was completed.
+     */
     @Unique
-    private boolean clientSort$specialOperation(int button) {
-        Options options = this.minecraft.options;
-        if (((options.keyPickItem.matchesMouse(button)
-                && this.minecraft.gameMode.hasInfiniteItems()
-                && (this.hoveredSlot.hasItem()
-                    || !this.draggingItem.isEmpty()
-                    || !this.menu.getCarried().isEmpty())))
-            || (options.keyDrop.matchesMouse(button)
-                && this.hoveredSlot.hasItem())) {
-            return true;
-        }
-        else if (options.keySwapOffhand.matchesMouse(button)) {
-            return true;
-        }
-        else {
-            for(int i = 0; i < 9; i++) {
-                if (options.keyHotbarSlots[i].matchesMouse(button)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    @SuppressWarnings("ConstantConditions")
+    public boolean clientSort$triggerSort() {
+        if (hoveredSlot == null) return false;
 
-    @SuppressWarnings("ConstantConditions")
-    @Unique
-    private boolean clientSort$specialOperation(int keyCode, int scanCode) {
-        Options options = this.minecraft.options;
-        if (((options.keyPickItem.matches(keyCode, scanCode)
-                && this.minecraft.gameMode.hasInfiniteItems()
-                && (this.hoveredSlot.hasItem()
-                    || !this.draggingItem.isEmpty()
-                    || !this.menu.getCarried().isEmpty())))
-            || (options.keyDrop.matches(keyCode, scanCode)
-                && this.hoveredSlot.hasItem())) {
-            return true;
+        SortOrder sortOrder;
+        if (hasShiftDown()) {
+            sortOrder = options().shiftSortOrder;
+        } else if (hasControlDown()) {
+            sortOrder = options().ctrlSortOrder;
+        } else if (hasAltDown()) {
+            sortOrder = options().altSortOrder;
+        } else {
+            sortOrder = options().sortOrder;
         }
-        else if (options.keySwapOffhand.matches(keyCode, scanCode)) {
+
+        if (sortOrder != null || sortOrder != SortOrder.NONE) {
+            InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(),
+                    (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
+            sorter.sort(sortOrder);
             return true;
-        }
-        else {
-            for(int i = 0; i < 9; i++) {
-                if (options.keyHotbarSlots[i].matches(keyCode, scanCode)) {
-                    return true;
-                }
-            }
         }
         return false;
     }

@@ -7,13 +7,12 @@
   "mixins": [
   ],
   "client": [
-    "MixinSlot",
-    "emi.MixinReloadWorker",
     "MixinAbstractContainerScreen",
     "MixinClientPacketListener",
-    "MixinCreativeSlot",
     "MixinLocalPlayer",
-    "accessor.LocalPlayerAccessor"
+    "emi.MixinReloadWorker",
+    "slot.MixinCreativeSlot",
+    "slot.MixinSlot"
   ],
   "server": [
   ],

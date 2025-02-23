@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +14,27 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.network;
+package dev.terminalmc.clientsort.platform.services;
 
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public interface ClickEventFactory {
-    InteractionManager.InteractionEvent create(Slot slot, int action, ClickType slotActionType, boolean playSound);
+import java.nio.file.Path;
+
+public interface IPlatformInfo {
+
+    /**
+     * @return the configuration directory of the instance.
+     */
+    Path getConfigDir();
+
+    /**
+     * @return {@code true} if the payload type can be sent from the client to
+     * the server.
+     */
+    boolean canSendToServer(CustomPacketPayload.Type<?> type);
+    
+    /**
+     * Sends the payload to the server.
+     */
+    void sendToServer(CustomPacketPayload payload);
 }

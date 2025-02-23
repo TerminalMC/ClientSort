@@ -17,7 +17,7 @@
 package dev.terminalmc.clientsort.gui.screen;
 
 import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.inventory.sort.SortMode;
+import dev.terminalmc.clientsort.inventory.sort.SortOrder;
 import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -79,26 +79,41 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.interactionRateClient = val)
                 .build());
 
-        general.addEntry(eb.startEnumSelector(localized("option", "hotbarMode"),
-                        Config.Options.HotbarMode.class, options.hotbarMode)
-                .setEnumNameProvider(val -> localized("hotbarMode",
-                        ((Config.Options.HotbarMode)val).lowerName()))
-                .setTooltipSupplier(val -> Optional.of(new Component[]{
-                        localized("hotbarMode", val.lowerName() + ".tooltip")
-                }))
-                .setDefaultValue(Config.Options.hotbarModeDefault)
-                .setSaveConsumer(val -> options.hotbarMode = val)
+        general.addEntry(eb.startBooleanToggle(localized("option", "serverAcceleratedSorting"),
+                        options.serverAcceleratedSorting)
+                .setTooltip(localized("option", "serverAcceleratedSorting.tooltip"))
+                .setDefaultValue(Config.Options.serverAcceleratedSortingDefault)
+                .setSaveConsumer(val -> options.serverAcceleratedSorting = val)
                 .build());
 
-        general.addEntry(eb.startEnumSelector(localized("option", "extraSlotMode"),
-                        Config.Options.ExtraSlotMode.class, options.extraSlotMode)
-                .setEnumNameProvider(val -> localized("extraSlotMode",
-                        ((Config.Options.ExtraSlotMode)val).lowerName()))
+        general.addEntry(eb.startBooleanToggle(localized("option", "optimizedCreativeSorting"),
+                        options.optimizedCreativeSorting)
+                .setTooltip(localized("option", "optimizedCreativeSorting.tooltip"))
+                .setDefaultValue(Config.Options.optimizedCreativeSortingDefault)
+                .setSaveConsumer(val -> {
+                    options.optimizedCreativeSorting = val;
+                    if (val) CreativeSearchOrder.tryRefreshStackPositionMap();
+                })
+                .build());
+
+        general.addEntry(eb.startEnumSelector(localized("option", "hotbarScope"),
+                        Config.Options.HotbarScope.class, options.hotbarScope)
+                .setEnumNameProvider(val -> localized("hotbarScope", val.name()))
                 .setTooltipSupplier(val -> Optional.of(new Component[]{
-                        localized("extraSlotMode", val.lowerName() + ".tooltip")
+                        localized("hotbarScope", val + ".tooltip")
                 }))
-                .setDefaultValue(Config.Options.extraSlotModeDefault)
-                .setSaveConsumer(val -> options.extraSlotMode = val)
+                .setDefaultValue(Config.Options.hotbarScopeDefault)
+                .setSaveConsumer(val -> options.hotbarScope = val)
+                .build());
+
+        general.addEntry(eb.startEnumSelector(localized("option", "extraSlotScope"),
+                        Config.Options.ExtraSlotScope.class, options.extraSlotScope)
+                .setEnumNameProvider(val -> localized("extraSlotScope", val.name()))
+                .setTooltipSupplier(val -> Optional.of(new Component[]{
+                        localized("extraSlotScope", val + ".tooltip")
+                }))
+                .setDefaultValue(Config.Options.extraSlotScopeDefault)
+                .setSaveConsumer(val -> options.extraSlotScope = val)
                 .build());
 
         general.addEntry(eb.startBooleanToggle(localized("option", "lmbBundle"),
@@ -107,47 +122,38 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.lmbBundleDefault)
                 .setSaveConsumer(val -> {
                     options.lmbBundle = val;
-                    if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
+                    if (val) CreativeSearchOrder.tryRefreshStackPositionMap();
                 })
                 .build());
 
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
-        sort.addEntry(eb.startSelector(localized("option", "sortMode"),
-                        SortMode.SORT_MODES.keySet().toArray(), options.sortModeStr)
+        sort.addEntry(eb.startSelector(localized("option", "sortOrder"),
+                        SortOrder.SORT_MODES.keySet().toArray(), options.sortOrderStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.sortModeDefault)
-                .setSaveConsumer(val -> options.sortModeStr = (String)val)
+                .setDefaultValue(Config.Options.sortOrderDefault)
+                .setSaveConsumer(val -> options.sortOrderStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "shiftSortMode"),
-                        SortMode.SORT_MODES.keySet().toArray(), options.shiftSortModeStr)
+        sort.addEntry(eb.startSelector(localized("option", "shiftSortOrder"),
+                        SortOrder.SORT_MODES.keySet().toArray(), options.shiftSortOrderStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.shiftSortModeDefault)
-                .setSaveConsumer(val -> options.shiftSortModeStr = (String)val)
+                .setDefaultValue(Config.Options.shiftSortOrderDefault)
+                .setSaveConsumer(val -> options.shiftSortOrderStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "ctrlSortMode"),
-                        SortMode.SORT_MODES.keySet().toArray(), options.ctrlSortModeStr)
+        sort.addEntry(eb.startSelector(localized("option", "ctrlSortOrder"),
+                        SortOrder.SORT_MODES.keySet().toArray(), options.ctrlSortOrderStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.ctrlSortModeDefault)
-                .setSaveConsumer(val -> options.ctrlSortModeStr = (String)val)
+                .setDefaultValue(Config.Options.ctrlSortOrderDefault)
+                .setSaveConsumer(val -> options.ctrlSortOrderStr = (String)val)
                 .build());
 
-        sort.addEntry(eb.startSelector(localized("option", "altSortMode"),
-                        SortMode.SORT_MODES.keySet().toArray(), options.altSortModeStr)
+        sort.addEntry(eb.startSelector(localized("option", "altSortOrder"),
+                        SortOrder.SORT_MODES.keySet().toArray(), options.altSortOrderStr)
                 .setNameProvider(val -> localized("sortOrder", (String)val))
-                .setDefaultValue(Config.Options.altSortModeDefault)
-                .setSaveConsumer(val -> options.altSortModeStr = (String)val)
-                .build());
-
-        sort.addEntry(eb.startBooleanToggle(localized("option", "optimizedCreativeSorting"),
-                        options.optimizedCreativeSorting)
-                .setDefaultValue(Config.Options.optimizedCreativeSortingDefault)
-                .setSaveConsumer(val -> {
-                    options.optimizedCreativeSorting = val;
-                    if (val) CreativeSearchOrder.tryRefreshItemSearchPositionLookup();
-                })
+                .setDefaultValue(Config.Options.altSortOrderDefault)
+                .setSaveConsumer(val -> options.altSortOrderStr = (String)val)
                 .build());
 
         ConfigCategory sound = builder.getOrCreateCategory(localized("option", "sound"));

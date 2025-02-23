@@ -16,17 +16,17 @@
 
 package dev.terminalmc.clientsort.util;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.main.MainSort;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public final class Localization {
     public static String translationKey(String path) {
-        return ClientSort.MOD_ID + "." + path;
+        return MainSort.MOD_ID + "." + path;
     }
 
     public static String translationKey(String domain, String path) {
-        return domain + "." + ClientSort.MOD_ID + "." + path;
+        return domain + "." + MainSort.MOD_ID + "." + path;
     }
 
     public static MutableComponent localized(String path, Object... args) {

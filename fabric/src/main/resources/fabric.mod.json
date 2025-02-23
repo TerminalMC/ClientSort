@@ -9,12 +9,12 @@
   "contributors": [$mod_contributors_list],
   "license": "${mod_license}",
 
-  "environment": "client",
+  "environment": "*",
 
   "provides": [],
 
   "entrypoints": {
-    "main": [],
+    "main": ["${mod_group}.${mod_id}.main.MainSortFabric"],
     "client": ["${mod_group}.${mod_id}.${mod_name}Fabric"],
     "server": [],
     "modmenu": ["${mod_group}.${mod_id}.gui.screen.ModMenuIntegration"]
@@ -43,7 +43,9 @@
 
   "conflicts": {},
 
-  "breaks": {},
+  "breaks": {
+    "mousewheelie": "*"
+  },
 
   "contact": {
     "homepage": "${homepage_url}",

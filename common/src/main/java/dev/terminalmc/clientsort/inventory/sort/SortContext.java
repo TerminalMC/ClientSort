@@ -17,25 +17,28 @@
 
 package dev.terminalmc.clientsort.inventory.sort;
 
+import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
 /**
  * Additional context for executing a sort.
  *
- * @see SortMode#sort(int[], ItemStack[], SortContext)
+ * @see SortOrder#sort
  */
 public class SortContext {
     /**
      * The screen that is currently sorted on.
      */
     AbstractContainerScreen<?> screen;
+    
     /**
      * The slots that are the target of the current sort action.
-     * These slots are usually in the same scope (see {@link dev.terminalmc.clientsort.inventory.ContainerScreenHelper.getScope(Slot)}).
+     * 
+     * <p>These slots are usually in the same scope (see
+     * {@link ContainerScreenHelper#getScope(Slot)}).</p>
      */
     List<Slot> relevantSlots;
 
