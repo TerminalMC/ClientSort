@@ -253,12 +253,14 @@ public class Config {
         return instance;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Config getAndSave() {
         get();
         save();
         return instance;
     }
 
+    @SuppressWarnings("unused")
     public static Config resetAndSave() {
         instance = new Config();
         save();
@@ -280,6 +282,7 @@ public class Config {
         return config != null ? config : new Config();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static @Nullable Config load(Path file, Gson gson) {
         try (InputStreamReader reader = new InputStreamReader(
                 new FileInputStream(file.toFile()), StandardCharsets.UTF_8)) {

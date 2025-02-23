@@ -42,6 +42,7 @@ EMI reload is finished.
 @Mixin(targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker", remap = false)
 public class MixinReloadWorker {
 
+    @SuppressWarnings({ "UnresolvedMixinReference", "ResultOfMethodCallIgnored" })
     @Inject(
             method = "run",
             at = @At("HEAD")
@@ -51,6 +52,7 @@ public class MixinReloadWorker {
         ClientSort.emiReloadLock.tryLock();
     }
 
+    @SuppressWarnings("UnresolvedMixinReference")
     @Inject(
             method = "run",
             at = @At("RETURN")

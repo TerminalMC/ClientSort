@@ -53,6 +53,7 @@ public class ConfigScreenProvider {
         }
 
         @Override
+        @SuppressWarnings("ConstantConditions")
         public void init() {
             MultiLineTextWidget messageWidget = new MultiLineTextWidget(
                     width / 2 - 120, height / 2 - 40,

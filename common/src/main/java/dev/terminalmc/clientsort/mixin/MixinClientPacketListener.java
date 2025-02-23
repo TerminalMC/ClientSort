@@ -19,11 +19,7 @@ package dev.terminalmc.clientsort.mixin;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.network.InteractionManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.CommonListenerCookie;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
@@ -38,10 +34,7 @@ import static dev.terminalmc.clientsort.config.Config.options;
  * Network-related events.
  */
 @Mixin(ClientPacketListener.class)
-public abstract class MixinClientPacketListener extends ClientCommonPacketListenerImpl {
-    protected MixinClientPacketListener(Minecraft client, Connection connection, CommonListenerCookie connectionState) {
-        super(client, connection, connectionState);
-    }
+public abstract class MixinClientPacketListener {
 
     @Inject(method = "handleLogin", at = @At("HEAD"))
     private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {

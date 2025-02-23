@@ -52,6 +52,7 @@ import static dev.terminalmc.clientsort.config.Config.options;
  */
 @Mixin(AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen extends Screen {
+    
     protected MixinAbstractContainerScreen(Component title) {
         super(title);
     }
@@ -99,9 +100,10 @@ public abstract class MixinAbstractContainerScreen extends Screen {
     private void onMouseClicked(double mouseX, double mouseY, int button,
                                 CallbackInfoReturnable<Boolean> cir) {
         if (clientSort$shouldSort((keyMapping) -> keyMapping.matchesMouse(button))) {
-            clientSort$triggerSort();
-            cir.setReturnValue(true);
-            cir.cancel();
+            if (clientSort$triggerSort()) {
+                cir.setReturnValue(true);
+                cir.cancel();
+            }
         }
     }
 
@@ -116,9 +118,10 @@ public abstract class MixinAbstractContainerScreen extends Screen {
     private void onKeyPressed(int keyCode, int scanCode, int modifiers,
                               CallbackInfoReturnable<Boolean> cir) {
         if (clientSort$shouldSort((keyMapping) -> keyMapping.matches(keyCode, scanCode))) {
-            clientSort$triggerSort();
-            cir.setReturnValue(true);
-            cir.cancel();
+            if (clientSort$triggerSort()) {
+                cir.setReturnValue(true);
+                cir.cancel();
+            }
         }
     }
 
@@ -177,7 +180,7 @@ public abstract class MixinAbstractContainerScreen extends Screen {
             sortOrder = options().sortOrder;
         }
 
-        if (sortOrder != null || sortOrder != SortOrder.NONE) {
+        if (sortOrder != null && sortOrder != SortOrder.NONE) {
             InventorySorter sorter = new InventorySorter(clientSort$screenHelper.get(),
                     (AbstractContainerScreen<?>) (Object) this, hoveredSlot);
             sorter.sort(sortOrder);

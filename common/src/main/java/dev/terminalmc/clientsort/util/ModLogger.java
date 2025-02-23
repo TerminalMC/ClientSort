@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 
+@SuppressWarnings("unused")
 public class ModLogger {
     private final Logger logger;
 
@@ -42,7 +43,7 @@ public class ModLogger {
         if (!logger.isEnabled(level)) return;
         logger.log(level, edit(level, message), args);
     }
-
+    
     public void trace(String message, Object... args){
         log(Level.TRACE, message, args);
     }

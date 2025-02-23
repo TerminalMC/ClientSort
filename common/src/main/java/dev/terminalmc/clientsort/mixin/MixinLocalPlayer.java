@@ -17,12 +17,9 @@
 
 package dev.terminalmc.clientsort.mixin;
 
-import com.mojang.authlib.GameProfile;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,10 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Player-related events.
  */
 @Mixin(LocalPlayer.class)
-public abstract class MixinLocalPlayer extends AbstractClientPlayer {
-    public MixinLocalPlayer(ClientLevel world, GameProfile profile) {
-        super(world, profile);
-    }
+public abstract class MixinLocalPlayer {
 
     @Inject(method = "clientSideCloseContainer", at = @At("HEAD"))
     public void onContainerClosed(CallbackInfo callbackInfo) {

@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedAttribute, HtmlDeprecatedTag, XmlDeprecatedElement -->
 <div align="center"><center>
 
 <img alt="Icon" width=100 src="https://raw.githubusercontent.com/TerminalMC/ClientSort/HEAD/common/src/main/resources/assets/clientsort/icon.png">

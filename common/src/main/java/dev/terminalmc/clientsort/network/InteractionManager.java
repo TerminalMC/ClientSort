@@ -140,6 +140,7 @@ public class InteractionManager {
     public interface Waiter {
         boolean trigger(TriggerType triggerType);
 
+        @SuppressWarnings("unused")
         static Waiter equal(TriggerType triggerType) {
             return triggerType::equals;
         }

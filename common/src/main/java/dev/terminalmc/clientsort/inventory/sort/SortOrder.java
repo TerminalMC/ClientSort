@@ -49,6 +49,7 @@ public abstract class SortOrder {
         return sortOrder;
     }
 
+    @SuppressWarnings("unused")
     public static void unregister(String name) {
         SORT_MODES.remove(name);
     }
@@ -142,10 +143,12 @@ public abstract class SortOrder {
                     for (int i = 0; i < stacks.length; i++) {
                         final ItemStack stack = stacks[i];
                         sortValues[i] = lookup.computeIfAbsent(StackMatcher.of(stack), matcher -> {
+                            @SuppressWarnings("SuspiciousMethodCalls")
                             int index = displayStackList.indexOf(matcher);
                             if (index != -1) return index;
                             return lookup.computeIfAbsent(StackMatcher.ignoreNbt(stack), 
                                     altMatcher -> {
+                                        @SuppressWarnings("SuspiciousMethodCalls")
                                         int plainIndex = displayStackList.indexOf(altMatcher);
                                         if (plainIndex == -1) return Integer.MAX_VALUE;
                                         return plainIndex;

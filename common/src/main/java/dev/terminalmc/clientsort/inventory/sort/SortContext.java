@@ -42,6 +42,7 @@ public class SortContext {
      */
     List<Slot> relevantSlots;
 
+    @SuppressWarnings("unused")
     public <T> SortContext(AbstractContainerScreen<?> containerScreen, List<Slot> list) {
         this.screen = containerScreen;
         this.relevantSlots = list;

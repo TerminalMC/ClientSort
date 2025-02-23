@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
+@SuppressWarnings("unused")
 public class ClientSortFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {

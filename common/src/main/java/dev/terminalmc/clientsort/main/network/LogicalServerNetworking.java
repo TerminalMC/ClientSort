@@ -39,6 +39,7 @@ public class LogicalServerNetworking {
     /**
      * Handles a {@link SortPayload} sent by a client.
      */
+    @SuppressWarnings("ConstantConditions")
 	public static void onSortPayload(SortPayload payload, MinecraftServer server,
                                      ServerPlayer player) {
 		if (player.containerMenu == null) {
@@ -154,6 +155,7 @@ public class LogicalServerNetworking {
     /**
      * @return {@code true} if the specified slot ID is a valid index.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean validSlotId(AbstractContainerMenu screenHandler, int slotId) {
         if (slotId < 0 || slotId >= screenHandler.slots.size()) {
             MainSort.LOG.warn("Sort payload contains invalid slot id {} out of bounds " +
@@ -168,6 +170,7 @@ public class LogicalServerNetworking {
      * @return {@code true} if the specified slot ID refers to a slot in the
      * specified {@link Container}.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	private static boolean validSlot(AbstractContainerMenu screenHandler, int slotId, Container targetInv) {
         if (!validSlotId(screenHandler, slotId)) {
             return false;

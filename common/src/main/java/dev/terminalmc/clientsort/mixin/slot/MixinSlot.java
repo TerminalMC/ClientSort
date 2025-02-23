@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Slot.class)
 public class MixinSlot implements ISlot {
+    
     @Shadow
     @Final
     private int slot;
