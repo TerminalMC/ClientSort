@@ -339,7 +339,7 @@ public class InventorySorter {
                 // Swap the current stack with the target stack, using right
                 // click if required for bundles
                 if (
-                        options().lmbBundle && (
+                        !options().rmbBundle && (
                             // Clicking on bundle with item,
                             (backingStacks[id] instanceof BundleItem
                                     && !(carriedItem instanceof AirItem))
