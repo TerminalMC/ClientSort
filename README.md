@@ -42,6 +42,12 @@ Neo/Forge: [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 ClientSort uses code from [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) by
 [Siphalor](https://github.com/Siphalor), under license.
 
+### Related Mods
+
+- [Mouse Tweaks](https://modrinth.com/mod/aC3cM3Vq) - item scrolling, mouse dragging.
+- [More Mouse Tweaks](https://modrinth.com/mod/S8drsznD) - quick-crafting/trading, quick-move and quick-drop.
+- [Tweakeroo](https://modrinth.com/mod/t5wuYk45) - hand restock, auto tool-switch, tool break prevention (+ lots more).
+
 ### Contact
 
 [![Discord Server](https://img.shields.io/discord/1103153365216669797?logo=discord&label=Discord%20Server&color=%235865F2)](https://discord.terminalmc.dev)
