@@ -54,7 +54,8 @@ public class ClientSort {
     }
 
     public static void setInteractionManagerTickRate(Config.Options options) {
-        if (Minecraft.getInstance().getSingleplayerServer() == null) {
+        if (Minecraft.getInstance() == null // Workaround for a NeoForge quirk
+                || Minecraft.getInstance().getSingleplayerServer() == null) {
             InteractionManager.setTickRate(options.interactionRateServer);
         } else {
             InteractionManager.setTickRate(options.interactionRateClient);
