@@ -32,7 +32,6 @@ dependencies {
 }
 
 neoForge {
-    version = neoforge_version // Shut up
     neoFormVersion = neoform_version
     // Automatically enable AccessTransformers if the file exists
     def at = file("src/main/resources/META-INF/accesstransformer.cfg")
