@@ -39,4 +39,9 @@ public class FabricPlatformInfo implements IPlatformInfo {
     public void sendToServer(CustomPacketPayload payload) {
         ClientPlayNetworking.send(payload);
     }
+
+    @Override
+    public boolean isModLoaded(String modId) {
+        return FabricLoader.getInstance().isModLoaded(modId);
+    }
 }

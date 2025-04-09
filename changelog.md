@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- Improved EMI compatibility
+
 ## 1.3.0
 
 - Enabled server accelerated sorting

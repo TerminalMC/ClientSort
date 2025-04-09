@@ -37,4 +37,9 @@ public interface IPlatformInfo {
      * Sends the payload to the server.
      */
     void sendToServer(CustomPacketPayload payload);
+
+    /**
+     * @return true if the mod is loaded, false otherwise.
+     */
+    boolean isModLoaded(String modId);
 }
