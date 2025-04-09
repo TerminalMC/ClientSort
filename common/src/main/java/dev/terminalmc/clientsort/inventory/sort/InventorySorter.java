@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.inventory.sort;
 
 import dev.terminalmc.clientsort.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
-import dev.terminalmc.clientsort.main.network.SortPayload;
+import dev.terminalmc.clientsort.main.network.ServerboundSortPacket;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.platform.Services;
 import dev.terminalmc.clientsort.util.SoundManager;
@@ -95,7 +95,7 @@ public class InventorySorter {
             stack = stacks[i];
             if (stack.isEmpty()) continue;
             int stackSize = stack.getCount();
-            if (stackSize >= stack.getItem().getDefaultMaxStackSize()) continue;
+            if (stackSize >= stack.getItem().getMaxStackSize()) continue;
             // Partial stack found, pick it up
             clickEvents.add(screenHelper.createClickEvent(
                     inventorySlots[i], 0, ClickType.PICKUP, false));
@@ -104,15 +104,15 @@ public class InventorySorter {
             for (int j = 0; j < i; j++) {
                 ItemStack target = stacks[j];
                 if (target.isEmpty()) continue;
-                if (target.getCount() >= target.getItem().getDefaultMaxStackSize()) continue;
-                if (ItemStack.isSameItemSameComponents(stack, target)) {
+                if (target.getCount() >= target.getItem().getMaxStackSize()) continue;
+                if (ItemStack.isSameItemSameTags(stack, target)) {
                     // Matching partial stack found, click on it to place as
                     // much of the carried stack as possible
                     clickEvents.add(screenHelper.createClickEvent(
                             inventorySlots[j], 0, ClickType.PICKUP, false));
                     // Check how many items would be placed by the click, and
                     // update logical record
-                    int delta = target.getItem().getDefaultMaxStackSize() - target.getCount();
+                    int delta = target.getItem().getMaxStackSize() - target.getCount();
                     delta = Math.min(delta, stackSize);
                     stackSize -= delta;
                     target.setCount(target.getCount() + delta);
@@ -165,7 +165,8 @@ public class InventorySorter {
         SortContext context = new SortContext(containerScreen, Arrays.asList(inventorySlots));
         sortIds = sortOrder.sort(sortIds, stacks, context);
         
-        if (options().serverAcceleratedSorting && Services.PLATFORM.canSendToServer(SortPayload.TYPE)) {
+        if (options().serverAcceleratedSorting
+                && Services.PLATFORM.canSendToServer(ServerboundSortPacket.ID)) {
             // Send the key off to the server
             sortOnServer(sortIds);
         } else {
@@ -192,8 +193,8 @@ public class InventorySorter {
         
         // Send the instructions to the server
         InteractionManager.push(() -> {
-            Services.PLATFORM.sendToServer(
-                    new SortPayload(containerScreen.getMenu().containerId, slotMapping));
+            Services.PLATFORM.sendToServer(ServerboundSortPacket.ID, new ServerboundSortPacket(
+                    containerScreen.getMenu().containerId, slotMapping));
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -301,7 +302,7 @@ public class InventorySorter {
                 if (
                         stacks[id].getItem() == currentStack.getItem()
                         && !doneOrEmpty.get(slotCount + id)
-                        && ItemStack.isSameItemSameComponents(stacks[id], currentStack)
+                        && ItemStack.isSameItemSameTags(stacks[id], currentStack)
                 ) {
                     // If the current stack and the target stack are completely
                     // equal, then we can skip this step in the chain

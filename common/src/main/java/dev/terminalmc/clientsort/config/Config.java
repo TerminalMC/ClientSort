@@ -129,45 +129,6 @@ public class Config {
 
         public static final boolean soundAllowOverlapDefault = true;
         public boolean soundAllowOverlap = soundAllowOverlapDefault;
-        
-        // Legacy from pre v1.3.0
-
-        public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
-        public HotbarMode hotbarMode = hotbarModeDefault;
-        public enum HotbarMode {
-            NONE,
-            HARD,
-            SOFT;
-
-            public HotbarScope update() {
-                return switch(this) {
-                    case NONE -> HotbarScope.INVENTORY;
-                    case HARD -> HotbarScope.HOTBAR;
-                    case SOFT -> HotbarScope.NONE;
-                };
-            }
-        }
-
-        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
-        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
-        public enum ExtraSlotMode {
-            NONE,
-            HOTBAR,
-            INVENTORY;
-
-            public ExtraSlotScope update() {
-                return switch(this) {
-                    case NONE -> ExtraSlotScope.NONE;
-                    case HOTBAR -> ExtraSlotScope.HOTBAR;
-                    case INVENTORY -> ExtraSlotScope.INVENTORY;
-                };
-            }
-        }
-        
-        public String sortModeStr = sortOrderDefault;
-        public String shiftSortModeStr = shiftSortOrderDefault;
-        public String ctrlSortModeStr = ctrlSortOrderDefault;
-        public String altSortModeStr = altSortOrderDefault;
     }
 
     // Validation
@@ -176,7 +137,6 @@ public class Config {
      * Ensures that all config values are valid.
      */
     private void validate() {
-        update();
         // interactionRateServer
         if (options.interactionRateServer < Options.interactionRateMin)
             options.interactionRateServer = Options.interactionRateMin;
@@ -210,36 +170,6 @@ public class Config {
             options.soundVolume = Options.soundVolumeMin;
         if (options.soundVolume > Options.soundVolumeMax)
             options.soundVolume = Options.soundVolumeMax;
-    }
-
-    /**
-     * Updates legacy (pre v1.3.0) config values.
-     */
-    private void update() {
-        if (options.hotbarMode != Options.hotbarModeDefault) {
-            options.hotbarScope = options.hotbarMode.update();
-            options.hotbarMode = Options.hotbarModeDefault;
-        }
-        if (options.extraSlotMode != Options.extraSlotModeDefault) {
-            options.extraSlotScope = options.extraSlotMode.update();
-            options.extraSlotMode = Options.extraSlotModeDefault;
-        }
-        if (!Options.sortOrderDefault.equals(options.sortModeStr)) {
-            options.sortOrderStr = options.sortModeStr;
-            options.sortModeStr = Options.sortOrderDefault;
-        }
-        if (!Options.shiftSortOrderDefault.equals(options.shiftSortModeStr)) {
-            options.shiftSortOrderStr = options.shiftSortModeStr;
-            options.shiftSortModeStr = Options.shiftSortOrderDefault;
-        }
-        if (!Options.ctrlSortOrderDefault.equals(options.ctrlSortModeStr)) {
-            options.ctrlSortOrderStr = options.ctrlSortModeStr;
-            options.ctrlSortModeStr = Options.ctrlSortOrderDefault;
-        }
-        if (!Options.altSortOrderDefault.equals(options.altSortModeStr)) {
-            options.altSortOrderStr = options.altSortModeStr;
-            options.altSortModeStr = Options.altSortOrderDefault;
-        }
     }
     
     // Instance management
