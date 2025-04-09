@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.mixin.emi;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.main.MainSort;
 import dev.terminalmc.clientsort.util.item.CreativeSearchOrder;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,14 +47,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker", remap = false)
 public class MixinReloadWorker {
 
-    @SuppressWarnings({ "UnresolvedMixinReference", "ResultOfMethodCallIgnored" })
+    @SuppressWarnings("UnresolvedMixinReference")
     @Inject(
             method = "run",
             at = @At("HEAD")
     )
     private void onRunHead(CallbackInfo ci) {
         ClientSort.updateBlockedByEmi = false;
-        ClientSort.emiReloadLock.tryLock();
+        ClientSort.emiReloading = true;
     }
 
     @SuppressWarnings("UnresolvedMixinReference")
@@ -62,11 +63,12 @@ public class MixinReloadWorker {
             at = @At("RETURN")
     )
     private void onRunReturn(CallbackInfo ci) {
-        ClientSort.emiReloadLock.unlock();
         if (ClientSort.updateBlockedByEmi) {
-            MainSort.LOG.info("EMI reload finished; updating search order");
-            CreativeSearchOrder.tryRefreshStackPositionMap();
-            ClientSort.updateBlockedByEmi = false;
+            Minecraft.getInstance().execute(() -> {
+                MainSort.LOG.info("EMI reload finished; updating search order");
+                CreativeSearchOrder.tryRefreshStackPositionMap();
+            });
         }
+        ClientSort.emiReloading = false;
     }
 }

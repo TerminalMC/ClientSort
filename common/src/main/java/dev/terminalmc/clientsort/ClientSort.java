@@ -24,9 +24,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
 public class ClientSort {
@@ -36,8 +33,8 @@ public class ClientSort {
     
     public static boolean searchOrderUpdated = false;
 
-    public static Lock emiReloadLock = new ReentrantLock();
-    public static boolean updateBlockedByEmi = false;
+    public static volatile boolean emiReloading = false;
+    public static volatile boolean updateBlockedByEmi = false;
 
     public static void init() {
         Config.getAndSave();

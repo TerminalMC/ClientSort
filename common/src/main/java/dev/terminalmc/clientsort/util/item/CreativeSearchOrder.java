@@ -71,12 +71,11 @@ public class CreativeSearchOrder {
      */
     public static void tryRefreshStackPositionMap() {
         if (Config.options().optimizedCreativeSorting) {
-            if (ClientSort.emiReloadLock.tryLock()) {
-                refreshStackPositionMap();
-                ClientSort.emiReloadLock.unlock();
-            } else {
-                MainSort.LOG.info("Search order update blocked by EMI reload, waiting...");
+            if (ClientSort.emiReloading) {
                 ClientSort.updateBlockedByEmi = true;
+                MainSort.LOG.info("Search order update blocked by EMI reload, waiting...");
+            } else {
+                refreshStackPositionMap();
             }
         } else {
             Lock lock = stackPositionMapLock.writeLock();
