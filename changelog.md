@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+- Fixed a crash on NeoForge introduced in v1.3.1
+
 ## 1.3.1
 
 - Improved EMI compatibility
