@@ -1,6 +1,8 @@
 plugins {
     id("fabric-loom") version("${loom_version}") apply(false)
-    id("net.neoforged.moddev") version("${moddev_version}") apply(false)
+    id("net.minecraftforge.gradle") version("${forgegradle_version}") apply(false)
+    id("org.spongepowered.gradle.vanilla") version("${vanillagradle_version}") apply(false)
+    id("org.spongepowered.mixin") version("${mixingradle_version}") apply(false)
     id("org.cadixdev.licenser") version("${licenser_version}") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("${mpp_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
@@ -42,7 +44,8 @@ subprojects {
 
         afterEvaluate {
             publishMods {
-                file = project.name == "fabric" ? remapJar.archiveFile : jar.archiveFile
+                file = project.name == "fabric" ? remapJar.archiveFile : name == "forge"
+                        ? project.file("build/libs/${mod_id}-${name}-${mod_version}.jar") : jar.archiveFile
                 version = mod_version
                 type = me.modmuss50.mpp.ReleaseType.of(release_type)
                 displayName = "v${mod_version}-${capsLoader(project.name)}"
