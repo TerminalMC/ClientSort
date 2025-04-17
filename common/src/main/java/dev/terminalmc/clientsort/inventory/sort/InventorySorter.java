@@ -19,12 +19,15 @@ package dev.terminalmc.clientsort.inventory.sort;
 
 import dev.terminalmc.clientsort.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.inventory.ContainerScreenHelper;
+import dev.terminalmc.clientsort.main.MainSort;
 import dev.terminalmc.clientsort.main.network.SortPayload;
 import dev.terminalmc.clientsort.network.InteractionManager;
 import dev.terminalmc.clientsort.platform.Services;
 import dev.terminalmc.clientsort.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
@@ -61,6 +64,8 @@ public class InventorySorter {
         for (int i = 0; i < inventorySlots.length; i++) {
             stacks[i] = inventorySlots[i].getItem();
         }
+        
+        logInventorySlots(inventorySlots);
     }
 
     /**
@@ -68,6 +73,7 @@ public class InventorySorter {
      * {@code originSlot}.
      */
     private Slot[] collectSlots(Slot originSlot) {
+        LocalPlayer player = Minecraft.getInstance().player;
         Scope originScope = screenHelper.getScope(originSlot);
         if (originScope == Scope.INVALID) return new Slot[0];
         
@@ -75,6 +81,8 @@ public class InventorySorter {
         for (Slot slot : containerScreen.getMenu().slots) {
             // Ignore slots in different scope
             if (originScope != screenHelper.getScope(slot)) continue;
+            // Ignore inaccessible slots
+            if (player != null && !slot.mayPickup(player)) continue;
             // Ignore locked slots
             if (ItemLocksWrapper.isLocked(slot)) continue;
             // Slot is valid
@@ -374,5 +382,17 @@ public class InventorySorter {
                 // can break the chain.
             } while (!doneOrEmpty.get(id));
         }
+    }
+
+    private static void logInventorySlots(Slot[] inventorySlots) {
+        // Log inventory array
+        StringBuilder arr = new StringBuilder("[");
+        for (Slot inventorySlot : inventorySlots) {
+            arr.append(inventorySlot.index);
+            arr.append(":");
+            arr.append(inventorySlot.getItem().getDisplayName().getString());
+            arr.append(", ");
+        }
+        MainSort.LOG.warn(arr.length() == 1 ? "[]" : arr.substring(0, arr.length() - 2) + "]");
     }
 }

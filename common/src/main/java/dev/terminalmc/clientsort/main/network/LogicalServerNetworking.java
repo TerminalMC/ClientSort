@@ -28,7 +28,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Handles sorting via a {@link SortPayload} on the logical server side.
@@ -62,39 +63,46 @@ public class LogicalServerNetworking {
      */
 	private static void sort(Player player, AbstractContainerMenu screenHandler,
                              int[] slotMapping) {
-		if (!validMapping(player, screenHandler, slotMapping)) {
+        Map<Integer,Slot> slots = new TreeMap<>();
+        Map<Integer,ItemStack> stacks = new TreeMap<>();
+        for (Slot slot : screenHandler.slots) {
+            slots.put(slot.index, slot);
+            stacks.put(slot.index, slot.getItem());
+        }
+        
+        logScreenHandlerSlots(screenHandler);
+        logSlotMapping(slotMapping);
+        
+		if (!validMapping(player, slots, slotMapping)) {
 			MainSort.LOG.warn("Sort payload from player {} contains invalid data, ignoring!",
                     player);
 			return;
 		}
 
-		List<ItemStack> stacks = screenHandler.slots.stream().map(Slot::getItem).toList();
-
-		for (int i = 0; i < slotMapping.length; i += 2) {
+		for (int i = 0; i < slotMapping.length - 1; i += 2) {
 			int originSlotId = slotMapping[i];
 			int destSlotId = slotMapping[i + 1];
-
-			screenHandler.slots.get(destSlotId).setByPlayer(stacks.get(originSlotId));
+            slots.get(destSlotId).setByPlayer(stacks.get(originSlotId));
 		}
 	}
 
     /**
      * @return {@code true} if the specified slot mapping is valid.
      */
-	private static boolean validMapping(Player player, AbstractContainerMenu screenHandler,
-                                        int[] slotMapping) {
+	private static boolean validMapping(Player player, Map<Integer,Slot> slots, int[] slotMapping) {
 		if (slotMapping.length < 4) {
-			MainSort.LOG.warn("Sort payload contains too few slots!");
+			MainSort.LOG.warn("Sort payload contains too few slots! Got {}, expected at least {}",
+                    slotMapping.length, 4);
 			return false;
 		}
 
 		IntSet requestedSlots = new IntAVLTreeSet();
 		Container targetInv;
 
-        if (!validSlotId(screenHandler, slotMapping[0])) {
+        if (!validSlotId(slots, slotMapping[0])) {
             return false;
         }
-		Slot firstSlot = screenHandler.slots.get(slotMapping[0]);
+		Slot firstSlot = slots.get(slotMapping[0]);
 		targetInv = firstSlot.container;
 
         // Check each slot mapping
@@ -102,7 +110,7 @@ public class LogicalServerNetworking {
 			int originSlotId = slotMapping[i];
 			int destSlotId = slotMapping[i + 1];
             
-			if (!validSlot(screenHandler, originSlotId, targetInv)) {
+			if (!validSlot(slots, originSlotId, targetInv)) {
 				return false;
 			}
             
@@ -112,7 +120,7 @@ public class LogicalServerNetworking {
 				return false;
 			}
 
-			if (!validSlot(screenHandler, destSlotId, targetInv)) {
+			if (!validSlot(slots, destSlotId, targetInv)) {
 				return false;
 			}
 
@@ -120,17 +128,18 @@ public class LogicalServerNetworking {
 				continue;
 			}
 
-			Slot originSlot = screenHandler.getSlot(originSlotId);
+			Slot originSlot = slots.get(originSlotId);
 			if (!originSlot.mayPickup(player)) {
-				MainSort.LOG.warn("Player {} tried to sort slot {}, but that slot " +
-                        "doesn't allow taking items!", player, originSlotId);
+				MainSort.LOG.warn("Player {} tried to sort slot {} with stack [{}], but that slot " +
+                        "doesn't allow taking items!", player, originSlotId, originSlot.getItem());
 				return false;
 			}
             
-			Slot destSlot = screenHandler.getSlot(destSlotId);
+			Slot destSlot = slots.get(destSlotId);
 			if (!destSlot.mayPlace(originSlot.getItem())) {
-				MainSort.LOG.warn("Player {} tried to sort slot {}, but that slot " +
-                        "doesn't allow inserting the origin stack!", player, destSlotId);
+				MainSort.LOG.warn("Player {} tried to sort slot {} with stack [{}], but that slot " +
+                        "doesn't allow inserting the origin stack [{}]!", player, destSlotId,
+                        destSlot.getItem(), originSlot.getItem());
 				return false;
 			}
 		}
@@ -156,10 +165,12 @@ public class LogicalServerNetworking {
      * @return {@code true} if the specified slot ID is a valid index.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean validSlotId(AbstractContainerMenu screenHandler, int slotId) {
-        if (slotId < 0 || slotId >= screenHandler.slots.size()) {
-            MainSort.LOG.warn("Sort payload contains invalid slot id {} out of bounds " +
-                            "for length {}!", slotId, screenHandler.slots.size());
+    private static boolean validSlotId(Map<Integer,Slot> slots, int slotId) {
+        if (!slots.containsKey(slotId)) {
+            StringBuilder sb = new StringBuilder();
+            slots.keySet().forEach((key) -> sb.append(key).append(", "));
+            MainSort.LOG.warn("Sort payload contains invalid slot id {} not found in list [{}]!",
+                    slotId, sb.toString());
             return false;
         }
         
@@ -171,12 +182,12 @@ public class LogicalServerNetworking {
      * specified {@link Container}.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	private static boolean validSlot(AbstractContainerMenu screenHandler, int slotId, Container targetInv) {
-        if (!validSlotId(screenHandler, slotId)) {
+	private static boolean validSlot(Map<Integer,Slot> slots, int slotId, Container targetInv) {
+        if (!validSlotId(slots, slotId)) {
             return false;
         }
         
-        Slot slot = screenHandler.getSlot(slotId);
+        Slot slot = slots.get(slotId);
 
 		if (targetInv != slot.container) {
 			MainSort.LOG.warn("Sort payload contains slots from different inventories, " +
@@ -186,4 +197,27 @@ public class LogicalServerNetworking {
         
 		return true;
 	}
+
+    private static void logScreenHandlerSlots(AbstractContainerMenu screenHandler) {
+        // Log inventory array
+        StringBuilder arr = new StringBuilder("[");
+        for (Slot slot : screenHandler.slots) {
+            arr.append(slot.index);
+            arr.append(":");
+            arr.append(slot.getItem().getDisplayName().getString());
+            arr.append(", ");
+        }
+        MainSort.LOG.warn(arr.length() == 1 ? "[]" : arr.substring(0, arr.length() - 2) + "]");
+    }
+
+    private static void logSlotMapping(int[] slotMapping) {
+        StringBuilder arr = new StringBuilder("[");
+        for (int i = 0; i < slotMapping.length - 1; i += 2) {
+            arr.append(slotMapping[i]);
+            arr.append("->");
+            arr.append(slotMapping[i+1]);
+            arr.append(", ");
+        }
+        MainSort.LOG.warn(arr.length() == 1 ? "[]" : arr.substring(0, arr.length() - 2) + "]");
+    }
 }
