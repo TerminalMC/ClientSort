@@ -65,7 +65,7 @@ public class InventorySorter {
             stacks[i] = inventorySlots[i].getItem();
         }
         
-        logInventorySlots(inventorySlots);
+//        logInventorySlots(inventorySlots);
     }
 
     /**
@@ -384,6 +384,7 @@ public class InventorySorter {
         }
     }
 
+    @SuppressWarnings("unused")
     private static void logInventorySlots(Slot[] inventorySlots) {
         // Log inventory array
         StringBuilder arr = new StringBuilder("[");

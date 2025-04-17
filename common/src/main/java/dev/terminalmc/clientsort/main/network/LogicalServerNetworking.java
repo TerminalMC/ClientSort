@@ -70,8 +70,8 @@ public class LogicalServerNetworking {
             stacks.put(slot.index, slot.getItem());
         }
         
-        logScreenHandlerSlots(screenHandler);
-        logSlotMapping(slotMapping);
+//        logScreenHandlerSlots(screenHandler);
+//        logSlotMapping(slotMapping);
         
 		if (!validMapping(player, slots, slotMapping)) {
 			MainSort.LOG.warn("Sort payload from player {} contains invalid data, ignoring!",
@@ -198,6 +198,7 @@ public class LogicalServerNetworking {
 		return true;
 	}
 
+    @SuppressWarnings("unused")
     private static void logScreenHandlerSlots(AbstractContainerMenu screenHandler) {
         // Log inventory array
         StringBuilder arr = new StringBuilder("[");
@@ -210,6 +211,7 @@ public class LogicalServerNetworking {
         MainSort.LOG.warn(arr.length() == 1 ? "[]" : arr.substring(0, arr.length() - 2) + "]");
     }
 
+    @SuppressWarnings("unused")
     private static void logSlotMapping(int[] slotMapping) {
         StringBuilder arr = new StringBuilder("[");
         for (int i = 0; i < slotMapping.length - 1; i += 2) {
