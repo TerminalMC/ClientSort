@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- Moved stack collection to server when using server-accelerated sort
+- Fixed inventory sorting in creative mode
+
 ## 1.3.3
 
 - Fixed serverside sorting with certain storage mods

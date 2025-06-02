@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.platform;
 
-import dev.terminalmc.clientsort.main.MainSort;
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
 
 import java.util.ServiceLoader;
@@ -29,7 +29,7 @@ public class Services {
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException(
                         "Failed to load service for " + clazz.getName()));
-        MainSort.LOG.debug("Loaded {} for service {}", loadedService, clazz);
+        ClientSort.LOG.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
 }

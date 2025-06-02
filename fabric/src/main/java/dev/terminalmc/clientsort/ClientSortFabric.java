@@ -16,17 +16,45 @@
 
 package dev.terminalmc.clientsort;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import dev.terminalmc.clientsort.network.handler.CollectHandler;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
+import dev.terminalmc.clientsort.network.handler.SortHandler;
+import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
+import dev.terminalmc.clientsort.network.payload.SortPayload;
+import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-@SuppressWarnings("unused")
-public class ClientSortFabric implements ClientModInitializer {
+public class ClientSortFabric implements ModInitializer {
     @Override
-    public void onInitializeClient() {
-        // Keybindings
-        KeyBindingHelper.registerKeyBinding(ClientSort.SORT_KEY);
-
-        // Client initialization
-        ClientSort.init();
+    public void onInitialize() {
+        // Custom payloads
+        PayloadTypeRegistry.playC2S().register(
+                CollectPayload.TYPE,
+                CollectPayload.STREAM_CODEC
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+                CollectPayload.TYPE,
+                (payload, context) -> CollectHandler.onCollectPayload(
+                        payload, context.server(), context.player())
+        );
+        PayloadTypeRegistry.playC2S().register(
+                SortPayload.TYPE,
+                SortPayload.STREAM_CODEC
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+                SortPayload.TYPE,
+                (payload, context) -> SortHandler.onSortPayload(
+                        payload, context.server(), context.player())
+        );
+        PayloadTypeRegistry.playS2C().register(
+                CollectResultPayload.TYPE,
+                CollectResultPayload.STREAM_CODEC
+        );
+        PayloadTypeRegistry.playS2C().register(
+                SortResultPayload.TYPE,
+                SortResultPayload.STREAM_CODEC
+        );
     }
 }

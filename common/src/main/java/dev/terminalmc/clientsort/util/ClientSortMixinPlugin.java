@@ -36,7 +36,7 @@ public class ClientSortMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.contains("mixin.emi")) {
+        if (mixinClassName.contains("compat.emi")) {
             return Services.PLATFORM.isModLoaded("emi");
         }
         return true;

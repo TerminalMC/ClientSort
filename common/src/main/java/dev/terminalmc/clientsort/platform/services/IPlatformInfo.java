@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort.platform.services;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
@@ -28,18 +29,18 @@ public interface IPlatformInfo {
     Path getConfigDir();
 
     /**
-     * @return {@code true} if the payload type can be sent from the client to
-     * the server.
-     */
-    boolean canSendToServer(CustomPacketPayload.Type<?> type);
-    
-    /**
-     * Sends the payload to the server.
-     */
-    void sendToServer(CustomPacketPayload payload);
-
-    /**
      * @return true if the mod is loaded, false otherwise.
      */
     boolean isModLoaded(String modId);
+
+    /**
+     * @return {@code true} if the payload type can be sent from the server to
+     * the specified player.
+     */
+    boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type);
+
+    /**
+     * Sends the payload to the player.
+     */
+    void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
 }

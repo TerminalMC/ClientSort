@@ -17,9 +17,8 @@
 package dev.terminalmc.clientsort.platform;
 
 import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -34,20 +33,17 @@ public class NeoForgePlatformInfo implements IPlatformInfo {
     }
 
     @Override
-    public boolean canSendToServer(CustomPacketPayload.Type<?> type) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return false;
-        if (!player.connection.isAcceptingMessages()) return false;
+    public boolean isModLoaded(String modId) {
+        return LoadingModList.get().getModFileById(modId) != null;
+    }
+
+    @Override
+    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
         return player.connection.hasChannel(type);
     }
 
     @Override
-    public void sendToServer(CustomPacketPayload payload) {
-        PacketDistributor.sendToServer(payload);
-    }
-
-    @Override
-    public boolean isModLoaded(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
+    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+        PacketDistributor.sendToPlayer(player, payload);
     }
 }

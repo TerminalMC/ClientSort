@@ -43,7 +43,7 @@ public class ModLogger {
         if (!logger.isEnabled(level)) return;
         logger.log(level, edit(level, message), args);
     }
-    
+
     public void trace(String message, Object... args){
         log(Level.TRACE, message, args);
     }

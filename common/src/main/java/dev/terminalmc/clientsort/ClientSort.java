@@ -16,45 +16,10 @@
 
 package dev.terminalmc.clientsort;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.clientsort.config.Config;
-import dev.terminalmc.clientsort.inventory.sort.SortOrder;
-import dev.terminalmc.clientsort.network.InteractionManager;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-
-import static dev.terminalmc.clientsort.util.Localization.translationKey;
+import dev.terminalmc.clientsort.util.ModLogger;
 
 public class ClientSort {
-    public static final KeyMapping SORT_KEY = new KeyMapping(
-            translationKey("key", "group.sort"), InputConstants.Type.MOUSE,
-            InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
-    
-    public static boolean searchOrderUpdated = false;
-
-    public static volatile boolean emiReloading = false;
-    public static volatile boolean updateBlockedByEmi = false;
-
-    public static void init() {
-        Config.getAndSave();
-    }
-    
-    public static void onConfigSaved(Config config) {
-        Config.Options options = config.options;
-        options.sortOrder = SortOrder.SORT_MODES.get(options.sortOrderStr);
-        options.shiftSortOrder = SortOrder.SORT_MODES.get(options.shiftSortOrderStr);
-        options.ctrlSortOrder = SortOrder.SORT_MODES.get(options.ctrlSortOrderStr);
-        options.altSortOrder = SortOrder.SORT_MODES.get(options.altSortOrderStr);
-        options.sortSoundLoc = ResourceLocation.tryParse(options.sortSound);
-        setInteractionManagerTickRate(config.options);
-    }
-
-    public static void setInteractionManagerTickRate(Config.Options options) {
-        if (Minecraft.getInstance().getSingleplayerServer() == null) {
-            InteractionManager.setTickRate(options.interactionRateServer);
-        } else {
-            InteractionManager.setTickRate(options.interactionRateClient);
-        }
-    }
+    public static final String MOD_ID = "clientsort";
+    public static final String MOD_NAME = "ClientSort";
+    public static final ModLogger LOG = new ModLogger(MOD_NAME);
 }

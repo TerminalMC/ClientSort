@@ -14,10 +14,10 @@
   "provides": [],
 
   "entrypoints": {
-    "main": ["${mod_group}.${mod_id}.main.MainSortFabric"],
-    "client": ["${mod_group}.${mod_id}.${mod_name}Fabric"],
+    "main": ["dev.terminalmc.clientsort.ClientSortFabric"],
+    "client": ["dev.terminalmc.clientsort.client.ClientSortFabric"],
     "server": [],
-    "modmenu": ["${mod_group}.${mod_id}.gui.screen.ModMenuIntegration"]
+    "modmenu": ["dev.terminalmc.clientsort.client.gui.screen.ModMenuIntegration"]
   },
 
   "mixins": [

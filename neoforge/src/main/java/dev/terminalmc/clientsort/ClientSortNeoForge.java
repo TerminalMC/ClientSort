@@ -16,31 +16,44 @@
 
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.gui.screen.ConfigScreenProvider;
-import dev.terminalmc.clientsort.main.MainSort;
-import net.neoforged.api.distmarker.Dist;
+import dev.terminalmc.clientsort.network.handler.CollectHandler;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
+import dev.terminalmc.clientsort.network.handler.SortHandler;
+import dev.terminalmc.clientsort.network.payload.SortPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@Mod(value = MainSort.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber(modid = MainSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod(ClientSort.MOD_ID)
+@EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSortNeoForge {
-    public ClientSortNeoForge() {
-        // Config screen
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-                () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent));
-
-        // Client initialization
-        ClientSort.init();
-    }
-
-    // Keybindings
+    // Custom payloads
     @SubscribeEvent
-    static void registerKeyMappingsEvent(RegisterKeyMappingsEvent event) {
-        event.register(ClientSort.SORT_KEY);
+    static void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar("1").optional();
+        registrar.playToServer(
+                CollectPayload.TYPE,
+                CollectPayload.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> CollectHandler.onCollectPayload(
+                                payload, context.player().getServer(), ((ServerPlayer)context.player())),
+                        (payload, context) -> CollectHandler.onCollectPayload(
+                                payload, context.player().getServer(), ((ServerPlayer)context.player()))
+                )
+        );
+        registrar.playToServer(
+                SortPayload.TYPE,
+                SortPayload.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> SortHandler.onSortPayload(
+                                payload, context.player().getServer(), ((ServerPlayer)context.player())),
+                        (payload, context) -> SortHandler.onSortPayload(
+                                payload, context.player().getServer(), ((ServerPlayer)context.player()))
+                )
+        );
     }
 }

@@ -17,9 +17,10 @@
 package dev.terminalmc.clientsort.platform;
 
 import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
@@ -29,19 +30,19 @@ public class FabricPlatformInfo implements IPlatformInfo {
     public Path getConfigDir() {
         return FabricLoader.getInstance().getConfigDir();
     }
-    
-    @Override
-    public boolean canSendToServer(CustomPacketPayload.Type<?> type) {
-        return ClientPlayNetworking.canSend(type);
-    }
-    
-    @Override
-    public void sendToServer(CustomPacketPayload payload) {
-        ClientPlayNetworking.send(payload);
-    }
 
     @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
+    }
+
+    @Override
+    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
+        return ServerPlayNetworking.canSend(player, type);
+    }
+
+    @Override
+    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
+        ServerPlayNetworking.send(player, payload);
     }
 }

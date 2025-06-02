@@ -24,12 +24,11 @@ subprojects {
         }
         // Alternate license
         matching(includes: [
-                "**/inventory/**",
-                "**/main/**",
+                "**/client/inventory/**",
+                "**/client/network/InteractionManager.java",
+                "**/client/order/**",
                 "**/mixin/**",
-                "**/network/**",
-                "**/util/inject/**",
-                "**/util/item/**",
+                "**/network/handler/**",
         ]) {
             header = rootProject.project("common").file(licenseDir + "mouse-wheelie/HEADER.txt")
         }

@@ -1,0 +1,110 @@
+/*
+ * Copyright 2022 Siphalor
+ * Copyright 2025 TerminalMC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package dev.terminalmc.clientsort.client.inventory.sort.client;
+
+import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.*;
+
+public class ClientCreativeSorter extends ClientSorter {
+    public ClientCreativeSorter(
+            AbstractContainerScreen<?> screen,
+            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
+            Slot originSlot
+    ) {
+        super(screen, screenHelper, originSlot);
+    }
+
+    /**
+     * Uses creative inventory update packets to collect partial stacks into the
+     * smallest possible number of slots.
+     */
+    @Override
+    protected void collect() {
+        // Work backwards from the end, looking for a partial stack
+        for (int i = scopeSlots.length - 1; i >= 0; i--) {
+            Slot srcSlot = scopeSlots[i];
+            ItemStack srcStack = scopeStacks[i];
+            if (srcStack.isEmpty()) continue;
+            if (srcStack.getCount() >= srcSlot.getMaxStackSize(srcStack)) continue;
+
+            // Partial stack found; work forwards from the start, looking for
+            // another partial stack of the same item
+            for (int j = 0; j < i; j++) {
+                Slot dstSlot = scopeSlots[j];
+                ItemStack dstStack = scopeStacks[j];
+                if (dstStack.isEmpty()) continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+
+                // Matching partial stack found; place as much as possible
+                int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
+                delta = Math.min(delta, srcStack.getCount());
+
+                // Update logical record
+                srcStack.setCount(srcStack.getCount() - delta);
+                dstStack.setCount(dstStack.getCount() + delta);
+
+                // Send inventory update
+                int dstSlotId = ((ISlot)dstSlot).clientSort$getIdInContainer();
+                InteractionManager.push(() -> {
+                    //noinspection DataFlowIssue
+                    Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcStack.copy(), dstSlotId);
+                    return InteractionManager.TICK_WAITER;
+                });
+
+                // If no items remain in the source stack, stop looking
+                if (srcStack.getCount() <= 0) break;
+                // Otherwise keep looking for another matching stack
+            }
+        }
+        InteractionManager.push(() -> {
+            //noinspection DataFlowIssue
+            Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
+            return InteractionManager.TICK_WAITER;
+        });
+    }
+
+    /**
+     * Uses creative inventory update packets to sort the inventory according to
+     * the key.
+     */
+    @Override
+    protected void sort(int[] key, boolean playSound) {
+        for (int i = 0; i < key.length; i++) {
+            int dstSlotId = ((ISlot) scopeSlots[i]).clientSort$getIdInContainer();
+            ItemStack srcItem = scopeStacks[key[i]];
+            InteractionManager.push(() -> {
+                //noinspection DataFlowIssue
+                Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);
+                if (playSound) SoundManager.play();
+                return InteractionManager.TICK_WAITER;
+            });
+        }
+        InteractionManager.push(() -> {
+            //noinspection DataFlowIssue
+            Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
+            return InteractionManager.TICK_WAITER;
+        });
+    }
+}
