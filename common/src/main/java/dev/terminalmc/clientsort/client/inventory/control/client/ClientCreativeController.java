@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.sort.client;
+package dev.terminalmc.clientsort.client.inventory.control.client;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
@@ -26,8 +27,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
 
-public class ClientCreativeSorter extends ClientSorter {
-    public ClientCreativeSorter(
+/**
+ * Provides methods for manipulating the player's inventory or open container
+ * via creative mode set-slot packets.
+ * <p>
+ * Valid for use ONLY in
+ * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
+ */
+public class ClientCreativeController extends ClientController {
+    public ClientCreativeController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot
@@ -42,17 +50,19 @@ public class ClientCreativeSorter extends ClientSorter {
     @Override
     protected void collect() {
         // Work backwards from the end, looking for a partial stack
-        for (int i = scopeSlots.length - 1; i >= 0; i--) {
-            Slot srcSlot = scopeSlots[i];
-            ItemStack srcStack = scopeStacks[i];
+        for (int i = originScopeSlots.length - 1; i >= 0; i--) {
+            Slot srcSlot = originScopeSlots[i];
+            ItemStack srcStack = originScopeStacks[i];
+
             if (srcStack.isEmpty()) continue;
             if (srcStack.getCount() >= srcSlot.getMaxStackSize(srcStack)) continue;
 
             // Partial stack found; work forwards from the start, looking for
             // another partial stack of the same item
             for (int j = 0; j < i; j++) {
-                Slot dstSlot = scopeSlots[j];
-                ItemStack dstStack = scopeStacks[j];
+                Slot dstSlot = originScopeSlots[j];
+                ItemStack dstStack = originScopeStacks[j];
+
                 if (dstStack.isEmpty()) continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
                 if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
@@ -62,22 +72,23 @@ public class ClientCreativeSorter extends ClientSorter {
                 delta = Math.min(delta, srcStack.getCount());
 
                 // Update logical record
-                srcStack.setCount(srcStack.getCount() - delta);
-                dstStack.setCount(dstStack.getCount() + delta);
+                srcStack.shrink(delta);
+                dstStack.grow(delta);
 
                 // Send inventory update
                 int dstSlotId = ((ISlot)dstSlot).clientSort$getIdInContainer();
                 InteractionManager.push(() -> {
                     //noinspection DataFlowIssue
-                    Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcStack.copy(), dstSlotId);
+                    Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(
+                            srcStack.copy(), dstSlotId);
                     return InteractionManager.TICK_WAITER;
                 });
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.getCount() <= 0) break;
-                // Otherwise keep looking for another matching stack
             }
         }
+        // Broadcast changes once operation is complete
         InteractionManager.push(() -> {
             //noinspection DataFlowIssue
             Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
@@ -87,13 +98,13 @@ public class ClientCreativeSorter extends ClientSorter {
 
     /**
      * Uses creative inventory update packets to sort the inventory according to
-     * the key.
+     * {@code key}.
      */
     @Override
     protected void sort(int[] key, boolean playSound) {
         for (int i = 0; i < key.length; i++) {
-            int dstSlotId = ((ISlot) scopeSlots[i]).clientSort$getIdInContainer();
-            ItemStack srcItem = scopeStacks[key[i]];
+            ItemStack srcItem = originScopeStacks[key[i]];
+            int dstSlotId = ((ISlot)originScopeSlots[i]).clientSort$getIdInContainer();
             InteractionManager.push(() -> {
                 //noinspection DataFlowIssue
                 Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);
@@ -101,10 +112,29 @@ public class ClientCreativeSorter extends ClientSorter {
                 return InteractionManager.TICK_WAITER;
             });
         }
+        // Broadcast changes once operation is complete
         InteractionManager.push(() -> {
             //noinspection DataFlowIssue
             Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
             return InteractionManager.TICK_WAITER;
         });
+    }
+
+    @Override
+    public void transfer() {
+        if (!canOperate()) return;
+        if (ClientSort.debug) ClientSort.LOG.warn(
+                "Transfer is not supported by {}",
+                this.getClass().getSimpleName()
+        );
+    }
+
+    @Override
+    public void fillStacks() {
+        if (!canOperate()) return;
+        if (ClientSort.debug) ClientSort.LOG.warn(
+                "Stack fill is not supported by {}",
+                this.getClass().getSimpleName()
+        );
     }
 }

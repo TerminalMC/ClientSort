@@ -38,14 +38,20 @@ import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.vali
 public class CollectHandler {
     private CollectHandler() {}
     
-    public static void onCollectPayload(CollectPayload payload, MinecraftServer server,
-                                        ServerPlayer player) {
+    public static void handle(
+            CollectPayload payload,
+            MinecraftServer server,
+            ServerPlayer player
+    ) {
         // Execute on main server thread
         server.execute(() -> handleCollectPayload(payload, server, player));
     }
     
-    public static void handleCollectPayload(CollectPayload payload, MinecraftServer server,
-                                             ServerPlayer player) {
+    public static void handleCollectPayload(
+            CollectPayload payload,
+            MinecraftServer server,
+            ServerPlayer player
+    ) {
         @Nullable AbstractContainerMenu menu = null;
         @Nullable String error = null;
 

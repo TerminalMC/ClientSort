@@ -29,7 +29,7 @@ public class ClientSortFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Keybindings
-        KeyBindingHelper.registerKeyBinding(ClientSort.SORT_KEY);
+        ClientSort.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
         // Tick events
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::onEndTick);
@@ -37,12 +37,12 @@ public class ClientSortFabric implements ClientModInitializer {
         // Custom payloads
         ClientPlayNetworking.registerGlobalReceiver(
                 CollectResultPayload.TYPE,
-                (payload, context) -> CollectResultHandler.onCollectResultPayload(
+                (payload, context) -> CollectResultHandler.handle(
                         payload, context.client(), context.player())
         );
         ClientPlayNetworking.registerGlobalReceiver(
                 SortResultPayload.TYPE,
-                (payload, context) -> SortResultHandler.onSortResultPayload(
+                (payload, context) -> SortResultHandler.handle(
                         payload, context.client(), context.player())
         );
 

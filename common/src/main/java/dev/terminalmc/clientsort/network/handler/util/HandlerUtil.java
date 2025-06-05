@@ -25,28 +25,25 @@ import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 
 public class HandlerUtil {
-    public static @NotNull AbstractContainerMenu getMenu(int syncId, ServerPlayer player)
+    public static @NotNull AbstractContainerMenu getMenu(int id, ServerPlayer player)
             throws ClientSortException {
-        //noinspection ConstantValue
-        if (player.containerMenu == null) {
-            throw new ClientSortException(String.format(
-                    "Player %s tried to collect slots without having an open container!",
-                    player));
+        if (!player.containerMenu.stillValid(player)) {
+            ClientSort.LOG.warn("Player {} interacted with invalid menu {}", player, player.containerMenu);
         }
 
         AbstractContainerMenu menu;
-        if (syncId == player.inventoryMenu.containerId) {
+        if (id == player.inventoryMenu.containerId) {
             menu = player.inventoryMenu;
-        } else if (syncId == player.containerMenu.containerId) {
+        } else if (id == player.containerMenu.containerId) {
             menu = player.containerMenu;
         } else {
             throw new ClientSortException(String.format(
-                    "Player %s tried to collect slots in unrecognized container %s!",
-                    player, syncId));
+                    "Container ID '%s' does not match player inventory or container!",
+                    id));
         }
         return menu;
     }
-    
+
     @SuppressWarnings("unused")
     private static void logScreenHandlerSlots(AbstractContainerMenu screenHandler) {
         // Log inventory array

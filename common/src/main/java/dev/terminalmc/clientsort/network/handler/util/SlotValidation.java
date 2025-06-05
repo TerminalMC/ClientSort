@@ -26,6 +26,8 @@ import net.minecraft.world.inventory.Slot;
 
 import java.util.Map;
 
+// TODO check isValidSlotIndex
+
 public class SlotValidation {
     /**
      * @throws ClientSortException if slotId is not in slots.

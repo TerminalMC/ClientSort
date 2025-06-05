@@ -18,12 +18,10 @@ package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
-import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
-import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
-import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.client.network.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
@@ -51,7 +49,7 @@ public class ClientSortNeoForge {
     // Keybindings
     @SubscribeEvent
     static void registerKeyMappingsEvent(RegisterKeyMappingsEvent event) {
-        event.register(dev.terminalmc.clientsort.client.ClientSort.SORT_KEY);
+        dev.terminalmc.clientsort.client.ClientSort.KEYBINDS.forEach(event::register);
     }
 
     @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
@@ -67,24 +65,30 @@ public class ClientSortNeoForge {
     @SubscribeEvent
     static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
+        Registration.PAYLOADS_S2C.forEach((rp) -> registerS2C(registrar, rp));
+    }
+
+    /**
+     * S2C; register payload and handler here.
+     */
+    private static <T extends CustomPacketPayload> void registerS2C(
+            PayloadRegistrar registrar,
+            Registration.RegisterablePayloadS2C<T> rp
+    ) {
         registrar.playToClient(
-                CollectResultPayload.TYPE,
-                CollectResultPayload.STREAM_CODEC,
+                rp.type,
+                rp.streamCodec,
                 new DirectionalPayloadHandler<>(
-                        (payload, context) -> CollectResultHandler.onCollectResultPayload(
-                                payload, Minecraft.getInstance(), (LocalPlayer)context.player()),
-                        (payload, context) -> CollectResultHandler.onCollectResultPayload(
-                                payload, Minecraft.getInstance(), (LocalPlayer)context.player())
-                )
-        );
-        registrar.playToClient(
-                SortResultPayload.TYPE,
-                SortResultPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> SortResultHandler.onSortResultPayload(
-                                payload, Minecraft.getInstance(), (LocalPlayer)context.player()),
-                        (payload, context) -> SortResultHandler.onSortResultPayload(
-                                payload, Minecraft.getInstance(), (LocalPlayer)context.player())
+                        (payload, context) -> rp.handler.accept(
+                                payload,
+                                Minecraft.getInstance(),
+                                (LocalPlayer)context.player()
+                        ),
+                        (payload, context) -> rp.handler.accept(
+                                payload,
+                                Minecraft.getInstance(),
+                                (LocalPlayer)context.player()
+                        )
                 )
         );
     }

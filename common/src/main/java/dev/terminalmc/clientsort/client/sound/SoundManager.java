@@ -22,6 +22,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -31,6 +32,14 @@ public class SoundManager {
     private static float pitch = 1.0F;
     private static float increment = 0.01F;
     private static @Nullable SoundInstance sound;
+
+    public static boolean shouldPlayWhenSorting() {
+        return options().soundEnabled && options().soundVolume > 0;
+    }
+
+    public static boolean shouldPlayAlways() {
+        return options().soundEnabled && options().soundVolume > 0;
+    }
 
     public static void resetForCount(int size) {
         increment = (options().soundMaxPitch - options().soundMinPitch) / size;
@@ -63,5 +72,87 @@ public class SoundManager {
                 Minecraft.getInstance().getSoundManager().play(sound);
             }
         }
+    }
+
+    /**
+     * Estimates the number of interaction sounds that will be played in the
+     * course of a sort operation.
+     */
+    public static int estimateSortSounds(ItemStack[] stacks) {
+        // Count non-empty stacks; assume all these require sorting
+        int stackCount = 0;
+        for (ItemStack stack : stacks) {
+            if (stack != ItemStack.EMPTY) {
+                stackCount++;
+            }
+        }
+        // Count 'holes' that will require filling
+        int compaction = 0;
+        for (int i = 0; i < stackCount; i++) {
+            if (stacks[i] == ItemStack.EMPTY) {
+                compaction++;
+            }
+        }
+        int size = stackCount + compaction;
+
+        // Compensate for a small percentage of swaps requiring multiple clicks
+        size += size / 15;
+
+        return size;
+    }
+
+    /**
+     * Estimates the number of interaction sounds that will be played in the
+     * course of a transfer operation.
+     */
+    public static int estimateTransferSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
+        // Count non-empty slots in the source array
+        int srcStackCount = 0;
+        for (ItemStack stack : srcStacks) {
+            if (stack != ItemStack.EMPTY) {
+                srcStackCount++;
+            }
+        }
+
+        // Count empty slots in the destination array
+        int dstHoleCount = 0;
+        for (ItemStack stack : dstStacks) {
+            if (stack == ItemStack.EMPTY) {
+                dstHoleCount++;
+            }
+        }
+
+        // Compensate for a percentage of nonempty destination slots with 
+        // matching source stacks being only partially filled
+        dstHoleCount += dstHoleCount / 8;
+
+        // Smaller number defines length of operation
+        return Math.min(srcStackCount, dstHoleCount);
+    }
+
+    /**
+     * Estimates the number of interaction sounds that will be played in the
+     * course of a stack fill operation.
+     */
+    public static int estimateStackFillSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
+        // Count partial stacks in the destination array
+        int dstPartialCount = 0;
+        for (ItemStack stack : dstStacks) {
+            if (stack != ItemStack.EMPTY && stack.getCount() < stack.getMaxStackSize()) {
+                dstPartialCount++;
+            }
+        }
+
+        // Count non-empty slots in the source array
+        int srcStackCount = 0;
+        for (ItemStack stack : srcStacks) {
+            if (stack != ItemStack.EMPTY) {
+                srcStackCount++;
+            }
+        }
+
+        // Assume a small percentage of the source stacks match the destination
+        // partial stacks
+        return (dstPartialCount / 2 + srcStackCount / 2) / 2;
     }
 }

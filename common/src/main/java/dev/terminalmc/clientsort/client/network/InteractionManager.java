@@ -24,7 +24,6 @@ import net.minecraft.world.inventory.Slot;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -32,29 +31,37 @@ import java.util.function.Supplier;
 
 /**
  * Manages rate-limited transmission of interaction events for client-side
- * manual inventory operations.
+ * inventory manipulation operations.
  */
 public class InteractionManager {
     public static final Waiter TICK_WAITER =
             (TriggerType triggerType) -> triggerType == TriggerType.TICK;
 
-    private static final Queue<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
+    private static final ArrayDeque<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
 
     private static ScheduledFuture<?> tickFuture;
     private static Waiter waiter = null;
 
     /**
-     * Queues the specified event.
+     * Queues the event.
      */
     public static void push(InteractionEvent interactionEvent) {
-        if (interactionEvent == null) {
-            return;
-        }
+        if (interactionEvent == null) return;
         synchronized (interactionEventQueue) {
             interactionEventQueue.add(interactionEvent);
-            if (waiter == null)
-                triggerSend(TriggerType.INITIAL);
+            if (waiter == null) triggerSend(TriggerType.INITIAL);
+        }
+    }
+
+    /**
+     * Adds the event to the front of the queue.
+     */
+    public static void now(InteractionEvent interactionEvent) {
+        if (interactionEvent == null) return;
+        synchronized (interactionEventQueue) {
+            interactionEventQueue.addFirst(interactionEvent);
+            if (waiter == null) triggerSend(TriggerType.INITIAL);
         }
     }
 
@@ -62,13 +69,10 @@ public class InteractionManager {
      * Queues the specified events.
      */
     public static void pushAll(Collection<InteractionEvent> interactionEvents) {
-        if (interactionEvents == null) {
-            return;
-        }
+        if (interactionEvents == null) return;
         synchronized (interactionEventQueue) {
             interactionEventQueue.addAll(interactionEvents);
-            if (waiter == null)
-                triggerSend(TriggerType.INITIAL);
+            if (waiter == null) triggerSend(TriggerType.INITIAL);
         }
     }
 

@@ -20,11 +20,14 @@ package dev.terminalmc.clientsort.mixin.client;
 import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.inventory.sort.InventorySorter;
+import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import dev.terminalmc.clientsort.network.payload.SortPayload;
+import dev.terminalmc.clientsort.network.payload.StackFillPayload;
+import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,6 +37,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -99,11 +103,10 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     )
     private void onMouseClicked(double mouseX, double mouseY, int button,
                                 CallbackInfoReturnable<Boolean> cir) {
-        if (clientSort$shouldSort((keyMapping) -> keyMapping.matchesMouse(button))) {
-            if (clientSort$triggerSort()) {
-                cir.setReturnValue(true);
-                cir.cancel();
-            }
+        Supplier<Boolean> op = clientSort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
+        if (op != null && op.get()) {
+            cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 
@@ -117,11 +120,10 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     )
     private void onKeyPressed(int keyCode, int scanCode, int modifiers,
                               CallbackInfoReturnable<Boolean> cir) {
-        if (clientSort$shouldSort((keyMapping) -> keyMapping.matches(keyCode, scanCode))) {
-            if (clientSort$triggerSort()) {
-                cir.setReturnValue(true);
-                cir.cancel();
-            }
+        Supplier<Boolean> op = clientSort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
+        if (op != null && op.get()) {
+            cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 
@@ -131,12 +133,11 @@ public abstract class AbstractContainerScreenMixin extends Screen {
      */
     @SuppressWarnings("ConstantConditions")
     @Unique
-    private boolean clientSort$shouldSort(Function<KeyMapping, Boolean> inputMatcher) {
+    private @Nullable Supplier<Boolean> clientSort$getOperation(
+            Function<KeyMapping,Boolean> inputMatcher
+    ) {
         // Check that we're hovering a slot
-        if (hoveredSlot == null) return false;
-
-        // Check that the input matches the sort key
-        if (!inputMatcher.apply(ClientSort.SORT_KEY)) return false;
+        if (hoveredSlot == null) return null;
 
         // Check that the input will not trigger a vanilla operation
         Options options = this.minecraft.options;
@@ -146,27 +147,32 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 && (this.hoveredSlot.hasItem()
                 || !this.draggingItem.isEmpty()
                 || !this.menu.getCarried().isEmpty())))) {
-            return false;
+            return null;
         }
         // Drop
-        if (inputMatcher.apply(options.keyDrop) && this.hoveredSlot.hasItem()) return false;
+        if (inputMatcher.apply(options.keyDrop) && this.hoveredSlot.hasItem()) return null;
         // Offhand swap
-        if (inputMatcher.apply(options.keySwapOffhand)) return false;
+        if (inputMatcher.apply(options.keySwapOffhand)) return null;
         // Hotbar swap
         for (int i = 0; i < 9; i++) {
-            if (inputMatcher.apply(options.keyHotbarSlots[i])) return false;
+            if (inputMatcher.apply(options.keyHotbarSlots[i])) return null;
         }
-        // No operations
-        return true;
+        // No vanilla operations
+
+        // Trigger mod operation
+        if (inputMatcher.apply(ClientSort.SORT_KEY)) {
+            return this::clientSort$sort;
+        } else if (inputMatcher.apply(ClientSort.TRANSFER_KEY)) {
+            return this::clientSort$transfer;
+        } else if (inputMatcher.apply(ClientSort.FILL_STACKS_KEY)) {
+            return this::clientSort$fillStacks;
+        } else {
+            return null;
+        }
     }
 
-    /**
-     * Triggers sorting of this screen's inventory.
-     * @return {@code true} if sorting was completed.
-     */
     @Unique
-    @SuppressWarnings("ConstantConditions")
-    public boolean clientSort$triggerSort() {
+    private boolean clientSort$sort() {
         if (hoveredSlot == null) return false;
 
         SortOrder sortOrder;
@@ -181,13 +187,36 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         }
 
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            InventorySorter.getSorter(
-                    (AbstractContainerScreen<?>) (Object) this,
+            SingleUseController.getController(
+                    (AbstractContainerScreen<?>)(Object)this,
                     clientSort$screenHelper.get(),
-                    hoveredSlot
+                    hoveredSlot,
+                    SortPayload.TYPE
             ).sort(sortOrder);
             return true;
         }
         return false;
+    }
+
+    @Unique
+    private boolean clientSort$transfer() {
+        SingleUseController.getController(
+                (AbstractContainerScreen<?>)(Object)this,
+                clientSort$screenHelper.get(),
+                hoveredSlot,
+                TransferPayload.TYPE
+        ).transfer();
+        return true;
+    }
+
+    @Unique
+    private boolean clientSort$fillStacks() {
+        SingleUseController.getController(
+                (AbstractContainerScreen<?>)(Object)this,
+                clientSort$screenHelper.get(),
+                hoveredSlot,
+                StackFillPayload.TYPE
+        ).fillStacks();
+        return true;
     }
 }

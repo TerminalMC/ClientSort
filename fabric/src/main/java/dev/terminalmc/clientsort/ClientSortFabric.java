@@ -16,45 +16,49 @@
 
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.network.handler.CollectHandler;
-import dev.terminalmc.clientsort.network.payload.CollectPayload;
-import dev.terminalmc.clientsort.network.handler.SortHandler;
-import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
-import dev.terminalmc.clientsort.network.payload.SortPayload;
-import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.network.Registration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientSortFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         // Custom payloads
+        Registration.PAYLOADS_C2S.forEach(ClientSortFabric::registerC2S);
+        Registration.PAYLOADS_S2C.forEach(ClientSortFabric::registerS2C);
+    }
+
+    /**
+     * C2S; register payload and handler here.
+     */
+    private static <T extends CustomPacketPayload> void registerC2S(
+            Registration.RegisterablePayloadC2S<T> rp
+    ) {
         PayloadTypeRegistry.playC2S().register(
-                CollectPayload.TYPE,
-                CollectPayload.STREAM_CODEC
+                rp.type,
+                rp.streamCodec
         );
         ServerPlayNetworking.registerGlobalReceiver(
-                CollectPayload.TYPE,
-                (payload, context) -> CollectHandler.onCollectPayload(
-                        payload, context.server(), context.player())
+                rp.type,
+                (payload, context) -> rp.handler.accept(
+                        payload,
+                        context.server(),
+                        context.player()
+                )
         );
-        PayloadTypeRegistry.playC2S().register(
-                SortPayload.TYPE,
-                SortPayload.STREAM_CODEC
-        );
-        ServerPlayNetworking.registerGlobalReceiver(
-                SortPayload.TYPE,
-                (payload, context) -> SortHandler.onSortPayload(
-                        payload, context.server(), context.player())
-        );
+    }
+
+    /**
+     * S2C; register payload here, handler in client.
+     */
+    private static <T extends CustomPacketPayload> void registerS2C(
+            Registration.RegisterablePayloadS2C<T> rp
+    ) {
         PayloadTypeRegistry.playS2C().register(
-                CollectResultPayload.TYPE,
-                CollectResultPayload.STREAM_CODEC
-        );
-        PayloadTypeRegistry.playS2C().register(
-                SortResultPayload.TYPE,
-                SortResultPayload.STREAM_CODEC
+                rp.type,
+                rp.streamCodec
         );
     }
 }

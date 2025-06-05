@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.gui.screen;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.config.Config;
@@ -126,6 +127,13 @@ public class ClothScreenProvider {
                 })
                 .build());
 
+        general.addEntry(eb.startBooleanToggle(localized("option", "debugLogEnabled"),
+                        ClientSort.debug)
+                .setTooltip(localized("option", "debugLogEnabled.tooltip"))
+                .setDefaultValue(false)
+                .setSaveConsumer(val -> ClientSort.debug = val)
+                .build());
+
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
 
         sort.addEntry(eb.startSelector(localized("option", "sortOrder"),
@@ -162,6 +170,13 @@ public class ClothScreenProvider {
                         options.soundEnabled)
                 .setDefaultValue(Config.Options.soundEnabledDefault)
                 .setSaveConsumer(val -> options.soundEnabled = val)
+                .build());
+
+        sound.addEntry(eb.startBooleanToggle(localized("option", "soundEnabledAllOps"),
+                        options.soundEnabledAllOps)
+                .setTooltip(localized("option", "soundEnabledAllOps.tooltip"))
+                .setDefaultValue(Config.Options.soundEnabledAllOpsDefault)
+                .setSaveConsumer(val -> options.soundEnabledAllOps = val)
                 .build());
 
         sound.addEntry(eb.startStrField(localized("option", "sortSound"),

@@ -35,23 +35,27 @@ public class CollectResultHandler {
     /**
      * Handles a {@link CollectResultPayload} sent by a server.
      */
-    public static void onCollectResultPayload(
+    public static void handle(
             CollectResultPayload payload,
             Minecraft mc,
             LocalPlayer player
     ) {
         if (!payload.success()) {
-            ClientSort.LOG.error("Failed to complete collection operation on server: {}",
-                    payload.message());
+            ClientSort.LOG.error(
+                    "Received failure warning '{}': {}",
+                    payload.message()
+            );
         }
-        
+
         if (payload.success() && onSuccess != null) {
             try {
                 onSuccess.run();
             } catch (Exception e) {
-                ClientSort.LOG.error("Failed to run onSuccess runnable", e);
+                // Whatever goes wrong should not crash the game
+                ClientSort.LOG.error("Failed to run onSuccess", e);
             }
         }
+
         onSuccess = null;
     }
 }

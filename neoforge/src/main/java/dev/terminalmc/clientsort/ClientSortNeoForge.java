@@ -16,10 +16,8 @@
 
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.network.handler.CollectHandler;
-import dev.terminalmc.clientsort.network.payload.CollectPayload;
-import dev.terminalmc.clientsort.network.handler.SortHandler;
-import dev.terminalmc.clientsort.network.payload.SortPayload;
+import dev.terminalmc.clientsort.network.Registration;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -35,24 +33,30 @@ public class ClientSortNeoForge {
     @SubscribeEvent
     static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
+        Registration.PAYLOADS_C2S.forEach((rp) -> registerC2S(registrar, rp));
+    }
+
+    /**
+     * C2S; register payload and handler here.
+     */
+    private static <T extends CustomPacketPayload> void registerC2S(
+            PayloadRegistrar registrar,
+            Registration.RegisterablePayloadC2S<T> rp
+    ) {
         registrar.playToServer(
-                CollectPayload.TYPE,
-                CollectPayload.STREAM_CODEC,
+                rp.type,
+                rp.streamCodec,
                 new DirectionalPayloadHandler<>(
-                        (payload, context) -> CollectHandler.onCollectPayload(
-                                payload, context.player().getServer(), ((ServerPlayer)context.player())),
-                        (payload, context) -> CollectHandler.onCollectPayload(
-                                payload, context.player().getServer(), ((ServerPlayer)context.player()))
-                )
-        );
-        registrar.playToServer(
-                SortPayload.TYPE,
-                SortPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> SortHandler.onSortPayload(
-                                payload, context.player().getServer(), ((ServerPlayer)context.player())),
-                        (payload, context) -> SortHandler.onSortPayload(
-                                payload, context.player().getServer(), ((ServerPlayer)context.player()))
+                        (payload, context) -> rp.handler.accept(
+                                payload,
+                                context.player().getServer(),
+                                (ServerPlayer)context.player()
+                        ),
+                        (payload, context) -> rp.handler.accept(
+                                payload,
+                                context.player().getServer(),
+                                (ServerPlayer)context.player()
+                        )
                 )
         );
     }

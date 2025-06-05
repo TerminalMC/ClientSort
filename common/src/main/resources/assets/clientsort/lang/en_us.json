@@ -19,7 +19,7 @@
   "option.clientsort.extraSlotScope": "Extra Slot Scope",
   "option.clientsort.lmbBundle": "Bundles use Left Click",
   "option.clientsort.lmbBundle.tooltip": "In 1.21.2+, bundles use left-click to load, which breaks sorting. If playing on a 1.21.2+ server, enable this option.",
-  
+
   "option.clientsort.sorting": "Sorting",
   "option.clientsort.sortOrder": "Sort Order",
   "option.clientsort.shiftSortOrder": "Shift Sort Order",
@@ -28,6 +28,8 @@
 
   "option.clientsort.sound": "Sound",
   "option.clientsort.soundEnabled": "Sound Enabled",
+  "option.clientsort.soundEnabledAllOps": "All Operations",
+  "option.clientsort.soundEnabledAllOps.tooltip": "Whether to play sounds for all client-side operations, not just sorting",
   "option.clientsort.sortSound": "Sorting Sound",
   "option.clientsort.soundRate": "Sound Rate",
   "option.clientsort.soundRate.tooltip": "Reduce to play sounds faster",
@@ -38,6 +40,9 @@
   "option.clientsort.soundVolume": "Volume",
   "option.clientsort.soundAllowOverlap": "Allow Overlap",
   "option.clientsort.soundAllowOverlap.tooltip": "Whether to allow the previous sound to continue when starting a new sound",
+
+  "option.clientsort.debugLogEnabled": "Debug logging",
+  "option.clientsort.debugLogEnabled.tooltip": "Enable or disable debug logging for this session only",
 
   "hotbarScope.clientsort.HOTBAR": "Hotbar",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Hotbar will be sorted as a separate inventory",

@@ -18,18 +18,18 @@
 package dev.terminalmc.clientsort.client.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
-public class SortResultHandler {
-    private SortResultHandler() {}
+public class StackFillResultHandler {
+    private StackFillResultHandler() {}
 
     /**
-     * Handles a {@link SortResultPayload} sent by a server.
+     * Handles a {@link StackFillResultPayload} sent by a server.
      */
     public static void handle(
-            SortResultPayload payload,
+            StackFillResultPayload payload,
             Minecraft mc,
             LocalPlayer player
     ) {

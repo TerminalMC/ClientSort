@@ -22,4 +22,6 @@ public class ClientSort {
     public static final String MOD_ID = "clientsort";
     public static final String MOD_NAME = "ClientSort";
     public static final ModLogger LOG = new ModLogger(MOD_NAME);
+    
+    public static boolean debug;
 }

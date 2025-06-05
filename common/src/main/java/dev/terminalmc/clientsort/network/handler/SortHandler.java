@@ -38,8 +38,8 @@ import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.vali
 public class SortHandler {
     private SortHandler() {}
     
-    public static void onSortPayload(SortPayload payload, MinecraftServer server,
-                                     ServerPlayer player) {
+    public static void handle(SortPayload payload, MinecraftServer server,
+                              ServerPlayer player) {
         // Execute on main server thread
         server.execute(() -> handleSortPayload(payload, server, player));
     }

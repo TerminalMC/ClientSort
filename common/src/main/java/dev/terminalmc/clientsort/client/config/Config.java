@@ -106,6 +106,9 @@ public class Config {
         public static final boolean soundEnabledDefault = false;
         public boolean soundEnabled = soundEnabledDefault;
 
+        public static final boolean soundEnabledAllOpsDefault = false;
+        public boolean soundEnabledAllOps = soundEnabledAllOpsDefault;
+
         public static final String sortSoundDefault = "minecraft:block.note_block.xylophone";
         public String sortSound = sortSoundDefault;
         public transient @Nullable ResourceLocation sortSoundLoc = null;

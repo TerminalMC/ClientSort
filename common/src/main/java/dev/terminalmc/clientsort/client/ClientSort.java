@@ -33,6 +33,17 @@ public class ClientSort {
     public static final KeyMapping SORT_KEY = new KeyMapping(
             translationKey("key", "group.sort"), InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
+    public static final KeyMapping TRANSFER_KEY = new KeyMapping(
+            translationKey("key", "group.transfer"), InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(), translationKey("key", "group"));
+    public static final KeyMapping FILL_STACKS_KEY = new KeyMapping(
+            translationKey("key", "group.fillStacks"), InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(), translationKey("key", "group"));
+    public static final List<KeyMapping> KEYBINDS = List.of(
+            SORT_KEY,
+            TRANSFER_KEY,
+            FILL_STACKS_KEY
+    );
 
     public static final List<ScheduledAction> SCHEDULED_ACTIONS = new ArrayList<>();
     public static class ScheduledAction {
