@@ -18,7 +18,7 @@
   "option.clientsort.hotbarScope": "Режим панели быстрого доступа",
   "option.clientsort.extraSlotScope": "Режим дополнительных слотов",
   "option.clientsort.lmbBundle": "Пакеты используют ЛКМ",
-  "option.clientsort.lmbBundle.tooltip": "С версии 1.21.2+ для загрузки пакетов используется ЛКМ, что нарушает сортировку. Если вы играете на сервере 1.21.2+, включите эту опцию.",
+  "option.clientsort.lmbBundle.tooltip": "Начиная с версии 1.21.2+ для загрузки пакетов используется ЛКМ, что нарушает сортировку. Если вы играете на сервере 1.21.2+, включите эту опцию.",
   
   "option.clientsort.sorting": "Сортировка",
   "option.clientsort.sortOrder": "Режим сортировки",
@@ -28,6 +28,8 @@
 
   "option.clientsort.sound": "Звук",
   "option.clientsort.soundEnabled": "Звук включён",
+  "option.clientsort.soundEnabledAllOps": "Все операции",
+  "option.clientsort.soundEnabledAllOps.tooltip": "Воспроизводить звуки для всех операций на стороне клиента, а не только при сортировке",
   "option.clientsort.sortSound": "Сортировка звука",
   "option.clientsort.soundRate": "Частота звука",
   "option.clientsort.soundRate.tooltip": "Уменьшите, если нужно воспроизводить звуки быстрее",
@@ -39,6 +41,9 @@
   "option.clientsort.soundAllowOverlap": "Разрешить наложение",
   "option.clientsort.soundAllowOverlap.tooltip": "Разрешить ли воспроизведение предыдущего звука при запуске нового звука",
 
+  "option.clientsort.debugLogEnabled": "Отладочное логирование",
+  "option.clientsort.debugLogEnabled.tooltip": "Включить или отключить отладочное логирование только для этой сессии",
+  
   "hotbarScope.clientsort.HOTBAR": "Панель быстрого доступа",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Панель быстрого доступа будет сортировываться как отдельный инвентарь",
   "hotbarScope.clientsort.INVENTORY": "Инвентарь",
