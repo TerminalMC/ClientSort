@@ -85,7 +85,9 @@
   "option.clientsort.buttonDefaultOffset.y": "Смещение кнопки по умолчанию Y",
   "option.clientsort.buttonDefaultOffset.tooltip": "Это значение влияет только на инвентари, у которых положение кнопок установлено в 'null' в их макете.",
   "option.clientsort.buttonLayouts": "Макеты кнопок",
-  "option.clientsort.buttonLayouts.tooltip": "Удалите запись, чтобы скрыть кнопки в инвентарях этого типа.",
+  "option.clientsort.buttonLayouts.tooltip.1": "Записи макета используют следующий формат:",
+  "option.clientsort.buttonLayouts.tooltip.2": "<имя класса или суперкласса>,<смещение (x,y) или null>,<кнопка сортировки включена 1 или 0>,<кнопка заполнения стаков включена>,<кнопка перемещения включена>",
+  "option.clientsort.buttonLayouts.tooltip.3": "Удалите запись, чтобы отключить кнопки для инвентарей этого класса.",
 
   "hotbarScope.clientsort.HOTBAR": "Панель быстрого доступа",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Панель быстрого доступа будет сортировываться как отдельный инвентарь",
