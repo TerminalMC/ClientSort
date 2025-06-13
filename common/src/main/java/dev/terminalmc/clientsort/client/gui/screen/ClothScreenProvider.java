@@ -307,13 +307,15 @@ public class ClothScreenProvider {
 
         gui.addEntry(eb.startStrList(localized("option", "buttonLayouts"),
                         getLayoutStrings(options.buttonLayouts.values()))
-                .setTooltip(localized("option", "buttonLayouts.tooltip"))
+                .setTooltip(localized("option", "buttonLayouts.tooltip.1")
+                        .append("\n").append(localized("option", "buttonLayouts.tooltip.2"))
+                        .append("\n").append(localized("option", "buttonLayouts.tooltip.3")))
+                .setExpanded(true)
                 .setErrorSupplier((list) -> {
                     int i = 0;
                     for (String string : list) {
                         try {
-                            ButtonLayout layout = ButtonLayout.fromDataString(string);
-                            options.buttonLayouts.put(layout.className, layout);
+                            ButtonLayout.fromDataString(string);
                         } catch (ParseException ex) {
                             return Optional.of(localized("error", "buttonLayout.parse",
                                     i+1, ex.getMessage()));
@@ -324,7 +326,16 @@ public class ClothScreenProvider {
                 })
                 .setDefaultValue(getLayoutStrings(Config.Options.buttonLayoutsDefaultList.get()))
                 .setSaveConsumer((list) -> {
-
+                    for (String string : list) {
+                        try {
+                            ButtonLayout layout = ButtonLayout.fromDataString(string);
+                            options.buttonLayouts.put(layout.className, layout);
+                        } catch (ParseException ex) {
+                            ClientSort.LOG.error("Encountered a button layout parsing error not " +
+                                    "caught by error checker: {}", ex.getMessage());
+                            break;
+                        }
+                    }
                 })
                 .build());
 

@@ -172,11 +172,11 @@ public class Config {
                 new ButtonLayout(HopperMenu.class.getName(), null, false, false, true)
         );
         public static final Supplier<Map<String,ButtonLayout>> buttonLayoutsDefault = () -> {
-            LinkedHashMap<String,ButtonLayout> map = new LinkedHashMap<>();
+            Map<String,ButtonLayout> map = new LinkedHashMap<>();
             buttonLayoutsDefaultList.get().forEach((layout) -> map.put(layout.className, layout));
             return map;
         };
-        public final Map<String,ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
+        public Map<String,ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
     }
 
     // Validation
@@ -222,6 +222,11 @@ public class Config {
                         Options.BUTTON_DEFAULT_OFFSET_MAX
                 )
         );
+        // Sort the layouts by key for better UX
+        Map<String,ButtonLayout> sortedLayouts = new LinkedHashMap<>();
+        options.buttonLayouts.keySet().stream().sorted().forEach((k) ->
+                sortedLayouts.put(k, options.buttonLayouts.get(k)));
+        options.buttonLayouts = sortedLayouts;
     }
 
     // Instance management
