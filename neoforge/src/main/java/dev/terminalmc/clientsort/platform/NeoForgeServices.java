@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.platform;
 
-import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
+import dev.terminalmc.clientsort.platform.services.IPlatformServices;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.loading.FMLPaths;
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
 
-public class NeoForgePlatformInfo implements IPlatformInfo {
+public class NeoForgeServices implements IPlatformServices {
 
     @Override
     public Path getConfigDir() {

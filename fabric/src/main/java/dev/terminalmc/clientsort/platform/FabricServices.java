@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.platform;
 
-import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
+import dev.terminalmc.clientsort.platform.services.IPlatformServices;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -24,7 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public class FabricPlatformInfo implements IPlatformInfo {
+public class FabricServices implements IPlatformServices {
 
     @Override
     public Path getConfigDir() {

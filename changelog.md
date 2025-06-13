@@ -1,9 +1,15 @@
 # Changelog
 
-## 2.0.0
+## 2.0.0-alpha.1
+
+Note: `v2.x.x` versions are not compatible with `v1.x.x` config files, or vice versa.
+
+Note: `alpha` versions use `-alpha` config files which may not be compatible with other alpha or release versions.
 
 - Moved stack collection to server when using server-accelerated sort
-- Fixed inventory sorting in creative mode
+- Fixed player inventory sorting in creative mode
+- Added support for stack fill and transfer operations
+- Added GUI buttons (off by default) as an alternative to using keybinds
 
 ## 1.3.3
 

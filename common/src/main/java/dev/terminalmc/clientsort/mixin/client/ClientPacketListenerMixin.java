@@ -28,8 +28,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static dev.terminalmc.clientsort.client.config.Config.options;
-
 /**
  * Network-related events.
  */
@@ -39,7 +37,6 @@ public abstract class ClientPacketListenerMixin {
     @Inject(method = "handleLogin", at = @At("HEAD"))
     private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         ClientSort.searchOrderUpdated = false;
-        ClientSort.setInteractionManagerTickRate(options());
     }
 
     @Inject(method = "handleSetCarriedItem", at = @At("HEAD"))

@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +64,7 @@ public abstract class ClientController extends SingleUseController {
         );
 
         // Prepare sounds
-        boolean playSound = SoundManager.shouldPlayWhenSorting();
+        boolean playSound = SoundManager.shouldPlaySortingSounds();
         if (playSound) SoundManager.resetForCount(
                 SoundManager.estimateSortSounds(originScopeStacks));
 

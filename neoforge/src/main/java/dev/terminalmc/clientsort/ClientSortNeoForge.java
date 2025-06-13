@@ -29,7 +29,9 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 @Mod(ClientSort.MOD_ID)
 @EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSortNeoForge {
-    // Custom payloads
+    /**
+     * Registers all custom C2S payloads and their handlers.
+     */
     @SubscribeEvent
     static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
@@ -37,7 +39,7 @@ public class ClientSortNeoForge {
     }
 
     /**
-     * C2S; register payload and handler here.
+     * Registers a custom C2S payload and its handler.
      */
     private static <T extends CustomPacketPayload> void registerC2S(
             PayloadRegistrar registrar,

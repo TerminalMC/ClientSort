@@ -36,12 +36,12 @@ public class StackMatcher {
         this.components = components;
     }
 
-    public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
-        return new StackMatcher(stack.getItem(), null);
-    }
-
     public static StackMatcher of(@NotNull ItemStack stack) {
         return new StackMatcher(stack.getItem(), stack.getComponents());
+    }
+
+    public static StackMatcher ignoreNbt(@NotNull ItemStack stack) {
+        return new StackMatcher(stack.getItem(), null);
     }
 
     @Override

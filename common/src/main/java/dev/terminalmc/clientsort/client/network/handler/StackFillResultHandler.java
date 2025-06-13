@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,7 @@
 package dev.terminalmc.clientsort.client.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -28,6 +28,7 @@ public class StackFillResultHandler {
     /**
      * Handles a {@link StackFillResultPayload} sent by a server.
      */
+    @SuppressWarnings("unused")
     public static void handle(
             StackFillResultPayload payload,
             Minecraft mc,
@@ -36,6 +37,7 @@ public class StackFillResultHandler {
         if (!payload.success()) {
             ClientSort.LOG.error(
                     "Received failure warning '{}': {}",
+                    StackFillPayload.ID,
                     payload.message()
             );
         }

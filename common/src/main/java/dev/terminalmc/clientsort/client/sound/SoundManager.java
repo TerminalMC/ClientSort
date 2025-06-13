@@ -28,41 +28,40 @@ import org.jetbrains.annotations.Nullable;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class SoundManager {
-    private static long time = Long.MIN_VALUE;
+    private static long nextSoundTime = Long.MIN_VALUE;
     private static float pitch = 1.0F;
     private static float increment = 0.01F;
     private static @Nullable SoundInstance sound;
 
-    public static boolean shouldPlayWhenSorting() {
-        return options().soundEnabled && options().soundVolume > 0;
+    public static boolean shouldPlaySortingSounds() {
+        return options().playSoundSort && options().soundVolume > 0;
     }
 
-    public static boolean shouldPlayAlways() {
-        return options().soundEnabled && options().soundVolume > 0;
+    public static boolean shouldPlayOtherSounds() {
+        return options().playSoundOther && options().soundVolume > 0;
     }
 
+    /**
+     * Resets the sound manager for a new operation.
+     * @param size the number of sounds to expect, for pitch interval
+     *             calculation.
+     */
     public static void resetForCount(int size) {
-        increment = (options().soundMaxPitch - options().soundMinPitch) / size;
-        pitch = options().soundMinPitch;
+        increment = (options().soundPitchMax - options().soundPitchMin) / size;
+        pitch = options().soundPitchMin;
     }
 
-    private static float pitch() {
-        float val = pitch;
-        pitch += increment;
-        if (pitch > options().soundMaxPitch) {
-            pitch = options().soundMaxPitch;
-        }
-        return val;
-    }
-
+    /**
+     * Plays an interaction sound with incremented pitch.
+     */
     public static void play() {
         long now = Util.getMillis();
-        float soundPitch = pitch(); // Increment even if sound is skipped
-        if (now >= time) {
-            time = now + options().soundRate;
+        float soundPitch = getPitch(); // Increment even if sound is skipped
+        if (now >= nextSoundTime) {
+            nextSoundTime = now + options().soundInterval;
             ResourceLocation location = options().sortSoundLoc;
             if (location != null) {
-                if (sound != null && !options().soundAllowOverlap) {
+                if (sound != null && !options().allowSoundOverlap) {
                     Minecraft.getInstance().getSoundManager().stop(sound);
                 }
                 sound = new SimpleSoundInstance(
@@ -72,6 +71,18 @@ public class SoundManager {
                 Minecraft.getInstance().getSoundManager().play(sound);
             }
         }
+    }
+
+    /**
+     * @return an incremented pitch value.
+     */
+    private static float getPitch() {
+        float val = pitch;
+        pitch += increment;
+        if (pitch > options().soundPitchMax) {
+            pitch = options().soundPitchMax;
+        }
+        return val;
     }
 
     /**
@@ -103,6 +114,32 @@ public class SoundManager {
 
     /**
      * Estimates the number of interaction sounds that will be played in the
+     * course of a stack fill operation.
+     */
+    public static int estimateStackFillSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
+        // Count partial stacks in the destination array
+        int dstPartialCount = 0;
+        for (ItemStack stack : dstStacks) {
+            if (stack != ItemStack.EMPTY && stack.getCount() < stack.getMaxStackSize()) {
+                dstPartialCount++;
+            }
+        }
+
+        // Count non-empty slots in the source array
+        int srcStackCount = 0;
+        for (ItemStack stack : srcStacks) {
+            if (stack != ItemStack.EMPTY) {
+                srcStackCount++;
+            }
+        }
+
+        // Assume a small percentage of the source stacks match the destination
+        // partial stacks
+        return (dstPartialCount / 2 + srcStackCount / 2) / 2;
+    }
+
+    /**
+     * Estimates the number of interaction sounds that will be played in the
      * course of a transfer operation.
      */
     public static int estimateTransferSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
@@ -128,31 +165,5 @@ public class SoundManager {
 
         // Smaller number defines length of operation
         return Math.min(srcStackCount, dstHoleCount);
-    }
-
-    /**
-     * Estimates the number of interaction sounds that will be played in the
-     * course of a stack fill operation.
-     */
-    public static int estimateStackFillSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
-        // Count partial stacks in the destination array
-        int dstPartialCount = 0;
-        for (ItemStack stack : dstStacks) {
-            if (stack != ItemStack.EMPTY && stack.getCount() < stack.getMaxStackSize()) {
-                dstPartialCount++;
-            }
-        }
-
-        // Count non-empty slots in the source array
-        int srcStackCount = 0;
-        for (ItemStack stack : srcStacks) {
-            if (stack != ItemStack.EMPTY) {
-                srcStackCount++;
-            }
-        }
-
-        // Assume a small percentage of the source stacks match the destination
-        // partial stacks
-        return (dstPartialCount / 2 + srcStackCount / 2) / 2;
     }
 }

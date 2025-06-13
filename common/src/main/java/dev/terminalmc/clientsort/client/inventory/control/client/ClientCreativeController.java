@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,6 +85,7 @@ public class ClientCreativeController extends ClientController {
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.getCount() <= 0) break;
+                // Otherwise keep looking for another matching stack
             }
         }
         // Broadcast changes once operation is complete

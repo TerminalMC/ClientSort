@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.platform;
+package dev.terminalmc.clientsort.client.config;
 
-import dev.terminalmc.clientsort.client.platform.services.IPlatformInfo;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-public class FabricPlatformInfo implements IPlatformInfo {
-
-    @Override
-    public boolean canSendToServer(CustomPacketPayload.Type<?> type) {
-        return ClientPlayNetworking.canSend(type);
+public record Vec2i(int x, int y) {
+    public Vec2i add(Vec2i other) {
+        return new Vec2i(this.x + other.x, this.y + other.y);
     }
 
-    @Override
-    public void sendToServer(CustomPacketPayload payload) {
-        ClientPlayNetworking.send(payload);
+    public Vec2i subtract(Vec2i other) {
+        return new Vec2i(this.x - other.x, this.y - other.y);
+    }
+
+    public boolean equals(Vec2i other) {
+        return this.x == other.x && this.y == other.y;
     }
 }

@@ -118,6 +118,7 @@ public class StackComparison {
         return compareEqualItems5(a, b, context);
     }
 
+    @SuppressWarnings("unused")
     private static int compareEqualItems5(ItemStack a, ItemStack b, SortContext context) {
         // Compare damage
         return Integer.compare(a.getDamageValue(), b.getDamageValue());

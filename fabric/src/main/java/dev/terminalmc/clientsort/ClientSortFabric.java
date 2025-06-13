@@ -25,13 +25,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 public class ClientSortFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        // Custom payloads
+        // Register all custom payloads
         Registration.PAYLOADS_C2S.forEach(ClientSortFabric::registerC2S);
-        Registration.PAYLOADS_S2C.forEach(ClientSortFabric::registerS2C);
+        Registration.PAYLOADS_S2C.forEach(ClientSortFabric::registerPayloadS2C);
     }
 
     /**
-     * C2S; register payload and handler here.
+     * Registers a C2S payload and its handler.
      */
     private static <T extends CustomPacketPayload> void registerC2S(
             Registration.RegisterablePayloadC2S<T> rp
@@ -51,9 +51,12 @@ public class ClientSortFabric implements ModInitializer {
     }
 
     /**
-     * S2C; register payload here, handler in client.
+     * Registers an S2C payload, but not its handler.
+     * <p>
+     * <b>Note:</b> client-side payload handlers must be registered in
+     * {@link dev.terminalmc.clientsort.client.ClientSortFabric}.
      */
-    private static <T extends CustomPacketPayload> void registerS2C(
+    private static <T extends CustomPacketPayload> void registerPayloadS2C(
             Registration.RegisterablePayloadS2C<T> rp
     ) {
         PayloadTypeRegistry.playS2C().register(

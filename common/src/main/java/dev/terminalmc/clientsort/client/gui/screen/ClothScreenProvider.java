@@ -17,6 +17,8 @@
 package dev.terminalmc.clientsort.client.gui.screen;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.config.Config;
@@ -27,7 +29,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Optional;
+import java.text.ParseException;
+import java.util.*;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -49,50 +52,35 @@ public class ClothScreenProvider {
 
         ConfigEntryBuilder eb = builder.entryBuilder();
 
-
         ConfigCategory general = builder.getOrCreateCategory(localized("option", "general"));
 
-        general.addEntry(eb.startIntField(localized("option", "interactionRateServer"),
-                        options.interactionRateServer)
-                .setTooltip(localized("option", "interactionRate.tooltip"))
+        general.addEntry(eb.startIntField(localized("option", "interactionInterval"),
+                        options.interactionInterval)
+                .setTooltip(localized("option", "interactionInterval.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < Config.Options.interactionRateMin) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > Config.Options.interactionRateMax) return Optional.of(
-                            localized("option", "error.high"));
+                    if (val < Config.Options.INTERACTION_INTERVAL_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.INTERACTION_INTERVAL_MAX) return Optional.of(
+                            localized("error", "high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.interactionRateServerDefault)
-                .setSaveConsumer(val -> options.interactionRateServer = val)
+                .setDefaultValue(Config.Options.interactionIntervalDefault)
+                .setSaveConsumer(val -> options.interactionInterval = val)
                 .build());
 
-        general.addEntry(eb.startIntField(localized("option", "interactionRateClient"),
-                        options.interactionRateClient)
-                .setTooltip(localized("option", "interactionRate.tooltip"))
-                .setErrorSupplier(val -> {
-                    if (val < Config.Options.interactionRateMin) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > Config.Options.interactionRateMax) return Optional.of(
-                            localized("option", "error.high"));
-                    else return Optional.empty();
-                })
-                .setDefaultValue(Config.Options.interactionRateClientDefault)
-                .setSaveConsumer(val -> options.interactionRateClient = val)
+        general.addEntry(eb.startBooleanToggle(localized("option", "useServerAcceleration"),
+                        options.useServerAcceleration)
+                .setTooltip(localized("option", "useServerAcceleration.tooltip"))
+                .setDefaultValue(Config.Options.useServerAccelerationDefault)
+                .setSaveConsumer(val -> options.useServerAcceleration = val)
                 .build());
 
-        general.addEntry(eb.startBooleanToggle(localized("option", "serverAcceleratedSorting"),
-                        options.serverAcceleratedSorting)
-                .setTooltip(localized("option", "serverAcceleratedSorting.tooltip"))
-                .setDefaultValue(Config.Options.serverAcceleratedSortingDefault)
-                .setSaveConsumer(val -> options.serverAcceleratedSorting = val)
-                .build());
-
-        general.addEntry(eb.startBooleanToggle(localized("option", "optimizedCreativeSorting"),
-                        options.optimizedCreativeSorting)
-                .setTooltip(localized("option", "optimizedCreativeSorting.tooltip"))
-                .setDefaultValue(Config.Options.optimizedCreativeSortingDefault)
+        general.addEntry(eb.startBooleanToggle(localized("option", "optimizeCreativeSorting"),
+                        options.optimizeCreativeSorting)
+                .setTooltip(localized("option", "optimizeCreativeSorting.tooltip"))
+                .setDefaultValue(Config.Options.optimizeCreativeSortingDefault)
                 .setSaveConsumer(val -> {
-                    options.optimizedCreativeSorting = val;
+                    options.optimizeCreativeSorting = val;
                     if (val) CreativeSearchOrder.tryRefreshStackPositionMap();
                 })
                 .build());
@@ -117,19 +105,19 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.extraSlotScope = val)
                 .build());
 
-        general.addEntry(eb.startBooleanToggle(localized("option", "lmbBundle"),
-                        options.lmbBundle)
-                .setTooltip(localized("option", "lmbBundle.tooltip"))
-                .setDefaultValue(Config.Options.lmbBundleDefault)
+        general.addEntry(eb.startBooleanToggle(localized("option", "bundlesUseLeftClick"),
+                        options.bundlesUseLeftClick)
+                .setTooltip(localized("option", "bundlesUseLeftClick.tooltip"))
+                .setDefaultValue(Config.Options.bundlesUseLeftClickDefault)
                 .setSaveConsumer(val -> {
-                    options.lmbBundle = val;
+                    options.bundlesUseLeftClick = val;
                     if (val) CreativeSearchOrder.tryRefreshStackPositionMap();
                 })
                 .build());
 
-        general.addEntry(eb.startBooleanToggle(localized("option", "debugLogEnabled"),
+        general.addEntry(eb.startBooleanToggle(localized("option", "showDebugInfo"),
                         ClientSort.debug)
-                .setTooltip(localized("option", "debugLogEnabled.tooltip"))
+                .setTooltip(localized("option", "showDebugInfo.tooltip"))
                 .setDefaultValue(false)
                 .setSaveConsumer(val -> ClientSort.debug = val)
                 .build());
@@ -166,92 +154,188 @@ public class ClothScreenProvider {
 
         ConfigCategory sound = builder.getOrCreateCategory(localized("option", "sound"));
 
-        sound.addEntry(eb.startBooleanToggle(localized("option", "soundEnabled"),
-                        options.soundEnabled)
-                .setDefaultValue(Config.Options.soundEnabledDefault)
-                .setSaveConsumer(val -> options.soundEnabled = val)
+        sound.addEntry(eb.startBooleanToggle(localized("option", "playSoundSort"),
+                        options.playSoundSort)
+                .setTooltip(localized("option", "playSoundSort.tooltip"))
+                .setDefaultValue(Config.Options.playSoundSortDefault)
+                .setSaveConsumer(val -> options.playSoundSort = val)
                 .build());
 
-        sound.addEntry(eb.startBooleanToggle(localized("option", "soundEnabledAllOps"),
-                        options.soundEnabledAllOps)
-                .setTooltip(localized("option", "soundEnabledAllOps.tooltip"))
-                .setDefaultValue(Config.Options.soundEnabledAllOpsDefault)
-                .setSaveConsumer(val -> options.soundEnabledAllOps = val)
+        sound.addEntry(eb.startBooleanToggle(localized("option", "playSoundOther"),
+                        options.playSoundOther)
+                .setTooltip(localized("option", "playSoundOther.tooltip"))
+                .setDefaultValue(Config.Options.playSoundOtherDefault)
+                .setSaveConsumer(val -> options.playSoundOther = val)
                 .build());
 
-        sound.addEntry(eb.startStrField(localized("option", "sortSound"),
-                        options.sortSound)
-                .setDefaultValue(Config.Options.sortSoundDefault)
-                .setSaveConsumer(val -> options.sortSound = val)
+        sound.addEntry(eb.startStrField(localized("option", "interactionSound"),
+                        options.interactionSound)
+                .setDefaultValue(Config.Options.interactionSoundDefault)
+                .setSaveConsumer(val -> options.interactionSound = val)
                 .setErrorSupplier(val -> {
                     if (ResourceLocation.tryParse(val) == null) return Optional.of(
-                            localized("option", "error.resourceLocation.parse"));
+                            localized("error", "resourceLocation.parse"));
                     else return Optional.empty();
                 })
                 .build());
 
-        sound.addEntry(eb.startIntField(localized("option", "soundRate"),
-                        options.soundRate)
-                .setTooltip(localized("option", "soundRate.tooltip"))
+        sound.addEntry(eb.startIntField(localized("option", "soundInterval"),
+                        options.soundInterval)
+                .setTooltip(localized("option", "soundInterval.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < Config.Options.interactionRateMin) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > Config.Options.interactionRateMax) return Optional.of(
-                            localized("option", "error.high"));
+                    if (val < Config.Options.SOUND_INTERVAL_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.SOUND_INTERVAL_MAX) return Optional.of(
+                            localized("error", "high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.soundRateDefault)
-                .setSaveConsumer(val -> options.soundRate = val)
+                .setDefaultValue(Config.Options.soundIntervalDefault)
+                .setSaveConsumer(val -> options.soundInterval = val)
                 .build());
 
-        sound.addEntry(eb.startFloatField(localized("option", "soundMinPitch"),
-                        options.soundMinPitch)
-                .setTooltip(localized("option", "soundMinPitch.tooltip"))
+        sound.addEntry(eb.startFloatField(localized("option", "soundPitchMin"),
+                        options.soundPitchMin)
+                .setTooltip(localized("option", "soundPitchMin.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < Config.Options.soundPitchMin) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > options.soundMaxPitch) return Optional.of(
-                            localized("option", "error.high"));
+                    if (val < Config.Options.SOUND_PITCH_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > options.soundPitchMax) return Optional.of(
+                            localized("error", "high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.soundMinPitchDefault)
-                .setSaveConsumer(val -> options.soundMinPitch = val)
+                .setDefaultValue(Config.Options.soundPitchMinDefault)
+                .setSaveConsumer(val -> options.soundPitchMin = val)
                 .build());
 
-        sound.addEntry(eb.startFloatField(localized("option", "soundMaxPitch"),
-                        options.soundMaxPitch)
-                .setTooltip(localized("option", "soundMaxPitch.tooltip"))
+        sound.addEntry(eb.startFloatField(localized("option", "soundPitchMax"),
+                        options.soundPitchMax)
+                .setTooltip(localized("option", "soundPitchMax.tooltip"))
                 .setErrorSupplier(val -> {
-                    if (val < options.soundMinPitch) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > Config.Options.soundPitchMax) return Optional.of(
-                            localized("option", "error.high"));
+                    if (val < options.soundPitchMin) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.SOUND_PITCH_MAX) return Optional.of(
+                            localized("error", "high"));
                     else return Optional.empty();
                 })
-                .setDefaultValue(Config.Options.soundMaxPitchDefault)
-                .setSaveConsumer(val -> options.soundMaxPitch = val)
+                .setDefaultValue(Config.Options.soundPitchMaxDefault)
+                .setSaveConsumer(val -> options.soundPitchMax = val)
                 .build());
 
         sound.addEntry(eb.startFloatField(localized("option", "soundVolume"),
                         options.soundVolume)
                 .setErrorSupplier(val -> {
-                    if (val < Config.Options.soundVolumeMin) return Optional.of(
-                            localized("option", "error.low"));
-                    else if (val > Config.Options.soundVolumeMax) return Optional.of(
-                            localized("option", "error.high"));
+                    if (val < Config.Options.SOUND_VOLUME_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.SOUND_VOLUME_MAX) return Optional.of(
+                            localized("error", "high"));
                     else return Optional.empty();
                 })
                 .setDefaultValue(Config.Options.soundVolumeDefault)
                 .setSaveConsumer(val -> options.soundVolume = val)
                 .build());
 
-        sound.addEntry(eb.startBooleanToggle(localized("option", "soundAllowOverlap"),
-                        options.soundAllowOverlap)
-                .setTooltip(localized("option", "soundAllowOverlap.tooltip"))
-                .setDefaultValue(Config.Options.soundAllowOverlapDefault)
-                .setSaveConsumer(val -> options.soundAllowOverlap = val)
+        sound.addEntry(eb.startBooleanToggle(localized("option", "allowSoundOverlap"),
+                        options.allowSoundOverlap)
+                .setTooltip(localized("option", "allowSoundOverlap.tooltip"))
+                .setDefaultValue(Config.Options.allowSoundOverlapDefault)
+                .setSaveConsumer(val -> options.allowSoundOverlap = val)
+                .build());
+
+        ConfigCategory gui = builder.getOrCreateCategory(localized("option", "gui"));
+
+        gui.addEntry(eb.startBooleanToggle(localized("option", "showButtons"),
+                        options.showButtons)
+                .setTooltip(localized("option", "showButtons.tooltip"))
+                .setDefaultValue(Config.Options.showButtonsDefault)
+                .setSaveConsumer(val -> options.showButtons = val)
+                .build());
+
+        gui.addEntry(eb.startEnumSelector(localized("option", "firstButton"),
+                        Config.Options.CONTROL_BUTTON.class, options.firstButton)
+                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setDefaultValue(Config.Options.firstButtonDefault)
+                .setSaveConsumer(val -> options.firstButton = val)
+                .build());
+
+        gui.addEntry(eb.startEnumSelector(localized("option", "secondButton"),
+                        Config.Options.CONTROL_BUTTON.class, options.secondButton)
+                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setDefaultValue(Config.Options.secondButtonDefault)
+                .setSaveConsumer(val -> options.secondButton = val)
+                .build());
+
+        gui.addEntry(eb.startEnumSelector(localized("option", "thirdButton"),
+                        Config.Options.CONTROL_BUTTON.class, options.thirdButton)
+                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setDefaultValue(Config.Options.thirdButtonDefault)
+                .setSaveConsumer(val -> options.thirdButton = val)
+                .build());
+
+        gui.addEntry(eb.startIntField(localized("option", "buttonDefaultOffset.x"),
+                        options.buttonDefaultOffset.x())
+                .setTooltip(localized("option", "buttonDefaultOffset.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < Config.Options.BUTTON_DEFAULT_OFFSET_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.BUTTON_DEFAULT_OFFSET_MAX) return Optional.of(
+                            localized("error", "high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.buttonDefaultOffsetDefault.x())
+                .setSaveConsumer(val -> options.buttonDefaultOffset = new Vec2i(
+                        val,
+                        options.buttonDefaultOffset.y()
+                ))
+                .build());
+
+        gui.addEntry(eb.startIntField(localized("option", "buttonDefaultOffset.y"),
+                        options.buttonDefaultOffset.y())
+                .setTooltip(localized("option", "buttonDefaultOffset.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < Config.Options.BUTTON_DEFAULT_OFFSET_MIN) return Optional.of(
+                            localized("error", "low"));
+                    else if (val > Config.Options.BUTTON_DEFAULT_OFFSET_MAX) return Optional.of(
+                            localized("error", "high"));
+                    else return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.buttonDefaultOffsetDefault.y())
+                .setSaveConsumer(val -> options.buttonDefaultOffset = new Vec2i(
+                        options.buttonDefaultOffset.x(),
+                        val
+                ))
+                .build());
+
+        gui.addEntry(eb.startStrList(localized("option", "buttonLayouts"),
+                        getLayoutStrings(options.buttonLayouts.values()))
+                .setTooltip(localized("option", "buttonLayouts.tooltip"))
+                .setErrorSupplier((list) -> {
+                    int i = 0;
+                    for (String string : list) {
+                        try {
+                            ButtonLayout layout = ButtonLayout.fromDataString(string);
+                            options.buttonLayouts.put(layout.className, layout);
+                        } catch (ParseException ex) {
+                            return Optional.of(localized("error", "buttonLayout.parse",
+                                    i+1, ex.getMessage()));
+                        }
+                        i++;
+                    }
+                    return Optional.empty();
+                })
+                .setDefaultValue(getLayoutStrings(Config.Options.buttonLayoutsDefaultList.get()))
+                .setSaveConsumer((list) -> {
+
+                })
                 .build());
 
         return builder.build();
+    }
+
+    private static List<String> getLayoutStrings(Collection<ButtonLayout> layouts) {
+        List<String> strings = new ArrayList<>();
+        for (ButtonLayout layout : layouts) {
+            strings.add(layout.toDataString());
+        }
+        return strings;
     }
 }

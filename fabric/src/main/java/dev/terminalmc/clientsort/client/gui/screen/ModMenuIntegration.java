@@ -20,6 +20,9 @@ import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 public class ModMenuIntegration implements ModMenuApi {
+    /**
+     * Registers the config screen with ModMenu.
+     */
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return ConfigScreenProvider::getConfigScreen;

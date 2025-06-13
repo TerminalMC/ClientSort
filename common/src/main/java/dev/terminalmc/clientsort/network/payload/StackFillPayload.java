@@ -25,13 +25,14 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom payload allowing stack fill instructions to be sent from a client
- * to the server.
- * @param srcId the ID of the player inventory.
- * @param srcSlots the array of available slots in the player inventory.
- * @param dstSlots the array of available slots in the container.
+ * A custom C2S payload used to instruct a server to complete as many partial
+ * item stacks in a destination container as possible, using items in a source
+ * container.
+ * @param srcContainerId the ID of the source container.
+ * @param srcSlotIds a sub-array of slots to take items from.
+ * @param dstSlotIds a sub-array of slots to place items in.
  */
-public record StackFillPayload(int srcId, int[] srcSlots, int[] dstSlots) implements CustomPacketPayload {
+public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -46,17 +47,16 @@ public record StackFillPayload(int srcId, int[] srcSlots, int[] dstSlots) implem
 
     public static final StreamCodec<RegistryFriendlyByteBuf, StackFillPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, StackFillPayload::srcId,
-                    VAR_INT_ARRAY, StackFillPayload::srcSlots,
-                    VAR_INT_ARRAY, StackFillPayload::dstSlots,
+                    ByteBufCodecs.VAR_INT, StackFillPayload::srcContainerId,
+                    VAR_INT_ARRAY, StackFillPayload::srcSlotIds,
+                    VAR_INT_ARRAY, StackFillPayload::dstSlotIds,
                     StackFillPayload::new
             );
 
-    public static final ResourceLocation TYPE_LOCATION =
+    public static final ResourceLocation ID =
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_c2s");
 
-    public static final Type<StackFillPayload> TYPE =
-            new Type<>(TYPE_LOCATION);
+    public static final Type<StackFillPayload> TYPE = new Type<>(ID);
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

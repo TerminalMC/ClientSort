@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client.platform.services;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public interface IPlatformInfo {
+public interface IPlatformClientServices {
 
     /**
      * @return {@code true} if the payload type can be sent from the client to

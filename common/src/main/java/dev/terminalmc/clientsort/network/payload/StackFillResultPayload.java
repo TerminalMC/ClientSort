@@ -25,7 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom payload allowing feedback to be sent from server to client.
+ * A custom S2C payload used to send feedback for an operation requested by a
+ * {@link StackFillPayload} to a client.
  * @param success whether the operation was successful.
  * @param message an optional message describing an error.
  */
@@ -38,11 +39,10 @@ public record StackFillResultPayload(boolean success, String message) implements
                     StackFillResultPayload::new
             );
 
-    public static final ResourceLocation TYPE_LOCATION =
+    public static final ResourceLocation ID =
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_result_s2c");
 
-    public static final Type<StackFillResultPayload> TYPE =
-            new Type<>(TYPE_LOCATION);
+    public static final Type<StackFillResultPayload> TYPE = new Type<>(ID);
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

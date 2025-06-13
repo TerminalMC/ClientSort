@@ -11,6 +11,8 @@
     "client.AbstractContainerScreenMixin",
     "client.ClientPacketListenerMixin",
     "client.LocalPlayerMixin",
+    "client.accessor.AbstractContainerScreenAccessor",
+    "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
     "client.slot.CreativeSlotMixin",
     "client.slot.SlotMixin"

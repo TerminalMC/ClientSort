@@ -1,4 +1,5 @@
 /*
+ * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +26,13 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom payload allowing inventory sorting instructions to be sent from a
- * client to the server.
- * @param syncId the ID of the container to sort.
- * @param slotMapping the array of slot swap operations.
+ * A custom C2S payload used to instruct a server to sort slots in a container
+ * into a particular order.
+ * @param containerId the ID of the container.
+ * @param slotMapping an array of slot swap instructions, represented as pairs
+ *                    of the form [from slot ID, to slot ID].
  */
-public record SortPayload(int syncId, int[] slotMapping) implements CustomPacketPayload {
+public record SortPayload(int containerId, int[] slotMapping) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -45,16 +47,15 @@ public record SortPayload(int syncId, int[] slotMapping) implements CustomPacket
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SortPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, SortPayload::syncId,
+                    ByteBufCodecs.VAR_INT, SortPayload::containerId,
                     VAR_INT_ARRAY, SortPayload::slotMapping,
                     SortPayload::new
             );
 
-    public static final ResourceLocation TYPE_LOCATION =
+    public static final ResourceLocation ID =
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "sort_c2s");
 
-    public static final CustomPacketPayload.Type<SortPayload> TYPE =
-            new Type<>(TYPE_LOCATION);
+    public static final CustomPacketPayload.Type<SortPayload> TYPE = new Type<>(ID);
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

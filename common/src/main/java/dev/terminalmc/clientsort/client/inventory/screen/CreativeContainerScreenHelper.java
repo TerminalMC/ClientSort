@@ -26,11 +26,10 @@ import net.minecraft.world.inventory.Slot;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * A {@link ContainerScreenHelper} for a {@link CreativeModeInventoryScreen}.
+ * A {@link ContainerScreenHelper} for an instance of
+ * {@link CreativeModeInventoryScreen}.
  */
-public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen>
-        extends ContainerScreenHelper<T> {
-
+public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen> extends ContainerScreenHelper<T> {
     public CreativeContainerScreenHelper(
             T screen,
             InteractionManager.ClickEventFactory clickEventFactory
@@ -40,11 +39,11 @@ public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen
 
     @Override
     public Scope getScope(Slot slot) {
-        // Full inventory visible
+        // If full inventory is visible
         if (screen.isInventoryOpen()) {
             return super.getScope(slot);
         }
-        // Only hotbar visible
+        // If only hotbar is visible
         if (slot.container instanceof Inventory) {
             if (isHotbarSlot(slot)) {
                 return switch (options().hotbarScope) {
@@ -59,8 +58,8 @@ public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen
     @Override
     public void translateSlotIds(int[] slotMapping) {
         if (!screen.isInventoryOpen()) {
-            // Workaround for server ignoring armor and 2x2 crafting grid when
-            // only hotbar is visible on client
+            // Workaround for server ignoring offhand, armor slots and 2x2
+            // crafting grid when only hotbar is visible on client
             for (int i = 0; i < slotMapping.length; i++) {
                 slotMapping[i] -= 9;
             }

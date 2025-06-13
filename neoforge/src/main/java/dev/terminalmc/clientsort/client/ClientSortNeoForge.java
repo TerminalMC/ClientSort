@@ -17,8 +17,7 @@
 package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
-import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.network.Registration;
+import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,6 +28,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
@@ -38,42 +38,56 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 @EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSortNeoForge {
     public ClientSortNeoForge() {
-        // Config screen
+        // Register config screen
         ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
                 () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent));
 
-        // Client initialization
-        dev.terminalmc.clientsort.client.ClientSort.init();
+        // Initialize client
+        ClientSort.init();
     }
 
-    // Keybindings
+    /**
+     * Registers all keybinds.
+     */
     @SubscribeEvent
-    static void registerKeyMappingsEvent(RegisterKeyMappingsEvent event) {
-        dev.terminalmc.clientsort.client.ClientSort.KEYBINDS.forEach(event::register);
+    static void registerKeybinds(RegisterKeyMappingsEvent event) {
+        ClientSort.KEYBINDS.forEach(event::register);
     }
 
     @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
     static class ClientEventHandler {
-        // Tick events
+        /**
+         * Registers after-tick event.
+         */
         @SubscribeEvent
-        public static void clientTickEvent(ClientTickEvent.Post event) {
-            dev.terminalmc.clientsort.client.ClientSort.onEndTick(Minecraft.getInstance());
+        public static void afterClientTick(ClientTickEvent.Post event) {
+            ClientSort.afterClientTick(Minecraft.getInstance());
+        }
+
+        /**
+         * Registers screen after-init event.
+         */
+        @SubscribeEvent
+        public static void afterScreenInit(ScreenEvent.Init.Post event) {
+            ClientSort.afterScreenInit(event.getScreen());
         }
     }
 
-    // Custom payloads
+    /**
+     * Registers all custom S2C payloads and their handlers.
+     */
     @SubscribeEvent
-    static void register(final RegisterPayloadHandlersEvent event) {
+    static void registerPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
-        Registration.PAYLOADS_S2C.forEach((rp) -> registerS2C(registrar, rp));
+        ClientRegistration.PAYLOADS_S2C.forEach((rp) -> registerS2C(registrar, rp));
     }
 
     /**
-     * S2C; register payload and handler here.
+     * Registers a custom S2C payload and its handler.
      */
     private static <T extends CustomPacketPayload> void registerS2C(
             PayloadRegistrar registrar,
-            Registration.RegisterablePayloadS2C<T> rp
+            ClientRegistration.RegisterablePayloadS2C<T> rp
     ) {
         registrar.playToClient(
                 rp.type,
