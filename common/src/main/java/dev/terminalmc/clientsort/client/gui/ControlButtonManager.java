@@ -427,9 +427,12 @@ public class ControlButtonManager {
             AbstractContainerScreen<?> screen,
             boolean isPlayerInv
     ) {
+        // TODO find a way to reliably get a slot that belongs to the correct
+        //  inventory, since the reference slot is used as the scope slot
+        // Get the top-most of the right-most slots
         return screen.getMenu().slots.stream()
                 .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
-                .max(Comparator.comparingInt(slot -> slot.x - slot.y))
+                .max(Comparator.comparingInt(slot -> slot.x * 9999 - slot.y))
                 .orElse(null);
     }
 
