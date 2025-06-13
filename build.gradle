@@ -22,15 +22,29 @@ subprojects {
             owner_name = mod_owner
             year = java.time.LocalDate.now().getYear().toString()
         }
-        // Alternate license
+        // Attribution licenses
         matching(includes: [
-                "**/client/inventory/**",
+                "**/client/inventory/screen/**",
+                "**/client/inventory/control/SingleUseController.java",
+                "**/client/inventory/control/client/ClientSurvivalController.java",
                 "**/client/network/InteractionManager.java",
                 "**/client/order/**",
-                "**/mixin/**",
-                "**/network/handler/**",
+                "**/mixin/client/slot/**",
+                "**/mixin/client/AbstractContainerScreenMixin.java",
+                "**/mixin/client/ClientPacketListenerMixin.java",
+                "**/mixin/client/LocalPlayerMixin.java",
+                "**/network/handler/util/**",
+                "**/network/handler/SortHandler.java",
+                "**/network/payload/SortPayload.java",
         ]) {
             header = rootProject.project("common").file(licenseDir + "mouse-wheelie/HEADER.txt")
+        }
+        matching(includes: [
+                "**/client/gui/widget/**",
+                "**/client/gui/ControlButtonManager.java",
+                "**/client/gui/screen/edit/PositionEditScreen.java",
+        ]) {
+            header = rootProject.project("common").file(licenseDir + "inventory-management/HEADER.txt")
         }
     }
 
@@ -146,9 +160,9 @@ String versionChangelog() {
             String line = lines.get(i)
             if (line.startsWith("## ")) {
                 break
-            } else if (!line.isBlank()) {
+            } else {
                 if (!builder.isEmpty()) builder.append("\n")
-                builder.append(line)
+                if (!line.isBlank()) builder.append(line)
             }
         }
     } else {
@@ -156,7 +170,11 @@ String versionChangelog() {
                 String.format("Mod version '%s' does not match changelog version '%s'",
                         mod_version, lines.get(2).substring(3)))
     }
-    return builder.toString()
+    String changelog = builder.toString()
+    while (changelog.endsWith("\n")) {
+        changelog = changelog.substring(0, changelog.length() - 2);
+    }
+    return changelog;
 }
 
 static String capsLoader(String loader) {

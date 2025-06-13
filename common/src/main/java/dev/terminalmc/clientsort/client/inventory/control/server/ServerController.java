@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +22,7 @@ import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.platform.Services;
+import dev.terminalmc.clientsort.client.platform.ClientServices;
 import dev.terminalmc.clientsort.client.util.inject.ISlot;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
@@ -55,7 +54,7 @@ public class ServerController extends SingleUseController {
             ServerController sorter = new ServerController(screen, screenHelper, originSlot);
             int[] slotMapping = sorter.createSlotMapping(sortOrder);
             InteractionManager.now(() -> {
-                Services.PLATFORM.sendToServer(
+                ClientServices.PLATFORM.sendToServer(
                         new SortPayload(screen.getMenu().containerId, slotMapping));
                 return InteractionManager.TICK_WAITER;
             });
@@ -72,14 +71,12 @@ public class ServerController extends SingleUseController {
         if (otherScopeSlots.length == 0) return;
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
-        int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
-            Services.PLATFORM.sendToServer(
+            ClientServices.PLATFORM.sendToServer(
                     new TransferPayload(
                             screen.getMenu().containerId,
-                            srcSlotIds,
-                            dstSlotIds
+                            srcSlotIds
                     ));
             return InteractionManager.TICK_WAITER;
         });
@@ -95,7 +92,7 @@ public class ServerController extends SingleUseController {
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
-            Services.PLATFORM.sendToServer(
+            ClientServices.PLATFORM.sendToServer(
                     new StackFillPayload(
                             screen.getMenu().containerId,
                             srcSlotIds,
@@ -109,7 +106,7 @@ public class ServerController extends SingleUseController {
         // Translate slots for server
         int[] slotIds = new int[slots.length];
         for (int i = 0; i < slots.length; i++) {
-            slotIds[i] = ((ISlot) slots[i]).clientSort$getIdInContainer();
+            slotIds[i] = ((ISlot)slots[i]).clientSort$getIdInContainer();
         }
         screenHelper.translateSlotIds(slotIds);
         return slotIds;
@@ -117,7 +114,7 @@ public class ServerController extends SingleUseController {
 
     private void sendCollectPayload(int[] scopeArray) {
         InteractionManager.now(() -> {
-            Services.PLATFORM.sendToServer(
+            ClientServices.PLATFORM.sendToServer(
                     new CollectPayload(screen.getMenu().containerId, scopeArray));
             return InteractionManager.TICK_WAITER;
         });

@@ -1,0 +1,129 @@
+/*
+ * Copyright 2025 TerminalMC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package dev.terminalmc.clientsort.client.gui.screen.edit;
+
+import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
+import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedList;
+
+import static dev.terminalmc.clientsort.util.Localization.localized;
+
+public class GroupSelectorScreen extends Screen {
+    private final Screen lastScreen;
+    private final Screen underlay;
+    private final LinkedList<ControlButton> buttons = new LinkedList<>();
+
+    public GroupSelectorScreen(Screen underlay) {
+        this(underlay, underlay);
+    }
+
+    public GroupSelectorScreen(Screen underlay, Screen lastScreen) {
+        super(localized("title", "groupSelector"));
+        this.font = Minecraft.getInstance().font;
+        this.underlay = underlay;
+        this.lastScreen = lastScreen;
+
+        resetButtons();
+    }
+
+    private void resetButtons() {
+        buttons.clear();
+        buttons.addAll(ControlButtonManager.getContainerButtons());
+        buttons.addAll(ControlButtonManager.getPlayerButtons());
+    }
+
+    @Override
+    public void init() {
+        underlay.init(Minecraft.getInstance(), width, height);
+        resetButtons();
+        rebuildGui();
+    }
+
+    private void rebuildGui() {
+        clearWidgets();
+
+        StringWidget titleWidget = new StringWidget(
+                0,
+                2,
+                width,
+                font.lineHeight,
+                title,
+                font
+        );
+        addRenderableWidget(titleWidget);
+
+        Button cancelButton = Button.builder(CommonComponents.GUI_BACK,
+                        (button) -> onClose())
+                .pos(width / 2 - 60, height - 22)
+                .size(120, 20)
+                .build();
+        addRenderableWidget(cancelButton);
+    }
+
+    @Override
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        underlay.render(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
+
+        for (ControlButton cb : buttons) {
+            cb.renderWidget(graphics, mouseX, mouseY, partialTick);
+        }
+    }
+
+    @Override
+    protected void renderBlurredBackground(float partialTick) {
+        // Heavy blur, we want the widgets to really stand out
+        int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
+        Minecraft.getInstance().options.menuBackgroundBlurriness().set(6);
+        super.renderBlurredBackground(partialTick);
+        Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        underlay.init(Minecraft.getInstance(), width, height);
+        if (lastScreen != underlay) {
+            lastScreen.init(Minecraft.getInstance(), width, height);
+        }
+        Minecraft.getInstance().setScreen(lastScreen);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+            return true;
+        } else {
+            for (ControlButton cb : buttons) {
+                if (cb.isMouseOver(mouseX, mouseY)) {
+                    cb.playDownSound(Minecraft.getInstance().getSoundManager());
+                    onClose();
+                    cb.openEditScreen();
+                }
+            }
+            return false;
+        }
+    }
+}

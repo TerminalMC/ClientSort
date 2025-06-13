@@ -30,11 +30,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.List;
 
 /**
- * Stores custom S2C payload and handler data for registration.
+ * Stores custom S2C payload and handler data for network registration.
  */
-public class Registration {
+public class ClientRegistration {
+    private ClientRegistration() {}
+
     /**
-     * All S2C payloads with handlers.
+     * S2C payloads with handlers.
      */
     public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
             new RegisterablePayloadS2C<>(
@@ -60,8 +62,7 @@ public class Registration {
     );
 
     /**
-     * Contains registration info for a custom S2C payload and handler.
-     * @param <T> the custom payload type.
+     * Contains registration info for a custom S2C payload and its handler.
      */
     public static class RegisterablePayloadS2C<T extends CustomPacketPayload>
             extends dev.terminalmc.clientsort.network.Registration.RegisterablePayload<T> {
@@ -78,7 +79,6 @@ public class Registration {
 
         /**
          * Handles a custom S2C payload.
-         * @param <T> the custom payload type.
          */
         @FunctionalInterface
         public interface PayloadHandlerS2C<T extends CustomPacketPayload> {

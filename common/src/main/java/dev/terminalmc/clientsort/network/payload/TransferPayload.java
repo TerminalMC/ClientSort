@@ -25,13 +25,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom payload allowing item transfer instructions to be sent from a client
- * to the server.
- * @param srcId the ID of the player inventory.
- * @param srcSlots the array of available slots to transfer from.
- * @param dstSlots the array of available slots to transfer to.
+ * A custom C2S payload used to instruct a server to transfer as many items as
+ * possible from a source container to a destination container.
+ * @param srcContainerId the ID of the source container.
+ * @param srcSlotIds a sub-array of slots to take items from.
  */
-public record TransferPayload(int srcId, int[] srcSlots, int[] dstSlots) implements CustomPacketPayload {
+public record TransferPayload(int srcContainerId, int[] srcSlotIds) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -46,17 +45,15 @@ public record TransferPayload(int srcId, int[] srcSlots, int[] dstSlots) impleme
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TransferPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, TransferPayload::srcId,
-                    VAR_INT_ARRAY, TransferPayload::srcSlots,
-                    VAR_INT_ARRAY, TransferPayload::dstSlots,
+                    ByteBufCodecs.VAR_INT, TransferPayload::srcContainerId,
+                    VAR_INT_ARRAY, TransferPayload::srcSlotIds,
                     TransferPayload::new
             );
 
-    public static final ResourceLocation TYPE_LOCATION =
+    public static final ResourceLocation ID =
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "transfer_c2s");
 
-    public static final Type<TransferPayload> TYPE =
-            new Type<>(TYPE_LOCATION);
+    public static final Type<TransferPayload> TYPE = new Type<>(ID);
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

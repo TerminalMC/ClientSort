@@ -37,20 +37,21 @@ public abstract class SortOrder {
     }
 
     /**
-     * Sorts the given slot ids using the given stacks in the slots. Sorting may
+     * Sorts the given slot IDs using the given stacks in the slots. Sorting may
      * be done in place.
-     * @param sortIds an array of the current slot indices
-     * @param stacks the stacks in the respective slots
-     * @return the sorted array of slot indices
+     * @param slotIds an array of slot IDs to sort.
+     * @param stacks the item stacks in the respective slots.
+     * @param context additional context for the sort.
+     * @return the sorted array of slot IDs.
      */
-    public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
-        return sortIds;
+    public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
+        return slotIds;
     }
 
     /**
      * All registered sort orders, mapped by name.
      */
-    public static final Map<String, SortOrder> SORT_MODES = new HashMap<>();
+    public static final Map<String,SortOrder> SORT_MODES = new HashMap<>();
     /**
      * No-op.
      */
@@ -79,14 +80,9 @@ public abstract class SortOrder {
         return sortOrder;
     }
 
-    @SuppressWarnings("unused")
-    public static void unregister(String name) {
-        SORT_MODES.remove(name);
-    }
-
     /**
      * Sorts {@code sortIds} by comparing the elements of {@code values},
-     * falling back to comparing elements of {@code stacks} if necessary.
+     * falling back to comparing the elements of {@code stacks} if necessary.
      */
     private static void sortByValues(int[] sortIds, int[] values, ItemStack[] stacks, SortContext context) {
         IntArrays.quickSort(sortIds, (a, b) -> {
@@ -103,14 +99,16 @@ public abstract class SortOrder {
 
         ALPHABET = register(new SortOrder("alphabet") {
             @Override
-            public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
-                String[] strings = new String[sortIds.length];
-                for (int i = 0; i < sortIds.length; i++) {
+            public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
+                // Create a reference array of slot item names
+                String[] strings = new String[slotIds.length];
+                for (int i = 0; i < slotIds.length; i++) {
                     ItemStack stack = stacks[i];
                     strings[i] = stack.isEmpty() ? "" : stack.getHoverName().getString();
                 }
 
-                IntArrays.quickSort(sortIds, (a, b) -> {
+                // Sort by reference array
+                IntArrays.quickSort(slotIds, (a, b) -> {
                     if (strings[a].isEmpty()) {
                         if (strings[b].isEmpty())
                             return 0;
@@ -123,23 +121,27 @@ public abstract class SortOrder {
                     }
                     return cmp;
                 });
-
-                return sortIds;
+                return slotIds;
             }
         });
 
         CREATIVE = register(new SortOrder("creative") {
             @Override
-            public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
-                int[] sortValues = new int[sortIds.length];
-                if (Config.options().optimizedCreativeSorting) {
+            public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
+                // Create a reference array of item positions
+                int[] sortValues = new int[slotIds.length];
+
+                // If using optimized sorting, read the stored search order
+                if (Config.options().optimizeCreativeSorting) {
                     Lock lock = CreativeSearchOrder.getReadLock();
                     lock.lock();
                     for (int i = 0; i < stacks.length; i++) {
                         sortValues[i] = CreativeSearchOrder.getPosition(stacks[i]);
                     }
                     lock.unlock();
-                } else {
+                }
+                // Otherwise compare the items manually
+                else {
                     Collection<ItemStack> displayStacks =
                             CreativeModeTabs.searchTab().getDisplayItems();
                     List<ItemStack> displayStackList;
@@ -165,56 +167,60 @@ public abstract class SortOrder {
                         });
                     }
                 }
-                SortOrder.sortByValues(sortIds, sortValues, stacks, context);
-                return sortIds;
+
+                // Sort by reference array
+                SortOrder.sortByValues(slotIds, sortValues, stacks, context);
+                return slotIds;
             }
         });
 
         QUANTITY = register(new SortOrder("quantity") {
             @Override
-            public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
-                HashMap<Item,Integer> itemToAmountMap = new HashMap<>();
-
+            public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
+                // Record the total count of each item
+                HashMap<Item,Integer> itemTotalAmountMap = new HashMap<>();
                 for (ItemStack stack : stacks) {
                     if (stack.isEmpty()) continue;
-                    if (!itemToAmountMap.containsKey(stack.getItem())) {
-                        itemToAmountMap.put(stack.getItem(), stack.getCount());
+                    if (!itemTotalAmountMap.containsKey(stack.getItem())) {
+                        itemTotalAmountMap.put(stack.getItem(), stack.getCount());
                     } else {
-                        itemToAmountMap.put(stack.getItem(),
-                                itemToAmountMap.get(stack.getItem()) + stack.getCount());
+                        itemTotalAmountMap.put(stack.getItem(),
+                                itemTotalAmountMap.get(stack.getItem()) + stack.getCount());
                     }
                 }
 
-                IntArrays.quickSort(sortIds, (a, b) -> {
-                    ItemStack stack = stacks[a];
-                    ItemStack stack2 = stacks[b];
-                    if (stack.isEmpty()) {
-                        return stack2.isEmpty() ? 0 : 1;
+                // Sort by descending order of total item count
+                IntArrays.quickSort(slotIds, (a, b) -> {
+                    ItemStack stackA = stacks[a];
+                    ItemStack stackB = stacks[b];
+                    if (stackA.isEmpty()) {
+                        return stackB.isEmpty() ? 0 : 1;
                     }
-                    if (stack2.isEmpty()) {
+                    if (stackB.isEmpty()) {
                         return -1;
                     }
-                    Integer amountA = itemToAmountMap.get(stack.getItem());
-                    Integer amountB = itemToAmountMap.get(stack2.getItem());
+                    Integer amountA = itemTotalAmountMap.get(stackA.getItem());
+                    Integer amountB = itemTotalAmountMap.get(stackB.getItem());
                     int cmp = Integer.compare(amountB, amountA);
                     if (cmp != 0) {
                         return cmp;
                     }
-                    return StackComparison.compareEqualItems(stack, stack2, context);
+                    return StackComparison.compareEqualItems(stackA, stackB, context);
                 });
-
-                return sortIds;
+                return slotIds;
             }
         });
 
         RAW_ID = register(new SortOrder("rawId") {
             @Override
-            public int[] sort(int[] sortIds, ItemStack[] stacks, SortContext context) {
+            public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
+                // Create a reference array of item IDs
                 int[] rawIds = Arrays.stream(stacks).mapToInt(stack -> stack.isEmpty()
                         ? Integer.MAX_VALUE
                         : BuiltInRegistries.ITEM.getId(stack.getItem())).toArray();
-                sortByValues(sortIds, rawIds, stacks, context);
-                return sortIds;
+                // Sort by reference array
+                sortByValues(slotIds, rawIds, stacks, context);
+                return slotIds;
             }
         });
     }

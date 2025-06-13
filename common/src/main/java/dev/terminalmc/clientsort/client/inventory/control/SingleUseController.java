@@ -25,7 +25,7 @@ import dev.terminalmc.clientsort.client.inventory.control.client.ClientSurvivalC
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.inventory.control.server.ServerController;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.platform.Services;
+import dev.terminalmc.clientsort.client.platform.ClientServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -41,10 +41,9 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
 /**
  * Provides methods for manipulating the player's inventory or open container.
  * <p>
- * Note: A {@link SingleUseController} instance must be used one time,
- * immediately after creation, then promptly discarded, because the inventory
- * state is stored on initialization and not updated.
- * </ol>
+ * Note: A {@link SingleUseController} instance must be used one time
+ * immediately after creation then promptly discarded, because the inventory
+ * state is stored on initialization and never updated.
  */
 public abstract class SingleUseController {
     protected boolean hasOperated = false;
@@ -161,8 +160,8 @@ public abstract class SingleUseController {
             Slot originSlot,
             CustomPacketPayload.Type<?> payloadType
     ) {
-        if (options().serverAcceleratedSorting
-                && Services.PLATFORM.canSendToServer(payloadType)
+        if (options().useServerAcceleration
+                && ClientServices.PLATFORM.canSendToServer(payloadType)
         ) {
             return new ServerController(screen, screenHelper, originSlot);
         }

@@ -19,17 +19,21 @@ package dev.terminalmc.clientsort.mixin.client;
 
 import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -44,6 +48,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Function;
@@ -52,7 +57,7 @@ import java.util.function.Supplier;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * Enables sorting via mouseclick or keypress.
+ * Enables triggering inventory operations via mouseclick or keypress.
  */
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin extends Screen {
@@ -79,31 +84,40 @@ public abstract class AbstractContainerScreenMixin extends Screen {
      */
     @SuppressWarnings("unchecked")
     @Unique
-    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>>
-            clientSort$screenHelper = Suppliers.memoize(
+    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>> clientSort$screenHelper = Suppliers.memoize(
             () -> ContainerScreenHelper.of(
-                    (AbstractContainerScreen<AbstractContainerMenu>) (Object) this,
-                    (slot, button, clickType, sound) ->
+                    (AbstractContainerScreen<AbstractContainerMenu>)(Object)this,
+                    (slot, mouseButton, clickType, playSound) ->
                             new InteractionManager.CallbackEvent(() -> {
-                                slotClicked(slot, ((ISlot) slot).clientSort$getIdInContainer(),
-                                        button, clickType);
-                                if (sound) SoundManager.play();
+                                slotClicked(
+                                        slot,
+                                        ((ISlot)slot).clientSort$getIdInContainer(),
+                                        mouseButton,
+                                        clickType
+                                );
+                                if (playSound) SoundManager.play();
                                 return InteractionManager.TICK_WAITER;
                             })
             )
     );
 
     /**
-     * Allows triggering sort via mouse click.
+     * Allows triggering operations via mouse click.
      */
     @Inject(
             method = "mouseClicked",
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void onMouseClicked(double mouseX, double mouseY, int button,
-                                CallbackInfoReturnable<Boolean> cir) {
-        Supplier<Boolean> op = clientSort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
+    private void onMouseClicked(
+            double mouseX,
+            double mouseY,
+            int button,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
+        Supplier<Boolean> op = clientSort$getOperation(
+                (keyMapping) -> keyMapping.matchesMouse(button)
+        );
         if (op != null && op.get()) {
             cir.setReturnValue(true);
             cir.cancel();
@@ -111,16 +125,22 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     /**
-     * Allows triggering sort via key press.
+     * Allows triggering operations via key press.
      */
     @Inject(
             method = "keyPressed",
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void onKeyPressed(int keyCode, int scanCode, int modifiers,
-                              CallbackInfoReturnable<Boolean> cir) {
-        Supplier<Boolean> op = clientSort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
+    private void onKeyPressed(
+            int keyCode,
+            int scanCode,
+            int modifiers,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
+        Supplier<Boolean> op = clientSort$getOperation(
+                (keyMapping) -> keyMapping.matches(keyCode, scanCode)
+        );
         if (op != null && op.get()) {
             cir.setReturnValue(true);
             cir.cancel();
@@ -128,20 +148,21 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     /**
-     * @return {@code true} if the specified input should trigger sorting and
-     * also should not trigger a vanilla operation.
+     * @return {@code true} if the input should trigger a mod operation and also
+     * should not trigger a vanilla operation.
      */
     @SuppressWarnings("ConstantConditions")
     @Unique
     private @Nullable Supplier<Boolean> clientSort$getOperation(
             Function<KeyMapping,Boolean> inputMatcher
     ) {
-        // Check that we're hovering a slot
-        if (hoveredSlot == null) return null;
+        // If key is not edit key, check that we're hovering a slot
+        boolean isEditKey = inputMatcher.apply(ClientSort.EDIT_KEY);
+        if (!isEditKey && hoveredSlot == null) return null;
 
         // Check that the input will not trigger a vanilla operation
         Options options = this.minecraft.options;
-        // Pick
+        // Pick item
         if (((inputMatcher.apply(options.keyPickItem)
                 && this.minecraft.gameMode.hasInfiniteItems()
                 && (this.hoveredSlot.hasItem()
@@ -149,26 +170,35 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 || !this.menu.getCarried().isEmpty())))) {
             return null;
         }
-        // Drop
+        // Drop slot
         if (inputMatcher.apply(options.keyDrop) && this.hoveredSlot.hasItem()) return null;
-        // Offhand swap
+        // Swap with offhand
         if (inputMatcher.apply(options.keySwapOffhand)) return null;
-        // Hotbar swap
+        // Swap with hotbar
         for (int i = 0; i < 9; i++) {
             if (inputMatcher.apply(options.keyHotbarSlots[i])) return null;
         }
-        // No vanilla operations
 
-        // Trigger mod operation
-        if (inputMatcher.apply(ClientSort.SORT_KEY)) {
+        // No vanilla operations; trigger mod operation
+        if (isEditKey) {
+            return this::clientSort$openEditor;
+        } else if (inputMatcher.apply(ClientSort.SORT_KEY)) {
             return this::clientSort$sort;
+        } else if (inputMatcher.apply(ClientSort.STACK_FILL_KEY)) {
+            return this::clientSort$fillStacks;
         } else if (inputMatcher.apply(ClientSort.TRANSFER_KEY)) {
             return this::clientSort$transfer;
-        } else if (inputMatcher.apply(ClientSort.FILL_STACKS_KEY)) {
-            return this::clientSort$fillStacks;
         } else {
             return null;
         }
+    }
+
+    @Unique
+    private boolean clientSort$openEditor() {
+        Minecraft.getInstance().setScreen(new GroupSelectorScreen(
+                (AbstractContainerScreen<?>)(Object)this)
+        );
+        return true;
     }
 
     @Unique
@@ -199,6 +229,17 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     @Unique
+    private boolean clientSort$fillStacks() {
+        SingleUseController.getController(
+                (AbstractContainerScreen<?>)(Object)this,
+                clientSort$screenHelper.get(),
+                hoveredSlot,
+                StackFillPayload.TYPE
+        ).fillStacks();
+        return true;
+    }
+
+    @Unique
     private boolean clientSort$transfer() {
         SingleUseController.getController(
                 (AbstractContainerScreen<?>)(Object)this,
@@ -209,14 +250,58 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         return true;
     }
 
-    @Unique
-    private boolean clientSort$fillStacks() {
-        SingleUseController.getController(
+    /**
+     * Displays slot numbers if debug mode is enabled.
+     */
+    @Inject(
+            method = "render",
+            at = @At("TAIL")
+    )
+    private void afterRender(
+            GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick,
+            CallbackInfo ci
+    ) {
+        if (!dev.terminalmc.clientsort.ClientSort.debug) return;
+
+        ContainerScreenHelper<?> helper = ContainerScreenHelper.of(
                 (AbstractContainerScreen<?>)(Object)this,
-                clientSort$screenHelper.get(),
-                hoveredSlot,
-                StackFillPayload.TYPE
-        ).fillStacks();
-        return true;
+                (a, b, c, d) -> null
+        );
+
+        float scale = 0.7F;
+        graphics.pose().pushPose();
+        graphics.pose().scale(scale, scale, 0.0F);
+        
+        for (Slot slot : menu.slots) {
+            String slotId;
+            if (hasShiftDown()) {
+                slotId = String.valueOf(((ISlot)slot).clientSort$getIndexInInv());
+            } else if (hasControlDown()) {
+                slotId = String.valueOf(slot.getContainerSlot());
+            } else {
+                slotId = String.valueOf(((ISlot)slot).clientSort$getIdInContainer());
+            }
+            // Draw slot ID
+            graphics.drawString(
+                    Minecraft.getInstance().font,
+                    slotId,
+                    (int)((((AbstractContainerScreenAccessor)(this)).getLeftPos() + slot.x) / scale),
+                    (int)((((AbstractContainerScreenAccessor)(this)).getTopPos() + slot.y) / scale),
+                    0xFFFFFF
+            );
+            // Draw slot scope
+            graphics.drawString(
+                    Minecraft.getInstance().font,
+                    String.valueOf(helper.getScope(slot).ordinal()),
+                    (int)((((AbstractContainerScreenAccessor)(this)).getLeftPos() + slot.x + 12) / scale),
+                    (int)((((AbstractContainerScreenAccessor)(this)).getTopPos() + slot.y) / scale),
+                    0xFFFFFF
+            );
+        }
+
+        graphics.pose().popPose();
     }
 }

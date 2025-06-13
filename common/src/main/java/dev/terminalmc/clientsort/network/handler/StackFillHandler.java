@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,105 +16,73 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
-import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.exception.ClientSortException;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
-import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import static dev.terminalmc.clientsort.network.handler.util.HandlerUtil.getMenu;
 import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.validateSlotArray;
 
-public class StackFillHandler {
+/**
+ * A handler for a {@link StackFillPayload}.
+ */
+public class StackFillHandler extends PayloadHandler {
     private StackFillHandler() {}
-    
+
     public static void handle(
             StackFillPayload payload,
             MinecraftServer server,
             ServerPlayer player
     ) {
         // Execute on main server thread
-        server.execute(() -> handleStackFillPayload(payload, server, player));
+        server.execute(() -> processPayload(
+                server,
+                player,
+                payload.srcContainerId(),
+                (menu) -> {
+                    validateSlotArray(player, menu, payload.srcSlotIds());
+                    validateSlotArray(player, menu, payload.dstSlotIds());
+                },
+                (menu) -> fillStacks(menu, payload.srcSlotIds(), payload.dstSlotIds()),
+                StackFillResultPayload.TYPE,
+                (error) -> new StackFillResultPayload(error == null, error == null ? "" : error)
+        ));
     }
-    
-    public static void handleStackFillPayload(
-            StackFillPayload payload,
-            MinecraftServer server,
-            ServerPlayer player
+
+    private static void fillStacks(
+            AbstractContainerMenu menu,
+            int[] srcSlotIds,
+            int[] dstSlotIds
     ) {
-        @Nullable AbstractContainerMenu menu = null;
-        @Nullable String error = null;
+        // Work backwards from the end of the source array, looking for a
+        // nonempty stack
+        for (int i = srcSlotIds.length - 1; i >= 0; i--) {
+            Slot srcSlot = menu.slots.get(srcSlotIds[i]);
+            ItemStack srcStack = srcSlot.getItem();
 
-        try {
-            // Check menu
-            menu = getMenu(payload.srcId(), player);
-            menu.suppressRemoteUpdates();
+            if (srcStack.isEmpty()) continue;
 
-            Map<Integer, Slot> slots = new TreeMap<>();
-            for (Slot slot : menu.slots) {
-                slots.put(slot.index, slot);
-            }
+            // Nonempty stack found; work forwards from the start of the
+            // destination array, looking for a partial stack of the same item
+            //noinspection ForLoopReplaceableByForEach
+            for (int j = 0; j < dstSlotIds.length; j++) {
+                Slot dstSlot = menu.slots.get(dstSlotIds[j]);
+                ItemStack dstStack = dstSlot.getItem();
 
-            validateSlotArray(player, slots, payload.srcSlots());
-            validateSlotArray(player, slots, payload.dstSlots());
+                if (dstStack.isEmpty()) continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
 
-            // Perform operation
+                // Matching partial stack found; place as much of the source
+                // stack as possible
+                dstSlot.safeInsert(srcStack);
 
-            // Work backwards from end of source slot array, looking for an
-            // accessible stack
-            for (int i = payload.srcSlots().length - 1; i >= 0; i--) {
-                int srcId = payload.srcSlots()[i];
-                Slot srcSlot = menu.slots.get(srcId);
-                ItemStack srcStack = srcSlot.getItem();
-
-                if (srcStack.isEmpty()) continue;
-                if (!srcSlot.mayPickup(player)) continue;
-
-                // Work forwards from start of destination slot array, looking
-                // for a matching partial stack
-                for (int j = 0; j < payload.dstSlots().length; j++) {
-                    int dstId = payload.dstSlots()[j];
-                    Slot dstSlot = slots.get(dstId);
-                    ItemStack dstStack = dstSlot.getItem();
-
-                    if (dstStack.isEmpty()) continue;
-                    if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                    if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
-                    
-                    dstSlot.safeInsert(srcStack);
-
-                    // If no items remain in the source stack, stop looking
-                    if (srcStack.isEmpty()) break;
-                    // Otherwise keep looking for another slot
-                }
-            }
-
-        } catch (Exception e) {
-            if (e instanceof ClientSortException se) {
-                error = se.getMessage();
-            } else {
-                error = ClientSortException.GENERIC_MESSAGE;
-                ClientSort.LOG.error(
-                        "Unexpected exception while handling payload '{}' from player '{}'",
-                        StackFillPayload.TYPE_LOCATION, player, e);
-            }
-        } finally {
-            if (menu != null) {
-                menu.resumeRemoteUpdates();
-                menu.broadcastChanges();
-            }
-            if (Services.PLATFORM.canSendToPlayer(player, StackFillResultPayload.TYPE)) {
-                Services.PLATFORM.sendToPlayer(player,
-                        new StackFillResultPayload(error == null, error == null ? "" : error));
+                // If no items remain in the source stack, stop looking
+                if (srcStack.isEmpty()) break;
+                // Otherwise keep looking for another matching partial stack
             }
         }
     }

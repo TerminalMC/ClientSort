@@ -32,11 +32,11 @@ public class CreativeSlotMixin implements ISlot {
 
     @Override
     public int clientSort$getIndexInInv() {
-        return ((ISlot) target).clientSort$getIndexInInv();
+        return ((ISlot)target).clientSort$getIndexInInv();
     }
 
     @Override
     public int clientSort$getIdInContainer() {
-        return ((ISlot) target).clientSort$getIdInContainer();
+        return ((ISlot)target).clientSort$getIdInContainer();
     }
 }

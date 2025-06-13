@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.exception;
+package dev.terminalmc.clientsort.client.gui.screen.edit;
 
-public class ClientSortException extends Exception {
-    public static String GENERIC_MESSAGE = "Exception not recognized, check server logs for more info.";
+import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
+import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import net.minecraft.client.gui.screens.Screen;
 
-    public ClientSortException(String message) {
-        super(message);
+import java.util.LinkedList;
+
+public class ContainerPositionEditScreen extends PositionEditScreen {
+    public ContainerPositionEditScreen(Screen underlay, ControlButton button) {
+        super(underlay, button);
+    }
+
+    @Override
+    protected LinkedList<ControlButton> getButtons() {
+        return ControlButtonManager.getContainerButtons();
     }
 }

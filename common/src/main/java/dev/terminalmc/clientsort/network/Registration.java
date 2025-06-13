@@ -30,10 +30,12 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
 
 /**
- * Stores custom C2S payload and handler data, and custom S2C payload data,
- * for registration.
+ * Stores custom C2S payload and handler data, and S2C payload-only data, for
+ * network registration.
  */
 public class Registration {
+    private Registration() {}
+
     /**
      * C2S payloads with handlers.
      */
@@ -61,7 +63,12 @@ public class Registration {
     );
 
     /**
-     * S2C payloads. Handlers are client-side, not accessible here.
+     * S2C payloads without handlers.
+     * <p>
+     * <b>Note:</b> this exists because on Fabric, all payloads must be
+     * registered in 'main'. For 'client' registration, handlers must be
+     * retrieved from
+     * {@link dev.terminalmc.clientsort.client.network.ClientRegistration#PAYLOADS_S2C}.
      */
     public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
             new RegisterablePayloadS2C<>(
@@ -84,7 +91,6 @@ public class Registration {
 
     /**
      * Contains registration info for a custom payload.
-     * @param <T> the custom payload type.
      */
     public abstract static class RegisterablePayload<T extends CustomPacketPayload> {
         public final CustomPacketPayload.Type<T> type;
@@ -100,8 +106,7 @@ public class Registration {
     }
 
     /**
-     * Contains registration info for a custom C2S payload and handler.
-     * @param <T> the custom payload type.
+     * Contains registration info for a custom C2S payload and its handler.
      */
     public static class RegisterablePayloadC2S<T extends CustomPacketPayload>
             extends RegisterablePayload<T> {
@@ -118,7 +123,6 @@ public class Registration {
 
         /**
          * Handles a custom S2C payload.
-         * @param <T> the custom payload type.
          */
         @FunctionalInterface
         public interface PayloadHandlerC2S<T extends CustomPacketPayload> {
@@ -128,7 +132,6 @@ public class Registration {
 
     /**
      * Contains registration info for a custom S2C payload, but not its handler.
-     * @param <T> the custom payload type.
      */
     public static class RegisterablePayloadS2C<T extends CustomPacketPayload>
             extends RegisterablePayload<T> {

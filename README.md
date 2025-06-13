@@ -5,7 +5,7 @@
 
 ## ClientSort
 
-A standalone implementation of the sorting algorithm from [Mouse Wheelie](https://modrinth.com/mod/u5Ic2U1u).
+A client-side inventory sorting mod with keybind and GUI support.
 
 [![Environment](https://img.shields.io/badge/Environment-Client-blue?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AYht+malUqDnYQEclQneyiIo6likWwUNoKrTqYXPoHTRqSFBdHwbXg4M9i1cHFWVcHV0EQ/AFxdnBSdJESv0sKLWI8uLuH97735e47QGhUmGp2RQFVs4xUPCZmc6ti4BU9CKCP1jGJmXoivZiB5/i6h4/vdxGe5V335xhQ8iYDfCJxlOmGRbxBPLtp6Zz3iUOsJCnE58STBl2Q+JHrsstvnIsOCzwzZGRS88QhYrHYwXIHs5KhEs8QhxVVo3wh67LCeYuzWqmx1j35C4N5bSXNdZqjiGMJCSQhQkYNZVRgIUK7RoqJFJ3HPPwjjj9JLplcZTByLKAKFZLjB/+D3701C9NTblIwBnS/2PbHOBDYBZp12/4+tu3mCeB/Bq60tr/aAOY+Sa+3tfARMLgNXFy3NXkPuNwBhp90yZAcyU9TKBSA9zP6phwwdAv0r7l9a53j9AHIUK+Wb4CDQ2CiSNnrHu/u7ezbvzWt/v0ATphymIBZ6aQAAAAGYktHRAAKAAwAGd6C8noAAAAJcEhZcwAADdcAAA3XAUIom3gAAAAHdElNRQfoBgcOHRYlcgoRAAABRklEQVR42u2YMUoDQRRAX0axUzCteIZ4hKn0FDmFhalSWKkgnkHt9AQWwhzBNr2tBGNno82ACwm6EZvxvwdTzP8s7P8zu8w8EJHIDABKKfvAFXAIbP/zmt+AR2CSc54NavFPwDDY4s+BUaorPwy4+3eBy1S3fVSOUoBv/jt2UmMv/A6cAHt1TGqsb36JzcYaMM05X3Tm56UUgLOe+SVa2wE3K2LXa+Sbb8BgRWxjjXzzDRj/EBv3fOarY6WUj8Z+glPgtlPcKbDVM998A/6cVM/GUXlN9WIQlYdUDwvzgMW/AMcp5zwDRsA9sAhQ+AK4Aw5yzs8aEZHY6AR1gjpBnaBOsLHrsE6wM9cJohPUCeoE0Qn+Hp0gOkGdoE5QRMKiE9QJ6gR1gjrBxq7DOsHOXCeITlAnqBNEJ/h7dILoBHWCOkERCcsncuextWq5TzoAAAAASUVORK5CYII=)]()
 [![Latest Minecraft](https://img.shields.io/modrinth/game-versions/K0AkAin6?label=Latest%20Minecraft&color=%2300AF5C&logo=data:image/png;base64,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)](https://modrinth.com/mod/K0AkAin6/versions)
@@ -20,16 +20,40 @@ A standalone implementation of the sorting algorithm from [Mouse Wheelie](https:
 
 </center></div>
 
-### Sorting
+### Usage
 
 To sort an inventory, simply hover over it with your mouse and press the keybind (default: middle mouse button).
 
 You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a different sorting order.
 
+#### Other Actions (v2)
+
+In addition to sorting, ClientSort v2 provides keybinds (unbound by default) for the following actions:
+
+- Stack Fill
+  - For all partial stacks in the other inventory, attempts to complete them using items in the target inventory.
+- Transfer
+  - Moves as many items as possible from the target inventory to the other inventory.
+
+#### Interaction GUI (v2)
+
+ClientSort v2 includes support for adding interaction buttons to the inventory screen, as an alternative to using the
+keybinds.
+
+- All buttons are disabled by default, but can be enabled via the config menu.
+- When the buttons are visible, you can right-click on them to adjust the position and enable or disable specific ones.
+- If the buttons are enabled but not visible, you can use the editor keybind (unbound by default) to select a group of
+buttons to edit.
+- ClientSort uses a whitelist to decide when to show the buttons. You can enable or disable the buttons for a particular
+inventory via the position editor, or by manually editing the whitelist in the main config menu.
+
+### Installation
+
 #### Client Required, Server Optional
 
-As the name suggests, ClientSort works completely fine if only installed on the client. However, if it is installed on
-a server, connected clients with the mod will be able to use 'instant' sorting instead of the normal rate-limited sort.
+As the name suggests, ClientSort works completely fine when it is only installed on the client. However, if it is also
+installed on a server, connected clients with the mod will be able to use 'instant' sorting instead of the normal
+rate-limited sort.
 
 ### Dependencies
 
@@ -39,13 +63,25 @@ Neo/Forge: [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
 ### Credits
 
-ClientSort uses code from [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) by
-[Siphalor](https://github.com/Siphalor), under license.
+ClientSort uses code from the following mods, in both raw and modified form, in accordance with their respective
+licenses.
+
+- [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) by [Siphalor](https://github.com/Siphalor)
+  - Item comparison
+  - Client and server-side sorting
+  - Client-side interaction manager
+
+
+- [Inventory Management](https://github.com/Roundaround/mc-fabric-inventory-management) by
+[Roundaround](https://github.com/Roundaround)
+  - Inventory control buttons
+  - Button generation
+  - Button position editor
 
 ### Related Mods
 
 - [Mouse Tweaks](https://modrinth.com/mod/aC3cM3Vq) - item scrolling, mouse dragging.
-- [More Mouse Tweaks](https://modrinth.com/mod/S8drsznD) - quick-crafting/trading, quick-move and quick-drop.
+- [More Mouse Tweaks](https://modrinth.com/mod/S8drsznD) - single-click crafting and trading, quick-move and quick-drop.
 - [Tweakeroo](https://modrinth.com/mod/t5wuYk45) - hand restock, auto tool-switch, tool break prevention (+ lots more).
 
 ### Contact

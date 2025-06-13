@@ -21,7 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public interface IPlatformInfo {
+public interface IPlatformServices {
 
     /**
      * @return the configuration directory of the instance.
@@ -34,8 +34,7 @@ public interface IPlatformInfo {
     boolean isModLoaded(String modId);
 
     /**
-     * @return {@code true} if the payload type can be sent from the server to
-     * the specified player.
+     * @return {@code true} if the payload type can be sent to the player.
      */
     boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type);
 

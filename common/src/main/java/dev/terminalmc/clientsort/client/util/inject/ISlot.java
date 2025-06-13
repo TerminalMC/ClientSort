@@ -19,22 +19,30 @@ package dev.terminalmc.clientsort.client.util.inject;
 public interface ISlot {
     /**
      * The index of the slot in its inventory.
-     *
-     * <p>As a container may have several inventories, multiple slots may use
-     * the same index within a container.</p>
-     *
+     * <p>
+     * As a container may have several inventories, this value may be the same
+     * for multiple slots may use.
+     * <p>
+     * This value does not necessarily follow the left-right, top-down order;
+     * for example, the hotbar may be indexed 0-8 while the top-left inventory
+     * slot is 9.
+     * <p>
      * @return the index within the inventory
-     * @see net.minecraft.world.inventory.Slot#index
+     * @see net.minecraft.world.inventory.Slot#slot
      */
+    @SuppressWarnings("JavadocReference")
     int clientSort$getIndexInInv();
 
     /**
-     * The unique id of the slot within its container.
-     *
-     * <p>This is unique within a container, but may differ from the index in
-     * the inventory.</p>
-     *
-     * @return the unique id within the container
+     * The unique ID of the slot within its container.
+     * <p>
+     * This is unique within a container, but may differ from the value of
+     * {@link ISlot#clientSort$getIndexInInv}.
+     * <p>
+     * This value can be safely assumed to be the same as the index of the slot
+     * in {@link net.minecraft.world.inventory.AbstractContainerMenu#slots}.
+     * <p>
+     * @return the unique ID within the container
      * @see net.minecraft.world.inventory.Slot#index
      */
     int clientSort$getIdInContainer();

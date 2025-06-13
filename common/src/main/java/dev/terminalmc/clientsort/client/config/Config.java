@@ -22,6 +22,9 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,11 +33,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class Config {
     private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
-    private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
-    private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
+    private static final String FILE_NAME = ClientSort.MOD_ID + "-alpha.json";
+    private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + "-alpha.unreadable.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     // Options
@@ -49,19 +54,16 @@ public class Config {
 
         // General options
 
-        public static final int interactionRateMin = 1;
-        public static final int interactionRateMax = 100;
-        public static final int interactionRateServerDefault = 10;
-        public int interactionRateServer = interactionRateServerDefault;
+        public static final int INTERACTION_INTERVAL_MIN = 1;
+        public static final int INTERACTION_INTERVAL_MAX = 100;
+        public static final int interactionIntervalDefault = 10;
+        public int interactionInterval = interactionIntervalDefault;
 
-        public static final int interactionRateClientDefault = 1;
-        public int interactionRateClient = interactionRateClientDefault;
+        public static final boolean useServerAccelerationDefault = true;
+        public boolean useServerAcceleration = useServerAccelerationDefault;
 
-        public static final boolean serverAcceleratedSortingDefault = true;
-        public boolean serverAcceleratedSorting = serverAcceleratedSortingDefault;
-
-        public static final boolean optimizedCreativeSortingDefault = true;
-        public boolean optimizedCreativeSorting = optimizedCreativeSortingDefault;
+        public static final boolean optimizeCreativeSortingDefault = true;
+        public boolean optimizeCreativeSorting = optimizeCreativeSortingDefault;
 
         public static final HotbarScope hotbarScopeDefault = HotbarScope.HOTBAR;
         public HotbarScope hotbarScope = hotbarScopeDefault;
@@ -80,10 +82,10 @@ public class Config {
             NONE
         }
 
-        public static final boolean lmbBundleDefault = false;
-        public boolean lmbBundle = lmbBundleDefault;
+        public static final boolean bundlesUseLeftClickDefault = false;
+        public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
 
-        // Sort mode options
+        // Sort order options
 
         public static final String sortOrderDefault = SortOrder.CREATIVE.name;
         public String sortOrderStr = sortOrderDefault;
@@ -101,75 +103,80 @@ public class Config {
         public String altSortOrderStr = altSortOrderDefault;
         public transient SortOrder altSortOrder;
 
-        // Sorting sound options
+        // Interaction sound options
 
-        public static final boolean soundEnabledDefault = false;
-        public boolean soundEnabled = soundEnabledDefault;
+        public static final boolean playSoundSortDefault = false;
+        public boolean playSoundSort = playSoundSortDefault;
 
-        public static final boolean soundEnabledAllOpsDefault = false;
-        public boolean soundEnabledAllOps = soundEnabledAllOpsDefault;
+        public static final boolean playSoundOtherDefault = false;
+        public boolean playSoundOther = playSoundOtherDefault;
 
-        public static final String sortSoundDefault = "minecraft:block.note_block.xylophone";
-        public String sortSound = sortSoundDefault;
+        public static final String interactionSoundDefault = "minecraft:block.note_block.xylophone";
+        public String interactionSound = interactionSoundDefault;
         public transient @Nullable ResourceLocation sortSoundLoc = null;
 
-        public static final int soundRateDefault = 1;
-        public int soundRate = soundRateDefault;
+        public static final int SOUND_INTERVAL_MIN = 1;
+        public static final int SOUND_INTERVAL_MAX = 100;
+        public static final int soundIntervalDefault = 1;
+        public int soundInterval = soundIntervalDefault;
 
-        public static final float soundPitchMin = 0.5F;
-        public static final float soundPitchMax = 2.0F;
-        public static final float soundMinPitchDefault = 0.5F;
-        public float soundMinPitch = soundMinPitchDefault;
+        public static final float SOUND_PITCH_MIN = 0.5F;
+        public static final float SOUND_PITCH_MAX = 2.0F;
+        public static final float soundPitchMinDefault = 0.5F;
+        public float soundPitchMin = soundPitchMinDefault;
 
-        public static final float soundMaxPitchDefault = 2.0F;
-        public float soundMaxPitch = soundMaxPitchDefault;
+        public static final float soundPitchMaxDefault = 2.0F;
+        public float soundPitchMax = soundPitchMaxDefault;
 
-        public static final float soundVolumeMin = 0.0F;
-        public static final float soundVolumeMax = 1.0F;
+        public static final float SOUND_VOLUME_MIN = 0.0F;
+        public static final float SOUND_VOLUME_MAX = 1.0F;
         public static final float soundVolumeDefault = 0.2F;
         public float soundVolume = soundVolumeDefault;
 
-        public static final boolean soundAllowOverlapDefault = true;
-        public boolean soundAllowOverlap = soundAllowOverlapDefault;
+        public static final boolean allowSoundOverlapDefault = true;
+        public boolean allowSoundOverlap = allowSoundOverlapDefault;
 
-        // Legacy from pre v1.3.0
+        // GUI options
 
-        public static final HotbarMode hotbarModeDefault = HotbarMode.HARD;
-        public HotbarMode hotbarMode = hotbarModeDefault;
-        public enum HotbarMode {
-            NONE,
-            HARD,
-            SOFT;
+        public static final boolean showButtonsDefault = false;
+        public boolean showButtons = showButtonsDefault;
 
-            public HotbarScope update() {
-                return switch(this) {
-                    case NONE -> HotbarScope.INVENTORY;
-                    case HARD -> HotbarScope.HOTBAR;
-                    case SOFT -> HotbarScope.NONE;
-                };
-            }
+        public static final CONTROL_BUTTON firstButtonDefault = CONTROL_BUTTON.SORT;
+        public CONTROL_BUTTON firstButton = firstButtonDefault;
+
+        public static final CONTROL_BUTTON secondButtonDefault = CONTROL_BUTTON.STACK_FILL;
+        public CONTROL_BUTTON secondButton = secondButtonDefault;
+
+        public static final CONTROL_BUTTON thirdButtonDefault = CONTROL_BUTTON.TRANSFER;
+        public CONTROL_BUTTON thirdButton = thirdButtonDefault;
+
+        public enum CONTROL_BUTTON {
+            SORT,
+            STACK_FILL,
+            TRANSFER,
+            NONE
         }
 
-        public static final ExtraSlotMode extraSlotModeDefault = ExtraSlotMode.NONE;
-        public ExtraSlotMode extraSlotMode = extraSlotModeDefault;
-        public enum ExtraSlotMode {
-            NONE,
-            HOTBAR,
-            INVENTORY;
+        public static final int BUTTON_DEFAULT_OFFSET_MIN = -100;
+        public static final int BUTTON_DEFAULT_OFFSET_MAX = 100;
+        public static final Vec2i buttonDefaultOffsetDefault = new Vec2i(-4, 0);
+        public Vec2i buttonDefaultOffset = buttonDefaultOffsetDefault;
 
-            public ExtraSlotScope update() {
-                return switch(this) {
-                    case NONE -> ExtraSlotScope.NONE;
-                    case HOTBAR -> ExtraSlotScope.HOTBAR;
-                    case INVENTORY -> ExtraSlotScope.INVENTORY;
-                };
-            }
-        }
-
-        public String sortModeStr = sortOrderDefault;
-        public String shiftSortModeStr = shiftSortOrderDefault;
-        public String ctrlSortModeStr = ctrlSortOrderDefault;
-        public String altSortModeStr = altSortOrderDefault;
+        public static final Supplier<List<ButtonLayout>> buttonLayoutsDefaultList = () -> List.of(
+                new ButtonLayout(Inventory.class.getName(), null, true, true, true),
+                new ButtonLayout(PlayerEnderChestContainer.class.getName(), null, true, true, true),
+                new ButtonLayout(RandomizableContainerBlockEntity.class.getName(), null, true, true, true),
+                new ButtonLayout(ChestMenu.class.getName(), null, true, true, true),
+                new ButtonLayout(ShulkerBoxMenu.class.getName(), null, true, true, true),
+                new ButtonLayout(HorseInventoryMenu.class.getName(), null, true, true, true),
+                new ButtonLayout(HopperMenu.class.getName(), null, false, false, true)
+        );
+        public static final Supplier<Map<String,ButtonLayout>> buttonLayoutsDefault = () -> {
+            LinkedHashMap<String,ButtonLayout> map = new LinkedHashMap<>();
+            buttonLayoutsDefaultList.get().forEach((layout) -> map.put(layout.className, layout));
+            return map;
+        };
+        public final Map<String,ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
     }
 
     // Validation
@@ -178,70 +185,43 @@ public class Config {
      * Ensures that all config values are valid.
      */
     private void validate() {
-        update();
-        // interactionRateServer
-        if (options.interactionRateServer < Options.interactionRateMin)
-            options.interactionRateServer = Options.interactionRateMin;
-        if (options.interactionRateServer > Options.interactionRateMax)
-            options.interactionRateServer = Options.interactionRateMax;
-        // interactionRateClient
-        if (options.interactionRateClient < Options.interactionRateMin)
-            options.interactionRateClient = Options.interactionRateMin;
-        if (options.interactionRateClient > Options.interactionRateMax)
-            options.interactionRateClient = Options.interactionRateMax;
-        // soundRate
-        if (options.soundRate < Options.interactionRateMin)
-            options.soundRate = Options.interactionRateMin;
-        if (options.soundRate > Options.interactionRateMax)
-            options.soundRate = Options.interactionRateMax;
-        // soundMinPitch
-        if (options.soundMinPitch < Options.soundPitchMin)
-            options.soundMinPitch = Options.soundPitchMin;
-        if (options.soundMinPitch > Options.soundPitchMax)
-            options.soundMinPitch = Options.soundPitchMax;
-        // soundMaxPitch
-        if (options.soundMaxPitch < Options.soundPitchMin)
-            options.soundMaxPitch = Options.soundPitchMin;
-        if (options.soundMaxPitch > Options.soundPitchMax)
-            options.soundMaxPitch = Options.soundPitchMax;
-        // also validate against min pitch
-        if (options.soundMaxPitch < options.soundMinPitch)
-            options.soundMaxPitch = options.soundMinPitch;
-        // soundVolume
-        if (options.soundVolume < Options.soundVolumeMin)
-            options.soundVolume = Options.soundVolumeMin;
-        if (options.soundVolume > Options.soundVolumeMax)
-            options.soundVolume = Options.soundVolumeMax;
-    }
-
-    /**
-     * Updates legacy (pre v1.3.0) config values.
-     */
-    private void update() {
-        if (options.hotbarMode != Options.hotbarModeDefault) {
-            options.hotbarScope = options.hotbarMode.update();
-            options.hotbarMode = Options.hotbarModeDefault;
-        }
-        if (options.extraSlotMode != Options.extraSlotModeDefault) {
-            options.extraSlotScope = options.extraSlotMode.update();
-            options.extraSlotMode = Options.extraSlotModeDefault;
-        }
-        if (!Options.sortOrderDefault.equals(options.sortModeStr)) {
-            options.sortOrderStr = options.sortModeStr;
-            options.sortModeStr = Options.sortOrderDefault;
-        }
-        if (!Options.shiftSortOrderDefault.equals(options.shiftSortModeStr)) {
-            options.shiftSortOrderStr = options.shiftSortModeStr;
-            options.shiftSortModeStr = Options.shiftSortOrderDefault;
-        }
-        if (!Options.ctrlSortOrderDefault.equals(options.ctrlSortModeStr)) {
-            options.ctrlSortOrderStr = options.ctrlSortModeStr;
-            options.ctrlSortModeStr = Options.ctrlSortOrderDefault;
-        }
-        if (!Options.altSortOrderDefault.equals(options.altSortModeStr)) {
-            options.altSortOrderStr = options.altSortModeStr;
-            options.altSortModeStr = Options.altSortOrderDefault;
-        }
+        options.interactionInterval = Math.clamp(
+                options.interactionInterval,
+                Options.INTERACTION_INTERVAL_MIN,
+                Options.INTERACTION_INTERVAL_MAX
+        );
+        options.soundInterval = Math.clamp(
+                options.soundInterval,
+                Options.SOUND_INTERVAL_MIN,
+                Options.SOUND_INTERVAL_MAX
+        );
+        options.soundPitchMin = Math.clamp(
+                options.soundPitchMin,
+                Options.SOUND_PITCH_MIN,
+                Options.SOUND_PITCH_MAX
+        );
+        options.soundPitchMax = Math.clamp(
+                options.soundPitchMax,
+                options.soundPitchMin, // Not less than configured min
+                Options.SOUND_PITCH_MAX
+        );
+        options.soundVolume = Math.clamp(
+                options.soundVolume,
+                Options.SOUND_VOLUME_MIN,
+                Options.SOUND_VOLUME_MAX
+        );
+        options.buttonDefaultOffset = new Vec2i(
+                Math.clamp(
+                        options.buttonDefaultOffset.x(),
+                        Options.BUTTON_DEFAULT_OFFSET_MIN,
+                        Options.BUTTON_DEFAULT_OFFSET_MAX
+                ),
+                Math.clamp(
+                        options.buttonDefaultOffset.y(),
+                        Options.BUTTON_DEFAULT_OFFSET_MIN,
+                        Options.BUTTON_DEFAULT_OFFSET_MAX
+                )
+        );
     }
 
     // Instance management

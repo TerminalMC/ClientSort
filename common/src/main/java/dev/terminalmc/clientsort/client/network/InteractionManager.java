@@ -34,8 +34,7 @@ import java.util.function.Supplier;
  * inventory manipulation operations.
  */
 public class InteractionManager {
-    public static final Waiter TICK_WAITER =
-            (TriggerType triggerType) -> triggerType == TriggerType.TICK;
+    public static final Waiter TICK_WAITER = (TriggerType type) -> type == TriggerType.TICK;
 
     private static final ArrayDeque<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
@@ -172,7 +171,6 @@ public class InteractionManager {
     public interface InteractionEvent {
         /**
          * Sends the interaction to the server
-         *
          * @return the number of inventory packets to wait for
          */
         Waiter send();

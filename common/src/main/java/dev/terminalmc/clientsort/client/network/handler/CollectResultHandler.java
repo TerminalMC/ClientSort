@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,7 @@
 package dev.terminalmc.clientsort.client.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,6 +35,7 @@ public class CollectResultHandler {
     /**
      * Handles a {@link CollectResultPayload} sent by a server.
      */
+    @SuppressWarnings("unused")
     public static void handle(
             CollectResultPayload payload,
             Minecraft mc,
@@ -43,6 +44,7 @@ public class CollectResultHandler {
         if (!payload.success()) {
             ClientSort.LOG.error(
                     "Received failure warning '{}': {}",
+                    CollectResultPayload.ID,
                     payload.message()
             );
         }
@@ -52,7 +54,11 @@ public class CollectResultHandler {
                 onSuccess.run();
             } catch (Exception e) {
                 // Whatever goes wrong should not crash the game
-                ClientSort.LOG.error("Failed to run onSuccess", e);
+                ClientSort.LOG.error(
+                        "Failed to run onSuccess runnable for payload {}: {}",
+                        CollectPayload.ID,
+                        e
+                );
             }
         }
 

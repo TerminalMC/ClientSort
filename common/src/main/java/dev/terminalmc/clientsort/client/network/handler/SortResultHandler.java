@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +17,7 @@
 package dev.terminalmc.clientsort.client.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import dev.terminalmc.clientsort.network.payload.SortResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -28,6 +28,7 @@ public class SortResultHandler {
     /**
      * Handles a {@link SortResultPayload} sent by a server.
      */
+    @SuppressWarnings("unused")
     public static void handle(
             SortResultPayload payload,
             Minecraft mc,
@@ -36,6 +37,7 @@ public class SortResultHandler {
         if (!payload.success()) {
             ClientSort.LOG.error(
                     "Received failure warning '{}': {}",
+                    CollectResultPayload.ID,
                     payload.message()
             );
         }

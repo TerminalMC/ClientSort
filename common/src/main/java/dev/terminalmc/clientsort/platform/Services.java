@@ -17,12 +17,12 @@
 package dev.terminalmc.clientsort.platform;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.platform.services.IPlatformInfo;
+import dev.terminalmc.clientsort.platform.services.IPlatformServices;
 
 import java.util.ServiceLoader;
 
 public class Services {
-    public static final IPlatformInfo PLATFORM = load(IPlatformInfo.class);
+    public static final IPlatformServices PLATFORM = load(IPlatformServices.class);
 
     public static <T> T load(Class<T> clazz) {
         final T loadedService = ServiceLoader.load(clazz)

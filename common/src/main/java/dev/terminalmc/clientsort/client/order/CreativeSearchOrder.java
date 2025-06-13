@@ -33,20 +33,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Allows storing the creative inventory item order in memory to reduce compute
- * load for creative-order sort operations.
+ * Allows the mod to store the creative inventory item order in memory to reduce
+ * compute load for creative-order sort operations.
  */
 public class CreativeSearchOrder {
     // Item order map
-    private static final Object2IntMap<StackMatcher> stackPositionMap =
-            new Object2IntOpenHashMap<>();
+    private static final Object2IntMap<StackMatcher> stackPositionMap = new Object2IntOpenHashMap<>();
     static {
         stackPositionMap.defaultReturnValue(Integer.MAX_VALUE);
     }
 
     // Item order map lock
-    private static final ReadWriteLock stackPositionMapLock =
-            new ReentrantReadWriteLock();
+    private static final ReadWriteLock stackPositionMapLock = new ReentrantReadWriteLock();
 
     public static Lock getReadLock() {
         return stackPositionMapLock.readLock();
@@ -69,7 +67,7 @@ public class CreativeSearchOrder {
      * if possible and configured to do so.
      */
     public static void tryRefreshStackPositionMap() {
-        if (Config.options().optimizedCreativeSorting) {
+        if (Config.options().optimizeCreativeSorting) {
             if (dev.terminalmc.clientsort.client.ClientSort.emiReloading) {
                 dev.terminalmc.clientsort.client.ClientSort.updateBlockedByEmi = true;
                 ClientSort.LOG.info("Search order update blocked by EMI reload, waiting...");
@@ -94,8 +92,7 @@ public class CreativeSearchOrder {
             return;
         }
         FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
-        boolean opTab = mc.player.canUseGameMasterBlocks()
-                && mc.options.operatorItemsTab().get();
+        boolean opTab = mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get();
 
         CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
 

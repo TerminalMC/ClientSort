@@ -16,37 +16,50 @@
 
 package dev.terminalmc.clientsort.client;
 
-import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
-import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
-import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
-import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientSortFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        // Keybindings
+        // Register keybindings
         ClientSort.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
-        // Tick events
-        ClientTickEvents.END_CLIENT_TICK.register(ClientSort::onEndTick);
+        // Register after-tick event
+        ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);
 
-        // Custom payloads
-        ClientPlayNetworking.registerGlobalReceiver(
-                CollectResultPayload.TYPE,
-                (payload, context) -> CollectResultHandler.handle(
-                        payload, context.client(), context.player())
-        );
-        ClientPlayNetworking.registerGlobalReceiver(
-                SortResultPayload.TYPE,
-                (payload, context) -> SortResultHandler.handle(
-                        payload, context.client(), context.player())
-        );
+        // Register screen after-init event
+        ScreenEvents.AFTER_INIT.register((mc, screen, scaledWidth, scaledHeight) ->
+                ClientSort.afterScreenInit(screen));
 
-        // Client initialization
+        // Register all custom S2C payload handlers
+        ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerHandlerS2C);
+
+        // Initialize client
         ClientSort.init();
+    }
+
+    /**
+     * Registers an S2C payload handler, but not the payload.
+     * <p>
+     * <b>Note:</b> S2C payloads must be registered alongside C2S payloads in
+     * {@link dev.terminalmc.clientsort.ClientSortFabric}.
+     */
+    private static <T extends CustomPacketPayload> void registerHandlerS2C(
+            ClientRegistration.RegisterablePayloadS2C<T> rp
+    ) {
+        ClientPlayNetworking.registerGlobalReceiver(
+                rp.type,
+                (payload, context) -> rp.handler.accept(
+                        payload,
+                        context.client(),
+                        context.player()
+                )
+        );
     }
 }

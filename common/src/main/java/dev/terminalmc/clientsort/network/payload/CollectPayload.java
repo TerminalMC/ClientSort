@@ -25,12 +25,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom payload allowing inventory sorting instructions to be sent from a
- * client to the server.
- * @param syncId the ID of the container to sort.
- * @param slots the array of slots to sort.
+ * A custom C2S payload used to instruct a server to collect items in a
+ * container into the smallest possible number of slots.
+ * @param containerId the ID of the container.
+ * @param slotIds a sub-array of slots to collect items in.
  */
-public record CollectPayload(int syncId, int[] slots) implements CustomPacketPayload {
+public record CollectPayload(int containerId, int[] slotIds) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -45,16 +45,15 @@ public record CollectPayload(int syncId, int[] slots) implements CustomPacketPay
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CollectPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, CollectPayload::syncId,
-                    VAR_INT_ARRAY, CollectPayload::slots,
+                    ByteBufCodecs.VAR_INT, CollectPayload::containerId,
+                    VAR_INT_ARRAY, CollectPayload::slotIds,
                     CollectPayload::new
             );
 
-    public static final ResourceLocation TYPE_LOCATION =
+    public static final ResourceLocation ID =
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "collect_c2s");
 
-    public static final Type<CollectPayload> TYPE =
-            new Type<>(TYPE_LOCATION);
+    public static final Type<CollectPayload> TYPE = new Type<>(ID);
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

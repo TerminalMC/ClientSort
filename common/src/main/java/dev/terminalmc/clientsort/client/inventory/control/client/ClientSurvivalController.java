@@ -91,6 +91,7 @@ public class ClientSurvivalController extends ClientController {
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.getCount() <= 0) break;
+                // Otherwise keep looking for another matching stack
             }
 
             // Only pick up the stack if a slot was found to place it
@@ -233,7 +234,7 @@ public class ClientSurvivalController extends ClientController {
                         && !(carriedStack.isEmpty());
                 boolean clickOnItemWithBundle = carriedStack.is(Items.BUNDLE)
                         && !(originScopeStacks[dstId].isEmpty());
-                if (options().lmbBundle && (clickOnBundleWithItem || clickOnItemWithBundle)) {
+                if (options().bundlesUseLeftClick && (clickOnBundleWithItem || clickOnItemWithBundle)) {
                     mouseButton = 1;
                 }
 
@@ -273,7 +274,7 @@ public class ClientSurvivalController extends ClientController {
         if (otherScopeSlots.length == 0) return;
 
         // Prepare sounds
-        boolean playSound = SoundManager.shouldPlayAlways();
+        boolean playSound = SoundManager.shouldPlayOtherSounds();
         if (playSound) SoundManager.resetForCount(
                 SoundManager.estimateTransferSounds(originScopeStacks, otherScopeStacks));
 
@@ -301,7 +302,7 @@ public class ClientSurvivalController extends ClientController {
         if (otherScopeSlots.length == 0) return;
 
         // Prepare sounds
-        boolean playSound = SoundManager.shouldPlayAlways();
+        boolean playSound = SoundManager.shouldPlayOtherSounds();
         if (playSound) SoundManager.resetForCount(
                 SoundManager.estimateStackFillSounds(originScopeStacks, otherScopeStacks));
 
