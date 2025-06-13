@@ -65,24 +65,6 @@ public class ServerController extends SingleUseController {
     }
 
     @Override
-    public void transfer() {
-        if (!canOperate()) return;
-        if (originScopeSlots.length == 0) return;
-        if (otherScopeSlots.length == 0) return;
-
-        int[] srcSlotIds = createSlotIdArray(originScopeSlots);
-
-        InteractionManager.now(() -> {
-            ClientServices.PLATFORM.sendToServer(
-                    new TransferPayload(
-                            screen.getMenu().containerId,
-                            srcSlotIds
-                    ));
-            return InteractionManager.TICK_WAITER;
-        });
-    }
-
-    @Override
     public void fillStacks() {
         if (!canOperate()) return;
         if (originScopeSlots.length == 0) return;
@@ -94,6 +76,26 @@ public class ServerController extends SingleUseController {
         InteractionManager.now(() -> {
             ClientServices.PLATFORM.sendToServer(
                     new StackFillPayload(
+                            screen.getMenu().containerId,
+                            srcSlotIds,
+                            dstSlotIds
+                    ));
+            return InteractionManager.TICK_WAITER;
+        });
+    }
+
+    @Override
+    public void transfer() {
+        if (!canOperate()) return;
+        if (originScopeSlots.length == 0) return;
+        if (otherScopeSlots.length == 0) return;
+
+        int[] srcSlotIds = createSlotIdArray(originScopeSlots);
+        int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
+
+        InteractionManager.now(() -> {
+            ClientServices.PLATFORM.sendToServer(
+                    new TransferPayload(
                             screen.getMenu().containerId,
                             srcSlotIds,
                             dstSlotIds

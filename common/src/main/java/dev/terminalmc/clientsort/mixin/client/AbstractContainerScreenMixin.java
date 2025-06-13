@@ -80,6 +80,23 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     protected abstract void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
 
     /**
+     * When a client-side survival inventory interaction operation is triggered
+     * by a button click outside the inventory, Minecraft may detect the click
+     * and erroneously throw the carried item. To prevent this, a flag is used
+     * to block all outside clicks while an operation is in progress.
+     */
+    @Inject(
+            method = "slotClicked",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void onSlotClicked(Slot slot, int slotId, int mouseButton, ClickType type, CallbackInfo ci) {
+        if (slotId < 0 && ClientSort.operatingClient) {
+            ci.cancel();
+        }
+    }
+
+    /**
      * Supplies a {@link ContainerScreenHelper} for this screen.
      */
     @SuppressWarnings("unchecked")
@@ -274,7 +291,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         float scale = 0.7F;
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 0.0F);
-        
+
         for (Slot slot : menu.slots) {
             String slotId;
             if (hasShiftDown()) {

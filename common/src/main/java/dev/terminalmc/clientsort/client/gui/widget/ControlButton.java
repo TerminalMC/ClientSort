@@ -18,7 +18,6 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;

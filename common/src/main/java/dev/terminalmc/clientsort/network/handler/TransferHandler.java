@@ -42,28 +42,61 @@ public class TransferHandler extends PayloadHandler {
                 server,
                 player,
                 payload.srcContainerId(),
-                (menu) -> validateSlotArray(player, menu, payload.srcSlotIds()),
-                (menu) -> transfer(player, menu, payload.srcSlotIds()),
+                (menu) -> {
+                    validateSlotArray(player, menu, payload.srcSlotIds());
+                    validateSlotArray(player, menu, payload.dstSlotIds());
+                },
+                (menu) -> transfer(menu, payload.srcSlotIds(), payload.dstSlotIds()),
                 TransferResultPayload.TYPE,
                 (error) -> new TransferResultPayload(error == null, error == null ? "" : error)
         ));
     }
 
     private static void transfer(
-            ServerPlayer player,
             AbstractContainerMenu menu,
-            int[] srcSlotIds
+            int[] srcSlotIds,
+            int[] dstSlotIds
     ) {
-        // Work backwards from the end of the source slot array
+        // Work backwards from the end of the source array, looking for a
+        // nonempty stack
         for (int i = srcSlotIds.length - 1; i >= 0; i--) {
-            int srcSlotId = srcSlotIds[i];
-            Slot srcSlot = menu.slots.get(srcSlotId);
+            Slot srcSlot = menu.slots.get(srcSlotIds[i]);
+            ItemStack srcStack = srcSlot.getItem();
 
-            ItemStack srcStack = menu.quickMoveStack(player, srcSlotId);
+            if (srcStack.isEmpty()) continue;
 
-            // Quick-move the slot
-            while (!srcStack.isEmpty() && ItemStack.isSameItem(srcSlot.getItem(), srcStack)) {
-                srcStack = menu.quickMoveStack(player, srcSlotId);
+            // Nonempty stack found; work forwards from the start of the
+            // destination array, looking for a partial stack of the same item
+            for (int slotId : dstSlotIds) {
+                Slot dstSlot = menu.slots.get(slotId);
+                ItemStack dstStack = dstSlot.getItem();
+
+                if (dstStack.isEmpty()) continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+
+                // Matching partial stack found; place as much of the source
+                // stack as possible
+                dstSlot.safeInsert(srcStack);
+
+                // If no items remain in the source stack, stop looking
+                if (srcStack.isEmpty()) break;
+                // Otherwise keep looking for another matching partial stack
+            }
+
+            if (srcStack.isEmpty()) continue;
+
+            // Source stack is still not empty; work forwards from the start of
+            // the destination array, looking for an empty slot
+            for (int dstSlotId : dstSlotIds) {
+                Slot dstSlot = menu.slots.get(dstSlotId);
+                ItemStack dstStack = dstSlot.getItem();
+
+                if (!dstStack.isEmpty()) continue;
+
+                // Empty slot found; place the source stack
+                dstSlot.safeInsert(srcStack);
+                break;
             }
         }
     }
