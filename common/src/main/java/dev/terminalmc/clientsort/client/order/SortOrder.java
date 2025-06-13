@@ -205,7 +205,15 @@ public abstract class SortOrder {
                     if (cmp != 0) {
                         return cmp;
                     }
-                    return StackComparison.compareEqualItems(stackA, stackB, context);
+                    if (ItemStack.isSameItemSameComponents(stackA, stackB)) {
+                        return StackComparison.compareEqualItems(stackA, stackB, context);
+                    } else {
+                        return StackComparison.compareEqualItems(
+                                stackA.copyWithCount(1),
+                                stackB.copyWithCount(1),
+                                context
+                        );
+                    }
                 });
                 return slotIds;
             }
