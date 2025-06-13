@@ -53,13 +53,25 @@ public class ControlButtonManager {
 
     private static final int BUTTON_SPACING = 1;
 
-    // Alters whether buttons are arrayed horizontally or vertically
+    // Alters whether buttons are arrayed horizontally, vertically or :/
     private static final int BUTTON_SHIFT_X = 0;
     private static final int BUTTON_SHIFT_Y = 1;
 
     private static final LinkedHashSet<ControlButton> containerButtons = new LinkedHashSet<>();
     private static final LinkedHashSet<ControlButton> playerButtons = new LinkedHashSet<>();
 
+    public static LinkedList<ControlButton> getContainerButtons() {
+        return new LinkedList<>(containerButtons);
+    }
+
+    public static LinkedList<ControlButton> getPlayerButtons() {
+        return new LinkedList<>(playerButtons);
+    }
+
+    /**
+     * Generates zero or more control buttons in accordance with config and
+     * state, and if any were generated, adds them to the screen.
+     */
     public static void afterScreenInit(Screen screen) {
         if (!(screen instanceof AbstractContainerScreen<?> acs)) return;
         if (!options().showButtons) return;
@@ -67,11 +79,9 @@ public class ControlButtonManager {
         containerButtons.clear();
         playerButtons.clear();
 
-        ClientSort.LOG.warn("asi {}", screen.getClass().getSimpleName());
-
+        // Allow forcing buttons to be shown on editor screens
         boolean forceShowContainer = false;
         boolean forceShowPlayer = false;
-
         Screen currentScreen = Minecraft.getInstance().screen;
         if (currentScreen instanceof GroupSelectorScreen) {
             forceShowContainer = true;
@@ -82,50 +92,31 @@ public class ControlButtonManager {
             forceShowPlayer = true;
         }
 
-        // Container side
-        generate(acs, false, forceShowContainer, forceShowPlayer, options().firstButton);
-        generate(acs, false, forceShowContainer, forceShowPlayer, options().secondButton);
-        generate(acs, false, forceShowContainer, forceShowPlayer, options().thirdButton);
+        // Generate container-side buttons
+        generate(acs, false, forceShowContainer, options().firstButton);
+        generate(acs, false, forceShowContainer, options().secondButton);
+        generate(acs, false, forceShowContainer, options().thirdButton);
 
-        // Player side
-        generate(acs, true, forceShowContainer, forceShowPlayer, options().firstButton);
-        generate(acs, true, forceShowContainer, forceShowPlayer, options().secondButton);
-        generate(acs, true, forceShowContainer, forceShowPlayer, options().thirdButton);
+        // Generate player-side buttons
+        generate(acs, true, forceShowPlayer, options().firstButton);
+        generate(acs, true, forceShowPlayer, options().secondButton);
+        generate(acs, true, forceShowPlayer, options().thirdButton);
     }
 
+    /**
+     * Generates zero or one config buttons in accordance with params and
+     * config, and if a button was generated, adds it to the screen.
+     */
     private static void generate(
             AbstractContainerScreen<?> screen,
             boolean isPlayerInv,
-            boolean forceShowContainer,
-            boolean forceShowPlayer,
+            boolean forceShow,
             Config.Options.CONTROL_BUTTON type
     ) {
-        boolean forceShow = isPlayerInv ? forceShowPlayer : forceShowContainer;
         switch(type) {
             case SORT -> generateSortButton(screen, isPlayerInv, forceShow);
             case STACK_FILL -> generateStackFillButton(screen, isPlayerInv, forceShow);
             case TRANSFER -> generateTransferButton(screen, isPlayerInv, forceShow);
-        }
-    }
-
-    public static boolean isInstanceOf(Object obj, String className) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            return clazz.isInstance(obj);
-        } catch (ClassNotFoundException e) {
-            if (ClientSort.debug) {
-                ClientSort.LOG.warn("Unable to check instance for object '{}': Class '{}' not found.",
-                        obj.getClass().getName(), className);
-            }
-            return false;
-        }
-    }
-
-    public static @Nullable Container getContainer(Player player) {
-        try {
-            return player.containerMenu.getSlot(0).container;
-        } catch (IndexOutOfBoundsException e) {
-            return null;
         }
     }
 
@@ -134,28 +125,34 @@ public class ControlButtonManager {
             boolean isPlayerInv,
             boolean forceShow
     ) {
-        // Do not show container buttons on player inventory screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
-
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
-
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
-
+        // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Get the relevant container
+        // Preliminary check; never display container buttons on player screen
+        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+
+        // Preliminary check; never display buttons on basic workstations
+        // or other minor inventories
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
+
+        // Get the reference or positional anchor slot
+        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
+        if (referenceSlot == null) return;
+
+        // Get the container we're adding buttons for
         Container container = isPlayerInv ? player.getInventory() : getContainer(player);
         if (container == null) return;
 
-        boolean enabled;
-        Vec2i offset;
-
-        // Retrieve the layout data
-        // TODO consider caching here?
+        // Retrieve the relevant container or GUI class
         Object object = container instanceof SimpleContainer ? screen.getMenu() : container;
+        // Check for perfect layout match
         ButtonLayout layout = options().buttonLayouts.get(object.getClass().getName());
+        // If no perfect match, try to find a layout for any superclass
+        // TODO benchmark and if it's slow, consider caching
+        // TODO depending on benchmark, consider performing inheritance cross-
+        //  checks of instance-matching layouts to ensure that we always get
+        //  the closest one
         if (layout == null) {
             for (ButtonLayout l : options().buttonLayouts.values()) {
                 if (isInstanceOf(object, l.className)) {
@@ -165,31 +162,38 @@ public class ControlButtonManager {
             }
         }
 
-        // Only show buttons if forced or whitelisted
+        // Get the configured or default offset
+        Vec2i offset;
         if (layout != null) {
-            enabled = layout.sortEnabled;
-            offset = layout.offset != null ? layout.offset : options().buttonDefaultOffset;
-        } else if (forceShow) {
-            enabled = false;
+            if (layout.offset != null) {
+                offset = layout.offset;
+            } else {
+                offset = options().buttonDefaultOffset;
+            }
+        } else {
             offset = options().buttonDefaultOffset;
+        }
+
+        // Only add the button if it's whitelisted or forced, and if it's
+        // forced, show it as inactive
+        boolean active;
+        if (layout != null && layout.sortEnabled) {
+            active = true;
+        } else if (forceShow) {
+            active = false;
         } else {
             return;
         }
 
-        if (!enabled && !forceShow) return;
-
-        Vec2i awareOffset = getButtonPosition(
-                (isPlayerInv ? playerButtons : containerButtons).size(),
-                offset
-        );
+        // Create and add
         SortButton button = new SortButton(
                 screen,
                 container,
                 layout != null ? layout.className : container.getClass().getName(),
                 isPlayerInv,
                 referenceSlot,
-                awareOffset,
-                enabled
+                getShiftedOffset(offset, isPlayerInv),
+                active
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -199,28 +203,31 @@ public class ControlButtonManager {
             boolean isPlayerInv,
             boolean forceShow
     ) {
-        // Do not show container buttons on player inventory screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
-
-        if (getNumberOfNonPlayerBulkInventorySlots(screen) < 3) return;
-
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
-
+        // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Get the relevant containers
-        Container srcContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        Container dstContainer = isPlayerInv ? player.getInventory() : getContainer(player);
+        // Preliminary check; never display container buttons on player screen
+        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+
+        // Preliminary check; never display buttons on basic workstations
+        // or other minor inventories
+        if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
+
+        // Get the reference or positional anchor slot
+        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
+        if (referenceSlot == null) return;
+
+        // Get the container we're adding buttons for, and the other container
+        Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
+        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
         if (srcContainer == null || dstContainer == null || srcContainer == dstContainer) return;
 
-        boolean enabled;
-        Vec2i offset;
-
-        // Retrieve the layout data
+        // Retrieve the relevant container or GUI class
         Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+        // Check for perfect layout match
         ButtonLayout srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
+        // If no perfect match, try to find a layout for any superclass
         if (srcLayout == null) {
             for (ButtonLayout l : options().buttonLayouts.values()) {
                 if (isInstanceOf(srcObject, l.className)) {
@@ -229,8 +236,11 @@ public class ControlButtonManager {
                 }
             }
         }
+        // Retrieve the relevant container or GUI class
         Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+        // Check for perfect layout match
         ButtonLayout dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
+        // If no perfect match, try to find a layout for any superclass
         if (dstLayout == null) {
             for (ButtonLayout l : options().buttonLayouts.values()) {
                 if (isInstanceOf(dstObject, l.className)) {
@@ -240,31 +250,40 @@ public class ControlButtonManager {
             }
         }
 
-        // Only show buttons if forced or whitelisted
-        if (srcLayout != null && dstLayout != null && dstLayout.stackFillEnabled) {
-            enabled = srcLayout.stackFillEnabled;
-            offset = srcLayout.offset != null ? srcLayout.offset : options().buttonDefaultOffset;
-        } else if (forceShow) {
-            enabled = false;
+        // Get the configured or default offset
+        Vec2i offset;
+        if (srcLayout != null) {
+            if (srcLayout.offset != null) {
+                offset = srcLayout.offset;
+            } else {
+                offset = options().buttonDefaultOffset;
+            }
+        } else {
             offset = options().buttonDefaultOffset;
+        }
+
+        // Only add the button if it's whitelisted or forced, and if it's
+        // forced, show it as inactive
+        boolean active;
+        if (srcLayout != null && srcLayout.stackFillEnabled
+                && dstLayout != null && dstLayout.stackFillEnabled
+        ) {
+            active = true;
+        } else if (forceShow) {
+            active = false;
         } else {
             return;
         }
 
-        if (!enabled && !forceShow) return;
-
-        Vec2i awareOffset = getButtonPosition(
-                (isPlayerInv ? playerButtons : containerButtons).size(),
-                offset
-        );
+        // Create and add
         StackFillButton button = new StackFillButton(
                 screen,
                 srcContainer,
                 srcLayout != null ? srcLayout.className : srcContainer.getClass().getName(),
                 isPlayerInv,
                 referenceSlot,
-                awareOffset,
-                enabled
+                getShiftedOffset(offset, isPlayerInv),
+                active
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -274,28 +293,31 @@ public class ControlButtonManager {
             boolean isPlayerInv,
             boolean forceShow
     ) {
-        // Do not show container buttons on player inventory screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
-
-        if (getNumberOfNonPlayerBulkInventorySlots(screen) < 3) return;
-
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
-
+        // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Get the relevant containers
-        Container srcContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        Container dstContainer = isPlayerInv ? player.getInventory() : getContainer(player);
+        // Preliminary check; never display container buttons on player screen
+        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+
+        // Preliminary check; never display buttons on basic workstations
+        // or other minor inventories
+        if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
+
+        // Get the reference or positional anchor slot
+        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
+        if (referenceSlot == null) return;
+
+        // Get the container we're adding buttons for, and the other container
+        Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
+        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
         if (srcContainer == null || dstContainer == null || srcContainer == dstContainer) return;
 
-        boolean enabled;
-        Vec2i offset;
-
-        // Retrieve the layout data
+        // Retrieve the relevant container or GUI class
         Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+        // Check for perfect layout match
         ButtonLayout srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
+        // If no perfect match, try to find a layout for any superclass
         if (srcLayout == null) {
             for (ButtonLayout l : options().buttonLayouts.values()) {
                 if (isInstanceOf(srcObject, l.className)) {
@@ -304,8 +326,11 @@ public class ControlButtonManager {
                 }
             }
         }
+        // Retrieve the relevant container or GUI class
         Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+        // Check for perfect layout match
         ButtonLayout dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
+        // If no perfect match, try to find a layout for any superclass
         if (dstLayout == null) {
             for (ButtonLayout l : options().buttonLayouts.values()) {
                 if (isInstanceOf(dstObject, l.className)) {
@@ -315,35 +340,76 @@ public class ControlButtonManager {
             }
         }
 
-        // Only show buttons if forced or whitelisted
-        if (srcLayout != null && dstLayout != null && dstLayout.transferEnabled) {
-            enabled = srcLayout.transferEnabled;
-            offset = srcLayout.offset != null ? srcLayout.offset : options().buttonDefaultOffset;
-        } else if (forceShow) {
-            enabled = false;
+        // Get the configured or default offset
+        Vec2i offset;
+        if (srcLayout != null) {
+            if (srcLayout.offset != null) {
+                offset = srcLayout.offset;
+            } else {
+                offset = options().buttonDefaultOffset;
+            }
+        } else {
             offset = options().buttonDefaultOffset;
+        }
+
+        // Only add the button if it's whitelisted or forced, and if it's
+        // forced, show it as inactive
+        boolean active;
+        if (srcLayout != null && srcLayout.transferEnabled
+                && dstLayout != null && dstLayout.transferEnabled
+        ) {
+            active = true;
+        } else if (forceShow) {
+            active = false;
         } else {
             return;
         }
 
-        if (!enabled && !forceShow) return;
-
-        Vec2i awareOffset = getButtonPosition(
-                (isPlayerInv ? playerButtons : containerButtons).size(),
-                offset
-        );
+        // Create and add
         TransferButton button = new TransferButton(
                 screen,
                 srcContainer,
                 srcLayout != null ? srcLayout.className : srcContainer.getClass().getName(),
                 isPlayerInv,
                 referenceSlot,
-                awareOffset,
-                enabled
+                getShiftedOffset(offset, isPlayerInv),
+                active
         );
         addButton(screen, button, isPlayerInv);
     }
 
+    /**
+     * @return {@code true} if the class name represents a valid and loadable
+     * class of which the object is an instance.
+     */
+    public static boolean isInstanceOf(Object object, String className) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            return clazz.isInstance(object);
+        } catch (ClassNotFoundException e) {
+            if (ClientSort.debug) {
+                ClientSort.LOG.warn("Unable to check instance for object '{}': Class '{}' not found.",
+                        object.getClass().getName(), className);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * @return the container associated with the player's container menu, if it
+     * exists.
+     */
+    public static @Nullable Container getContainer(Player player) {
+        try {
+            return player.containerMenu.getSlot(0).container;
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Adds the button to the screen, and to the respective set.
+     */
     private static void addButton(
             AbstractContainerScreen<?> screen,
             ControlButton button,
@@ -353,42 +419,47 @@ public class ControlButtonManager {
         (isPlayerInv ? playerButtons : containerButtons).add(button);
     }
 
-    private static @Nullable Slot getReferenceSlot(AbstractContainerScreen<?> screen, boolean isPlayerInv) {
+    /**
+     * @return the slot to which a button position in the respective container
+     * should be anchored, if any are available.
+     */
+    private static @Nullable Slot getReferenceSlot(
+            AbstractContainerScreen<?> screen,
+            boolean isPlayerInv
+    ) {
         return screen.getMenu().slots.stream()
                 .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
                 .max(Comparator.comparingInt(slot -> slot.x - slot.y))
                 .orElse(null);
     }
 
-    private static int getNumberOfBulkInventorySlots(AbstractContainerScreen<?> screen, boolean isPlayerInv) {
+    /**
+     * @return the number of slots in the respective container that are
+     * theoretically able to store any item.
+     */
+    private static int getNumberOfBulkInventorySlots(
+            AbstractContainerScreen<?> screen,
+            boolean isPlayerInv
+    ) {
         return screen.getMenu().slots.stream()
                 .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
-                .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu) || slot.getContainerSlot() >= 2)
+                .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu)
+                        || slot.getContainerSlot() >= 2)
                 .mapToInt(slot -> 1)
                 .sum();
     }
 
-    private static int getNumberOfNonPlayerBulkInventorySlots(AbstractContainerScreen<?> screen) {
-        return screen.getMenu().slots.stream()
-                .filter(slot -> !(slot.container instanceof Inventory))
-                .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu) || slot.getContainerSlot() >= 2)
-                .mapToInt(slot -> 1)
-                .sum();
-    }
-
+    /**
+     * @return the offset, shifted by a constant amount based on the number
+     * of buttons already generated.
+     */
     @SuppressWarnings("ConstantValue")
-    public static Vec2i getButtonPosition(int index, Vec2i offset) {
+    public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {
+        int index = (isPlayerInv ? playerButtons : containerButtons).size();
+
         int x = offset.x() + BUTTON_SHIFT_X * (ControlButton.WIDTH + BUTTON_SPACING) * index;
         int y = offset.y() + BUTTON_SHIFT_Y * (ControlButton.HEIGHT + BUTTON_SPACING) * index;
 
         return new Vec2i(x, y);
-    }
-
-    public static LinkedList<ControlButton> getContainerButtons() {
-        return new LinkedList<>(containerButtons);
-    }
-
-    public static LinkedList<ControlButton> getPlayerButtons() {
-        return new LinkedList<>(playerButtons);
     }
 }

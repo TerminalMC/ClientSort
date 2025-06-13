@@ -18,6 +18,7 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
@@ -86,14 +87,26 @@ public abstract class ControlButton extends Button {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT) {
-            openEditScreen();
-            return true;
-        } else if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
-            return true;
-        } else {
-            return super.mouseClicked(mouseX, mouseY, mouseButton);
+        if (isMouseOver(mouseX, mouseY)) {
+            if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT) {
+                openEditScreen();
+                return true;
+            } else if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+                return true;
+            }
         }
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
+    }
+
+    /**
+     * Checks mouse position irrespective of widget status or visibility.
+     */
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return mouseX >= (double)getX()
+                && mouseY >= (double)getY()
+                && mouseX < (double)(getX() + width)
+                && mouseY < (double)(getY() + height);
     }
 
     public void openEditScreen() {
@@ -123,9 +136,7 @@ public abstract class ControlButton extends Button {
         setY(newY);
 
         ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
-        if (isActive() || Minecraft.getInstance().screen instanceof PositionEditScreen) {
-            graphics.blitSprite(texture, getX(), getY(), 0, width, height);
-        }
+        graphics.blitSprite(texture, getX(), getY(), 0, width, height);
     }
 
     @Override

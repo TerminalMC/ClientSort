@@ -22,6 +22,10 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.LinkedList;
 
+/**
+ * An implementation of {@link PositionEditScreen} for editing container
+ * buttons.
+ */
 public class ContainerPositionEditScreen extends PositionEditScreen {
     public ContainerPositionEditScreen(Screen underlay, ControlButton button) {
         super(underlay, button);

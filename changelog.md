@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0-alpha.1
+## 2.0.0-alpha.2
 
 Note: `v2.x.x` versions are not compatible with `v1.x.x` config files, or vice versa.
 
