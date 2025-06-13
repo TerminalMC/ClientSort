@@ -44,21 +44,20 @@ public class GroupSelectorScreen extends Screen {
         this.font = Minecraft.getInstance().font;
         this.underlay = underlay;
         this.lastScreen = lastScreen;
-
-        resetButtons();
-    }
-
-    private void resetButtons() {
-        buttons.clear();
-        buttons.addAll(ControlButtonManager.getContainerButtons());
-        buttons.addAll(ControlButtonManager.getPlayerButtons());
     }
 
     @Override
     public void init() {
+        super.init();
         underlay.init(Minecraft.getInstance(), width, height);
-        resetButtons();
+        reloadButtons();
         rebuildGui();
+    }
+
+    private void reloadButtons() {
+        buttons.clear();
+        buttons.addAll(ControlButtonManager.getContainerButtons());
+        buttons.addAll(ControlButtonManager.getPlayerButtons());
     }
 
     private void rebuildGui() {

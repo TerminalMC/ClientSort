@@ -85,7 +85,9 @@
   "option.clientsort.buttonDefaultOffset.y": "Default Button Offset Y",
   "option.clientsort.buttonDefaultOffset.tooltip": "This value only affects inventories that have position set to 'null' in their button layout.",
   "option.clientsort.buttonLayouts": "Button Layouts",
-  "option.clientsort.buttonLayouts.tooltip": "Delete an entry to hide the buttons on inventories of that type.",
+  "option.clientsort.buttonLayouts.tooltip.1": "Layout entries use the following format:",
+  "option.clientsort.buttonLayouts.tooltip.2": "<class or superclass name>,<offset (x,y) or null>,<sort button enabled 1 or 0>,<stack fill button enabled>,<transfer button enabled>",
+  "option.clientsort.buttonLayouts.tooltip.3": "Delete an entry to disable the buttons on inventories of that class.",
 
   "hotbarScope.clientsort.HOTBAR": "Hotbar",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Hotbar will be processed as a separate inventory.",

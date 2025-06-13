@@ -25,9 +25,9 @@ import java.util.regex.Pattern;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ButtonLayout {
-    public static final String DATA_FORMAT = "%s|%s|%b|%b|%b";
+    public static final String DATA_FORMAT = "%s,%s,%d,%d,%d";
     public static final String DATA_POS_FORMAT = "(%d,%d)";
-    public static final String DATA_PATTERN_STRING = "^(.+)\\|(?:null|\\((-?\\d+),(-?\\d+)\\))\\|(true|false)\\|(true|false)\\|(true|false)$";
+    public static final String DATA_PATTERN_STRING = "^(.+),(?:null|\\((-?\\d+),(-?\\d+)\\)),([01]),([01]),([01])$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public final String className;
@@ -56,9 +56,9 @@ public class ButtonLayout {
         return String.format(DATA_FORMAT,
                 className,
                 offset == null ? "null" : String.format(DATA_POS_FORMAT, offset.x(), offset.y()),
-                sortEnabled,
-                stackFillEnabled,
-                transferEnabled
+                sortEnabled ? 1 : 0,
+                stackFillEnabled ? 1 : 0,
+                transferEnabled ? 1 : 0
         );
     }
 
@@ -75,9 +75,9 @@ public class ButtonLayout {
 
         String className = matcher.group(1);
         @Nullable Vec2i offset = null;
-        boolean sortEnabled = matcher.group(4).equals("true");
-        boolean stackFillEnabled = matcher.group(5).equals("true");
-        boolean transferEnabled = matcher.group(6).equals("true");
+        boolean sortEnabled = matcher.group(4).equals("1");
+        boolean stackFillEnabled = matcher.group(5).equals("1");
+        boolean transferEnabled = matcher.group(6).equals("1");
 
         // Validate class name
         try {

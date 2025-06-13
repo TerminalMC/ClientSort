@@ -66,33 +66,32 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public void init() {
         super.init();
-
-        if (Minecraft.getInstance().screen != this) {
-            Minecraft.getInstance().setScreen(this);
-        }
-
         underlay.init(Minecraft.getInstance(), width, height);
 
-        reloadButtons();
-        setSelected(buttons.getFirst());
+        if (!reloadButtons()) {
+            clearWidgets();
+            return;
+        }
 
+        setSelected(buttons.getFirst());
         rebuildGui();
     }
 
     /**
      * Reloads the list of editable buttons.
      */
-    private void reloadButtons() {
+    private boolean reloadButtons() {
         buttons.clear();
         buttons.addAll(getButtons());
 
-        // Should never happen, but worth catching anyway
         if (buttons.size() != 3) {
-            ClientSort.LOG.error("Failed to reload buttons on PositionEditScreen: "
-                    + "Button list is too small or does not contain provided button");
-            onClose();
-            Minecraft.getInstance().setScreen(underlay);
+            if (dev.terminalmc.clientsort.ClientSort.debug) {
+                ClientSort.LOG.error("Failed to reload buttons on PositionEditScreen: "
+                        + "Button list is too small (size: {})", buttons.size());
+            }
+            return false;
         }
+        return true;
     }
 
     /**
@@ -260,7 +259,6 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         underlay.render(graphics, mouseX, mouseY, partialTick);
-
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Render trace lines
@@ -314,13 +312,13 @@ public abstract class PositionEditScreen extends Screen {
                 button.getX() - button.offset.x(),
                 button.getX(),
                 button.getY(),
-                0xFFFF0000
+                0xFFBBBBBB
         );
         graphics.vLine(
                 button.getX() - button.offset.x(),
                 button.getY() - button.offset.y(),
                 button.getY(),
-                0xFFFF0000
+                0xFFBBBBBB
         );
     }
 
@@ -386,7 +384,7 @@ public abstract class PositionEditScreen extends Screen {
             return true;
         } else {
             for (ControlButton cb : buttons) {
-                if (isMouseOver(cb, mouseX, mouseY)) {
+                if (cb.isMouseOver(mouseX, mouseY)) {
                     cb.mouseClicked(mouseX, mouseY, mouseButton);
                     setSelected(cb);
                     dragging = true;
@@ -431,17 +429,6 @@ public abstract class PositionEditScreen extends Screen {
         selected = widget;
         selected.setFocused(true);
         if (statusButton != null) statusButton.setValue(selected.active);
-    }
-
-    /**
-     * A status-agnostic alternative to {@link AbstractWidget#isMouseOver}.
-     * @return {@code true} if the mouse position overlaps {@code widget}.
-     */
-    public boolean isMouseOver(AbstractWidget widget, double mouseX, double mouseY) {
-        return mouseX >= (double)widget.getX() &&
-                mouseY >= (double)widget.getY() &&
-                mouseX < (double)(widget.getX() + widget.getWidth())
-                && mouseY < (double)(widget.getY() + widget.getHeight());
     }
 
     /**

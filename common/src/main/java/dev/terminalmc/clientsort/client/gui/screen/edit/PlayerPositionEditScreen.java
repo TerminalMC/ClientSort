@@ -22,6 +22,10 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.LinkedList;
 
+/**
+ * An implementation of {@link PositionEditScreen} for editing player inventory
+ * buttons.
+ */
 public class PlayerPositionEditScreen extends PositionEditScreen {
     public PlayerPositionEditScreen(Screen underlay, ControlButton button) {
         super(underlay, button);
