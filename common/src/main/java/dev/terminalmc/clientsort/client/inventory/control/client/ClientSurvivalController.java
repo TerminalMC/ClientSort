@@ -75,7 +75,7 @@ public class ClientSurvivalController extends ClientController {
 
                 if (dstStack.isEmpty()) continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
@@ -179,7 +179,7 @@ public class ClientSurvivalController extends ClientController {
             do {
                 // If the destination stack is nonempty and matches the carried stack
                 if (!empty.get(dstId)
-                        && ItemStack.isSameItemSameComponents(carriedStack, originScopeStacks[dstId])
+                        && ItemStack.isSameItemSameTags(carriedStack, originScopeStacks[dstId])
                 ) {
                     // If the carried stack exactly equals the destination stack
                     if (carriedStack.getCount() == originScopeStacks[dstId].getCount()) {
@@ -302,7 +302,7 @@ public class ClientSurvivalController extends ClientController {
 
                 if (dstStack.isEmpty()) continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
@@ -388,7 +388,7 @@ public class ClientSurvivalController extends ClientController {
                     continue;
                 }
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();

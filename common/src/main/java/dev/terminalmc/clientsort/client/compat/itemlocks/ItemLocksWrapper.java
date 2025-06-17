@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.compat.itemlocks;
 
+import dev.terminalmc.clientsort.client.ClientSort;
 import net.minecraft.world.inventory.Slot;
 
 public class ItemLocksWrapper {
@@ -33,6 +34,10 @@ public class ItemLocksWrapper {
         try {
             return ItemLocksCompat.isLocked(slot);
         } catch (NoClassDefFoundError | NoSuchMethodError ignored) {
+            hasFailed = true;
+            return false;
+        } catch (Exception e) {
+            ClientSort.LOG.error("ItemLocks isLocked check failed with error:", e);
             hasFailed = true;
             return false;
         }
