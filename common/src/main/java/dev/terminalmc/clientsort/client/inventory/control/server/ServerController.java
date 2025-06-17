@@ -55,6 +55,7 @@ public class ServerController extends SingleUseController {
             int[] slotMapping = sorter.createSlotMapping(sortOrder);
             InteractionManager.now(() -> {
                 ClientServices.PLATFORM.sendToServer(
+                        SortPayload.ID,
                         new SortPayload(screen.getMenu().containerId, slotMapping));
                 return InteractionManager.TICK_WAITER;
             });
@@ -75,6 +76,7 @@ public class ServerController extends SingleUseController {
 
         InteractionManager.now(() -> {
             ClientServices.PLATFORM.sendToServer(
+                    StackFillPayload.ID,
                     new StackFillPayload(
                             screen.getMenu().containerId,
                             srcSlotIds,
@@ -95,6 +97,7 @@ public class ServerController extends SingleUseController {
 
         InteractionManager.now(() -> {
             ClientServices.PLATFORM.sendToServer(
+                    TransferPayload.ID,
                     new TransferPayload(
                             screen.getMenu().containerId,
                             srcSlotIds,
@@ -117,6 +120,7 @@ public class ServerController extends SingleUseController {
     private void sendCollectPayload(int[] scopeArray) {
         InteractionManager.now(() -> {
             ClientServices.PLATFORM.sendToServer(
+                    CollectPayload.ID,
                     new CollectPayload(screen.getMenu().containerId, scopeArray));
             return InteractionManager.TICK_WAITER;
         });

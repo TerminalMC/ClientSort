@@ -48,7 +48,8 @@ public class SortHandler extends PayloadHandler {
                 payload.containerId(),
                 (menu) -> validateSlotMapping(player, menu, payload.slotMapping()),
                 (menu) -> sort(menu, payload.slotMapping()),
-                SortResultPayload.TYPE,
+                SortPayload.ID,
+                SortResultPayload.ID,
                 (error) -> new SortResultPayload(error == null, error == null ? "" : error)
         ));
     }

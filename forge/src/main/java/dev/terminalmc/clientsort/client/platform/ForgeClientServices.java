@@ -16,24 +16,26 @@
 
 package dev.terminalmc.clientsort.client.platform;
 
+import dev.terminalmc.clientsort.ClientSortForge;
 import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 
-public class NeoForgeClientServices implements IPlatformClientServices {
+public class ForgeClientServices implements IPlatformClientServices {
 
     @Override
-    public boolean canSendToServer(CustomPacketPayload.Type<?> type) {
+    public boolean canSendToServer(ResourceLocation channel) {
         LocalPlayer player = Minecraft.getInstance().player;
-        return (player != null
-                && player.connection.isAcceptingMessages()
-                && player.connection.hasChannel(type));
+        if (player == null) return false;
+        if (!player.connection.isAcceptingMessages()) return false;
+        return ClientSortForge.CHANNEL.isRemotePresent(player.connection.getConnection());
     }
 
     @Override
-    public void sendToServer(CustomPacketPayload payload) {
-        PacketDistributor.sendToServer(payload);
+    public void sendToServer(ResourceLocation channel, Packet<ServerGamePacketListener> packet) {
+        ClientSortForge.CHANNEL.sendToServer(packet);
     }
 }

@@ -22,6 +22,7 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -187,38 +188,38 @@ public class Config {
      * Ensures that all config values are valid.
      */
     private void validate() {
-        options.interactionInterval = Math.clamp(
+        options.interactionInterval = Mth.clamp(
                 options.interactionInterval,
                 Options.INTERACTION_INTERVAL_MIN,
                 Options.INTERACTION_INTERVAL_MAX
         );
-        options.soundInterval = Math.clamp(
+        options.soundInterval = Mth.clamp(
                 options.soundInterval,
                 Options.SOUND_INTERVAL_MIN,
                 Options.SOUND_INTERVAL_MAX
         );
-        options.soundPitchMin = Math.clamp(
+        options.soundPitchMin = Mth.clamp(
                 options.soundPitchMin,
                 Options.SOUND_PITCH_MIN,
                 Options.SOUND_PITCH_MAX
         );
-        options.soundPitchMax = Math.clamp(
+        options.soundPitchMax = Mth.clamp(
                 options.soundPitchMax,
                 options.soundPitchMin, // Not less than configured min
                 Options.SOUND_PITCH_MAX
         );
-        options.soundVolume = Math.clamp(
+        options.soundVolume = Mth.clamp(
                 options.soundVolume,
                 Options.SOUND_VOLUME_MIN,
                 Options.SOUND_VOLUME_MAX
         );
         options.buttonDefaultOffset = new Vec2i(
-                Math.clamp(
+                Mth.clamp(
                         options.buttonDefaultOffset.x(),
                         Options.BUTTON_DEFAULT_OFFSET_MIN,
                         Options.BUTTON_DEFAULT_OFFSET_MAX
                 ),
-                Math.clamp(
+                Mth.clamp(
                         options.buttonDefaultOffset.y(),
                         Options.BUTTON_DEFAULT_OFFSET_MIN,
                         Options.BUTTON_DEFAULT_OFFSET_MAX

@@ -17,29 +17,15 @@
 
 package dev.terminalmc.clientsort.client.gui.widget;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 
 public class StackFillButton extends ControlButton {
-    private static final WidgetSprites SPRITES_UP = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up_highlighted")
-    );
-    private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down_highlighted")
-    );
-    
     public StackFillButton(
             AbstractContainerScreen<?> screen,
             Container container,
@@ -55,13 +41,13 @@ public class StackFillButton extends ControlButton {
                 layoutKey,
                 isPlayerInv,
                 referenceSlot,
-                isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
+                new Vec2i(isPlayerInv ? 2 : 1, 0),
                 offset,
                 (button) -> SingleUseController.getController(
                         screen,
                         ContainerScreenHelper.of(screen),
                         referenceSlot,
-                        StackFillPayload.TYPE
+                        StackFillPayload.ID
                 ).fillStacks(),
                 active
         );

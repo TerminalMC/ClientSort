@@ -16,16 +16,19 @@
 
 package dev.terminalmc.clientsort.platform;
 
+import dev.terminalmc.clientsort.ClientSortForge;
 import dev.terminalmc.clientsort.platform.services.IPlatformServices;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.LoadingModList;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.LoadingModList;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.nio.file.Path;
 
-public class NeoForgeServices implements IPlatformServices {
+public class ForgeServices implements IPlatformServices {
 
     @Override
     public Path getConfigDir() {
@@ -38,12 +41,17 @@ public class NeoForgeServices implements IPlatformServices {
     }
 
     @Override
-    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
-        return player.connection.hasChannel(type);
+    public boolean canSendToPlayer(ServerPlayer player, ResourceLocation channel) {
+        if (!player.connection.isAcceptingMessages()) return false;
+        return ClientSortForge.CHANNEL.isRemotePresent(player.connection.connection);
     }
 
     @Override
-    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayer(player, payload);
+    public void sendToPlayer(
+            ServerPlayer player,
+            ResourceLocation channel,
+            Packet<ClientGamePacketListener> packet
+    ) {
+        ClientSortForge.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 }

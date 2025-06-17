@@ -44,7 +44,8 @@ public class CollectHandler extends PayloadHandler {
                 payload.containerId(),
                 (menu) -> validateSlotArray(player, menu, payload.slotIds()),
                 (menu) -> collect(menu, payload.slotIds()),
-                CollectResultPayload.TYPE,
+                CollectPayload.ID,
+                CollectResultPayload.ID,
                 (error) -> new CollectResultPayload(error == null, error == null ? "" : error)
         ));
     }
@@ -56,7 +57,7 @@ public class CollectHandler extends PayloadHandler {
             ItemStack srcStack = srcSlot.getItem();
 
             if (srcStack.isEmpty()) continue;
-            if (srcStack.getCount() >= srcStack.getItem().getDefaultMaxStackSize()) continue;
+            if (srcStack.getCount() >= srcStack.getItem().getMaxStackSize()) continue;
 
             // Partial stack found; work forwards from the start, looking for
             // another partial stack of the same item
@@ -65,8 +66,8 @@ public class CollectHandler extends PayloadHandler {
                 ItemStack dstStack = dstSlot.getItem();
 
                 if (dstStack.isEmpty()) continue;
-                if (dstStack.getCount() >= dstStack.getItem().getDefaultMaxStackSize()) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.getCount() >= dstStack.getItem().getMaxStackSize()) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much of the source
                 // stack as possible
