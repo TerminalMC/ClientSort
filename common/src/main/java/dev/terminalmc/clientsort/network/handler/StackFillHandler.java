@@ -47,7 +47,8 @@ public class StackFillHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
                 (menu) -> fillStacks(menu, payload.srcSlotIds(), payload.dstSlotIds()),
-                StackFillResultPayload.TYPE,
+                StackFillPayload.ID,
+                StackFillResultPayload.ID,
                 (error) -> new StackFillResultPayload(error == null, error == null ? "" : error)
         ));
     }
@@ -74,7 +75,7 @@ public class StackFillHandler extends PayloadHandler {
 
                 if (dstStack.isEmpty()) continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much of the source
                 // stack as possible

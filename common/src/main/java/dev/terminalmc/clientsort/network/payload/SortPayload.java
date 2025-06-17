@@ -18,47 +18,51 @@
 package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom C2S payload used to instruct a server to sort slots in a container
  * into a particular order.
- * @param containerId the ID of the container.
- * @param slotMapping an array of slot swap instructions, represented as pairs
- *                    of the form [from slot ID, to slot ID].
  */
-public record SortPayload(int containerId, int[] slotMapping) implements CustomPacketPayload {
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
-            new StreamCodec<>() {
-                public int @NotNull [] decode(@NotNull RegistryFriendlyByteBuf byteBuf) {
-                    return byteBuf.readVarIntArray();
-                }
-
-                public void encode(@NotNull RegistryFriendlyByteBuf byteBuf, int @NotNull [] array) {
-                    byteBuf.writeVarIntArray(array);
-                }
-            };
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, SortPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, SortPayload::containerId,
-                    VAR_INT_ARRAY, SortPayload::slotMapping,
-                    SortPayload::new
-            );
-
+public class SortPayload implements Packet<ServerGamePacketListener> {
     public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "sort_c2s");
+            new ResourceLocation(ClientSort.MOD_ID, "sort_c2s");
 
-    public static final CustomPacketPayload.Type<SortPayload> TYPE = new Type<>(ID);
+    int containerId;
+    int[] slotMapping;
+
+    public SortPayload(int containerId, int[] slotMapping) {
+        this.containerId = containerId;
+        this.slotMapping = slotMapping;
+    }
+
+    public int containerId() {
+        return containerId;
+    }
+
+    public int[] slotMapping() {
+        return slotMapping;
+    }
+
+    public static SortPayload read(FriendlyByteBuf buf) {
+        return new SortPayload(
+                buf.readVarInt(),
+                buf.readVarIntArray()
+        );
+    }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(@NotNull FriendlyByteBuf buf) {
+        buf.writeVarInt(containerId);
+        buf.writeVarIntArray(slotMapping);
+    }
+
+    @Override
+    public void handle(@NotNull ServerGamePacketListener listener) {
+
     }
 }
