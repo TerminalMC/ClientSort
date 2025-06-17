@@ -64,7 +64,7 @@ public class ClientCreativeController extends ClientController {
 
                 if (dstStack.isEmpty()) continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack)) continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();

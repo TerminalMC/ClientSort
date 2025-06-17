@@ -205,7 +205,7 @@ public abstract class SortOrder {
                     if (cmp != 0) {
                         return cmp;
                     }
-                    if (ItemStack.isSameItemSameComponents(stackA, stackB)) {
+                    if (ItemStack.isSameItemSameTags(stackA, stackB)) {
                         return StackComparison.compareEqualItems(stackA, stackB, context);
                     } else {
                         return StackComparison.compareEqualItems(

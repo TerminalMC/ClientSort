@@ -1,28 +1,43 @@
+buildscript {
+    dependencies.add("classpath", "org.spongepowered:vanillagradle:${vanillagradle_version}")
+}
+
 plugins {
     id("multiloader-common")
-    id("net.neoforged.moddev")
+    id("org.spongepowered.gradle.vanilla")
+}
+
+// Mixin plugin requires new ASM
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "org.ow2.asm") {
+            details.useVersion(asm_version)
+            details.because("Mixin requires new ASM")
+        }
+    }
 }
 
 dependencies {
+    compileOnly "org.ow2.asm:asm:${asm_version}"
+    compileOnly "org.ow2.asm:asm-analysis:${asm_version}"
+    compileOnly "org.ow2.asm:asm-commons:${asm_version}"
+    compileOnly "org.ow2.asm:asm-tree:${asm_version}"
+    compileOnly "org.ow2.asm:asm-util:${asm_version}"
+
     compileOnly("org.spongepowered:mixin:${mixin_version}")
 //    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
     // Cloth Config API
-    api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    api("me.shedaniel.cloth:cloth-config-forge:${clothconfig_version}")
 
     // ItemLocks
     implementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
 }
 
-neoForge {
-    version = neoforge_version // Shut up
-    neoFormVersion = neoform_version
-    // Automatically enable AccessTransformers if the file exists
-    def at = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_version
+minecraft {
+    version(minecraft_version)
+    if (file("src/main/resources/${mod_id}.accesswidener").exists()) {
+        accessWideners(file("src/main/resources/${mod_id}.accesswidener"))
     }
 }
 

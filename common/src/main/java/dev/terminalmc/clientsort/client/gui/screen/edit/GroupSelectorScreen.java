@@ -114,15 +114,6 @@ public class GroupSelectorScreen extends Screen {
     }
 
     @Override
-    protected void renderBlurredBackground(float partialTick) {
-        // Heavy blur, we want the widgets to really stand out
-        int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(6);
-        super.renderBlurredBackground(partialTick);
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
-    }
-
-    @Override
     public void onClose() {
         super.onClose();
         if (lastScreen instanceof PositionEditScreen pes && !options().showButtons) {

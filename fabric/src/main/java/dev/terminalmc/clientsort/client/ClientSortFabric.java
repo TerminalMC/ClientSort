@@ -22,7 +22,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 
 public class ClientSortFabric implements ClientModInitializer {
     @Override
@@ -37,28 +38,25 @@ public class ClientSortFabric implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((mc, screen, scaledWidth, scaledHeight) ->
                 ClientSort.afterScreenInit(screen));
 
-        // Register all custom S2C payload handlers
-        ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerHandlerS2C);
+        // Register all custom S2C payloads
+        ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerS2C);
 
         // Initialize client
         ClientSort.init();
     }
 
     /**
-     * Registers an S2C payload handler, but not the payload.
-     * <p>
-     * <b>Note:</b> S2C payloads must be registered alongside C2S payloads in
-     * {@link dev.terminalmc.clientsort.ClientSortFabric}.
+     * Registers a S2C payload and its handler.
      */
-    private static <T extends CustomPacketPayload> void registerHandlerS2C(
+    private static <T extends Packet<ClientGamePacketListener>> void registerS2C(
             ClientRegistration.RegisterablePayloadS2C<T> rp
     ) {
         ClientPlayNetworking.registerGlobalReceiver(
-                rp.type,
-                (payload, context) -> rp.handler.accept(
-                        payload,
-                        context.client(),
-                        context.player()
+                rp.channel,
+                (mc, listener, byteBuf, sender) -> rp.handler.accept(
+                        rp.decoder.apply(byteBuf),
+                        mc,
+                        mc.player
                 )
         );
     }
