@@ -1,10 +1,8 @@
 # Changelog
 
-## 2.0.0-alpha.2
+## 2.0.0-beta.1
 
 Note: `v2.x.x` versions are not compatible with `v1.x.x` config files, or vice versa.
-
-Note: `alpha` versions use `-alpha` config files which may not be compatible with other alpha or release versions.
 
 - Moved stack collection to server when using server-accelerated sort
 - Fixed player inventory sorting in creative mode

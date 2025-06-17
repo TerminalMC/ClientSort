@@ -33,13 +33,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class Config {
     private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
-    private static final String FILE_NAME = ClientSort.MOD_ID + "-alpha.json";
-    private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + "-alpha.unreadable.json";
+    private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
+    private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     // Options
