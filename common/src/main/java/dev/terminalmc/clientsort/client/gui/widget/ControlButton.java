@@ -62,7 +62,7 @@ public abstract class ControlButton extends Button {
             boolean active
     ) {
         super(
-                ((AbstractContainerScreenAccessor)screen).getLeftPos()
+                ((AbstractContainerScreenAccessor) screen).getLeftPos()
                         + ((AbstractContainerScreenAccessor) screen).getImageWidth()
                         + offset.x(),
                 ((AbstractContainerScreenAccessor) screen).getTopPos()
@@ -102,10 +102,10 @@ public abstract class ControlButton extends Button {
      */
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return mouseX >= (double)getX()
-                && mouseY >= (double)getY()
-                && mouseX < (double)(getX() + width)
-                && mouseY < (double)(getY() + height);
+        return mouseX >= (double) getX()
+                && mouseY >= (double) getY()
+                && mouseX < (double) (getX() + width)
+                && mouseY < (double) (getY() + height);
     }
 
     public void openEditScreen() {
@@ -117,7 +117,7 @@ public abstract class ControlButton extends Button {
 
     @Override
     public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor)screen;
+        AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
 
         // Keep visible
         int newX = Math.clamp(
@@ -140,13 +140,17 @@ public abstract class ControlButton extends Button {
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor)screen;
-        int newX = Math.clamp((int)mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
-        int newY = Math.clamp((int)mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
+        if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+            AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
+            int newX = Math.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
+            int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
 
-        offset = new Vec2i(
-                newX - (acs.getLeftPos() + acs.getImageWidth()),
-                newY - (acs.getTopPos() + referenceSlot.y)
-        );
+            offset = new Vec2i(
+                    newX - (acs.getLeftPos() + acs.getImageWidth()),
+                    newY - (acs.getTopPos() + referenceSlot.y)
+            );
+        } else {
+            super.onDrag(mouseX, mouseY, dragX, dragY);
+        }
     }
 }
