@@ -16,11 +16,14 @@
 
 package dev.terminalmc.clientsort.client.gui.screen.edit;
 
+import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -28,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
+import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class GroupSelectorScreen extends Screen {
@@ -73,9 +77,26 @@ public class GroupSelectorScreen extends Screen {
         );
         addRenderableWidget(titleWidget);
 
+        CycleButton<Boolean> toggleButton = CycleButton.booleanBuilder(
+                localized("button", "gui.enabled").withStyle(ChatFormatting.GREEN),
+                        localized("button", "gui.disabled").withStyle(ChatFormatting.RED))
+                .withInitialValue(options().showButtons)
+                .create(
+                        width / 2 - 125,
+                        height - 22,
+                        120,
+                        20,
+                        localized("button", "gui"),
+                        (buttons,  status) -> {
+                            options().showButtons = status;
+                            Config.save();
+                            init();
+                        });
+        addRenderableWidget(toggleButton);
+
         Button cancelButton = Button.builder(CommonComponents.GUI_BACK,
                         (button) -> onClose())
-                .pos(width / 2 - 60, height - 22)
+                .pos(width / 2 + 5, height - 22)
                 .size(120, 20)
                 .build();
         addRenderableWidget(cancelButton);

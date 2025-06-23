@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.2
+
+- Added a global config toggle button to the button selector screen
+
 ## 2.0.0-beta.1
 
 Note: `v2.x.x` versions are not compatible with `v1.x.x` config files, or vice versa.

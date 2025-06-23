@@ -20,14 +20,14 @@ package dev.terminalmc.clientsort.client.gui;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
+import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
 import dev.terminalmc.clientsort.client.gui.widget.SortButton;
 import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
-import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -74,10 +74,11 @@ public class ControlButtonManager {
      */
     public static void afterScreenInit(Screen screen) {
         if (!(screen instanceof AbstractContainerScreen<?> acs)) return;
-        if (!options().showButtons) return;
 
         containerButtons.clear();
         playerButtons.clear();
+
+        if (!options().showButtons) return;
 
         // Allow forcing buttons to be shown on editor screens
         boolean forceShowContainer = false;
