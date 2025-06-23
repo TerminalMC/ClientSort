@@ -18,10 +18,11 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
@@ -76,5 +77,10 @@ public class SortButton extends ControlButton {
                 },
                 active
         );
+    }
+
+    @Override
+    public boolean getLayoutStatus(ButtonLayout layout) {
+        return layout.sortEnabled;
     }
 }

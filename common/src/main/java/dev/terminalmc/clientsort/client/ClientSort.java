@@ -55,19 +55,18 @@ public class ClientSort {
             TRANSFER_KEY
     );
 
-    public static long ticks = 0;
-
     public static boolean searchOrderUpdated = false;
 
     public static volatile boolean emiReloading = false;
     public static volatile boolean updateBlockedByEmi = false;
+
+    public static volatile boolean operatingClient = false;
 
     public static void init() {
         Config.getAndSave();
     }
 
     public static void afterClientTick(Minecraft mc) {
-        ticks++;
     }
 
     public static void afterScreenInit(Screen screen) {

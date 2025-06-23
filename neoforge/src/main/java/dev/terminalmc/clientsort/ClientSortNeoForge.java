@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort;
 import dev.terminalmc.clientsort.network.Registration;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -36,6 +37,18 @@ public class ClientSortNeoForge {
     static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
         Registration.PAYLOADS_C2S.forEach((rp) -> registerC2S(registrar, rp));
+    }
+
+    @EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.DEDICATED_SERVER)
+    static class DedicatedServerEventHandler {
+        /**
+         * Registers all custom S2C payloads, but not their handlers.
+         */
+        @SubscribeEvent
+        static void register(final RegisterPayloadHandlersEvent event) {
+            final PayloadRegistrar registrar = event.registrar("1").optional();
+            Registration.PAYLOADS_S2C.forEach((rp) -> registerPayloadS2C(registrar, rp));
+        }
     }
 
     /**
@@ -59,6 +72,26 @@ public class ClientSortNeoForge {
                                 context.player().getServer(),
                                 (ServerPlayer)context.player()
                         )
+                )
+        );
+    }
+
+    /**
+     * Registers a custom S2C payload, but not its handler.
+     * <p>
+     * <b>Note:</b> client-side payload handlers must be registered in
+     * {@link dev.terminalmc.clientsort.client.ClientSortNeoForge}.
+     */
+    private static <T extends CustomPacketPayload> void registerPayloadS2C(
+            PayloadRegistrar registrar,
+            Registration.RegisterablePayloadS2C<T> rp
+    ) {
+        registrar.playToClient(
+                rp.type,
+                rp.streamCodec,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> {},
+                        (payload, context) -> {}
                 )
         );
     }

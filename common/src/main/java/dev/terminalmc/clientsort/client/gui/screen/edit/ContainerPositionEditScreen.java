@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client.gui.screen.edit;
 
 import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import java.util.LinkedList;
 
@@ -27,7 +27,7 @@ import java.util.LinkedList;
  * buttons.
  */
 public class ContainerPositionEditScreen extends PositionEditScreen {
-    public ContainerPositionEditScreen(Screen underlay, ControlButton button) {
+    public ContainerPositionEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
         super(underlay, button);
     }
 

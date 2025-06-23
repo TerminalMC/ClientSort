@@ -182,14 +182,14 @@ public abstract class SingleUseController {
     public abstract void sort(SortOrder sortOrder);
 
     /**
-     * Transfers as many items as possible from the scope of the origin slot
-     * to the other container or inventory, if it exists.
-     */
-    public abstract void transfer();
-
-    /**
      * Uses items in the scope of the origin slot to complete as many partial
      * stacks as possible in the other container or inventory, if it exists.
      */
     public abstract void fillStacks();
+
+    /**
+     * Transfers as many items as possible from the scope of the origin slot
+     * to the other container or inventory, if it exists.
+     */
+    public abstract void transfer();
 }

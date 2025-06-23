@@ -1,10 +1,23 @@
 # Changelog
 
-## 2.0.0-alpha.2
+## 2.0.0-beta.3
+
+- Fixed a crash when returning to editor from selector with all buttons disabled
+
+## 2.0.0-beta.2
+
+- Added a global config toggle button to the button selector screen
+- Fixed buttons staying highlighted after completion of an action
+- Replaced status button with right-click to toggle individual status in editor
+- Moved GUI editor instructions to a tooltip
+- Fixed layout key split option allowing invalid layout creation
+- Fixed layout class indicator
+- Fixed a bug breaking deletion of layout keys
+- Fixed an issue with button generation in modded inventories
+
+## 2.0.0-beta.1
 
 Note: `v2.x.x` versions are not compatible with `v1.x.x` config files, or vice versa.
-
-Note: `alpha` versions use `-alpha` config files which may not be compatible with other alpha or release versions.
 
 - Moved stack collection to server when using server-accelerated sort
 - Fixed player inventory sorting in creative mode

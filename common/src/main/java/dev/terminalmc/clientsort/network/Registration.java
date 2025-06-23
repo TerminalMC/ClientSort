@@ -65,9 +65,9 @@ public class Registration {
     /**
      * S2C payloads without handlers.
      * <p>
-     * <b>Note:</b> this exists because on Fabric, all payloads must be
-     * registered in 'main'. For 'client' registration, handlers must be
-     * retrieved from
+     * <b>Note:</b> this exists because S2C payloads must be registered in
+     * 'main' but the handlers cannot be accessed from there, and must instead
+     * be registered in 'client'. For this purpose they can be retrieved from
      * {@link dev.terminalmc.clientsort.client.network.ClientRegistration#PAYLOADS_S2C}.
      */
     public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(

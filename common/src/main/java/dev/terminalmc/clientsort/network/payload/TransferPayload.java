@@ -29,8 +29,9 @@ import org.jetbrains.annotations.NotNull;
  * possible from a source container to a destination container.
  * @param srcContainerId the ID of the source container.
  * @param srcSlotIds a sub-array of slots to take items from.
+ * @param dstSlotIds a sub-array of slots to place items in.
  */
-public record TransferPayload(int srcContainerId, int[] srcSlotIds) implements CustomPacketPayload {
+public record TransferPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -47,6 +48,7 @@ public record TransferPayload(int srcContainerId, int[] srcSlotIds) implements C
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT, TransferPayload::srcContainerId,
                     VAR_INT_ARRAY, TransferPayload::srcSlotIds,
+                    VAR_INT_ARRAY, TransferPayload::dstSlotIds,
                     TransferPayload::new
             );
 

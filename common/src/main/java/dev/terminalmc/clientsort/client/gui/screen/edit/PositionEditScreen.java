@@ -23,12 +23,18 @@ import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,24 +45,50 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public abstract class PositionEditScreen extends Screen {
     private final Screen lastScreen;
-    private final Screen underlay;
+    private final AbstractContainerScreen<?> underlay;
     private final LinkedList<ControlButton> buttons = new LinkedList<>();
 
-    private ControlButton selected;
+    /**
+     * An element of {@link PositionEditScreen#buttons} which 'represents' the
+     * whole set of buttons.
+     * <p>
+     * This can be any element, and the specific choice is only relevant when
+     * repositioning via mouse drag.
+     */
+    private ControlButton rep;
+
+    /**
+     * The class name of either {@link PositionEditScreen#rep}'s
+     * {@link ControlButton#container}, or {@link PositionEditScreen#underlay}'s
+     * {@link AbstractContainerScreen#getMenu} if the former is {@code null}.
+     * <p>
+     * This value represents the lowest-level key on which a
+     * {@link ButtonLayout} can be created, and may differ from
+     * {@link PositionEditScreen#rep}'s
+     * {@link ControlButton#layoutKey}.
+     */
+    private String lowestLayoutKey;
+
+    /**
+     * A flag to assist repositioning buttons via click-drag.
+     */
     private boolean dragging;
 
-    private @Nullable CycleButton<Boolean> statusButton = null;
-
-    public PositionEditScreen(Screen underlay, ControlButton button) {
+    public PositionEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
         this(underlay, button, underlay);
     }
 
-    public PositionEditScreen(Screen underlay, ControlButton button, Screen lastScreen) {
+    public PositionEditScreen(
+            AbstractContainerScreen<?> underlay,
+            ControlButton button,
+            Screen lastScreen
+    ) {
         super(localized("title", "positionEditor"));
         this.font = Minecraft.getInstance().font;
         this.lastScreen = lastScreen;
         this.underlay = underlay;
-        this.selected = button;
+        this.rep = button;
+        this.buttons.add(button);
     }
 
     /**
@@ -66,14 +98,18 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public void init() {
         super.init();
+
+        // Resize the underlay
         underlay.init(Minecraft.getInstance(), width, height);
 
+        // Reload buttons from the manager
         if (!reloadButtons()) {
+            // Failure
             clearWidgets();
             return;
         }
 
-        setSelected(buttons.getFirst());
+        // Populate the GUI
         rebuildGui();
     }
 
@@ -82,15 +118,34 @@ public abstract class PositionEditScreen extends Screen {
      */
     private boolean reloadButtons() {
         buttons.clear();
+
+        // Retrieve the buttons from the manager
         buttons.addAll(getButtons());
 
         if (buttons.size() != 3) {
             if (dev.terminalmc.clientsort.ClientSort.debug) {
                 ClientSort.LOG.error("Failed to reload buttons on PositionEditScreen: "
-                        + "Button list is too small (size: {})", buttons.size());
+                        + "Button list is too small (expected: {}, actual: {})", 3, buttons.size());
             }
             return false;
         }
+
+        // Pick an arbitrary representative
+        rep = buttons.getFirst();
+
+        // Enable buttons that are enabled in config but disabled due to GUI
+        // state, such as transfer buttons when no second inventory is open
+        ButtonLayout layout = options().buttonLayouts.get(rep.layoutKey);
+        if (layout != null) {
+            buttons.forEach((button) -> button.active = button.getLayoutStatus(layout));
+        }
+
+        // Retrieve the layout key in the same way as the manager
+        Object keyObject = rep.container instanceof SimpleContainer
+                ? underlay.getMenu()
+                : rep.container;
+        lowestLayoutKey = keyObject.getClass().getName();
+
         return true;
     }
 
@@ -108,27 +163,25 @@ public abstract class PositionEditScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        MultiLineTextWidget messageWidget = new MultiLineTextWidget(
-                20,
-                2 + font.lineHeight,
-                localized("message", "positionEditor"),
-                font
-        );
-        messageWidget.setMaxWidth(width - 40);
-        messageWidget.setCentered(true);
-        addRenderableWidget(messageWidget);
-
         int numButtons = 9;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
         int height = 20;
 
-        // Toggle the status of the selected button
-        statusButton = CycleButton.onOffBuilder(selected.active)
-                .create(x, movingY, width, height, localized("button", "status"),
-                        (button, status) -> selected.active = status);
-        addRenderableWidget(statusButton);
+        // Instructions tooltip button
+        Button instructionsButton = Button.builder(
+                localized("button", "instructions"),
+                        (button) -> {}
+                )
+                .tooltip(Tooltip.create(localized("button", "instructions.tooltip.1")
+                        .append("\n\n").append(localized("button", "instructions.tooltip.2"))
+                        .append("\n\n").append(localized("button", "instructions.tooltip.3"))))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        instructionsButton.active = false;
+        addRenderableWidget(instructionsButton);
         movingY += 21;
 
         // Toggle the status of all buttons
@@ -159,15 +212,14 @@ public abstract class PositionEditScreen extends Screen {
         movingY += 21;
 
         // Split the current config off the parent class key
-        String containerName = selected.container.getClass().getName();
         Button splitConfigButton = Button.builder(localized("button", "splitConfig"),
                         (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
                                         options().buttonLayouts.put(
-                                                containerName,
+                                                lowestLayoutKey,
                                                 new ButtonLayout(
-                                                        containerName,
+                                                        lowestLayoutKey,
                                                         buttons.getFirst().offset,
                                                         buttons.getFirst().active,
                                                         buttons.get(1).active,
@@ -180,14 +232,21 @@ public abstract class PositionEditScreen extends Screen {
                                     Minecraft.getInstance().setScreen(this);
                                 },
                                 localized("title", "confirm.splitConfig"),
-                                localized("message", "confirm.splitConfig", selected.layoutKey,
-                                        containerName)
+                                localized(
+                                        "message", "confirm.splitConfig",
+                                        Component.literal(rep.layoutKey == null
+                                                        ? lowestLayoutKey
+                                                        : rep.layoutKey)
+                                                .withStyle(ChatFormatting.GOLD),
+                                        Component.literal(lowestLayoutKey)
+                                                .withStyle(ChatFormatting.GOLD)
+                                )
                         )))
                 .tooltip(Tooltip.create(localized("button", "splitConfig.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        splitConfigButton.active = !containerName.equals(selected.layoutKey);
+        splitConfigButton.active = rep.layoutKey != null && !rep.layoutKey.equals(lowestLayoutKey);
         addRenderableWidget(splitConfigButton);
         movingY += 21;
 
@@ -212,7 +271,7 @@ public abstract class PositionEditScreen extends Screen {
         addRenderableWidget(saveAsDefaultButton);
         movingY += 21;
 
-        // Undo all changes made since opening this screen
+        // Re-generates the screen to undo all changes made since opening
         Button undoChangesButton = Button.builder(localized("button", "undoChanges"),
                         (button) -> init())
                 .tooltip(Tooltip.create(localized("button", "undoChanges.tooltip")))
@@ -261,6 +320,10 @@ public abstract class PositionEditScreen extends Screen {
         underlay.render(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
+        // Safety net
+        if (buttons.isEmpty())
+            return;
+
         // Render trace lines
         drawLineFor(graphics, buttons.getFirst());
 
@@ -270,18 +333,27 @@ public abstract class PositionEditScreen extends Screen {
                 font,
                 localized("info", "offset", offset.x(), offset.y()).getString(),
                 105,
-                height - (font.lineHeight * 2 + 2),
+                height - (font.lineHeight + 1) * 3,
                 0xFFFFFFFF
         );
         graphics.drawString(
                 font,
-                localized("info", "className", selected.container.getClass().getName()),
+                localized("info", "layoutKey.current", rep.layoutKey == null
+                        ? localized("info", "layoutKey.unset")
+                        : rep.layoutKey),
+                105,
+                height - (font.lineHeight + 1) * 2,
+                0xFFFFFFFF
+        );
+        graphics.drawString(
+                font,
+                localized("info", "layoutKey.menu", lowestLayoutKey),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
         );
 
-        // Render editable widgets above background blur
+        // Render editable widgets again, above background blur
         for (ControlButton cb : buttons) {
             cb.renderWidget(graphics, mouseX, mouseY, partialTick);
         }
@@ -329,31 +401,31 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        underlay.init(Minecraft.getInstance(), width, height);
-        if (lastScreen != underlay) {
-            lastScreen.init(Minecraft.getInstance(), width, height);
-        }
+        lastScreen.init(Minecraft.getInstance(), width, height);
         Minecraft.getInstance().setScreen(lastScreen);
     }
 
     /**
-     * Saves any altered values, then closes this screen and shows
-     * {@link PositionEditScreen#lastScreen} instead.
+     * Saves any altered values, then calls {@link PositionEditScreen#onClose}.
      */
     public void saveAndClose() {
-        options().buttonLayouts.put(selected.layoutKey, new ButtonLayout(
-                selected.layoutKey,
-                buttons.getFirst().offset,
-                buttons.getFirst().active,
-                buttons.get(1).active,
-                buttons.get(2).active
-        ));
+        String layoutKey = rep.layoutKey == null ? lowestLayoutKey : rep.layoutKey;
+        if (buttons.stream().anyMatch((b) -> b.active)
+                || options().buttonLayouts.containsKey(layoutKey)) {
+            options().buttonLayouts.put(layoutKey, new ButtonLayout(
+                    layoutKey,
+                    buttons.getFirst().offset,
+                    buttons.getFirst().active,
+                    buttons.get(1).active,
+                    buttons.get(2).active
+            ));
+        }
         Config.save();
         onClose();
     }
 
     /**
-     * Allows pressing the arrow keys to reposition the selected widget.
+     * Allows pressing the arrow keys to reposition the set of buttons.
      */
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -366,9 +438,11 @@ public abstract class PositionEditScreen extends Screen {
             default -> null;
         };
         if (movement != null) {
-            Vec2i before = selected.offset;
-            selected.offset = selected.offset.add(movement);
-            repositionButtons(selected, before);
+            Vec2i before = rep.offset;
+            // Move the rep button first
+            rep.offset = rep.offset.add(movement);
+            // Then move the others to match
+            repositionButtons(rep, before);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -386,7 +460,7 @@ public abstract class PositionEditScreen extends Screen {
             for (ControlButton cb : buttons) {
                 if (cb.isMouseOver(mouseX, mouseY)) {
                     cb.mouseClicked(mouseX, mouseY, mouseButton);
-                    setSelected(cb);
+                    rep = cb;
                     dragging = true;
                     return true;
                 }
@@ -401,9 +475,10 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (dragging) {
-            Vec2i before = selected.offset;
-            if (selected.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
-                repositionButtons(selected, before);
+            Vec2i before = rep.offset;
+            if (rep.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+                // Move the other buttons to match the rep's movement
+                repositionButtons(rep, before);
                 return true;
             }
         }
@@ -417,18 +492,6 @@ public abstract class PositionEditScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
         dragging = false;
         return super.mouseReleased(mouseX, mouseY, mouseButton);
-    }
-
-    /**
-     * Selects {@code widget} and marks it as focused.
-     */
-    public void setSelected(@NotNull ControlButton widget) {
-        if (widget != selected) {
-            selected.setFocused(false);
-        }
-        selected = widget;
-        selected.setFocused(true);
-        if (statusButton != null) statusButton.setValue(selected.active);
     }
 
     /**
