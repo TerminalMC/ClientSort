@@ -3,9 +3,12 @@
 ## 2.0.0-beta.2
 
 - Added a global config toggle button to the button selector screen
-- Fixed buttons staying highlighted after an action was completed
+- Fixed buttons staying highlighted after completion of an action
 - Replaced status button with right-click to toggle individual status in editor
 - Moved GUI editor instructions to a tooltip
+- Fixed layout key split option allowing invalid layout creation
+- Fixed layout class indicator
+- Fixed a bug breaking deletion of layout keys
 
 ## 2.0.0-beta.1
 

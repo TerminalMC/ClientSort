@@ -26,6 +26,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,14 +37,14 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class GroupSelectorScreen extends Screen {
     private final Screen lastScreen;
-    private final Screen underlay;
+    private final AbstractContainerScreen<?> underlay;
     private final LinkedList<ControlButton> buttons = new LinkedList<>();
 
-    public GroupSelectorScreen(Screen underlay) {
+    public GroupSelectorScreen(AbstractContainerScreen<?> underlay) {
         this(underlay, underlay);
     }
 
-    public GroupSelectorScreen(Screen underlay, Screen lastScreen) {
+    public GroupSelectorScreen(AbstractContainerScreen<?> underlay, Screen lastScreen) {
         super(localized("title", "groupSelector"));
         this.font = Minecraft.getInstance().font;
         this.underlay = underlay;

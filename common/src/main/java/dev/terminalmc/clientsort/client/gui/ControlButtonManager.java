@@ -190,7 +190,7 @@ public class ControlButtonManager {
         SortButton button = new SortButton(
                 screen,
                 container,
-                layout != null ? layout.className : container.getClass().getName(),
+                layout == null ? null : layout.className,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -280,7 +280,7 @@ public class ControlButtonManager {
         StackFillButton button = new StackFillButton(
                 screen,
                 srcContainer,
-                srcLayout != null ? srcLayout.className : srcContainer.getClass().getName(),
+                srcLayout == null ? null : srcLayout.className,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -370,7 +370,7 @@ public class ControlButtonManager {
         TransferButton button = new TransferButton(
                 screen,
                 srcContainer,
-                srcLayout != null ? srcLayout.className : srcContainer.getClass().getName(),
+                srcLayout == null ? null : srcLayout.className,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),

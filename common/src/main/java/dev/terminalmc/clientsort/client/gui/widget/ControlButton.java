@@ -30,13 +30,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ControlButton extends Button {
     public static final int WIDTH = 13;
@@ -44,9 +44,9 @@ public abstract class ControlButton extends Button {
     public static final int HALF_WIDTH = WIDTH / 2;
     public static final int HALF_HEIGHT = HEIGHT / 2;
 
-    private final Screen screen;
+    private final AbstractContainerScreen<?> screen;
     public final Container container;
-    public final String layoutKey;
+    public final @Nullable String layoutKey;
     final boolean isPlayerInv;
     private final Slot referenceSlot;
     private final WidgetSprites sprites;
@@ -56,7 +56,7 @@ public abstract class ControlButton extends Button {
     protected ControlButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            String layoutKey,
+            @Nullable String layoutKey,
             boolean isPlayerInv,
             Slot referenceSlot,
             WidgetSprites sprites,

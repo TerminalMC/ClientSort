@@ -18,10 +18,10 @@ package dev.terminalmc.clientsort.client.gui.screen;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.config.Config;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -326,16 +326,20 @@ public class ClothScreenProvider {
                 })
                 .setDefaultValue(getLayoutStrings(Config.Options.buttonLayoutsDefaultList.get()))
                 .setSaveConsumer((list) -> {
+                    Set<ButtonLayout> layouts = new HashSet<>();
                     for (String string : list) {
                         try {
                             ButtonLayout layout = ButtonLayout.fromDataString(string);
-                            options.buttonLayouts.put(layout.className, layout);
+                            layouts.add(layout);
                         } catch (ParseException ex) {
                             ClientSort.LOG.error("Encountered a button layout parsing error not " +
                                     "caught by error checker: {}", ex.getMessage());
                             break;
                         }
                     }
+                    options.buttonLayouts.clear();
+                    layouts.forEach((layout) ->
+                            options.buttonLayouts.put(layout.className, layout));
                 })
                 .build());
 
