@@ -13,20 +13,24 @@
   "title.clientsort.groupSelector": "ClientSort GUI Editor - Select a Widget to Edit",
 
   "title.clientsort.positionEditor": "ClientSort GUI Editor",
-  "message.clientsort.positionEditor": "Click and drag to move buttons around, or use the arrow keys on your keyboard. Hold SHIFT while pressing arrow keys to move faster.",
 
   "title.clientsort.confirm.saveAsDefault": "Save Button Position as Default",
   "message.clientsort.confirm.saveAsDefault": "Are you sure you want to save this button position as the default? If you want to reset the default position in future, you must do so via the main options menu.",
 
   "title.clientsort.confirm.splitConfig": "Split this Configuration",
-  "message.clientsort.confirm.splitConfig": "This configuration is currently specified by class '%s'. Are you sure you want to create a unique configuration for class '%s'? If you want to revert this change in future, you must delete the entry in the main options menu.",
+  "message.clientsort.confirm.splitConfig": "This layout is currently specified by key '%s'. Are you sure you want to create a new layout under key '%s'? If you want to revert this change in future, you must delete the latter entry in the main options menu.",
 
-  "button.clientsort.status": "Status",
-  "button.clientsort.status.tooltip": "Toggle status of the selected button.",
+  "button.clientsort.gui": "GUI",
+  "button.clientsort.gui.enabled": "Enabled",
+  "button.clientsort.gui.disabled": "Disabled",
+  "button.clientsort.instructions": "Instructions",
+  "button.clientsort.instructions.tooltip.1": "Click and drag to move buttons around, or use the arrow keys on your keyboard.",
+  "button.clientsort.instructions.tooltip.2": "Hold SHIFT while pressing the arrow keys to move faster.",
+  "button.clientsort.instructions.tooltip.3": "Right-click a button to enable or disable it.",
   "button.clientsort.toggleAll": "Toggle All",
   "button.clientsort.toggleAll.tooltip": "Toggle the status of all buttons.",
   "button.clientsort.moveToDefault": "Move to Default",
-  "button.clientsort.moveToDefault.tooltip": "Move all buttons to their default offsets.",
+  "button.clientsort.moveToDefault.tooltip": "Move the buttons to their default offsets.",
   "button.clientsort.splitConfig": "Split Config",
   "button.clientsort.splitConfig.tooltip": "Create a unique configuration for this GUI (requires confirmation).",
   "button.clientsort.saveAsDefault": "Save as Default",
@@ -37,7 +41,9 @@
   "button.clientsort.reselect.tooltip": "Select a different set of buttons.",
 
   "info.clientsort.offset": "Offset: (%d, %d)",
-  "info.clientsort.className": "GUI: %s",
+  "info.clientsort.layoutKey.current": "Layout Key: %s",
+  "info.clientsort.layoutKey.menu": "Active Menu: %s",
+  "info.clientsort.layoutKey.unset": "Not set",
 
   "option.clientsort.general": "通用",
   "option.clientsort.interactionInterval": "Interaction Interval",
