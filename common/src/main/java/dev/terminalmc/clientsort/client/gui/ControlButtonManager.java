@@ -28,6 +28,8 @@ import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
 import dev.terminalmc.clientsort.client.gui.widget.SortButton;
 import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
+import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -94,14 +96,20 @@ public class ControlButtonManager {
         }
 
         // Generate container-side buttons
-        generate(acs, false, forceShowContainer, options().firstButton);
-        generate(acs, false, forceShowContainer, options().secondButton);
-        generate(acs, false, forceShowContainer, options().thirdButton);
+        Slot containerRefSlot = getReferenceSlot(acs, false);
+        if (containerRefSlot != null) {
+            generate(acs, containerRefSlot, false, forceShowContainer, options().firstButton);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().secondButton);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().thirdButton);
+        }
 
         // Generate player-side buttons
-        generate(acs, true, forceShowPlayer, options().firstButton);
-        generate(acs, true, forceShowPlayer, options().secondButton);
-        generate(acs, true, forceShowPlayer, options().thirdButton);
+        Slot playerRefSlot = getReferenceSlot(acs, true);
+        if (playerRefSlot != null) {
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().firstButton);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().secondButton);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().thirdButton);
+        }
     }
 
     /**
@@ -110,19 +118,21 @@ public class ControlButtonManager {
      */
     private static void generate(
             AbstractContainerScreen<?> screen,
+            Slot refSlot,
             boolean isPlayerInv,
             boolean forceShow,
             Config.Options.CONTROL_BUTTON type
     ) {
         switch(type) {
-            case SORT -> generateSortButton(screen, isPlayerInv, forceShow);
-            case STACK_FILL -> generateStackFillButton(screen, isPlayerInv, forceShow);
-            case TRANSFER -> generateTransferButton(screen, isPlayerInv, forceShow);
+            case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
+            case STACK_FILL -> generateStackFillButton(screen, refSlot, isPlayerInv, forceShow);
+            case TRANSFER -> generateTransferButton(screen, refSlot, isPlayerInv, forceShow);
         }
     }
 
     private static void generateSortButton(
             AbstractContainerScreen<?> screen,
+            Slot referenceSlot,
             boolean isPlayerInv,
             boolean forceShow
     ) {
@@ -136,10 +146,6 @@ public class ControlButtonManager {
         // Preliminary check; never display buttons on basic workstations
         // or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
-
-        // Get the reference or positional anchor slot
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
 
         // Get the container we're adding buttons for
         Container container = isPlayerInv ? player.getInventory() : getContainer(player);
@@ -201,6 +207,7 @@ public class ControlButtonManager {
 
     private static void generateStackFillButton(
             AbstractContainerScreen<?> screen,
+            Slot referenceSlot,
             boolean isPlayerInv,
             boolean forceShow
     ) {
@@ -214,10 +221,6 @@ public class ControlButtonManager {
         // Preliminary check; never display buttons on basic workstations
         // or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
-
-        // Get the reference or positional anchor slot
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
 
         // Get the container we're adding buttons for, and the other container
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
@@ -291,6 +294,7 @@ public class ControlButtonManager {
 
     private static void generateTransferButton(
             AbstractContainerScreen<?> screen,
+            Slot referenceSlot,
             boolean isPlayerInv,
             boolean forceShow
     ) {
@@ -304,10 +308,6 @@ public class ControlButtonManager {
         // Preliminary check; never display buttons on basic workstations
         // or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
-
-        // Get the reference or positional anchor slot
-        Slot referenceSlot = getReferenceSlot(screen, isPlayerInv);
-        if (referenceSlot == null) return;
 
         // Get the container we're adding buttons for, and the other container
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
@@ -428,11 +428,14 @@ public class ControlButtonManager {
             AbstractContainerScreen<?> screen,
             boolean isPlayerInv
     ) {
-        // TODO find a way to reliably get a slot that belongs to the correct
-        //  inventory, since the reference slot is used as the scope slot
-        // Get the top-most of the right-most slots
+        // Get the top-most of the right-most slots in scope
+        ContainerScreenHelper<?> helper = ContainerScreenHelper.of(screen);
         return screen.getMenu().slots.stream()
-                .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
+                .filter(slot -> isPlayerInv
+                        ? (slot.container instanceof Inventory)
+                        && helper.getScope(slot).equals(Scope.PLAYER_INV)
+                        : !(slot.container instanceof Inventory)
+                        && helper.getScope(slot).equals(Scope.CONTAINER_INV))
                 .max(Comparator.comparingInt(slot -> slot.x * 9999 - slot.y))
                 .orElse(null);
     }

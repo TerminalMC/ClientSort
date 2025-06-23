@@ -9,6 +9,7 @@
 - Fixed layout key split option allowing invalid layout creation
 - Fixed layout class indicator
 - Fixed a bug breaking deletion of layout keys
+- Fixed an issue with button generation in modded inventories
 
 ## 2.0.0-beta.1
 

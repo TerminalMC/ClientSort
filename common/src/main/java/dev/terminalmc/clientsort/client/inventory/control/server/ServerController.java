@@ -16,8 +16,8 @@
 
 package dev.terminalmc.clientsort.client.inventory.control.server;
 
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.order.SortContext;
