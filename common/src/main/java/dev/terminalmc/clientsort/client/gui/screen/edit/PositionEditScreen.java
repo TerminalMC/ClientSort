@@ -320,6 +320,10 @@ public abstract class PositionEditScreen extends Screen {
         underlay.render(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
+        // Safety net
+        if (buttons.isEmpty())
+            return;
+
         // Render trace lines
         drawLineFor(graphics, buttons.getFirst());
 

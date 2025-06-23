@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.3
+
+- Fixed a crash when returning to editor from selector with all buttons disabled
+
 ## 2.0.0-beta.2
 
 - Added a global config toggle button to the button selector screen

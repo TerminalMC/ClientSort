@@ -125,11 +125,12 @@ public class GroupSelectorScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        underlay.init(Minecraft.getInstance(), width, height);
-        if (lastScreen != underlay) {
+        if (lastScreen instanceof PositionEditScreen pes && !options().showButtons) {
+            pes.onClose();
+        } else {
             lastScreen.init(Minecraft.getInstance(), width, height);
+            Minecraft.getInstance().setScreen(lastScreen);
         }
-        Minecraft.getInstance().setScreen(lastScreen);
     }
 
     @Override
