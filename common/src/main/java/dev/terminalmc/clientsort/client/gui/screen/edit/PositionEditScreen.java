@@ -25,7 +25,9 @@ import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -42,10 +44,8 @@ public abstract class PositionEditScreen extends Screen {
     private final Screen underlay;
     private final LinkedList<ControlButton> buttons = new LinkedList<>();
 
-    private ControlButton selected;
+    private ControlButton representative;
     private boolean dragging;
-
-    private @Nullable CycleButton<Boolean> statusButton = null;
 
     public PositionEditScreen(Screen underlay, ControlButton button) {
         this(underlay, button, underlay);
@@ -56,7 +56,7 @@ public abstract class PositionEditScreen extends Screen {
         this.font = Minecraft.getInstance().font;
         this.lastScreen = lastScreen;
         this.underlay = underlay;
-        this.selected = button;
+        this.representative = button;
     }
 
     /**
@@ -72,8 +72,6 @@ public abstract class PositionEditScreen extends Screen {
             clearWidgets();
             return;
         }
-
-        setSelected(buttons.getFirst());
         rebuildGui();
     }
 
@@ -91,6 +89,11 @@ public abstract class PositionEditScreen extends Screen {
             }
             return false;
         }
+
+        representative = buttons.getFirst();
+        ButtonLayout layout = options().buttonLayouts.get(representative.layoutKey);
+        buttons.forEach((button) -> button.active = button.getLayoutStatus(layout));
+
         return true;
     }
 
@@ -108,27 +111,25 @@ public abstract class PositionEditScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        MultiLineTextWidget messageWidget = new MultiLineTextWidget(
-                20,
-                2 + font.lineHeight,
-                localized("message", "positionEditor"),
-                font
-        );
-        messageWidget.setMaxWidth(width - 40);
-        messageWidget.setCentered(true);
-        addRenderableWidget(messageWidget);
-
-        int numButtons = 9;
+        int numButtons = 8;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
         int height = 20;
 
-        // Toggle the status of the selected button
-        statusButton = CycleButton.onOffBuilder(selected.active)
-                .create(x, movingY, width, height, localized("button", "status"),
-                        (button, status) -> selected.active = status);
-        addRenderableWidget(statusButton);
+        // Instructions tooltip button
+        Button instructionsButton = Button.builder(
+                localized("button", "instructions"),
+                        (button) -> {}
+                )
+                .tooltip(Tooltip.create(localized("button", "instructions.tooltip.1")
+                        .append("\n\n").append(localized("button", "instructions.tooltip.2"))
+                        .append("\n\n").append(localized("button", "instructions.tooltip.3"))))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        instructionsButton.active = false;
+        addRenderableWidget(instructionsButton);
         movingY += 21;
 
         // Toggle the status of all buttons
@@ -159,7 +160,7 @@ public abstract class PositionEditScreen extends Screen {
         movingY += 21;
 
         // Split the current config off the parent class key
-        String containerName = selected.container.getClass().getName();
+        String containerName = representative.container.getClass().getName();
         Button splitConfigButton = Button.builder(localized("button", "splitConfig"),
                         (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
                                 (confirm) -> {
@@ -180,14 +181,14 @@ public abstract class PositionEditScreen extends Screen {
                                     Minecraft.getInstance().setScreen(this);
                                 },
                                 localized("title", "confirm.splitConfig"),
-                                localized("message", "confirm.splitConfig", selected.layoutKey,
+                                localized("message", "confirm.splitConfig", representative.layoutKey,
                                         containerName)
                         )))
                 .tooltip(Tooltip.create(localized("button", "splitConfig.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        splitConfigButton.active = !containerName.equals(selected.layoutKey);
+        splitConfigButton.active = !containerName.equals(representative.layoutKey);
         addRenderableWidget(splitConfigButton);
         movingY += 21;
 
@@ -275,7 +276,7 @@ public abstract class PositionEditScreen extends Screen {
         );
         graphics.drawString(
                 font,
-                localized("info", "className", selected.container.getClass().getName()),
+                localized("info", "className", representative.container.getClass().getName()),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
@@ -341,8 +342,8 @@ public abstract class PositionEditScreen extends Screen {
      * {@link PositionEditScreen#lastScreen} instead.
      */
     public void saveAndClose() {
-        options().buttonLayouts.put(selected.layoutKey, new ButtonLayout(
-                selected.layoutKey,
+        options().buttonLayouts.put(representative.layoutKey, new ButtonLayout(
+                representative.layoutKey,
                 buttons.getFirst().offset,
                 buttons.getFirst().active,
                 buttons.get(1).active,
@@ -366,9 +367,9 @@ public abstract class PositionEditScreen extends Screen {
             default -> null;
         };
         if (movement != null) {
-            Vec2i before = selected.offset;
-            selected.offset = selected.offset.add(movement);
-            repositionButtons(selected, before);
+            Vec2i before = representative.offset;
+            representative.offset = representative.offset.add(movement);
+            repositionButtons(representative, before);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -386,7 +387,7 @@ public abstract class PositionEditScreen extends Screen {
             for (ControlButton cb : buttons) {
                 if (cb.isMouseOver(mouseX, mouseY)) {
                     cb.mouseClicked(mouseX, mouseY, mouseButton);
-                    setSelected(cb);
+                    representative = cb;
                     dragging = true;
                     return true;
                 }
@@ -401,9 +402,9 @@ public abstract class PositionEditScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (dragging) {
-            Vec2i before = selected.offset;
-            if (selected.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
-                repositionButtons(selected, before);
+            Vec2i before = representative.offset;
+            if (representative.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+                repositionButtons(representative, before);
                 return true;
             }
         }
@@ -417,18 +418,6 @@ public abstract class PositionEditScreen extends Screen {
     public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
         dragging = false;
         return super.mouseReleased(mouseX, mouseY, mouseButton);
-    }
-
-    /**
-     * Selects {@code widget} and marks it as focused.
-     */
-    public void setSelected(@NotNull ControlButton widget) {
-        if (widget != selected) {
-            selected.setFocused(false);
-        }
-        selected = widget;
-        selected.setFocused(true);
-        if (statusButton != null) statusButton.setValue(selected.active);
     }
 
     /**

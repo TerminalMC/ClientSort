@@ -18,9 +18,10 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -39,7 +40,7 @@ public class TransferButton extends ControlButton {
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down_disabled"),
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down_highlighted")
     );
-    
+
     public TransferButton(
             AbstractContainerScreen<?> screen,
             Container container,
@@ -65,5 +66,10 @@ public class TransferButton extends ControlButton {
                 ).transfer(),
                 active
         );
+    }
+
+    @Override
+    public boolean getLayoutStatus(ButtonLayout layout) {
+        return layout.transferEnabled;
     }
 }

@@ -18,6 +18,7 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
@@ -89,10 +90,14 @@ public abstract class ControlButton extends Button {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (isMouseOver(mouseX, mouseY)) {
-            if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT) {
-                openEditScreen();
+            boolean rightClick = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
+            if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+                if (rightClick) {
+                    active = !active;
+                }
                 return true;
-            } else if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+            } else if (rightClick) {
+                openEditScreen();
                 return true;
             }
         }
@@ -172,4 +177,6 @@ public abstract class ControlButton extends Button {
         if (!focused)
             super.setFocused(false);
     }
+
+    public abstract boolean getLayoutStatus(ButtonLayout layout);
 }

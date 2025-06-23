@@ -4,6 +4,8 @@
 
 - Added a global config toggle button to the button selector screen
 - Fixed buttons staying highlighted after an action was completed
+- Replaced status button with right-click to toggle individual status in editor
+- Moved GUI editor instructions to a tooltip
 
 ## 2.0.0-beta.1
 
