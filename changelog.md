@@ -3,6 +3,7 @@
 ## 2.0.0-beta.2
 
 - Added a global config toggle button to the button selector screen
+- Fixed buttons staying highlighted after an action was completed
 
 ## 2.0.0-beta.1
 

@@ -24,9 +24,11 @@ import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen
 import dev.terminalmc.clientsort.client.gui.screen.edit.PositionEditScreen;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
@@ -152,5 +154,22 @@ public abstract class ControlButton extends Button {
         } else {
             super.onDrag(mouseX, mouseY, dragX, dragY);
         }
+    }
+
+    /**
+     * Disables keyboard navigation.
+     */
+    @Override
+    public ComponentPath nextFocusPath(@NotNull FocusNavigationEvent event) {
+        return null;
+    }
+
+    /**
+     * Disables focusing on click.
+     */
+    @Override
+    public void setFocused(boolean focused) {
+        if (!focused)
+            super.setFocused(false);
     }
 }
