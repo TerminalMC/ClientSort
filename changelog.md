@@ -3,6 +3,7 @@
 ## 2.0.0-beta.4
 
 - Fixed an issue breaking button editor on modded inventory screens
+- Slightly improved slot placement on scrolling inventories
 
 ## 2.0.0-beta.3
 

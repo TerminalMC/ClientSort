@@ -133,7 +133,7 @@ public abstract class ControlButton extends Button {
                 screen.width - WIDTH
         );
         int newY = Math.clamp(
-                acs.getTopPos() + referenceSlot.y + offset.y(),
+                acs.getTopPos() + Math.max(0, referenceSlot.y) + offset.y(),
                 0,
                 screen.height - HEIGHT
         );
