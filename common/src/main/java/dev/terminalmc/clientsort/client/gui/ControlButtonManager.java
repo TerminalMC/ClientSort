@@ -215,41 +215,46 @@ public class ControlButtonManager {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Preliminary check; never display container buttons on player screen
+        // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv) return;
 
-        // Preliminary check; never display buttons on basic workstations
+        // Sanity check; never display buttons on basic workstations
         // or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
 
-        // Get the container we're adding buttons for, and the other container
+        // Get the container we're adding buttons for, and its layout
+        ButtonLayout srcLayout = null;
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
-        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        if (srcContainer == null || dstContainer == null || srcContainer == dstContainer) return;
-
-        // Retrieve the relevant container or GUI class
-        Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-        // Check for perfect layout match
-        ButtonLayout srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
-        // If no perfect match, try to find a layout for any superclass
-        if (srcLayout == null) {
-            for (ButtonLayout l : options().buttonLayouts.values()) {
-                if (isInstanceOf(srcObject, l.className)) {
-                    srcLayout = l;
-                    break;
+        if (srcContainer != null) {
+            // Retrieve the relevant container or GUI class
+            Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+            // Check for perfect layout match
+            srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
+            // If no perfect match, try to find a layout for any superclass
+            if (srcLayout == null) {
+                for (ButtonLayout l : options().buttonLayouts.values()) {
+                    if (isInstanceOf(srcObject, l.className)) {
+                        srcLayout = l;
+                        break;
+                    }
                 }
             }
         }
-        // Retrieve the relevant container or GUI class
-        Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-        // Check for perfect layout match
-        ButtonLayout dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
-        // If no perfect match, try to find a layout for any superclass
-        if (dstLayout == null) {
-            for (ButtonLayout l : options().buttonLayouts.values()) {
-                if (isInstanceOf(dstObject, l.className)) {
-                    dstLayout = l;
-                    break;
+        // Get the other container (if any), and its layout
+        ButtonLayout dstLayout = null;
+        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
+        if (dstContainer != null && srcContainer != dstContainer) {
+            // Retrieve the relevant container or GUI class
+            Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+            // Check for perfect layout match
+            dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
+            // If no perfect match, try to find a layout for any superclass
+            if (dstLayout == null) {
+                for (ButtonLayout l : options().buttonLayouts.values()) {
+                    if (isInstanceOf(dstObject, l.className)) {
+                        dstLayout = l;
+                        break;
+                    }
                 }
             }
         }
@@ -302,41 +307,46 @@ public class ControlButtonManager {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        // Preliminary check; never display container buttons on player screen
+        // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv) return;
 
-        // Preliminary check; never display buttons on basic workstations
+        // Sanity check; never display buttons on basic workstations
         // or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, false) < 3) return;
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
 
-        // Get the container we're adding buttons for, and the other container
+        // Get the container we're adding buttons for, and its layout
+        ButtonLayout srcLayout = null;
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
-        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        if (srcContainer == null || dstContainer == null || srcContainer == dstContainer) return;
-
-        // Retrieve the relevant container or GUI class
-        Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-        // Check for perfect layout match
-        ButtonLayout srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
-        // If no perfect match, try to find a layout for any superclass
-        if (srcLayout == null) {
-            for (ButtonLayout l : options().buttonLayouts.values()) {
-                if (isInstanceOf(srcObject, l.className)) {
-                    srcLayout = l;
-                    break;
+        if (srcContainer != null) {
+            // Retrieve the relevant container or GUI class
+            Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+            // Check for perfect layout match
+            srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
+            // If no perfect match, try to find a layout for any superclass
+            if (srcLayout == null) {
+                for (ButtonLayout l : options().buttonLayouts.values()) {
+                    if (isInstanceOf(srcObject, l.className)) {
+                        srcLayout = l;
+                        break;
+                    }
                 }
             }
         }
-        // Retrieve the relevant container or GUI class
-        Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-        // Check for perfect layout match
-        ButtonLayout dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
-        // If no perfect match, try to find a layout for any superclass
-        if (dstLayout == null) {
-            for (ButtonLayout l : options().buttonLayouts.values()) {
-                if (isInstanceOf(dstObject, l.className)) {
-                    dstLayout = l;
-                    break;
+        // Get the other container (if any), and its layout
+        ButtonLayout dstLayout = null;
+        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
+        if (dstContainer != null && srcContainer != dstContainer) {
+            // Retrieve the relevant container or GUI class
+            Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+            // Check for perfect layout match
+            dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
+            // If no perfect match, try to find a layout for any superclass
+            if (dstLayout == null) {
+                for (ButtonLayout l : options().buttonLayouts.values()) {
+                    if (isInstanceOf(dstObject, l.className)) {
+                        dstLayout = l;
+                        break;
+                    }
                 }
             }
         }

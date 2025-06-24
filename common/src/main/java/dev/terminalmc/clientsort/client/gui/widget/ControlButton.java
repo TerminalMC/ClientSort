@@ -47,7 +47,7 @@ public abstract class ControlButton extends Button {
     private final AbstractContainerScreen<?> screen;
     public final Container container;
     public final @Nullable String layoutKey;
-    final boolean isPlayerInv;
+    public final boolean isPlayerInv;
     private final Slot referenceSlot;
     private final WidgetSprites sprites;
 

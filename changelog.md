@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.4
+
+- Fixed an issue breaking button editor on modded inventory screens
+
 ## 2.0.0-beta.3
 
 - Fixed a crash when returning to editor from selector with all buttons disabled
