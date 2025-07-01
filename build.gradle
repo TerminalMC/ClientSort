@@ -89,8 +89,6 @@ subprojects {
                             embeds { id = mrId }
                         }
                     }
-                    // Sync Modrinth description with README
-                    projectDescription = rootProject.file("README.md").text
                 }
                 curseforge {
                     accessToken = providers.environmentVariable("CURSEFORGE_TOKEN").getOrElse("")
