@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = MainSort.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber(modid = MainSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MainSort.MOD_ID, value = Dist.CLIENT)
 public class ClientSortNeoForge {
     public ClientSortNeoForge() {
         // Config screen

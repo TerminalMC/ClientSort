@@ -24,11 +24,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @Mod(MainSort.MOD_ID)
-@EventBusSubscriber(modid = MainSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = MainSort.MOD_ID)
 public class MainSortNeoForge {
     @SubscribeEvent
     static void register(final RegisterPayloadHandlersEvent event) {
@@ -36,20 +35,12 @@ public class MainSortNeoForge {
         registrar.playToServer(
                 SortPayload.TYPE,
                 SortPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) ->
-                                LogicalServerNetworking.onSortPayload(
-                                        payload,
-                                        context.player().getServer(),
-                                        ((ServerPlayer)context.player())
-                                ),
-                        (payload, context) ->
-                                LogicalServerNetworking.onSortPayload(
-                                        payload,
-                                        context.player().getServer(),
-                                        ((ServerPlayer)context.player())
-                                )
-                )
+                (payload, context) ->
+                        LogicalServerNetworking.onSortPayload(
+                                payload,
+                                context.player().getServer(),
+                                ((ServerPlayer)context.player())
+                        )
         );
     }
 }

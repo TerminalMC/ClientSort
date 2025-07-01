@@ -36,7 +36,8 @@ jobs:
       - name: Build
 #        run: ./gradlew build neoforge:publishGithub fabric:publishGithub --stacktrace
 #        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth fabric:publishGithub fabric:publishModrinth --stacktrace
-        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth neoforge:publishCurseforge fabric:publishGithub fabric:publishModrinth fabric:publishCurseforge --stacktrace
+#        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth neoforge:publishCurseforge fabric:publishGithub fabric:publishModrinth fabric:publishCurseforge --stacktrace
+        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth neoforge:publishCurseforge --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
