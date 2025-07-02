@@ -183,7 +183,7 @@ public class SlotValidation {
 
             // Check that the source slot is accessible
             Slot srcSlot = menu.slots.get(srcId);
-            if (!srcSlot.mayPickup(player)) {
+            if (srcSlot.hasItem() && !srcSlot.mayPickup(player)) {
                 throw new PayloadHandlerException(String.format(
                         "Slot mapping contains inaccessible slot %d with item '%s'!",
                         srcId,
