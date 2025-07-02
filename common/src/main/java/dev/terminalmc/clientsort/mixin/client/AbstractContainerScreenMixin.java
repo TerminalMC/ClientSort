@@ -90,7 +90,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void onSlotClicked(
+    private void beforeSlotClicked(
             Slot slot,
             int slotId,
             int mouseButton,
@@ -108,12 +108,12 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     @SuppressWarnings("unchecked")
     @Unique
     private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>>
-            clientSort$screenHelper = Suppliers.memoize(() -> ContainerScreenHelper.of(
+            clientsort$screenHelper = Suppliers.memoize(() -> ContainerScreenHelper.of(
             (AbstractContainerScreen<AbstractContainerMenu>) (Object) this,
             (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
                 slotClicked(
                         slot,
-                        ((ISlot) slot).clientSort$getIdInContainer(),
+                        ((ISlot) slot).clientsort$getIdInContainer(),
                         mouseButton,
                         clickType
                 );
@@ -131,14 +131,14 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void onMouseClicked(
+    private void beforeMouseClicked(
             double mouseX,
             double mouseY,
             int button,
             CallbackInfoReturnable<Boolean> cir
     ) {
         Supplier<Boolean> op =
-                clientSort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
+                clientsort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
             cir.cancel();
@@ -153,14 +153,14 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void onKeyPressed(
+    private void beforeKeyPressed(
             int keyCode,
             int scanCode,
             int modifiers,
             CallbackInfoReturnable<Boolean> cir
     ) {
         Supplier<Boolean> op =
-                clientSort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
+                clientsort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
             cir.cancel();
@@ -173,7 +173,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
      */
     @SuppressWarnings("ConstantConditions")
     @Unique
-    private @Nullable Supplier<Boolean> clientSort$getOperation(
+    private @Nullable Supplier<Boolean> clientsort$getOperation(
             Function<KeyMapping, Boolean> inputMatcher
     ) {
         // If key is not edit key, check that we're hovering a slot
@@ -205,27 +205,27 @@ public abstract class AbstractContainerScreenMixin extends Screen {
 
         // No vanilla operations; trigger mod operation
         if (isEditKey) {
-            return this::clientSort$openEditor;
+            return this::clientsort$openEditor;
         } else if (inputMatcher.apply(ClientSort.SORT_KEY)) {
-            return this::clientSort$sort;
+            return this::clientsort$sort;
         } else if (inputMatcher.apply(ClientSort.STACK_FILL_KEY)) {
-            return this::clientSort$fillStacks;
+            return this::clientsort$fillStacks;
         } else if (inputMatcher.apply(ClientSort.TRANSFER_KEY)) {
-            return this::clientSort$transfer;
+            return this::clientsort$transfer;
         } else {
             return null;
         }
     }
 
     @Unique
-    private boolean clientSort$openEditor() {
+    private boolean clientsort$openEditor() {
         Minecraft.getInstance()
                 .setScreen(new GroupSelectorScreen((AbstractContainerScreen<?>) (Object) this));
         return true;
     }
 
     @Unique
-    private boolean clientSort$sort() {
+    private boolean clientsort$sort() {
         if (hoveredSlot == null)
             return false;
 
@@ -243,7 +243,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
             SingleUseController.getController(
                     (AbstractContainerScreen<?>) (Object) this,
-                    clientSort$screenHelper.get(),
+                    clientsort$screenHelper.get(),
                     hoveredSlot,
                     SortPayload.TYPE
             ).sort(sortOrder);
@@ -253,10 +253,10 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     @Unique
-    private boolean clientSort$fillStacks() {
+    private boolean clientsort$fillStacks() {
         SingleUseController.getController(
                 (AbstractContainerScreen<?>) (Object) this,
-                clientSort$screenHelper.get(),
+                clientsort$screenHelper.get(),
                 hoveredSlot,
                 StackFillPayload.TYPE
         ).fillStacks();
@@ -264,10 +264,10 @@ public abstract class AbstractContainerScreenMixin extends Screen {
     }
 
     @Unique
-    private boolean clientSort$transfer() {
+    private boolean clientsort$transfer() {
         SingleUseController.getController(
                 (AbstractContainerScreen<?>) (Object) this,
-                clientSort$screenHelper.get(),
+                clientsort$screenHelper.get(),
                 hoveredSlot,
                 TransferPayload.TYPE
         ).transfer();
@@ -304,19 +304,21 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         for (Slot slot : menu.slots) {
             String slotId;
             if (hasShiftDown()) {
-                slotId = String.valueOf(((ISlot) slot).clientSort$getIndexInInv());
+                slotId = String.valueOf(((ISlot) slot).clientsort$getIndexInInv());
             } else if (hasControlDown()) {
                 slotId = String.valueOf(slot.getContainerSlot());
             } else {
-                slotId = String.valueOf(((ISlot) slot).clientSort$getIdInContainer());
+                slotId = String.valueOf(((ISlot) slot).clientsort$getIdInContainer());
             }
             // Draw slot ID
             graphics.drawString(
                     Minecraft.getInstance().font,
                     slotId,
-                    (int) ((((AbstractContainerScreenAccessor) (this)).getLeftPos() + slot.x)
+                    (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
+                            + slot.x)
                             / scale),
-                    (int) ((((AbstractContainerScreenAccessor) (this)).getTopPos() + slot.y)
+                    (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
+                            + slot.y)
                             / scale),
                     0xFFFFFF
             );
@@ -324,9 +326,11 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             graphics.drawString(
                     Minecraft.getInstance().font,
                     String.valueOf(helper.getScope(slot).ordinal()),
-                    (int) ((((AbstractContainerScreenAccessor) (this)).getLeftPos() + slot.x + 12)
+                    (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
+                            + slot.x + 12)
                             / scale),
-                    (int) ((((AbstractContainerScreenAccessor) (this)).getTopPos() + slot.y)
+                    (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
+                            + slot.y)
                             / scale),
                     0xFFFFFF
             );

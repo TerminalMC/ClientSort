@@ -26,15 +26,15 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(AbstractContainerScreen.class)
 public interface AbstractContainerScreenAccessor {
 
-    @Accessor
-    int getLeftPos();
+    @Accessor("leftPos")
+    int clientsort$getLeftPos();
 
-    @Accessor
-    int getTopPos();
+    @Accessor("topPos")
+    int clientsort$getTopPos();
 
-    @Accessor
-    int getImageWidth();
+    @Accessor("imageWidth")
+    int clientsort$getImageWidth();
 
     @Invoker("slotClicked")
-    void callSlotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
+    void clientsort$slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
 }

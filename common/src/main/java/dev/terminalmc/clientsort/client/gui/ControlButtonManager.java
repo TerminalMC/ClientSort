@@ -448,7 +448,7 @@ public class ControlButtonManager {
             ControlButton button,
             boolean isPlayerInv
     ) {
-        ((ScreenAccessor) screen).callAddRenderableWidget(button);
+        ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
         (isPlayerInv ? playerButtons : containerButtons).add(button);
     }
 

@@ -66,10 +66,10 @@ public abstract class ControlButton extends Button {
             boolean active
     ) {
         super(
-                ((AbstractContainerScreenAccessor) screen).getLeftPos()
-                        + ((AbstractContainerScreenAccessor) screen).getImageWidth()
+                ((AbstractContainerScreenAccessor) screen).clientsort$getLeftPos()
+                        + ((AbstractContainerScreenAccessor) screen).clientsort$getImageWidth()
                         + offset.x(),
-                ((AbstractContainerScreenAccessor) screen).getTopPos()
+                ((AbstractContainerScreenAccessor) screen).clientsort$getTopPos()
                         + referenceSlot.y
                         + offset.y(),
                 WIDTH,
@@ -135,12 +135,12 @@ public abstract class ControlButton extends Button {
 
         // Keep visible
         int newX = Math.clamp(
-                acs.getLeftPos() + acs.getImageWidth() + offset.x(),
+                acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth() + offset.x(),
                 0,
                 screen.width - WIDTH
         );
         int newY = Math.clamp(
-                acs.getTopPos() + Math.max(0, referenceSlot.y) + offset.y(),
+                acs.clientsort$getTopPos() + Math.max(0, referenceSlot.y) + offset.y(),
                 0,
                 screen.height - HEIGHT
         );
@@ -160,8 +160,8 @@ public abstract class ControlButton extends Button {
             int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
 
             offset = new Vec2i(
-                    newX - (acs.getLeftPos() + acs.getImageWidth()),
-                    newY - (acs.getTopPos() + referenceSlot.y)
+                    newX - (acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth()),
+                    newY - (acs.clientsort$getTopPos() + referenceSlot.y)
             );
         } else {
             super.onDrag(mouseX, mouseY, dragX, dragY);

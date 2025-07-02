@@ -32,13 +32,13 @@ public interface ISlot {
      * @see net.minecraft.world.inventory.Slot#slot
      */
     @SuppressWarnings("JavadocReference")
-    int clientSort$getIndexInInv();
+    int clientsort$getIndexInInv();
 
     /**
      * The unique ID of the slot within its container.
      * <p>
      * This is unique within a container, but may differ from the value of
-     * {@link ISlot#clientSort$getIndexInInv}.
+     * {@link ISlot#clientsort$getIndexInInv}.
      * <p>
      * This value can be safely assumed to be the same as the index of the slot in
      * {@link net.minecraft.world.inventory.AbstractContainerMenu#slots}.
@@ -47,5 +47,5 @@ public interface ISlot {
      * @return the unique ID within the container
      * @see net.minecraft.world.inventory.Slot#index
      */
-    int clientSort$getIdInContainer();
+    int clientsort$getIdInContainer();
 }

@@ -36,7 +36,7 @@ public abstract class LocalPlayerMixin {
             method = "clientSideCloseContainer",
             at = @At("HEAD")
     )
-    public void onContainerClosed(CallbackInfo callbackInfo) {
+    public void beforeContainerClose(CallbackInfo callbackInfo) {
         InteractionManager.clear();
     }
 
@@ -44,7 +44,7 @@ public abstract class LocalPlayerMixin {
             method = "setPermissionLevel",
             at = @At("RETURN")
     )
-    public void onSetPermissionLevel(int level, CallbackInfo ci) {
+    public void afterPermissionLevelChange(int level, CallbackInfo ci) {
         if (!ClientSort.searchOrderUpdated) {
             ClientSort.searchOrderUpdated = true;
             CreativeSearchOrder.tryRefreshStackPositionMap();

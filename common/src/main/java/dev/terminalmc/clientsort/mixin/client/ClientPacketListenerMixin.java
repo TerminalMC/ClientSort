@@ -38,7 +38,7 @@ public abstract class ClientPacketListenerMixin {
             method = "handleLogin",
             at = @At("HEAD")
     )
-    private void onLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
+    private void beforeLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         ClientSort.searchOrderUpdated = false;
     }
 
@@ -46,7 +46,7 @@ public abstract class ClientPacketListenerMixin {
             method = "handleSetCarriedItem",
             at = @At("HEAD")
     )
-    public void onHeldItemChangeBegin(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
+    public void beforeHeldItemChange(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
         InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
     }
 
@@ -54,7 +54,7 @@ public abstract class ClientPacketListenerMixin {
             method = "handleContainerSetSlot",
             at = @At("RETURN")
     )
-    public void onGuiSlotUpdateBegin(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
+    public void beforeSlotItemChange(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
         InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
     }
 }

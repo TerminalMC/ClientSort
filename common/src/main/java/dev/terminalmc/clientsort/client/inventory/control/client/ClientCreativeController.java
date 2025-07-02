@@ -81,7 +81,7 @@ public class ClientCreativeController extends ClientController {
                 dstStack.grow(delta);
 
                 // Send inventory update
-                int dstSlotId = ((ISlot) dstSlot).clientSort$getIdInContainer();
+                int dstSlotId = ((ISlot) dstSlot).clientsort$getIdInContainer();
                 InteractionManager.push(() -> {
                     //noinspection DataFlowIssue
                     Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(
@@ -112,7 +112,7 @@ public class ClientCreativeController extends ClientController {
     protected void sort(int[] key, boolean playSound) {
         for (int i = 0; i < key.length; i++) {
             ItemStack srcItem = originScopeStacks[key[i]];
-            int dstSlotId = ((ISlot) originScopeSlots[i]).clientSort$getIdInContainer();
+            int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIdInContainer();
             InteractionManager.push(() -> {
                 //noinspection DataFlowIssue
                 Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);

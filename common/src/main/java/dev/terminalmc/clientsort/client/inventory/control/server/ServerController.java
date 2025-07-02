@@ -116,7 +116,7 @@ public class ServerController extends SingleUseController {
         // Translate slots for server
         int[] slotIds = new int[slots.length];
         for (int i = 0; i < slots.length; i++) {
-            slotIds[i] = ((ISlot) slots[i]).clientSort$getIdInContainer();
+            slotIds[i] = ((ISlot) slots[i]).clientsort$getIdInContainer();
         }
         screenHelper.translateSlotIds(slotIds);
         return slotIds;
@@ -151,8 +151,8 @@ public class ServerController extends SingleUseController {
         for (int i = 0; i < sortedIds.length; i++) {
             Slot from = originScopeSlots[sortedIds[i]];
             Slot to = originScopeSlots[i];
-            slotMapping[i * 2] = ((ISlot) from).clientSort$getIdInContainer();
-            slotMapping[i * 2 + 1] = ((ISlot) to).clientSort$getIdInContainer();
+            slotMapping[i * 2] = ((ISlot) from).clientsort$getIdInContainer();
+            slotMapping[i * 2 + 1] = ((ISlot) to).clientsort$getIdInContainer();
         }
         screenHelper.translateSlotIds(slotMapping);
         return slotMapping;

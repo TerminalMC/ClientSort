@@ -74,9 +74,9 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen) {
         InteractionManager.ClickEventFactory clickEventFactory =
                 (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
-                    ((AbstractContainerScreenAccessor) screen).callSlotClicked(
+                    ((AbstractContainerScreenAccessor) screen).clientsort$slotClicked(
                             slot,
-                            ((ISlot) slot).clientSort$getIdInContainer(),
+                            ((ISlot) slot).clientsort$getIdInContainer(),
                             mouseButton,
                             clickType
                     );
@@ -103,14 +103,14 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
      * @return {@code true} if the index of the slot in its inventory is less than 9.
      */
     public boolean isHotbarSlot(Slot slot) {
-        return ((ISlot) slot).clientSort$getIndexInInv() < 9;
+        return ((ISlot) slot).clientsort$getIndexInInv() < 9;
     }
 
     /**
      * @return {@code true} if the index of the slot in its inventory is greater than 35.
      */
     public boolean isExtraSlot(Slot slot) {
-        return ((ISlot) slot).clientSort$getIndexInInv() > 35;
+        return ((ISlot) slot).clientsort$getIndexInInv() > 35;
     }
 
     /**

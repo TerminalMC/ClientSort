@@ -51,7 +51,7 @@ public class ReloadWorkerMixin {
             method = "run",
             at = @At("HEAD")
     )
-    private void onRunHead(CallbackInfo ci) {
+    private void beforeRun(CallbackInfo ci) {
         ClientSort.updateBlockedByEmi = false;
         ClientSort.emiReloading = true;
     }
@@ -61,7 +61,7 @@ public class ReloadWorkerMixin {
             method = "run",
             at = @At("RETURN")
     )
-    private void onRunReturn(CallbackInfo ci) {
+    private void afterRun(CallbackInfo ci) {
         if (ClientSort.updateBlockedByEmi) {
             Minecraft.getInstance().execute(() -> {
                 ClientSort.LOG.info("EMI reload finished; updating search order");
