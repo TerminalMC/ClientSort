@@ -24,14 +24,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @Mod(ClientSort.MOD_ID)
-@EventBusSubscriber(
-        modid = ClientSort.MOD_ID,
-        bus = EventBusSubscriber.Bus.MOD
-)
+@EventBusSubscriber(modid = ClientSort.MOD_ID)
 public class ClientSortNeoForge {
 
     /**
@@ -45,7 +41,6 @@ public class ClientSortNeoForge {
 
     @EventBusSubscriber(
             modid = ClientSort.MOD_ID,
-            bus = EventBusSubscriber.Bus.MOD,
             value = Dist.DEDICATED_SERVER
     )
     static class DedicatedServerEventHandler {
@@ -70,17 +65,10 @@ public class ClientSortNeoForge {
         registrar.playToServer(
                 rp.type,
                 rp.streamCodec,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> rp.handler.accept(
-                                payload,
-                                context.player().getServer(),
-                                (ServerPlayer) context.player()
-                        ),
-                        (payload, context) -> rp.handler.accept(
-                                payload,
-                                context.player().getServer(),
-                                (ServerPlayer) context.player()
-                        )
+                (payload, context) -> rp.handler.accept(
+                        payload,
+                        context.player().getServer(),
+                        (ServerPlayer) context.player()
                 )
         );
     }
@@ -98,12 +86,8 @@ public class ClientSortNeoForge {
         registrar.playToClient(
                 rp.type,
                 rp.streamCodec,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> {
-                        },
-                        (payload, context) -> {
-                        }
-                )
+                (payload, context) -> {
+                }
         );
     }
 }
