@@ -185,7 +185,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         Options options = this.minecraft.options;
         // Pick item
         if (((inputMatcher.apply(options.keyPickItem)
-                && this.minecraft.gameMode.hasInfiniteItems()
+                && this.minecraft.player.hasInfiniteMaterials()
                 && (this.hoveredSlot.hasItem()
                 || !this.draggingItem.isEmpty()
                 || !this.menu.getCarried().isEmpty())))) {
