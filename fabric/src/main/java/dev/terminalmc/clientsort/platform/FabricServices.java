@@ -27,8 +27,23 @@ import java.nio.file.Path;
 public class FabricServices implements IPlatformServices {
 
     @Override
+    public String getPlatformName() {
+        return "Fabric";
+    }
+
+    @Override
+    public Path getGameDir() {
+        return FabricLoader.getInstance().getGameDir();
+    }
+
+    @Override
     public Path getConfigDir() {
         return FabricLoader.getInstance().getConfigDir();
+    }
+
+    @Override
+    public boolean isDevEnv() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Override

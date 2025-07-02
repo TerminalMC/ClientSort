@@ -23,7 +23,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class StackFillResultHandler {
-    private StackFillResultHandler() {}
+
+    private StackFillResultHandler() {
+    }
 
     /**
      * Handles a {@link StackFillResultPayload} sent by a server.

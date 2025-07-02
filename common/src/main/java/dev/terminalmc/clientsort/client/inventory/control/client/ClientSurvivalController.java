@@ -24,7 +24,8 @@ import dev.terminalmc.clientsort.client.sound.SoundManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayDeque;
 import java.util.BitSet;
@@ -32,13 +33,14 @@ import java.util.BitSet;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * Provides methods for manipulating the player's inventory or open container
- * via slot-click packets.
+ * Provides methods for manipulating the player's inventory or open container via slot-click
+ * packets.
  * <p>
  * Valid for use in all screens (and all game-modes) EXCEPT
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
 public class ClientSurvivalController extends ClientController {
+
     public ClientSurvivalController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
@@ -48,8 +50,8 @@ public class ClientSurvivalController extends ClientController {
     }
 
     /**
-     * Uses mouse click packets to collect partial stacks into the smallest
-     * possible number of slots.
+     * Uses mouse click packets to collect partial stacks into the smallest possible number of
+     * slots.
      */
     @Override
     protected void collect() {
@@ -61,8 +63,10 @@ public class ClientSurvivalController extends ClientController {
             Slot srcSlot = originScopeSlots[i];
             ItemStack srcStack = originScopeStacks[i];
 
-            if (srcStack.isEmpty()) continue;
-            if (srcStack.getCount() >= srcSlot.getMaxStackSize(srcStack)) continue;
+            if (srcStack.isEmpty())
+                continue;
+            if (srcStack.getCount() >= srcSlot.getMaxStackSize(srcStack))
+                continue;
 
             // Partial stack found; pick it up
             clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
@@ -73,9 +77,12 @@ public class ClientSurvivalController extends ClientController {
                 Slot dstSlot = originScopeSlots[j];
                 ItemStack dstStack = originScopeStacks[j];
 
-                if (dstStack.isEmpty()) continue;
-                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.isEmpty())
+                    continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
+                    continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                    continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
@@ -89,7 +96,8 @@ public class ClientSurvivalController extends ClientController {
                 clickEvents.add(screenHelper.createClickEvent(dstSlot, 0, ClickType.PICKUP, false));
 
                 // If no items remain in the source stack, stop looking
-                if (srcStack.getCount() <= 0) break;
+                if (srcStack.getCount() <= 0)
+                    break;
                 // Otherwise keep looking for another matching stack
             }
 
@@ -104,7 +112,11 @@ public class ClientSurvivalController extends ClientController {
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
                     InteractionManager.push(screenHelper.createClickEvent(
-                            srcSlot, 0, ClickType.PICKUP, false));
+                            srcSlot,
+                            0,
+                            ClickType.PICKUP,
+                            false
+                    ));
                 } else {
                     // Mark the source slot as empty
                     originScopeStacks[i] = ItemStack.EMPTY;
@@ -153,7 +165,8 @@ public class ClientSurvivalController extends ClientController {
         // sortedIds[i] is therefore the source slot
         for (int i = 0; i < slotCount; i++) {
             // If the destination slot is marked as done, skip
-            if (done.get(i)) continue;
+            if (done.get(i))
+                continue;
 
             // If the source slot is marked as empty
             if (empty.get(sortedIds[i])) {
@@ -164,7 +177,11 @@ public class ClientSurvivalController extends ClientController {
 
             // Pick up the stack at the source slot,
             InteractionManager.push(screenHelper.createClickEvent(
-                    originScopeSlots[sortedIds[i]], 0, ClickType.PICKUP, playSound));
+                    originScopeSlots[sortedIds[i]],
+                    0,
+                    ClickType.PICKUP,
+                    playSound
+            ));
             // and update the simulation to match
             ItemStack carriedStack = originScopeStacks[sortedIds[i]];
             originScopeStacks[sortedIds[i]] = ItemStack.EMPTY;
@@ -178,9 +195,10 @@ public class ClientSurvivalController extends ClientController {
             int dstId = i;
             do {
                 // If the destination stack is nonempty and matches the carried stack
-                if (!empty.get(dstId)
-                        && ItemStack.isSameItemSameComponents(carriedStack, originScopeStacks[dstId])
-                ) {
+                if (!empty.get(dstId) && ItemStack.isSameItemSameComponents(
+                        carriedStack,
+                        originScopeStacks[dstId]
+                )) {
                     // If the carried stack exactly equals the destination stack
                     if (carriedStack.getCount() == originScopeStacks[dstId].getCount()) {
                         // No point placing it down, instead mark the destination
@@ -198,20 +216,40 @@ public class ClientSurvivalController extends ClientController {
 
                         // Place down carried stack in working slot
                         InteractionManager.push(screenHelper.createClickEvent(
-                                workingSlot, 0, ClickType.PICKUP, playSound));
+                                workingSlot,
+                                0,
+                                ClickType.PICKUP,
+                                playSound
+                        ));
                         // Pick up destination stack from destination slot
                         InteractionManager.push(screenHelper.createClickEvent(
-                                dstSlot, 0, ClickType.PICKUP, playSound));
+                                dstSlot,
+                                0,
+                                ClickType.PICKUP,
+                                playSound
+                        ));
                         // Place down destination stack on top of working slot,
                         // automatically picking up previously carried stack
                         InteractionManager.push(screenHelper.createClickEvent(
-                                workingSlot, 0, ClickType.PICKUP, playSound));
+                                workingSlot,
+                                0,
+                                ClickType.PICKUP,
+                                playSound
+                        ));
                         // Place down carried stack in destination slot
                         InteractionManager.push(screenHelper.createClickEvent(
-                                dstSlot, 0, ClickType.PICKUP, playSound));
+                                dstSlot,
+                                0,
+                                ClickType.PICKUP,
+                                playSound
+                        ));
                         // Pick up destination stack from working slot
                         InteractionManager.push(screenHelper.createClickEvent(
-                                workingSlot, 0, ClickType.PICKUP, playSound));
+                                workingSlot,
+                                0,
+                                ClickType.PICKUP,
+                                playSound
+                        ));
 
                         // Swap carried and destination stacks in the simulation
                         ItemStack tmp = carriedStack;
@@ -234,13 +272,18 @@ public class ClientSurvivalController extends ClientController {
                         && !(carriedStack.isEmpty());
                 boolean clickOnItemWithBundle = carriedStack.is(Items.BUNDLE)
                         && !(originScopeStacks[dstId].isEmpty());
-                if (options().bundlesUseLeftClick && (clickOnBundleWithItem || clickOnItemWithBundle)) {
+                if (options().bundlesUseLeftClick
+                        && (clickOnBundleWithItem || clickOnItemWithBundle)) {
                     mouseButton = 1;
                 }
 
                 // Swap carried and destination stacks,
                 InteractionManager.push(screenHelper.createClickEvent(
-                        originScopeSlots[dstId], mouseButton, ClickType.PICKUP, playSound));
+                        originScopeSlots[dstId],
+                        mouseButton,
+                        ClickType.PICKUP,
+                        playSound
+                ));
                 // and update the simulation to match
                 ItemStack tmp = carriedStack;
                 carriedStack = originScopeStacks[dstId];
@@ -266,19 +309,24 @@ public class ClientSurvivalController extends ClientController {
     }
 
     /**
-     * Uses mouse click packets to complete as many partial stacks as possible
-     * in the other scope using items from the origin scope.
+     * Uses mouse click packets to complete as many partial stacks as possible in the other scope
+     * using items from the origin scope.
      */
     @Override
     public void fillStacks() {
-        if (!canOperate()) return;
-        if (otherScopeSlots.length == 0) return;
+        if (!canOperate())
+            return;
+        if (otherScopeSlots.length == 0)
+            return;
         raiseFlag();
 
         // Prepare sounds
         boolean playSound = SoundManager.shouldPlayOtherSounds();
-        if (playSound) SoundManager.resetForCount(
-                SoundManager.estimateStackFillSounds(originScopeStacks, otherScopeStacks));
+        if (playSound)
+            SoundManager.resetForCount(SoundManager.estimateStackFillSounds(
+                    originScopeStacks,
+                    otherScopeStacks
+            ));
 
         // Queue click events before sending to allow cancellation
         ArrayDeque<InteractionManager.InteractionEvent> clickEvents = new ArrayDeque<>();
@@ -289,7 +337,8 @@ public class ClientSurvivalController extends ClientController {
             Slot srcSlot = originScopeSlots[i];
             ItemStack srcStack = originScopeStacks[i];
 
-            if (srcStack.isEmpty()) continue;
+            if (srcStack.isEmpty())
+                continue;
 
             // Partial stack found; pick it up
             clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
@@ -300,9 +349,12 @@ public class ClientSurvivalController extends ClientController {
                 Slot dstSlot = otherScopeSlots[j];
                 ItemStack dstStack = otherScopeStacks[j];
 
-                if (dstStack.isEmpty()) continue;
-                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.isEmpty())
+                    continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
+                    continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                    continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
@@ -313,11 +365,16 @@ public class ClientSurvivalController extends ClientController {
                 dstStack.setCount(dstStack.getCount() + delta);
 
                 // Send interaction event
-                clickEvents.add(
-                        screenHelper.createClickEvent(dstSlot, 0, ClickType.PICKUP, playSound));
+                clickEvents.add(screenHelper.createClickEvent(
+                        dstSlot,
+                        0,
+                        ClickType.PICKUP,
+                        playSound
+                ));
 
                 // If no items remain in the source stack, stop looking
-                if (srcStack.getCount() <= 0) break;
+                if (srcStack.getCount() <= 0)
+                    break;
                 // Otherwise keep looking for another matching stack
             }
 
@@ -331,8 +388,12 @@ public class ClientSurvivalController extends ClientController {
                 // Check whether any items are still being carried
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
-                    InteractionManager.push(
-                            screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
+                    InteractionManager.push(screenHelper.createClickEvent(
+                            srcSlot,
+                            0,
+                            ClickType.PICKUP,
+                            false
+                    ));
                 } else {
                     // Mark the slot as empty
                     originScopeStacks[i] = ItemStack.EMPTY;
@@ -346,19 +407,24 @@ public class ClientSurvivalController extends ClientController {
     }
 
     /**
-     * Uses mouse click packets to transfer as many items as possible from the
-     * origin scope to the other scope.
+     * Uses mouse click packets to transfer as many items as possible from the origin scope to the
+     * other scope.
      */
     @Override
     public void transfer() {
-        if (!canOperate()) return;
-        if (otherScopeSlots.length == 0) return;
+        if (!canOperate())
+            return;
+        if (otherScopeSlots.length == 0)
+            return;
         raiseFlag();
 
         // Prepare sounds
         boolean playSound = SoundManager.shouldPlayOtherSounds();
-        if (playSound) SoundManager.resetForCount(
-                SoundManager.estimateTransferSounds(originScopeStacks, otherScopeStacks));
+        if (playSound)
+            SoundManager.resetForCount(SoundManager.estimateTransferSounds(
+                    originScopeStacks,
+                    otherScopeStacks
+            ));
 
         // Queue click events before sending to allow cancellation
         ArrayDeque<InteractionManager.InteractionEvent> clickEvents = new ArrayDeque<>();
@@ -369,7 +435,8 @@ public class ClientSurvivalController extends ClientController {
             Slot srcSlot = originScopeSlots[i];
             ItemStack srcStack = originScopeStacks[i];
 
-            if (srcStack.isEmpty()) continue;
+            if (srcStack.isEmpty())
+                continue;
 
             // Partial stack found; pick it up
             clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
@@ -384,11 +451,14 @@ public class ClientSurvivalController extends ClientController {
 
                 if (dstStack.isEmpty()) {
                     // Save the empty slot
-                    if (emptySlotId == -1) emptySlotId = j;
+                    if (emptySlotId == -1)
+                        emptySlotId = j;
                     continue;
                 }
-                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
+                    continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                    continue;
 
                 // Matching partial stack found; place as much as possible
                 int delta = dstSlot.getMaxStackSize(dstStack) - dstStack.getCount();
@@ -399,11 +469,16 @@ public class ClientSurvivalController extends ClientController {
                 dstStack.setCount(dstStack.getCount() + delta);
 
                 // Send interaction event
-                clickEvents.add(
-                        screenHelper.createClickEvent(dstSlot, 0, ClickType.PICKUP, playSound));
+                clickEvents.add(screenHelper.createClickEvent(
+                        dstSlot,
+                        0,
+                        ClickType.PICKUP,
+                        playSound
+                ));
 
                 // If no items remain in the source stack, stop looking
-                if (srcStack.isEmpty()) break;
+                if (srcStack.isEmpty())
+                    break;
                 // Otherwise keep looking for another matching stack
             }
 
@@ -417,8 +492,12 @@ public class ClientSurvivalController extends ClientController {
                 srcStack.setCount(0);
 
                 // Send interaction event
-                clickEvents.add(
-                        screenHelper.createClickEvent(dstSlot, 0, ClickType.PICKUP, playSound));
+                clickEvents.add(screenHelper.createClickEvent(
+                        dstSlot,
+                        0,
+                        ClickType.PICKUP,
+                        playSound
+                ));
             }
 
             // Only pick up the stack if we found a place to put it
@@ -431,8 +510,12 @@ public class ClientSurvivalController extends ClientController {
                 // Check whether any items are still being carried
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
-                    InteractionManager.push(
-                            screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
+                    InteractionManager.push(screenHelper.createClickEvent(
+                            srcSlot,
+                            0,
+                            ClickType.PICKUP,
+                            false
+                    ));
                 } else {
                     // Mark the slot as empty
                     originScopeStacks[i] = ItemStack.EMPTY;
@@ -446,8 +529,7 @@ public class ClientSurvivalController extends ClientController {
     }
 
     /**
-     * Sets a flag to indicate that a client-survival interaction operation is
-     * in progress.
+     * Sets a flag to indicate that a client-survival interaction operation is in progress.
      */
     private void raiseFlag() {
         ClientSort.operatingClient = true;

@@ -34,6 +34,7 @@ import net.minecraft.world.inventory.Slot;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class SortButton extends ControlButton {
+
     private static final WidgetSprites SPRITES = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort"),
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_disabled"),

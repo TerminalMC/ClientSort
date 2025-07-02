@@ -20,7 +20,11 @@ import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.TransferResultHandler;
-import dev.terminalmc.clientsort.network.payload.*;
+import dev.terminalmc.clientsort.network.Registration;
+import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
+import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
+import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -33,7 +37,9 @@ import java.util.List;
  * Stores custom S2C payload and handler data for network registration.
  */
 public class ClientRegistration {
-    private ClientRegistration() {}
+
+    private ClientRegistration() {
+    }
 
     /**
      * S2C payloads with handlers.
@@ -65,7 +71,8 @@ public class ClientRegistration {
      * Contains registration info for a custom S2C payload and its handler.
      */
     public static class RegisterablePayloadS2C<T extends CustomPacketPayload>
-            extends dev.terminalmc.clientsort.network.Registration.RegisterablePayload<T> {
+            extends Registration.RegisterablePayload<T> {
+
         public final PayloadHandlerS2C<T> handler;
 
         public RegisterablePayloadS2C(
@@ -82,6 +89,7 @@ public class ClientRegistration {
          */
         @FunctionalInterface
         public interface PayloadHandlerS2C<T extends CustomPacketPayload> {
+
             void accept(T payload, Minecraft mc, LocalPlayer player);
         }
     }

@@ -17,8 +17,8 @@
 
 package dev.terminalmc.clientsort.client.order;
 
-import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.config.Config;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -33,12 +33,15 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Allows the mod to store the creative inventory item order in memory to reduce
- * compute load for creative-order sort operations.
+ * Allows the mod to store the creative inventory item order in memory to reduce compute load for
+ * creative-order sort operations.
  */
 public class CreativeSearchOrder {
+
     // Item order map
-    private static final Object2IntMap<StackMatcher> stackPositionMap = new Object2IntOpenHashMap<>();
+    private static final Object2IntMap<StackMatcher> stackPositionMap =
+            new Object2IntOpenHashMap<>();
+
     static {
         stackPositionMap.defaultReturnValue(Integer.MAX_VALUE);
     }
@@ -51,8 +54,7 @@ public class CreativeSearchOrder {
     }
 
     /**
-     * @return the creative inventory search order position of the specified
-     * item.
+     * @return the creative inventory search order position of the specified item.
      */
     public static int getPosition(ItemStack stack) {
         int pos = stackPositionMap.getInt(StackMatcher.of(stack));
@@ -63,8 +65,8 @@ public class CreativeSearchOrder {
     }
 
     /**
-     * Clears {@link CreativeSearchOrder#stackPositionMap}, and re-populates it
-     * if possible and configured to do so.
+     * Clears {@link CreativeSearchOrder#stackPositionMap}, and re-populates it if possible and
+     * configured to do so.
      */
     public static void tryRefreshStackPositionMap() {
         if (Config.options().optimizeCreativeSorting) {
@@ -83,8 +85,8 @@ public class CreativeSearchOrder {
     }
 
     /**
-     * Clears and re-populates {@link CreativeSearchOrder#stackPositionMap} by
-     * looking up the creative inventory.
+     * Clears and re-populates {@link CreativeSearchOrder#stackPositionMap} by looking up the
+     * creative inventory.
      */
     private static void refreshStackPositionMap() {
         Minecraft mc = Minecraft.getInstance();
@@ -96,28 +98,30 @@ public class CreativeSearchOrder {
 
         CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
 
-        Collection<ItemStack> displayStacks = new ArrayList<>(
-                CreativeModeTabs.searchTab().getDisplayItems());
-        new Thread(() -> {
-            Lock lock = stackPositionMapLock.writeLock();
-            lock.lock();
-            stackPositionMap.clear();
-            if (displayStacks.isEmpty()) {
-                lock.unlock();
-                return;
-            }
+        Collection<ItemStack> displayStacks =
+                new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
+        new Thread(
+                () -> {
+                    Lock lock = stackPositionMapLock.writeLock();
+                    lock.lock();
+                    stackPositionMap.clear();
+                    if (displayStacks.isEmpty()) {
+                        lock.unlock();
+                        return;
+                    }
 
-            int i = 0;
-            for (ItemStack stack : displayStacks) {
-                StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
-                    stackPositionMap.put(plainMatcher, i);
-                    i++;
-                }
-                stackPositionMap.put(StackMatcher.of(stack), i);
-                i++;
-            }
-            lock.unlock();
-        },  ClientSort.MOD_NAME + ": creative search stack position lookup builder").start();
+                    int i = 0;
+                    for (ItemStack stack : displayStacks) {
+                        StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                        if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
+                            stackPositionMap.put(plainMatcher, i);
+                            i++;
+                        }
+                        stackPositionMap.put(StackMatcher.of(stack), i);
+                        i++;
+                    }
+                    lock.unlock();
+                }, ClientSort.MOD_NAME + ": creative search stack position lookup builder"
+        ).start();
     }
 }

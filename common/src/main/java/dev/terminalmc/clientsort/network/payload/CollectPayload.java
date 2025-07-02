@@ -25,10 +25,11 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom C2S payload used to instruct a server to collect items in a
- * container into the smallest possible number of slots.
+ * A custom C2S payload used to instruct a server to collect items in a container into the smallest
+ * possible number of slots.
+ *
  * @param containerId the ID of the container.
- * @param slotIds a sub-array of slots to collect items in.
+ * @param slotIds     a sub-array of slots to collect items in.
  */
 public record CollectPayload(int containerId, int[] slotIds) implements CustomPacketPayload {
 
@@ -38,15 +39,20 @@ public record CollectPayload(int containerId, int[] slotIds) implements CustomPa
                     return byteBuf.readVarIntArray();
                 }
 
-                public void encode(@NotNull RegistryFriendlyByteBuf byteBuf, int @NotNull [] array) {
+                public void encode(
+                        @NotNull RegistryFriendlyByteBuf byteBuf,
+                        int @NotNull [] array
+                ) {
                     byteBuf.writeVarIntArray(array);
                 }
             };
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CollectPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, CollectPayload::containerId,
-                    VAR_INT_ARRAY, CollectPayload::slotIds,
+                    ByteBufCodecs.VAR_INT,
+                    CollectPayload::containerId,
+                    VAR_INT_ARRAY,
+                    CollectPayload::slotIds,
                     CollectPayload::new
             );
 

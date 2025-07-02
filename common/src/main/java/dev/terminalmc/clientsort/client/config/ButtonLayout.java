@@ -25,9 +25,11 @@ import java.util.regex.Pattern;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ButtonLayout {
+
     public static final String DATA_FORMAT = "%s,%s,%d,%d,%d";
     public static final String DATA_POS_FORMAT = "(%d,%d)";
-    public static final String DATA_PATTERN_STRING = "^(.+),(?:null|\\((-?\\d+),(-?\\d+)\\)),([01]),([01]),([01])$";
+    public static final String DATA_PATTERN_STRING =
+            "^(.+),(?:null|\\((-?\\d+),(-?\\d+)\\)),([01]),([01]),([01])$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public final String className;
@@ -53,7 +55,8 @@ public class ButtonLayout {
     }
 
     public String toDataString() {
-        return String.format(DATA_FORMAT,
+        return String.format(
+                DATA_FORMAT,
                 className,
                 offset == null ? "null" : String.format(DATA_POS_FORMAT, offset.x(), offset.y()),
                 sortEnabled ? 1 : 0,
@@ -68,8 +71,11 @@ public class ButtonLayout {
         Matcher matcher = DATA_PATTERN.matcher(dataString);
         if (!matcher.matches()) {
             throw new ParseException(
-                    localized("error", "buttonLayout.pattern", DATA_PATTERN_STRING).getString(),
-                    0
+                    localized(
+                            "error",
+                            "buttonLayout.pattern",
+                            DATA_PATTERN_STRING
+                    ).getString(), 0
             );
         }
 
@@ -84,8 +90,11 @@ public class ButtonLayout {
             Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new ParseException(
-                    localized("error", "buttonLayout.classNotFound", className).getString(),
-                    0
+                    localized(
+                            "error",
+                            "buttonLayout.classNotFound",
+                            className
+                    ).getString(), 0
             );
         }
 
@@ -104,8 +113,7 @@ public class ButtonLayout {
                             "buttonLayout.parseOffset",
                             matcher.group(2),
                             matcher.group(3)
-                    ).getString(),
-                    0
+                    ).getString(), 0
             );
         }
 

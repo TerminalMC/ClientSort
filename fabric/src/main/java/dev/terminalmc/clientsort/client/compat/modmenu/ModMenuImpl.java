@@ -21,6 +21,7 @@ import com.terraformersmc.modmenu.api.ModMenuApi;
 import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
 
 public class ModMenuImpl implements ModMenuApi {
+
     /**
      * Registers the config screen with ModMenu.
      */

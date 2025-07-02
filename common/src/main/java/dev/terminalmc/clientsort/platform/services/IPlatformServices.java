@@ -24,12 +24,27 @@ import java.nio.file.Path;
 public interface IPlatformServices {
 
     /**
+     * @return the name of the current platform.
+     */
+    String getPlatformName();
+
+    /**
+     * @return the game directory of the instance.
+     */
+    Path getGameDir();
+
+    /**
      * @return the configuration directory of the instance.
      */
     Path getConfigDir();
 
     /**
-     * @return true if the mod is loaded, false otherwise.
+     * @return {@code true} if in a development environment.
+     */
+    boolean isDevEnv();
+
+    /**
+     * @return {@code true} if the mod is loaded, false otherwise.
      */
     boolean isModLoaded(String modId);
 

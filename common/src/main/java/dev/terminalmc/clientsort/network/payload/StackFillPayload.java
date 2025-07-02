@@ -25,14 +25,15 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom C2S payload used to instruct a server to complete as many partial
- * item stacks in a destination container as possible, using items in a source
- * container.
+ * A custom C2S payload used to instruct a server to complete as many partial item stacks in a
+ * destination container as possible, using items in a source container.
+ *
  * @param srcContainerId the ID of the source container.
- * @param srcSlotIds a sub-array of slots to take items from.
- * @param dstSlotIds a sub-array of slots to place items in.
+ * @param srcSlotIds     a sub-array of slots to take items from.
+ * @param dstSlotIds     a sub-array of slots to place items in.
  */
-public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds) implements CustomPacketPayload {
+public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds)
+        implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -40,16 +41,22 @@ public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSl
                     return byteBuf.readVarIntArray();
                 }
 
-                public void encode(@NotNull RegistryFriendlyByteBuf byteBuf, int @NotNull [] array) {
+                public void encode(
+                        @NotNull RegistryFriendlyByteBuf byteBuf,
+                        int @NotNull [] array
+                ) {
                     byteBuf.writeVarIntArray(array);
                 }
             };
 
     public static final StreamCodec<RegistryFriendlyByteBuf, StackFillPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, StackFillPayload::srcContainerId,
-                    VAR_INT_ARRAY, StackFillPayload::srcSlotIds,
-                    VAR_INT_ARRAY, StackFillPayload::dstSlotIds,
+                    ByteBufCodecs.VAR_INT,
+                    StackFillPayload::srcContainerId,
+                    VAR_INT_ARRAY,
+                    StackFillPayload::srcSlotIds,
+                    VAR_INT_ARRAY,
+                    StackFillPayload::dstSlotIds,
                     StackFillPayload::new
             );
 

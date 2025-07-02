@@ -18,8 +18,8 @@
 package dev.terminalmc.clientsort.mixin.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,12 +32,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin {
 
-    @Inject(method = "clientSideCloseContainer", at = @At("HEAD"))
+    @Inject(
+            method = "clientSideCloseContainer",
+            at = @At("HEAD")
+    )
     public void onContainerClosed(CallbackInfo callbackInfo) {
         InteractionManager.clear();
     }
 
-    @Inject(method = "setPermissionLevel", at = @At("RETURN"))
+    @Inject(
+            method = "setPermissionLevel",
+            at = @At("RETURN")
+    )
     public void onSetPermissionLevel(int level, CallbackInfo ci) {
         if (!ClientSort.searchOrderUpdated) {
             ClientSort.searchOrderUpdated = true;

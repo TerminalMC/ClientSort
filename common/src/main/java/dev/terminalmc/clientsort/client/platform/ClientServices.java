@@ -16,12 +16,13 @@
 
 package dev.terminalmc.clientsort.client.platform;
 
-import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
 
 import java.util.ServiceLoader;
 
 public class ClientServices {
+
     public static final IPlatformClientServices PLATFORM = load(IPlatformClientServices.class);
 
     public static <T> T load(Class<T> clazz) {

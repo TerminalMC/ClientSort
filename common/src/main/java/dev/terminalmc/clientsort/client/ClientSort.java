@@ -17,10 +17,10 @@
 package dev.terminalmc.clientsort.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
-import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -32,22 +32,37 @@ import java.util.List;
 import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
 public class ClientSort {
+
     public static final String MOD_ID = dev.terminalmc.clientsort.ClientSort.MOD_ID;
     public static final String MOD_NAME = dev.terminalmc.clientsort.ClientSort.MOD_NAME;
     public static final ModLogger LOG = dev.terminalmc.clientsort.ClientSort.LOG;
 
     public static final KeyMapping EDIT_KEY = new KeyMapping(
-            translationKey("key", "group.edit"), InputConstants.Type.KEYSYM,
-            InputConstants.UNKNOWN.getValue(), translationKey("key", "group"));
+            translationKey("key", "group.edit"),
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            translationKey("key", "group")
+    );
     public static final KeyMapping SORT_KEY = new KeyMapping(
-            translationKey("key", "group.op.sort"), InputConstants.Type.MOUSE,
-            InputConstants.MOUSE_BUTTON_MIDDLE, translationKey("key", "group"));
-    public static final KeyMapping STACK_FILL_KEY = new KeyMapping(
-            translationKey("key", "group.op.stackFill"), InputConstants.Type.KEYSYM,
-            InputConstants.UNKNOWN.getValue(), translationKey("key", "group"));
-    public static final KeyMapping TRANSFER_KEY = new KeyMapping(
-            translationKey("key", "group.op.transfer"), InputConstants.Type.KEYSYM,
-            InputConstants.UNKNOWN.getValue(), translationKey("key", "group"));
+            translationKey("key", "group.op.sort"),
+            InputConstants.Type.MOUSE,
+            InputConstants.MOUSE_BUTTON_MIDDLE,
+            translationKey("key", "group")
+    );
+    public static final KeyMapping STACK_FILL_KEY =
+            new KeyMapping(
+                    translationKey("key", "group.op.stackFill"),
+                    InputConstants.Type.KEYSYM,
+                    InputConstants.UNKNOWN.getValue(),
+                    translationKey("key", "group")
+            );
+    public static final KeyMapping TRANSFER_KEY =
+            new KeyMapping(
+                    translationKey("key", "group.op.transfer"),
+                    InputConstants.Type.KEYSYM,
+                    InputConstants.UNKNOWN.getValue(),
+                    translationKey("key", "group")
+            );
     public static final List<KeyMapping> KEYBINDS = List.of(
             EDIT_KEY,
             SORT_KEY,

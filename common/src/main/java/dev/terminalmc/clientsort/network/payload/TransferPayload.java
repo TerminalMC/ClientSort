@@ -25,13 +25,15 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom C2S payload used to instruct a server to transfer as many items as
- * possible from a source container to a destination container.
+ * A custom C2S payload used to instruct a server to transfer as many items as possible from a
+ * source container to a destination container.
+ *
  * @param srcContainerId the ID of the source container.
- * @param srcSlotIds a sub-array of slots to take items from.
- * @param dstSlotIds a sub-array of slots to place items in.
+ * @param srcSlotIds     a sub-array of slots to take items from.
+ * @param dstSlotIds     a sub-array of slots to place items in.
  */
-public record TransferPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds) implements CustomPacketPayload {
+public record TransferPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds)
+        implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -39,16 +41,22 @@ public record TransferPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlo
                     return byteBuf.readVarIntArray();
                 }
 
-                public void encode(@NotNull RegistryFriendlyByteBuf byteBuf, int @NotNull [] array) {
+                public void encode(
+                        @NotNull RegistryFriendlyByteBuf byteBuf,
+                        int @NotNull [] array
+                ) {
                     byteBuf.writeVarIntArray(array);
                 }
             };
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TransferPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, TransferPayload::srcContainerId,
-                    VAR_INT_ARRAY, TransferPayload::srcSlotIds,
-                    VAR_INT_ARRAY, TransferPayload::dstSlotIds,
+                    ByteBufCodecs.VAR_INT,
+                    TransferPayload::srcContainerId,
+                    VAR_INT_ARRAY,
+                    TransferPayload::srcSlotIds,
+                    VAR_INT_ARRAY,
+                    TransferPayload::dstSlotIds,
                     TransferPayload::new
             );
 

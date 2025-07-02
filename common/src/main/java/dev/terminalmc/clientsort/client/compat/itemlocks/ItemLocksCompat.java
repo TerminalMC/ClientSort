@@ -25,14 +25,15 @@ import static com.kirdow.itemlocks.client.input.KeyBindings.isBypass;
 import static com.kirdow.itemlocks.proxy.Components.getComponent;
 
 public class ItemLocksCompat {
+
     /**
      * @param slot the slot to check.
-     * @return {@code true} if the slot is valid, locked, and the bypass is not
-     * active.
+     * @return {@code true} if the slot is valid, locked, and the bypass is not active.
      */
     static boolean isLocked(Slot slot) {
-        if (!(slot.container instanceof Inventory)) return false;
-        int index = adjustForInventory(((ISlot)slot).clientSort$getIndexInInv());
+        if (!(slot.container instanceof Inventory))
+            return false;
+        int index = adjustForInventory(((ISlot) slot).clientSort$getIndexInInv());
         return getComponent(LockManager.class).isLockedSlotRaw(index) && !isBypass();
     }
 

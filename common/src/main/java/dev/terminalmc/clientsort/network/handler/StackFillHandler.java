@@ -30,7 +30,9 @@ import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.vali
  * A handler for a {@link StackFillPayload}.
  */
 public class StackFillHandler extends PayloadHandler {
-    private StackFillHandler() {}
+
+    private StackFillHandler() {
+    }
 
     public static void handle(
             StackFillPayload payload,
@@ -52,18 +54,15 @@ public class StackFillHandler extends PayloadHandler {
         ));
     }
 
-    private static void fillStacks(
-            AbstractContainerMenu menu,
-            int[] srcSlotIds,
-            int[] dstSlotIds
-    ) {
+    private static void fillStacks(AbstractContainerMenu menu, int[] srcSlotIds, int[] dstSlotIds) {
         // Work backwards from the end of the source array, looking for a
         // nonempty stack
         for (int i = srcSlotIds.length - 1; i >= 0; i--) {
             Slot srcSlot = menu.slots.get(srcSlotIds[i]);
             ItemStack srcStack = srcSlot.getItem();
 
-            if (srcStack.isEmpty()) continue;
+            if (srcStack.isEmpty())
+                continue;
 
             // Nonempty stack found; work forwards from the start of the
             // destination array, looking for a partial stack of the same item
@@ -72,16 +71,20 @@ public class StackFillHandler extends PayloadHandler {
                 Slot dstSlot = menu.slots.get(dstSlotIds[j]);
                 ItemStack dstStack = dstSlot.getItem();
 
-                if (dstStack.isEmpty()) continue;
-                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack)) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.isEmpty())
+                    continue;
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
+                    continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                    continue;
 
                 // Matching partial stack found; place as much of the source
                 // stack as possible
                 dstSlot.safeInsert(srcStack);
 
                 // If no items remain in the source stack, stop looking
-                if (srcStack.isEmpty()) break;
+                if (srcStack.isEmpty())
+                    break;
                 // Otherwise keep looking for another matching partial stack
             }
         }

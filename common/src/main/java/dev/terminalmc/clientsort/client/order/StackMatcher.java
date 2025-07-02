@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * A component-aware matcher for an {@link ItemStack}.
  */
 public class StackMatcher {
+
     private final @NotNull Item item;
     private final @Nullable DataComponentMap components;
 
@@ -47,12 +48,13 @@ public class StackMatcher {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof StackMatcher matcher) {
-            return ItemStack.isSameItemSameComponents(item.getDefaultInstance(), matcher.item.getDefaultInstance());
-        }
-        else if (obj instanceof ItemStack stack) {
+            return ItemStack.isSameItemSameComponents(
+                    item.getDefaultInstance(),
+                    matcher.item.getDefaultInstance()
+            );
+        } else if (obj instanceof ItemStack stack) {
             return ItemStack.isSameItem(item.getDefaultInstance(), stack);
-        }
-        else if (obj instanceof Item objItem) {
+        } else if (obj instanceof Item objItem) {
             return item == objItem;
         }
         return false;

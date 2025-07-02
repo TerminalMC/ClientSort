@@ -19,17 +19,19 @@ package dev.terminalmc.clientsort.client.compat.itemlocks;
 import net.minecraft.world.inventory.Slot;
 
 public class ItemLocksWrapper {
+
     private static boolean hasFailed = false;
 
     /**
-     * Wraps {@link ItemLocksCompat#isLocked} to catch errors if the ItemLocks
-     * mod is not loaded or the expected method is not available.
+     * Wraps {@link ItemLocksCompat#isLocked} to catch errors if the ItemLocks mod is not loaded or
+     * the expected method is not available.
+     *
      * @param slot the slot to check.
-     * @return {@code true} if the slot is valid, locked, and the bypass is not
-     * active.
+     * @return {@code true} if the slot is valid, locked, and the bypass is not active.
      */
     public static boolean isLocked(Slot slot) {
-        if (hasFailed) return false;
+        if (hasFailed)
+            return false;
         try {
             return ItemLocksCompat.isLocked(slot);
         } catch (NoClassDefFoundError | NoSuchMethodError ignored) {

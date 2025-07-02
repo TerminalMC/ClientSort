@@ -19,11 +19,11 @@ package dev.terminalmc.clientsort.client.inventory.control;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientCreativeController;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientSurvivalController;
-import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.inventory.control.server.ServerController;
+import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
 import net.minecraft.client.Minecraft;
@@ -32,20 +32,21 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
  * Provides methods for manipulating the player's inventory or open container.
  * <p>
- * Note: A {@link SingleUseController} instance must be used one time
- * immediately after creation then promptly discarded, because the inventory
- * state is stored on initialization and never updated.
+ * Note: A {@link SingleUseController} instance must be used one time immediately after creation
+ * then promptly discarded, because the inventory state is stored on initialization and never
+ * updated.
  */
 public abstract class SingleUseController {
+
     protected boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
@@ -57,27 +58,27 @@ public abstract class SingleUseController {
      * A potentially noncontiguous sub-array of slots in the same scope as
      * {@link SingleUseController#originSlot}.
      * <p>
-     * Must NOT be used by client-side operations to track and update simulation
-     * state. Instead, use {@link SingleUseController#originScopeStacks}.
+     * Must NOT be used by client-side operations to track and update simulation state. Instead, use
+     * {@link SingleUseController#originScopeStacks}.
      */
     protected final Slot[] originScopeSlots;
     /**
-     * A 1:1 equivalent of {@link SingleUseController#originScopeSlots}, keeping
-     * a logical record of the stack stored in each slot.
+     * A 1:1 equivalent of {@link SingleUseController#originScopeSlots}, keeping a logical record of
+     * the stack stored in each slot.
      */
     protected final ItemStack[] originScopeStacks;
     /**
      * A potentially noncontiguous sub-array of slots not in the same scope as
-     * {@link SingleUseController#originSlot}, but in still in either
-     * {@link Scope#CONTAINER_INV} or {@link Scope#PLAYER_INV}.
+     * {@link SingleUseController#originSlot}, but in still in either {@link Scope#CONTAINER_INV} or
+     * {@link Scope#PLAYER_INV}.
      * <p>
-     * Must NOT be used by client-side operations to track and update simulation
-     * state. Instead, use {@link SingleUseController#originScopeStacks}.
+     * Must NOT be used by client-side operations to track and update simulation state. Instead, use
+     * {@link SingleUseController#originScopeStacks}.
      */
     protected final Slot[] otherScopeSlots;
     /**
-     * A 1:1 equivalent of {@link SingleUseController#otherScopeSlots}, keeping
-     * a logical record of the stack stored in each slot.
+     * A 1:1 equivalent of {@link SingleUseController#otherScopeSlots}, keeping a logical record of
+     * the stack stored in each slot.
      */
     protected final ItemStack[] otherScopeStacks;
 
@@ -100,7 +101,7 @@ public abstract class SingleUseController {
         }
 
         // Collect slots in other container scope, if any
-        Scope otherScope = switch(originScope) {
+        Scope otherScope = switch (originScope) {
             case PLAYER_INV -> Scope.CONTAINER_INV;
             case CONTAINER_INV -> Scope.PLAYER_INV;
             default -> Scope.INVALID;
@@ -118,16 +119,20 @@ public abstract class SingleUseController {
      */
     private Slot[] findSlotsInScope(Scope scope) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (scope == Scope.INVALID) return new Slot[0];
+        if (scope == Scope.INVALID)
+            return new Slot[0];
 
         ArrayList<Slot> collectedSlots = new ArrayList<>();
         for (Slot slot : screen.getMenu().slots) {
             // Ignore slots in different scope
-            if (screenHelper.getScope(slot) != scope) continue;
+            if (screenHelper.getScope(slot) != scope)
+                continue;
             // Ignore inaccessible slots
-            if (player != null && !slot.mayPickup(player)) continue;
+            if (player != null && !slot.mayPickup(player))
+                continue;
             // Ignore locked slots
-            if (ItemLocksWrapper.isLocked(slot)) continue;
+            if (ItemLocksWrapper.isLocked(slot))
+                continue;
             // Slot is valid
             collectedSlots.add(slot);
         }
@@ -136,8 +141,8 @@ public abstract class SingleUseController {
     }
 
     /**
-     * @return {@code true} if this instance has not previously performed an
-     * operation (and therefore is able to perform one).
+     * @return {@code true} if this instance has not previously performed an operation (and
+     * therefore is able to perform one).
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean canOperate() {
@@ -151,8 +156,7 @@ public abstract class SingleUseController {
     }
 
     /**
-     * @return an instance of {@link SingleUseController} optimized for the
-     * current game state.
+     * @return an instance of {@link SingleUseController} optimized for the current game state.
      */
     public static SingleUseController getController(
             AbstractContainerScreen<?> screen,
@@ -161,15 +165,13 @@ public abstract class SingleUseController {
             CustomPacketPayload.Type<?> payloadType
     ) {
         if (options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(payloadType)
-        ) {
+                && ClientServices.PLATFORM.canSendToServer(payloadType)) {
             return new ServerController(screen, screenHelper, originSlot);
         }
 
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
-                && screen instanceof CreativeModeInventoryScreen
-        ) {
+                && screen instanceof CreativeModeInventoryScreen) {
             return new ClientCreativeController(screen, screenHelper, originSlot);
         }
 
@@ -182,14 +184,14 @@ public abstract class SingleUseController {
     public abstract void sort(SortOrder sortOrder);
 
     /**
-     * Uses items in the scope of the origin slot to complete as many partial
-     * stacks as possible in the other container or inventory, if it exists.
+     * Uses items in the scope of the origin slot to complete as many partial stacks as possible in
+     * the other container or inventory, if it exists.
      */
     public abstract void fillStacks();
 
     /**
-     * Transfers as many items as possible from the scope of the origin slot
-     * to the other container or inventory, if it exists.
+     * Transfers as many items as possible from the scope of the origin slot to the other container
+     * or inventory, if it exists.
      */
     public abstract void transfer();
 }

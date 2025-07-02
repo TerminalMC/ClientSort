@@ -26,11 +26,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom C2S payload used to instruct a server to sort slots in a container
- * into a particular order.
+ * A custom C2S payload used to instruct a server to sort slots in a container into a particular
+ * order.
+ *
  * @param containerId the ID of the container.
- * @param slotMapping an array of slot swap instructions, represented as pairs
- *                    of the form [from slot ID, to slot ID].
+ * @param slotMapping an array of slot swap instructions, represented as pairs of the form [from
+ *                    slot ID, to slot ID].
  */
 public record SortPayload(int containerId, int[] slotMapping) implements CustomPacketPayload {
 
@@ -40,15 +41,20 @@ public record SortPayload(int containerId, int[] slotMapping) implements CustomP
                     return byteBuf.readVarIntArray();
                 }
 
-                public void encode(@NotNull RegistryFriendlyByteBuf byteBuf, int @NotNull [] array) {
+                public void encode(
+                        @NotNull RegistryFriendlyByteBuf byteBuf,
+                        int @NotNull [] array
+                ) {
                     byteBuf.writeVarIntArray(array);
                 }
             };
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SortPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT, SortPayload::containerId,
-                    VAR_INT_ARRAY, SortPayload::slotMapping,
+                    ByteBufCodecs.VAR_INT,
+                    SortPayload::containerId,
+                    VAR_INT_ARRAY,
+                    SortPayload::slotMapping,
                     SortPayload::new
             );
 

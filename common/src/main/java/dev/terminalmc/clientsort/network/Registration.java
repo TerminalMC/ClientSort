@@ -30,11 +30,12 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
 
 /**
- * Stores custom C2S payload and handler data, and S2C payload-only data, for
- * network registration.
+ * Stores custom C2S payload and handler data, and S2C payload-only data, for network registration.
  */
 public class Registration {
-    private Registration() {}
+
+    private Registration() {
+    }
 
     /**
      * C2S payloads with handlers.
@@ -66,8 +67,8 @@ public class Registration {
      * S2C payloads without handlers.
      * <p>
      * <b>Note:</b> this exists because S2C payloads must be registered in
-     * 'main' but the handlers cannot be accessed from there, and must instead
-     * be registered in 'client'. For this purpose they can be retrieved from
+     * 'main' but the handlers cannot be accessed from there, and must instead be registered in
+     * 'client'. For this purpose they can be retrieved from
      * {@link dev.terminalmc.clientsort.client.network.ClientRegistration#PAYLOADS_S2C}.
      */
     public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
@@ -75,10 +76,7 @@ public class Registration {
                     CollectResultPayload.TYPE,
                     CollectResultPayload.STREAM_CODEC
             ),
-            new RegisterablePayloadS2C<>(
-                    SortResultPayload.TYPE,
-                    SortResultPayload.STREAM_CODEC
-            ),
+            new RegisterablePayloadS2C<>(SortResultPayload.TYPE, SortResultPayload.STREAM_CODEC),
             new RegisterablePayloadS2C<>(
                     StackFillResultPayload.TYPE,
                     StackFillResultPayload.STREAM_CODEC
@@ -93,6 +91,7 @@ public class Registration {
      * Contains registration info for a custom payload.
      */
     public abstract static class RegisterablePayload<T extends CustomPacketPayload> {
+
         public final CustomPacketPayload.Type<T> type;
         public final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
@@ -110,6 +109,7 @@ public class Registration {
      */
     public static class RegisterablePayloadC2S<T extends CustomPacketPayload>
             extends RegisterablePayload<T> {
+
         public final PayloadHandlerC2S<T> handler;
 
         public RegisterablePayloadC2S(
@@ -126,6 +126,7 @@ public class Registration {
          */
         @FunctionalInterface
         public interface PayloadHandlerC2S<T extends CustomPacketPayload> {
+
             void accept(T payload, MinecraftServer server, ServerPlayer player);
         }
     }

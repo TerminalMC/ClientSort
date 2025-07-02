@@ -30,7 +30,9 @@ import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.vali
  * A handler for a {@link CollectPayload}.
  */
 public class CollectHandler extends PayloadHandler {
-    private CollectHandler() {}
+
+    private CollectHandler() {
+    }
 
     public static void handle(
             CollectPayload payload,
@@ -55,8 +57,10 @@ public class CollectHandler extends PayloadHandler {
             Slot srcSlot = menu.slots.get(slotIds[i]);
             ItemStack srcStack = srcSlot.getItem();
 
-            if (srcStack.isEmpty()) continue;
-            if (srcStack.getCount() >= srcStack.getItem().getDefaultMaxStackSize()) continue;
+            if (srcStack.isEmpty())
+                continue;
+            if (srcStack.getCount() >= srcStack.getItem().getDefaultMaxStackSize())
+                continue;
 
             // Partial stack found; work forwards from the start, looking for
             // another partial stack of the same item
@@ -64,16 +68,20 @@ public class CollectHandler extends PayloadHandler {
                 Slot dstSlot = menu.slots.get(slotIds[j]);
                 ItemStack dstStack = dstSlot.getItem();
 
-                if (dstStack.isEmpty()) continue;
-                if (dstStack.getCount() >= dstStack.getItem().getDefaultMaxStackSize()) continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack)) continue;
+                if (dstStack.isEmpty())
+                    continue;
+                if (dstStack.getCount() >= dstStack.getItem().getDefaultMaxStackSize())
+                    continue;
+                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                    continue;
 
                 // Matching partial stack found; place as much of the source
                 // stack as possible
                 dstSlot.safeInsert(srcStack);
 
                 // If no items remain in the source stack, stop looking
-                if (srcStack.isEmpty()) break;
+                if (srcStack.isEmpty())
+                    break;
                 // Otherwise keep looking for another matching partial stack
             }
         }

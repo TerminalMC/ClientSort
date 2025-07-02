@@ -26,10 +26,11 @@ import net.minecraft.world.inventory.Slot;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * A {@link ContainerScreenHelper} for an instance of
- * {@link CreativeModeInventoryScreen}.
+ * A {@link ContainerScreenHelper} for an instance of {@link CreativeModeInventoryScreen}.
  */
-public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen> extends ContainerScreenHelper<T> {
+public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen>
+        extends ContainerScreenHelper<T> {
+
     public CreativeContainerScreenHelper(
             T screen,
             InteractionManager.ClickEventFactory clickEventFactory

@@ -20,7 +20,9 @@ package dev.terminalmc.clientsort.exception;
  * A custom exception for mod payload handlers.
  */
 public class PayloadHandlerException extends Exception {
-    public static String GENERIC_MESSAGE = "Exception not recognized, check server logs for more info.";
+
+    public static String GENERIC_MESSAGE =
+            "Exception not recognized, check server logs for more info.";
 
     public PayloadHandlerException(String message) {
         super(message);

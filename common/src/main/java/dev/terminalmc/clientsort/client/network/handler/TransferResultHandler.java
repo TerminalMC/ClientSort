@@ -22,7 +22,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class TransferResultHandler {
-    private TransferResultHandler() {}
+
+    private TransferResultHandler() {
+    }
 
     /**
      * Handles a {@link TransferResultPayload} sent by a server.

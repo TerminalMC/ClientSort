@@ -33,10 +33,11 @@ import net.minecraft.world.item.ItemStack;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * Provides slot scope information and interaction methods for 
- * an instance of {@link AbstractContainerScreen}.
+ * Provides slot scope information and interaction methods for an instance of
+ * {@link AbstractContainerScreen}.
  */
 public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
+
     protected final T screen;
     protected final InteractionManager.ClickEventFactory clickEventFactory;
 
@@ -59,7 +60,7 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         if (screen instanceof CreativeModeInventoryScreen) {
             //noinspection unchecked
             return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>(
-                    (CreativeModeInventoryScreen)screen,
+                    (CreativeModeInventoryScreen) screen,
                     clickEventFactory
             );
         }
@@ -71,15 +72,16 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
      * Creates a {@link ContainerScreenHelper} for {@code screen}.
      */
     public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen) {
-        InteractionManager.ClickEventFactory clickEventFactory = (slot, mouseButton, clickType, playSound) ->
-                new InteractionManager.CallbackEvent(() -> {
-                    ((AbstractContainerScreenAccessor)screen).callSlotClicked(
+        InteractionManager.ClickEventFactory clickEventFactory =
+                (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
+                    ((AbstractContainerScreenAccessor) screen).callSlotClicked(
                             slot,
-                            ((ISlot)slot).clientSort$getIdInContainer(),
+                            ((ISlot) slot).clientSort$getIdInContainer(),
                             mouseButton,
                             clickType
                     );
-                    if (playSound) SoundManager.play();
+                    if (playSound)
+                        SoundManager.play();
                     return InteractionManager.TICK_WAITER;
                 });
         return of(screen, clickEventFactory);
@@ -98,30 +100,27 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     }
 
     /**
-     * @return {@code true} if the index of the slot in its inventory is less
-     * than 9.
+     * @return {@code true} if the index of the slot in its inventory is less than 9.
      */
     public boolean isHotbarSlot(Slot slot) {
-        return ((ISlot)slot).clientSort$getIndexInInv() < 9;
+        return ((ISlot) slot).clientSort$getIndexInInv() < 9;
     }
 
     /**
-     * @return {@code true} if the index of the slot in its inventory is greater
-     * than 35.
+     * @return {@code true} if the index of the slot in its inventory is greater than 35.
      */
     public boolean isExtraSlot(Slot slot) {
-        return ((ISlot)slot).clientSort$getIndexInInv() > 35;
+        return ((ISlot) slot).clientSort$getIndexInInv() > 35;
     }
 
     /**
      * Gets the scope of the specified {@link Slot}.
      * <p>
-     * Scope is a heuristic system for grouping slots together based on their
-     * location in the inventory.
-     * <p>
+     * Scope is a heuristic system for grouping slots together based on their location in the
+     * inventory.
+     *
      * @param slot the slot for which to get the scope.
-     * @return the scope of the slot, or {@link Scope#INVALID} if the slot is
-     * not accessible.
+     * @return the scope of the slot, or {@link Scope#INVALID} if the slot is not accessible.
      */
     public Scope getScope(Slot slot) {
         // If the slot is not accessible, consider the scope invalid
@@ -196,8 +195,8 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     }
 
     /**
-     * Workaround for inconsistency between client-side and server-side
-     * inventory sizes (and therefore slot indexes).
+     * Workaround for inconsistency between client-side and server-side inventory sizes (and
+     * therefore slot indexes).
      */
     public void translateSlotIds(int[] slotMapping) {
     }

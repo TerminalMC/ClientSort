@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 public abstract class SortOrder {
+
     public final String name;
 
     protected SortOrder(String name) {
@@ -37,10 +38,10 @@ public abstract class SortOrder {
     }
 
     /**
-     * Sorts the given slot IDs using the given stacks in the slots. Sorting may
-     * be done in place.
+     * Sorts the given slot IDs using the given stacks in the slots. Sorting may be done in place.
+     *
      * @param slotIds an array of slot IDs to sort.
-     * @param stacks the item stacks in the respective slots.
+     * @param stacks  the item stacks in the respective slots.
      * @param context additional context for the sort.
      * @return the sorted array of slot IDs.
      */
@@ -51,7 +52,7 @@ public abstract class SortOrder {
     /**
      * All registered sort orders, mapped by name.
      */
-    public static final Map<String,SortOrder> SORT_MODES = new HashMap<>();
+    public static final Map<String, SortOrder> SORT_MODES = new HashMap<>();
     /**
      * No-op.
      */
@@ -81,21 +82,29 @@ public abstract class SortOrder {
     }
 
     /**
-     * Sorts {@code sortIds} by comparing the elements of {@code values},
-     * falling back to comparing the elements of {@code stacks} if necessary.
+     * Sorts {@code sortIds} by comparing the elements of {@code values}, falling back to comparing
+     * the elements of {@code stacks} if necessary.
      */
-    private static void sortByValues(int[] sortIds, int[] values, ItemStack[] stacks, SortContext context) {
-        IntArrays.quickSort(sortIds, (a, b) -> {
-            int cmp = Integer.compare(values[a], values[b]);
-            if (cmp != 0) {
-                return cmp;
-            }
-            return StackComparison.compareEqualItems(stacks[a], stacks[b], context);
-        });
+    private static void sortByValues(
+            int[] sortIds,
+            int[] values,
+            ItemStack[] stacks,
+            SortContext context
+    ) {
+        IntArrays.quickSort(
+                sortIds, (a, b) -> {
+                    int cmp = Integer.compare(values[a], values[b]);
+                    if (cmp != 0) {
+                        return cmp;
+                    }
+                    return StackComparison.compareEqualItems(stacks[a], stacks[b], context);
+                }
+        );
     }
 
     static {
-        NONE = register(new SortOrder("none") {});
+        NONE = register(new SortOrder("none") {
+        });
 
         ALPHABET = register(new SortOrder("alphabet") {
             @Override
@@ -108,19 +117,26 @@ public abstract class SortOrder {
                 }
 
                 // Sort by reference array
-                IntArrays.quickSort(slotIds, (a, b) -> {
-                    if (strings[a].isEmpty()) {
-                        if (strings[b].isEmpty())
-                            return 0;
-                        return 1;
-                    }
-                    if (strings[b].isEmpty()) return -1;
-                    int cmp = strings[a].compareToIgnoreCase(strings[b]);
-                    if (cmp == 0) {
-                        return StackComparison.compareEqualItems(stacks[a], stacks[b], context);
-                    }
-                    return cmp;
-                });
+                IntArrays.quickSort(
+                        slotIds, (a, b) -> {
+                            if (strings[a].isEmpty()) {
+                                if (strings[b].isEmpty())
+                                    return 0;
+                                return 1;
+                            }
+                            if (strings[b].isEmpty())
+                                return -1;
+                            int cmp = strings[a].compareToIgnoreCase(strings[b]);
+                            if (cmp == 0) {
+                                return StackComparison.compareEqualItems(
+                                        stacks[a],
+                                        stacks[b],
+                                        context
+                                );
+                            }
+                            return cmp;
+                        }
+                );
                 return slotIds;
             }
         });
@@ -153,18 +169,24 @@ public abstract class SortOrder {
                     Object2IntMap<StackMatcher> lookup = new Object2IntOpenHashMap<>(stacks.length);
                     for (int i = 0; i < stacks.length; i++) {
                         final ItemStack stack = stacks[i];
-                        sortValues[i] = lookup.computeIfAbsent(StackMatcher.of(stack), matcher -> {
-                            @SuppressWarnings("SuspiciousMethodCalls")
-                            int index = displayStackList.indexOf(matcher);
-                            if (index != -1) return index;
-                            return lookup.computeIfAbsent(StackMatcher.ignoreNbt(stack),
-                                    altMatcher -> {
-                                        @SuppressWarnings("SuspiciousMethodCalls")
-                                        int plainIndex = displayStackList.indexOf(altMatcher);
-                                        if (plainIndex == -1) return Integer.MAX_VALUE;
-                                        return plainIndex;
-                                    });
-                        });
+                        sortValues[i] = lookup.computeIfAbsent(
+                                StackMatcher.of(stack), matcher -> {
+                                    @SuppressWarnings("SuspiciousMethodCalls") int index =
+                                            displayStackList.indexOf(matcher);
+                                    if (index != -1)
+                                        return index;
+                                    return lookup.computeIfAbsent(
+                                            StackMatcher.ignoreNbt(stack), altMatcher -> {
+                                                @SuppressWarnings("SuspiciousMethodCalls") int
+                                                        plainIndex =
+                                                        displayStackList.indexOf(altMatcher);
+                                                if (plainIndex == -1)
+                                                    return Integer.MAX_VALUE;
+                                                return plainIndex;
+                                            }
+                                    );
+                                }
+                        );
                     }
                 }
 
@@ -178,43 +200,48 @@ public abstract class SortOrder {
             @Override
             public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
                 // Record the total count of each item
-                HashMap<Item,Integer> itemTotalAmountMap = new HashMap<>();
+                HashMap<Item, Integer> itemTotalAmountMap = new HashMap<>();
                 for (ItemStack stack : stacks) {
-                    if (stack.isEmpty()) continue;
+                    if (stack.isEmpty())
+                        continue;
                     if (!itemTotalAmountMap.containsKey(stack.getItem())) {
                         itemTotalAmountMap.put(stack.getItem(), stack.getCount());
                     } else {
-                        itemTotalAmountMap.put(stack.getItem(),
-                                itemTotalAmountMap.get(stack.getItem()) + stack.getCount());
+                        itemTotalAmountMap.put(
+                                stack.getItem(),
+                                itemTotalAmountMap.get(stack.getItem()) + stack.getCount()
+                        );
                     }
                 }
 
                 // Sort by descending order of total item count
-                IntArrays.quickSort(slotIds, (a, b) -> {
-                    ItemStack stackA = stacks[a];
-                    ItemStack stackB = stacks[b];
-                    if (stackA.isEmpty()) {
-                        return stackB.isEmpty() ? 0 : 1;
-                    }
-                    if (stackB.isEmpty()) {
-                        return -1;
-                    }
-                    Integer amountA = itemTotalAmountMap.get(stackA.getItem());
-                    Integer amountB = itemTotalAmountMap.get(stackB.getItem());
-                    int cmp = Integer.compare(amountB, amountA);
-                    if (cmp != 0) {
-                        return cmp;
-                    }
-                    if (ItemStack.isSameItemSameComponents(stackA, stackB)) {
-                        return StackComparison.compareEqualItems(stackA, stackB, context);
-                    } else {
-                        return StackComparison.compareEqualItems(
-                                stackA.copyWithCount(1),
-                                stackB.copyWithCount(1),
-                                context
-                        );
-                    }
-                });
+                IntArrays.quickSort(
+                        slotIds, (a, b) -> {
+                            ItemStack stackA = stacks[a];
+                            ItemStack stackB = stacks[b];
+                            if (stackA.isEmpty()) {
+                                return stackB.isEmpty() ? 0 : 1;
+                            }
+                            if (stackB.isEmpty()) {
+                                return -1;
+                            }
+                            Integer amountA = itemTotalAmountMap.get(stackA.getItem());
+                            Integer amountB = itemTotalAmountMap.get(stackB.getItem());
+                            int cmp = Integer.compare(amountB, amountA);
+                            if (cmp != 0) {
+                                return cmp;
+                            }
+                            if (ItemStack.isSameItemSameComponents(stackA, stackB)) {
+                                return StackComparison.compareEqualItems(stackA, stackB, context);
+                            } else {
+                                return StackComparison.compareEqualItems(
+                                        stackA.copyWithCount(1),
+                                        stackB.copyWithCount(1),
+                                        context
+                                );
+                            }
+                        }
+                );
                 return slotIds;
             }
         });
@@ -223,9 +250,11 @@ public abstract class SortOrder {
             @Override
             public int[] sort(int[] slotIds, ItemStack[] stacks, SortContext context) {
                 // Create a reference array of item IDs
-                int[] rawIds = Arrays.stream(stacks).mapToInt(stack -> stack.isEmpty()
-                        ? Integer.MAX_VALUE
-                        : BuiltInRegistries.ITEM.getId(stack.getItem())).toArray();
+                int[] rawIds = Arrays.stream(stacks)
+                        .mapToInt(stack -> stack.isEmpty()
+                                ? Integer.MAX_VALUE
+                                : BuiltInRegistries.ITEM.getId(stack.getItem()))
+                        .toArray();
                 // Sort by reference array
                 sortByValues(slotIds, rawIds, stacks, context);
                 return slotIds;

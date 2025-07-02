@@ -23,10 +23,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import java.util.LinkedList;
 
 /**
- * An implementation of {@link PositionEditScreen} for editing container
- * buttons.
+ * An implementation of {@link PositionEditScreen} for editing container buttons.
  */
 public class ContainerPositionEditScreen extends PositionEditScreen {
+
     public ContainerPositionEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
         super(underlay, button);
     }

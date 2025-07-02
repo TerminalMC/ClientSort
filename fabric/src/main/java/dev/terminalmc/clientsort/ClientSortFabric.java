@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientSortFabric implements ModInitializer {
+
     @Override
     public void onInitialize() {
         // Register all custom payloads
@@ -36,10 +37,7 @@ public class ClientSortFabric implements ModInitializer {
     private static <T extends CustomPacketPayload> void registerC2S(
             Registration.RegisterablePayloadC2S<T> rp
     ) {
-        PayloadTypeRegistry.playC2S().register(
-                rp.type,
-                rp.streamCodec
-        );
+        PayloadTypeRegistry.playC2S().register(rp.type, rp.streamCodec);
         ServerPlayNetworking.registerGlobalReceiver(
                 rp.type,
                 (payload, context) -> rp.handler.accept(
@@ -59,9 +57,6 @@ public class ClientSortFabric implements ModInitializer {
     private static <T extends CustomPacketPayload> void registerPayloadS2C(
             Registration.RegisterablePayloadS2C<T> rp
     ) {
-        PayloadTypeRegistry.playS2C().register(
-                rp.type,
-                rp.streamCodec
-        );
+        PayloadTypeRegistry.playS2C().register(rp.type, rp.streamCodec);
     }
 }

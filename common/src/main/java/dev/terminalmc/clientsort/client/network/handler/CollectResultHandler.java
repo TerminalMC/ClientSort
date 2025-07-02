@@ -24,11 +24,12 @@ import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class CollectResultHandler {
-    private CollectResultHandler() {}
+
+    private CollectResultHandler() {
+    }
 
     /**
-     * An operation to be run on receipt of a {@link CollectResultPayload}
-     * indicating success.
+     * An operation to be run on receipt of a {@link CollectResultPayload} indicating success.
      */
     public static @Nullable Runnable onSuccess;
 

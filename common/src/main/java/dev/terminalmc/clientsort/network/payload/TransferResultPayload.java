@@ -27,15 +27,19 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A custom S2C payload used to send feedback for an operation requested by a
  * {@link TransferPayload} to a client.
+ *
  * @param success whether the operation was successful.
  * @param message an optional message describing an error.
  */
-public record TransferResultPayload(boolean success, String message) implements CustomPacketPayload {
+public record TransferResultPayload(boolean success, String message)
+        implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, TransferResultPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.BOOL, TransferResultPayload::success,
-                    ByteBufCodecs.STRING_UTF8, TransferResultPayload::message,
+                    ByteBufCodecs.BOOL,
+                    TransferResultPayload::success,
+                    ByteBufCodecs.STRING_UTF8,
+                    TransferResultPayload::message,
                     TransferResultPayload::new
             );
 

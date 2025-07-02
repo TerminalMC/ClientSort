@@ -25,8 +25,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A custom S2C payload used to send feedback for an operation requested by a
- * {@link CollectPayload} to a client.
+ * A custom S2C payload used to send feedback for an operation requested by a {@link CollectPayload}
+ * to a client.
+ *
  * @param success whether the operation was successful.
  * @param message an optional message describing an error.
  */
@@ -34,8 +35,10 @@ public record CollectResultPayload(boolean success, String message) implements C
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CollectResultPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.BOOL, CollectResultPayload::success,
-                    ByteBufCodecs.STRING_UTF8, CollectResultPayload::message,
+                    ByteBufCodecs.BOOL,
+                    CollectResultPayload::success,
+                    ByteBufCodecs.STRING_UTF8,
+                    CollectResultPayload::message,
                     CollectResultPayload::new
             );
 

@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public final class Localization {
+
     public static String translationKey(String path) {
         return ClientSort.MOD_ID + "." + path;
     }

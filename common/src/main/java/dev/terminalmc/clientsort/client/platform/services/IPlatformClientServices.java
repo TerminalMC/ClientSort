@@ -21,8 +21,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 public interface IPlatformClientServices {
 
     /**
-     * @return {@code true} if the payload type can be sent from the client to
-     * the server.
+     * @return {@code true} if the payload type can be sent from the client to the server.
      */
     boolean canSendToServer(CustomPacketPayload.Type<?> type);
 

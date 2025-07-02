@@ -28,8 +28,12 @@ import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @Mod(ClientSort.MOD_ID)
-@EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(
+        modid = ClientSort.MOD_ID,
+        bus = EventBusSubscriber.Bus.MOD
+)
 public class ClientSortNeoForge {
+
     /**
      * Registers all custom C2S payloads and their handlers.
      */
@@ -39,8 +43,13 @@ public class ClientSortNeoForge {
         Registration.PAYLOADS_C2S.forEach((rp) -> registerC2S(registrar, rp));
     }
 
-    @EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.DEDICATED_SERVER)
+    @EventBusSubscriber(
+            modid = ClientSort.MOD_ID,
+            bus = EventBusSubscriber.Bus.MOD,
+            value = Dist.DEDICATED_SERVER
+    )
     static class DedicatedServerEventHandler {
+
         /**
          * Registers all custom S2C payloads, but not their handlers.
          */
@@ -65,12 +74,12 @@ public class ClientSortNeoForge {
                         (payload, context) -> rp.handler.accept(
                                 payload,
                                 context.player().getServer(),
-                                (ServerPlayer)context.player()
+                                (ServerPlayer) context.player()
                         ),
                         (payload, context) -> rp.handler.accept(
                                 payload,
                                 context.player().getServer(),
-                                (ServerPlayer)context.player()
+                                (ServerPlayer) context.player()
                         )
                 )
         );
@@ -90,8 +99,10 @@ public class ClientSortNeoForge {
                 rp.type,
                 rp.streamCodec,
                 new DirectionalPayloadHandler<>(
-                        (payload, context) -> {},
-                        (payload, context) -> {}
+                        (payload, context) -> {
+                        },
+                        (payload, context) -> {
+                        }
                 )
         );
     }

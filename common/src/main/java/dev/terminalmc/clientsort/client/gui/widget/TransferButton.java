@@ -30,15 +30,25 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 
 public class TransferButton extends ControlButton {
+
     private static final WidgetSprites SPRITES_UP = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_up"),
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_up_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_up_highlighted")
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/transfer_up_highlighted"
+            )
     );
     private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down_highlighted")
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/transfer_down_disabled"
+            ),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/transfer_down_highlighted"
+            )
     );
 
     public TransferButton(

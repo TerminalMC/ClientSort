@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.platform;
 import dev.terminalmc.clientsort.platform.services.IPlatformServices;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -28,8 +29,23 @@ import java.nio.file.Path;
 public class NeoForgeServices implements IPlatformServices {
 
     @Override
+    public String getPlatformName() {
+        return "NeoForge";
+    }
+
+    @Override
+    public Path getGameDir() {
+        return FMLPaths.GAMEDIR.get();
+    }
+
+    @Override
     public Path getConfigDir() {
         return FMLPaths.CONFIGDIR.get();
+    }
+
+    @Override
+    public boolean isDevEnv() {
+        return !FMLLoader.isProduction();
     }
 
     @Override

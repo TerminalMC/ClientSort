@@ -33,12 +33,13 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 
 /**
- * Provides methods for manipulating the player's inventory or open container
- * via custom payload packets.
+ * Provides methods for manipulating the player's inventory or open container via custom payload
+ * packets.
  * <p>
  * Valid for use ONLY if the mod is also present server-side.
  */
 public class ServerController extends SingleUseController {
+
     public ServerController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
@@ -49,13 +50,16 @@ public class ServerController extends SingleUseController {
 
     @Override
     public void sort(SortOrder sortOrder) {
-        if (!canOperate()) return;
+        if (!canOperate())
+            return;
         CollectResultHandler.onSuccess = () -> {
             ServerController sorter = new ServerController(screen, screenHelper, originSlot);
             int[] slotMapping = sorter.createSlotMapping(sortOrder);
             InteractionManager.now(() -> {
-                ClientServices.PLATFORM.sendToServer(
-                        new SortPayload(screen.getMenu().containerId, slotMapping));
+                ClientServices.PLATFORM.sendToServer(new SortPayload(
+                        screen.getMenu().containerId,
+                        slotMapping
+                ));
                 return InteractionManager.TICK_WAITER;
             });
         };
@@ -66,40 +70,44 @@ public class ServerController extends SingleUseController {
 
     @Override
     public void fillStacks() {
-        if (!canOperate()) return;
-        if (originScopeSlots.length == 0) return;
-        if (otherScopeSlots.length == 0) return;
+        if (!canOperate())
+            return;
+        if (originScopeSlots.length == 0)
+            return;
+        if (otherScopeSlots.length == 0)
+            return;
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
-            ClientServices.PLATFORM.sendToServer(
-                    new StackFillPayload(
-                            screen.getMenu().containerId,
-                            srcSlotIds,
-                            dstSlotIds
-                    ));
+            ClientServices.PLATFORM.sendToServer(new StackFillPayload(
+                    screen.getMenu().containerId,
+                    srcSlotIds,
+                    dstSlotIds
+            ));
             return InteractionManager.TICK_WAITER;
         });
     }
 
     @Override
     public void transfer() {
-        if (!canOperate()) return;
-        if (originScopeSlots.length == 0) return;
-        if (otherScopeSlots.length == 0) return;
+        if (!canOperate())
+            return;
+        if (originScopeSlots.length == 0)
+            return;
+        if (otherScopeSlots.length == 0)
+            return;
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
-            ClientServices.PLATFORM.sendToServer(
-                    new TransferPayload(
-                            screen.getMenu().containerId,
-                            srcSlotIds,
-                            dstSlotIds
-                    ));
+            ClientServices.PLATFORM.sendToServer(new TransferPayload(
+                    screen.getMenu().containerId,
+                    srcSlotIds,
+                    dstSlotIds
+            ));
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -108,7 +116,7 @@ public class ServerController extends SingleUseController {
         // Translate slots for server
         int[] slotIds = new int[slots.length];
         for (int i = 0; i < slots.length; i++) {
-            slotIds[i] = ((ISlot)slots[i]).clientSort$getIdInContainer();
+            slotIds[i] = ((ISlot) slots[i]).clientSort$getIdInContainer();
         }
         screenHelper.translateSlotIds(slotIds);
         return slotIds;
@@ -116,8 +124,10 @@ public class ServerController extends SingleUseController {
 
     private void sendCollectPayload(int[] scopeArray) {
         InteractionManager.now(() -> {
-            ClientServices.PLATFORM.sendToServer(
-                    new CollectPayload(screen.getMenu().containerId, scopeArray));
+            ClientServices.PLATFORM.sendToServer(new CollectPayload(
+                    screen.getMenu().containerId,
+                    scopeArray
+            ));
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -130,8 +140,11 @@ public class ServerController extends SingleUseController {
         }
 
         // Sort the array of slot numbers to make a sorting 'key'
-        sortedIds = sortOrder.sort(sortedIds, originScopeStacks,
-                new SortContext(Minecraft.getInstance().level));
+        sortedIds = sortOrder.sort(
+                sortedIds,
+                originScopeStacks,
+                new SortContext(Minecraft.getInstance().level)
+        );
 
         // Translate the key into a series of swap instructions
         int[] slotMapping = new int[sortedIds.length * 2];

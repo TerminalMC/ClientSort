@@ -29,8 +29,8 @@ import java.awt.*;
 import java.util.Iterator;
 
 /**
- * Additional comparison methods for sorting {@link ItemStack} instances that
- * could not be otherwise differentiated.
+ * Additional comparison methods for sorting {@link ItemStack} instances that could not be otherwise
+ * differentiated.
  * <p>
  * The comparators below are checked in sequence until a difference is found:
  * <ol>
@@ -42,6 +42,7 @@ import java.util.Iterator;
  * </ol>
  */
 public class StackComparison {
+
     public static int compareEqualItems(ItemStack a, ItemStack b, SortContext context) {
         // Compare counts
         int cmp = Integer.compare(b.getCount(), a.getCount());
@@ -73,17 +74,22 @@ public class StackComparison {
         // Compare tooltips
         Iterator<Component> tooltipsA = a.getTooltipLines(
                 Item.TooltipContext.of(context.level),
-                null, TooltipFlag.Default.NORMAL).iterator();
+                null,
+                TooltipFlag.Default.NORMAL
+        ).iterator();
         Iterator<Component> tooltipsB = b.getTooltipLines(
                 Item.TooltipContext.of(context.level),
-                null, TooltipFlag.Default.NORMAL).iterator();
+                null,
+                TooltipFlag.Default.NORMAL
+        ).iterator();
 
         while (tooltipsA.hasNext()) {
             if (!tooltipsB.hasNext()) {
                 return 1;
             }
 
-            int cmp = tooltipsA.next().getString().compareToIgnoreCase(tooltipsB.next().getString());
+            int cmp =
+                    tooltipsA.next().getString().compareToIgnoreCase(tooltipsB.next().getString());
             if (cmp != 0) {
                 return cmp;
             }
@@ -100,8 +106,10 @@ public class StackComparison {
         if ((item.getDefaultInstance()).is(ItemTags.DYEABLE)) {
             int colorA = DyedItemColor.getOrDefault(a, -6265536);
             int colorB = DyedItemColor.getOrDefault(b, -6265536);
-            float[] hsbA = Color.RGBtoHSB(colorA >> 16 & 0xFF, colorA >> 8 & 0xFF, colorA & 0xFF, null);
-            float[] hsbB = Color.RGBtoHSB(colorB >> 16 & 0xFF, colorB >> 8 & 0xFF, colorB & 0xFF, null);
+            float[] hsbA =
+                    Color.RGBtoHSB(colorA >> 16 & 0xFF, colorA >> 8 & 0xFF, colorA & 0xFF, null);
+            float[] hsbB =
+                    Color.RGBtoHSB(colorB >> 16 & 0xFF, colorB >> 8 & 0xFF, colorB & 0xFF, null);
             int cmp = Float.compare(hsbA[0], hsbB[0]);
             if (cmp != 0) {
                 return cmp;

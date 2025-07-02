@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ControlButton extends Button {
+
     public static final int WIDTH = 13;
     public static final int HEIGHT = 13;
     public static final int HALF_WIDTH = WIDTH / 2;
@@ -116,14 +117,20 @@ public abstract class ControlButton extends Button {
     }
 
     public void openEditScreen() {
-        Minecraft.getInstance().setScreen(isPlayerInv
-                ? new PlayerPositionEditScreen(screen, this)
-                : new ContainerPositionEditScreen(screen, this)
+        Minecraft.getInstance().setScreen(
+                isPlayerInv
+                        ? new PlayerPositionEditScreen(screen, this)
+                        : new ContainerPositionEditScreen(screen, this)
         );
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(
+            @NotNull GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
         AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
 
         // Keep visible

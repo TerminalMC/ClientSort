@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class SoundManager {
+
     private static long nextSoundTime = Long.MIN_VALUE;
     private static float pitch = 1.0F;
     private static float increment = 0.01F;
@@ -43,8 +44,8 @@ public class SoundManager {
 
     /**
      * Resets the sound manager for a new operation.
-     * @param size the number of sounds to expect, for pitch interval
-     *             calculation.
+     *
+     * @param size the number of sounds to expect, for pitch interval calculation.
      */
     public static void resetForCount(int size) {
         increment = (options().soundPitchMax - options().soundPitchMin) / size;
@@ -65,9 +66,19 @@ public class SoundManager {
                     Minecraft.getInstance().getSoundManager().stop(sound);
                 }
                 sound = new SimpleSoundInstance(
-                        location, SoundSource.MASTER, options().soundVolume, soundPitch,
-                        SoundInstance.createUnseededRandom(), false, 0,
-                        SoundInstance.Attenuation.NONE, 0, 0, 0, true);
+                        location,
+                        SoundSource.MASTER,
+                        options().soundVolume,
+                        soundPitch,
+                        SoundInstance.createUnseededRandom(),
+                        false,
+                        0,
+                        SoundInstance.Attenuation.NONE,
+                        0,
+                        0,
+                        0,
+                        true
+                );
                 Minecraft.getInstance().getSoundManager().play(sound);
             }
         }
@@ -86,8 +97,8 @@ public class SoundManager {
     }
 
     /**
-     * Estimates the number of interaction sounds that will be played in the
-     * course of a sort operation.
+     * Estimates the number of interaction sounds that will be played in the course of a sort
+     * operation.
      */
     public static int estimateSortSounds(ItemStack[] stacks) {
         // Count non-empty stacks; assume all these require sorting
@@ -113,8 +124,8 @@ public class SoundManager {
     }
 
     /**
-     * Estimates the number of interaction sounds that will be played in the
-     * course of a stack fill operation.
+     * Estimates the number of interaction sounds that will be played in the course of a stack fill
+     * operation.
      */
     public static int estimateStackFillSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
         // Count partial stacks in the destination array
@@ -139,8 +150,8 @@ public class SoundManager {
     }
 
     /**
-     * Estimates the number of interaction sounds that will be played in the
-     * course of a transfer operation.
+     * Estimates the number of interaction sounds that will be played in the course of a transfer
+     * operation.
      */
     public static int estimateTransferSounds(ItemStack[] srcStacks, ItemStack[] dstStacks) {
         // Count non-empty slots in the source array
@@ -159,7 +170,7 @@ public class SoundManager {
             }
         }
 
-        // Compensate for a percentage of nonempty destination slots with 
+        // Compensate for a percentage of nonempty destination slots with
         // matching source stacks being only partially filled
         dstHoleCount += dstHoleCount / 8;
 

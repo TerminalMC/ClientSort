@@ -34,7 +34,9 @@ import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.vali
  * A handler for a {@link SortPayload}.
  */
 public class SortHandler extends PayloadHandler {
-    private SortHandler() {}
+
+    private SortHandler() {
+    }
 
     public static void handle(
             SortPayload payload,
@@ -55,7 +57,7 @@ public class SortHandler extends PayloadHandler {
 
     private static void sort(AbstractContainerMenu menu, int[] slotMapping) {
         // Build reference maps
-        Map<Integer,ItemStack> stacks = new TreeMap<>();
+        Map<Integer, ItemStack> stacks = new TreeMap<>();
         for (Slot slot : menu.slots) {
             stacks.put(slot.index, slot.getItem());
         }

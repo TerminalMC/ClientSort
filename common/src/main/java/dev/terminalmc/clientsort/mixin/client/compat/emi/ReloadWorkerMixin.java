@@ -27,21 +27,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * If {@link CreativeSearchOrder#refreshStackPositionMap} calls
- * {@link net.minecraft.world.item.CreativeModeTabs#tryRebuildTabContents} while
- * EMI is reloading, it can cause an error.
+ * {@link net.minecraft.world.item.CreativeModeTabs#tryRebuildTabContents} while EMI is reloading,
+ * it can cause an error.
  * <p>
- * To prevent this, {@link ClientSort#emiReloading} is set to {@code true} while
- * EMI is reloading. If {@link CreativeSearchOrder#tryRefreshStackPositionMap}
- * is called while the value is {@code true}, the call is blocked and
- * {@link ClientSort#updateBlockedByEmi} is set to {@code true}.
+ * To prevent this, {@link ClientSort#emiReloading} is set to {@code true} while EMI is reloading.
+ * If {@link CreativeSearchOrder#tryRefreshStackPositionMap} is called while the value is
+ * {@code true}, the call is blocked and {@link ClientSort#updateBlockedByEmi} is set to
+ * {@code true}.
  * <p>
- * When the EMI reload finishes, if {@link ClientSort#updateBlockedByEmi} is
- * {@code true}, {@link CreativeSearchOrder#tryRefreshStackPositionMap} is
- * called one time.
+ * When the EMI reload finishes, if {@link ClientSort#updateBlockedByEmi} is {@code true},
+ * {@link CreativeSearchOrder#tryRefreshStackPositionMap} is called one time.
  */
 @SuppressWarnings("JavadocReference")
 @Pseudo
-@Mixin(targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker", remap = false)
+@Mixin(
+        targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker",
+        remap = false
+)
 public class ReloadWorkerMixin {
 
     @SuppressWarnings("UnresolvedMixinReference")

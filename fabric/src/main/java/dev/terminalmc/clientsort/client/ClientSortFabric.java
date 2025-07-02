@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientSortFabric implements ClientModInitializer {
+
     @Override
     public void onInitializeClient() {
         // Register keybindings
@@ -34,8 +35,8 @@ public class ClientSortFabric implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);
 
         // Register screen after-init event
-        ScreenEvents.AFTER_INIT.register((mc, screen, scaledWidth, scaledHeight) ->
-                ClientSort.afterScreenInit(screen));
+        ScreenEvents.AFTER_INIT.register(
+                (mc, screen, scaledWidth, scaledHeight) -> ClientSort.afterScreenInit(screen));
 
         // Register all custom S2C payload handlers
         ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerHandlerS2C);

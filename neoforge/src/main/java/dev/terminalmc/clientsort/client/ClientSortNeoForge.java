@@ -34,13 +34,23 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@Mod(value = ClientSort.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber(modid = ClientSort.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Mod(
+        value = ClientSort.MOD_ID,
+        dist = Dist.CLIENT
+)
+@EventBusSubscriber(
+        modid = ClientSort.MOD_ID,
+        bus = EventBusSubscriber.Bus.MOD,
+        value = Dist.CLIENT
+)
 public class ClientSortNeoForge {
+
     public ClientSortNeoForge() {
         // Register config screen
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-                () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent));
+        ModLoadingContext.get().registerExtensionPoint(
+                IConfigScreenFactory.class,
+                () -> (mc, parent) -> ConfigScreenProvider.getConfigScreen(parent)
+        );
 
         // Initialize client
         ClientSort.init();
@@ -54,8 +64,12 @@ public class ClientSortNeoForge {
         ClientSort.KEYBINDS.forEach(event::register);
     }
 
-    @EventBusSubscriber(modid = ClientSort.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(
+            modid = ClientSort.MOD_ID,
+            value = Dist.CLIENT
+    )
     static class ClientEventHandler {
+
         /**
          * Registers after-tick event.
          */
@@ -96,12 +110,12 @@ public class ClientSortNeoForge {
                         (payload, context) -> rp.handler.accept(
                                 payload,
                                 Minecraft.getInstance(),
-                                (LocalPlayer)context.player()
+                                (LocalPlayer) context.player()
                         ),
                         (payload, context) -> rp.handler.accept(
                                 payload,
                                 Minecraft.getInstance(),
-                                (LocalPlayer)context.player()
+                                (LocalPlayer) context.player()
                         )
                 )
         );

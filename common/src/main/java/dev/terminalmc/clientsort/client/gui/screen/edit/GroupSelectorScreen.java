@@ -36,6 +36,7 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class GroupSelectorScreen extends Screen {
+
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
     private final LinkedList<ControlButton> buttons = new LinkedList<>();
@@ -68,35 +69,28 @@ public class GroupSelectorScreen extends Screen {
     private void rebuildGui() {
         clearWidgets();
 
-        StringWidget titleWidget = new StringWidget(
-                0,
-                2,
-                width,
-                font.lineHeight,
-                title,
-                font
-        );
+        StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        CycleButton<Boolean> toggleButton = CycleButton.booleanBuilder(
-                localized("button", "gui.enabled").withStyle(ChatFormatting.GREEN),
-                        localized("button", "gui.disabled").withStyle(ChatFormatting.RED))
-                .withInitialValue(options().showButtons)
-                .create(
+        CycleButton<Boolean> toggleButton =
+                CycleButton.booleanBuilder(
+                        localized("button", "gui.enabled").withStyle(ChatFormatting.GREEN),
+                        localized("button", "gui.disabled").withStyle(ChatFormatting.RED)
+                ).withInitialValue(options().showButtons).create(
                         width / 2 - 125,
                         height - 22,
                         120,
                         20,
                         localized("button", "gui"),
-                        (buttons,  status) -> {
+                        (buttons, status) -> {
                             options().showButtons = status;
                             Config.save();
                             init();
-                        });
+                        }
+                );
         addRenderableWidget(toggleButton);
 
-        Button cancelButton = Button.builder(CommonComponents.GUI_BACK,
-                        (button) -> onClose())
+        Button cancelButton = Button.builder(CommonComponents.GUI_BACK, (button) -> onClose())
                 .pos(width / 2 + 5, height - 22)
                 .size(120, 20)
                 .build();

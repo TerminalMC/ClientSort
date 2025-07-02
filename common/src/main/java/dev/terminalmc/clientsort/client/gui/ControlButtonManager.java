@@ -51,7 +51,9 @@ import java.util.LinkedList;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class ControlButtonManager {
-    private ControlButtonManager() {}
+
+    private ControlButtonManager() {
+    }
 
     private static final int BUTTON_SPACING = 1;
 
@@ -71,16 +73,18 @@ public class ControlButtonManager {
     }
 
     /**
-     * Generates zero or more control buttons in accordance with config and
-     * state, and if any were generated, adds them to the screen.
+     * Generates zero or more control buttons in accordance with config and state, and if any were
+     * generated, adds them to the screen.
      */
     public static void afterScreenInit(Screen screen) {
-        if (!(screen instanceof AbstractContainerScreen<?> acs)) return;
+        if (!(screen instanceof AbstractContainerScreen<?> acs))
+            return;
 
         containerButtons.clear();
         playerButtons.clear();
 
-        if (!options().showButtons) return;
+        if (!options().showButtons)
+            return;
 
         // Allow forcing buttons to be shown on editor screens
         boolean forceShowContainer = false;
@@ -113,8 +117,8 @@ public class ControlButtonManager {
     }
 
     /**
-     * Generates zero or one config buttons in accordance with params and
-     * config, and if a button was generated, adds it to the screen.
+     * Generates zero or one config buttons in accordance with params and config, and if a button
+     * was generated, adds it to the screen.
      */
     private static void generate(
             AbstractContainerScreen<?> screen,
@@ -123,7 +127,7 @@ public class ControlButtonManager {
             boolean forceShow,
             Config.Options.CONTROL_BUTTON type
     ) {
-        switch(type) {
+        switch (type) {
             case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
             case STACK_FILL -> generateStackFillButton(screen, refSlot, isPlayerInv, forceShow);
             case TRANSFER -> generateTransferButton(screen, refSlot, isPlayerInv, forceShow);
@@ -138,18 +142,22 @@ public class ControlButtonManager {
     ) {
         // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
+        if (player == null)
+            return;
 
         // Preliminary check; never display container buttons on player screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+        if (screen instanceof InventoryScreen && !isPlayerInv)
+            return;
 
         // Preliminary check; never display buttons on basic workstations
         // or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
+            return;
 
         // Get the container we're adding buttons for
         Container container = isPlayerInv ? player.getInventory() : getContainer(player);
-        if (container == null) return;
+        if (container == null)
+            return;
 
         // Retrieve the relevant container or GUI class
         Object object = container instanceof SimpleContainer ? screen.getMenu() : container;
@@ -213,21 +221,25 @@ public class ControlButtonManager {
     ) {
         // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
+        if (player == null)
+            return;
 
         // Sanity check; never display container buttons on player screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+        if (screen instanceof InventoryScreen && !isPlayerInv)
+            return;
 
         // Sanity check; never display buttons on basic workstations
         // or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
+            return;
 
         // Get the container we're adding buttons for, and its layout
         ButtonLayout srcLayout = null;
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
         if (srcContainer != null) {
             // Retrieve the relevant container or GUI class
-            Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+            Object srcObject =
+                    srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
             // Check for perfect layout match
             srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
             // If no perfect match, try to find a layout for any superclass
@@ -245,7 +257,8 @@ public class ControlButtonManager {
         Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
         if (dstContainer != null && srcContainer != dstContainer) {
             // Retrieve the relevant container or GUI class
-            Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+            Object dstObject =
+                    dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
             // Check for perfect layout match
             dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
             // If no perfect match, try to find a layout for any superclass
@@ -274,9 +287,10 @@ public class ControlButtonManager {
         // Only add the button if it's whitelisted or forced, and if it's
         // forced, show it as inactive
         boolean active;
-        if (srcLayout != null && srcLayout.stackFillEnabled
-                && dstLayout != null && dstLayout.stackFillEnabled
-        ) {
+        if (srcLayout != null
+                && srcLayout.stackFillEnabled
+                && dstLayout != null
+                && dstLayout.stackFillEnabled) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -305,21 +319,25 @@ public class ControlButtonManager {
     ) {
         // Sanity check; we need a player to work with
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
+        if (player == null)
+            return;
 
         // Sanity check; never display container buttons on player screen
-        if (screen instanceof InventoryScreen && !isPlayerInv) return;
+        if (screen instanceof InventoryScreen && !isPlayerInv)
+            return;
 
         // Sanity check; never display buttons on basic workstations
         // or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3) return;
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
+            return;
 
         // Get the container we're adding buttons for, and its layout
         ButtonLayout srcLayout = null;
         Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
         if (srcContainer != null) {
             // Retrieve the relevant container or GUI class
-            Object srcObject = srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
+            Object srcObject =
+                    srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
             // Check for perfect layout match
             srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
             // If no perfect match, try to find a layout for any superclass
@@ -337,7 +355,8 @@ public class ControlButtonManager {
         Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
         if (dstContainer != null && srcContainer != dstContainer) {
             // Retrieve the relevant container or GUI class
-            Object dstObject = dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
+            Object dstObject =
+                    dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
             // Check for perfect layout match
             dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
             // If no perfect match, try to find a layout for any superclass
@@ -366,9 +385,10 @@ public class ControlButtonManager {
         // Only add the button if it's whitelisted or forced, and if it's
         // forced, show it as inactive
         boolean active;
-        if (srcLayout != null && srcLayout.transferEnabled
-                && dstLayout != null && dstLayout.transferEnabled
-        ) {
+        if (srcLayout != null
+                && srcLayout.transferEnabled
+                && dstLayout != null
+                && dstLayout.transferEnabled) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -390,8 +410,8 @@ public class ControlButtonManager {
     }
 
     /**
-     * @return {@code true} if the class name represents a valid and loadable
-     * class of which the object is an instance.
+     * @return {@code true} if the class name represents a valid and loadable class of which the
+     * object is an instance.
      */
     public static boolean isInstanceOf(Object object, String className) {
         try {
@@ -399,16 +419,18 @@ public class ControlButtonManager {
             return clazz.isInstance(object);
         } catch (ClassNotFoundException e) {
             if (ClientSort.debug) {
-                ClientSort.LOG.warn("Unable to check instance for object '{}': Class '{}' not found.",
-                        object.getClass().getName(), className);
+                ClientSort.LOG.warn(
+                        "Unable to check instance for object '{}': Class '{}' not found.",
+                        object.getClass().getName(),
+                        className
+                );
             }
             return false;
         }
     }
 
     /**
-     * @return the container associated with the player's container menu, if it
-     * exists.
+     * @return the container associated with the player's container menu, if it exists.
      */
     public static @Nullable Container getContainer(Player player) {
         try {
@@ -426,13 +448,13 @@ public class ControlButtonManager {
             ControlButton button,
             boolean isPlayerInv
     ) {
-        ((ScreenAccessor)screen).callAddRenderableWidget(button);
+        ((ScreenAccessor) screen).callAddRenderableWidget(button);
         (isPlayerInv ? playerButtons : containerButtons).add(button);
     }
 
     /**
-     * @return the slot to which a button position in the respective container
-     * should be anchored, if any are available.
+     * @return the slot to which a button position in the respective container should be anchored,
+     * if any are available.
      */
     private static @Nullable Slot getReferenceSlot(
             AbstractContainerScreen<?> screen,
@@ -445,14 +467,14 @@ public class ControlButtonManager {
                         ? (slot.container instanceof Inventory)
                         && helper.getScope(slot).equals(Scope.PLAYER_INV)
                         : !(slot.container instanceof Inventory)
-                        && helper.getScope(slot).equals(Scope.CONTAINER_INV))
+                                && helper.getScope(slot).equals(Scope.CONTAINER_INV))
                 .max(Comparator.comparingInt(slot -> slot.x * 9999 - slot.y))
                 .orElse(null);
     }
 
     /**
-     * @return the number of slots in the respective container that are
-     * theoretically able to store any item.
+     * @return the number of slots in the respective container that are theoretically able to store
+     * any item.
      */
     private static int getNumberOfBulkInventorySlots(
             AbstractContainerScreen<?> screen,
@@ -467,8 +489,8 @@ public class ControlButtonManager {
     }
 
     /**
-     * @return the offset, shifted by a constant amount based on the number
-     * of buttons already generated.
+     * @return the offset, shifted by a constant amount based on the number of buttons already
+     * generated.
      */
     @SuppressWarnings("ConstantValue")
     public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {

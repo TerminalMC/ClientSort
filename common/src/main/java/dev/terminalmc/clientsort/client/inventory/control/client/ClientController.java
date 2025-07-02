@@ -16,8 +16,8 @@
 
 package dev.terminalmc.clientsort.client.inventory.control.client;
 
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
@@ -26,10 +26,11 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 
 /**
- * Provides methods for manipulating the player's inventory or open container
- * via vanilla C2S inventory interaction packets.
+ * Provides methods for manipulating the player's inventory or open container via vanilla C2S
+ * inventory interaction packets.
  */
 public abstract class ClientController extends SingleUseController {
+
     public ClientController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
@@ -43,7 +44,8 @@ public abstract class ClientController extends SingleUseController {
      */
     @Override
     public void sort(SortOrder sortOrder) {
-        if (!canOperate()) return;
+        if (!canOperate())
+            return;
 
         // Collect partial stacks
         collect();
@@ -65,22 +67,22 @@ public abstract class ClientController extends SingleUseController {
 
         // Prepare sounds
         boolean playSound = SoundManager.shouldPlaySortingSounds();
-        if (playSound) SoundManager.resetForCount(
-                SoundManager.estimateSortSounds(originScopeStacks));
+        if (playSound)
+            SoundManager.resetForCount(SoundManager.estimateSortSounds(originScopeStacks));
 
         // Sort
         sort(key, playSound);
     }
 
     /**
-     * Uses vanilla C2S inventory interaction packets to collect partial stacks
-     * into the smallest possible number of slots.
+     * Uses vanilla C2S inventory interaction packets to collect partial stacks into the smallest
+     * possible number of slots.
      */
     protected abstract void collect();
 
     /**
-     * Uses vanilla C2S inventory interaction packets to sort the inventory
-     * according to {@code key}.
+     * Uses vanilla C2S inventory interaction packets to sort the inventory according to
+     * {@code key}.
      */
     protected abstract void sort(int[] key, boolean playSound);
 }

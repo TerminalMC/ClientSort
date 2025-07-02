@@ -23,7 +23,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SortResultHandler {
-    private SortResultHandler() {}
+
+    private SortResultHandler() {
+    }
 
     /**
      * Handles a {@link SortResultPayload} sent by a server.

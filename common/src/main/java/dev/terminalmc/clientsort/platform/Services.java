@@ -22,6 +22,7 @@ import dev.terminalmc.clientsort.platform.services.IPlatformServices;
 import java.util.ServiceLoader;
 
 public class Services {
+
     public static final IPlatformServices PLATFORM = load(IPlatformServices.class);
 
     public static <T> T load(Class<T> clazz) {

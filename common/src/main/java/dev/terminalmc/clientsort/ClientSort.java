@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort;
 import dev.terminalmc.clientsort.util.ModLogger;
 
 public class ClientSort {
+
     public static final String MOD_ID = "clientsort";
     public static final String MOD_NAME = "ClientSort";
     public static final ModLogger LOG = new ModLogger(MOD_NAME);
@@ -26,8 +27,7 @@ public class ClientSort {
     /**
      * Whether to show debug info on the GUI and write debug logs.
      * <p>
-     * While this value can be set via the config menu, it is intentionally
-     * non-persistent.
+     * While this value can be set via the config menu, it is intentionally non-persistent.
      */
     public static boolean debug;
 }

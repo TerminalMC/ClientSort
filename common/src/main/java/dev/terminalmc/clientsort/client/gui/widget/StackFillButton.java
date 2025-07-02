@@ -30,15 +30,28 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 
 public class StackFillButton extends ControlButton {
+
     private static final WidgetSprites SPRITES_UP = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up_highlighted")
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/stack_fill_up_disabled"
+            ),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/stack_fill_up_highlighted"
+            )
     );
     private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down_highlighted")
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/stack_fill_down_disabled"
+            ),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/stack_fill_down_highlighted"
+            )
     );
 
     public StackFillButton(

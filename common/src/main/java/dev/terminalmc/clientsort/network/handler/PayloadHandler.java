@@ -34,15 +34,16 @@ import java.util.function.Function;
  * Provides common methods to custom payload handlers.
  */
 public abstract class PayloadHandler {
+
     @FunctionalInterface
     public interface ThrowingConsumer<T> {
+
         void accept(T t) throws Exception;
     }
 
     /**
-     * Validates the data of a payload, performs an associated operation,
-     * catches any errors thrown in the process and finally sends a result
-     * payload back to the player.
+     * Validates the data of a payload, performs an associated operation, catches any errors thrown
+     * in the process and finally sends a result payload back to the player.
      */
     @SuppressWarnings("unused")
     public static void processPayload(
@@ -85,23 +86,18 @@ public abstract class PayloadHandler {
                 menu.broadcastChanges();
             }
             if (Services.PLATFORM.canSendToPlayer(player, responseType)) {
-                Services.PLATFORM.sendToPlayer(
-                        player,
-                        responseGenerator.apply(error)
-                );
+                Services.PLATFORM.sendToPlayer(player, responseGenerator.apply(error));
             }
         }
     }
 
     /**
      * @return the menu belonging to the player and matching the container ID.
-     * @throws PayloadHandlerException if no matching menu was found, or one was
-     * found but is not valid for the player.
+     * @throws PayloadHandlerException if no matching menu was found, or one was found but is not
+     *                                 valid for the player.
      */
-    private static @NotNull AbstractContainerMenu getMenu(
-            ServerPlayer player,
-            int containerId
-    ) throws PayloadHandlerException {
+    private static @NotNull AbstractContainerMenu getMenu(ServerPlayer player, int containerId)
+            throws PayloadHandlerException {
         AbstractContainerMenu menu;
 
         // Retrieve the matching container menu
@@ -112,14 +108,16 @@ public abstract class PayloadHandler {
         } else {
             throw new PayloadHandlerException(String.format(
                     "Container ID '%d' does not match player inventory or container!",
-                    containerId));
+                    containerId
+            ));
         }
 
         // Check that the menu is valid
         if (!menu.stillValid(player)) {
             throw new PayloadHandlerException(String.format(
                     "Container ID '%d' is not valid for the player!",
-                    containerId));
+                    containerId
+            ));
         }
 
         return menu;
@@ -164,7 +162,7 @@ public abstract class PayloadHandler {
         for (int i = 0; i < slotMapping.length - 1; i += 2) {
             sb.append(slotMapping[i]);
             sb.append("->");
-            sb.append(slotMapping[i+1]);
+            sb.append(slotMapping[i + 1]);
             sb.append(", ");
         }
         ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");

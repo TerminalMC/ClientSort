@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class Config {
+
     private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
     private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
     private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
@@ -69,6 +70,7 @@ public class Config {
 
         public static final HotbarScope hotbarScopeDefault = HotbarScope.HOTBAR;
         public HotbarScope hotbarScope = hotbarScopeDefault;
+
         public enum HotbarScope {
             HOTBAR,
             INVENTORY,
@@ -77,6 +79,7 @@ public class Config {
 
         public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.EXTRA;
         public ExtraSlotScope extraSlotScope = extraSlotScopeDefault;
+
         public enum ExtraSlotScope {
             EXTRA,
             HOTBAR,
@@ -167,18 +170,20 @@ public class Config {
         public static final Supplier<List<ButtonLayout>> buttonLayoutsDefaultList = () -> List.of(
                 new ButtonLayout(Inventory.class.getName(), null, true, true, true),
                 new ButtonLayout(PlayerEnderChestContainer.class.getName(), null, true, true, true),
-                new ButtonLayout(RandomizableContainerBlockEntity.class.getName(), null, true, true, true),
+                new ButtonLayout(
+                        RandomizableContainerBlockEntity.class.getName(), null, true, true, true
+                ),
                 new ButtonLayout(ChestMenu.class.getName(), null, true, true, true),
                 new ButtonLayout(ShulkerBoxMenu.class.getName(), null, true, true, true),
                 new ButtonLayout(HorseInventoryMenu.class.getName(), null, true, true, true),
                 new ButtonLayout(HopperMenu.class.getName(), null, false, false, true)
         );
-        public static final Supplier<Map<String,ButtonLayout>> buttonLayoutsDefault = () -> {
-            Map<String,ButtonLayout> map = new LinkedHashMap<>();
+        public static final Supplier<Map<String, ButtonLayout>> buttonLayoutsDefault = () -> {
+            Map<String, ButtonLayout> map = new LinkedHashMap<>();
             buttonLayoutsDefaultList.get().forEach((layout) -> map.put(layout.className, layout));
             return map;
         };
-        public Map<String,ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
+        public Map<String, ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
     }
 
     // Validation
@@ -225,9 +230,11 @@ public class Config {
                 )
         );
         // Sort the layouts by key for better UX
-        Map<String,ButtonLayout> sortedLayouts = new LinkedHashMap<>();
-        options.buttonLayouts.keySet().stream().sorted().forEach((k) ->
-                sortedLayouts.put(k, options.buttonLayouts.get(k)));
+        Map<String, ButtonLayout> sortedLayouts = new LinkedHashMap<>();
+        options.buttonLayouts.keySet()
+                .stream()
+                .sorted()
+                .forEach((k) -> sortedLayouts.put(k, options.buttonLayouts.get(k)));
         options.buttonLayouts = sortedLayouts;
     }
 
@@ -273,8 +280,12 @@ public class Config {
 
     @SuppressWarnings("SameParameterValue")
     private static @Nullable Config load(Path file, Gson gson) {
-        try (InputStreamReader reader = new InputStreamReader(
-                new FileInputStream(file.toFile()), StandardCharsets.UTF_8)) {
+        try (
+                InputStreamReader reader = new InputStreamReader(
+                        new FileInputStream(file.toFile()),
+                        StandardCharsets.UTF_8
+                )
+        ) {
             return gson.fromJson(reader, Config.class);
         } catch (Exception e) {
             // Catch Exception as errors in deserialization may not fall under
@@ -287,32 +298,47 @@ public class Config {
     private static void backup() {
         try {
             ClientSort.LOG.warn("Copying {} to {}", FILE_NAME, BACKUP_FILE_NAME);
-            if (!Files.isDirectory(CONFIG_DIR)) Files.createDirectories(CONFIG_DIR);
+            if (!Files.isDirectory(CONFIG_DIR))
+                Files.createDirectories(CONFIG_DIR);
             Path file = CONFIG_DIR.resolve(FILE_NAME);
             Path backupFile = file.resolveSibling(BACKUP_FILE_NAME);
-            Files.move(file, backupFile, StandardCopyOption.ATOMIC_MOVE,
-                    StandardCopyOption.REPLACE_EXISTING);
+            Files.move(
+                    file,
+                    backupFile,
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
         } catch (IOException e) {
             ClientSort.LOG.error("Unable to copy config file", e);
         }
     }
 
     public static void save() {
-        if (instance == null) return;
+        if (instance == null)
+            return;
         instance.validate();
         try {
-            if (!Files.isDirectory(CONFIG_DIR)) Files.createDirectories(CONFIG_DIR);
+            if (!Files.isDirectory(CONFIG_DIR))
+                Files.createDirectories(CONFIG_DIR);
             Path file = CONFIG_DIR.resolve(FILE_NAME);
             Path tempFile = file.resolveSibling(file.getFileName() + ".tmp");
-            try (OutputStreamWriter writer = new OutputStreamWriter(
-                    new FileOutputStream(tempFile.toFile()), StandardCharsets.UTF_8)) {
+            try (
+                    OutputStreamWriter writer = new OutputStreamWriter(
+                            new FileOutputStream(tempFile.toFile()),
+                            StandardCharsets.UTF_8
+                    )
+            ) {
                 writer.write(GSON.toJson(instance));
             } catch (IOException e) {
                 throw new IOException(e);
             }
-            Files.move(tempFile, file, StandardCopyOption.ATOMIC_MOVE,
-                    StandardCopyOption.REPLACE_EXISTING);
-            dev.terminalmc.clientsort.client.ClientSort.onConfigSaved(instance);
+            Files.move(
+                    tempFile,
+                    file,
+                    StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+            ClientSort.onConfigSaved(instance);
         } catch (IOException e) {
             ClientSort.LOG.error("Unable to save config", e);
         }

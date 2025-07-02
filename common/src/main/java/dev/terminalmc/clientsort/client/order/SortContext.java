@@ -21,9 +21,11 @@ import net.minecraft.world.level.Level;
 
 /**
  * Additional context for executing a sort.
+ *
  * @see SortOrder#sort
  */
 public class SortContext {
+
     /**
      * The level associated with the inventory being sorted.
      */

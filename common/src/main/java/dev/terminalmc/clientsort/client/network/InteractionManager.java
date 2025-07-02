@@ -30,14 +30,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * Manages rate-limited transmission of interaction events for client-side
- * inventory manipulation operations.
+ * Manages rate-limited transmission of interaction events for client-side inventory manipulation
+ * operations.
  */
 public class InteractionManager {
+
     public static final Waiter TICK_WAITER = (TriggerType type) -> type == TriggerType.TICK;
 
     private static final ArrayDeque<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
-    private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+    private static final ScheduledThreadPoolExecutor scheduledExecutor =
+            new ScheduledThreadPoolExecutor(1);
 
     private static ScheduledFuture<?> tickFuture;
     private static Waiter waiter = null;
@@ -46,10 +48,12 @@ public class InteractionManager {
      * Queues the event.
      */
     public static void push(InteractionEvent interactionEvent) {
-        if (interactionEvent == null) return;
+        if (interactionEvent == null)
+            return;
         synchronized (interactionEventQueue) {
             interactionEventQueue.add(interactionEvent);
-            if (waiter == null) triggerSend(TriggerType.INITIAL);
+            if (waiter == null)
+                triggerSend(TriggerType.INITIAL);
         }
     }
 
@@ -57,10 +61,12 @@ public class InteractionManager {
      * Adds the event to the front of the queue.
      */
     public static void now(InteractionEvent interactionEvent) {
-        if (interactionEvent == null) return;
+        if (interactionEvent == null)
+            return;
         synchronized (interactionEventQueue) {
             interactionEventQueue.addFirst(interactionEvent);
-            if (waiter == null) triggerSend(TriggerType.INITIAL);
+            if (waiter == null)
+                triggerSend(TriggerType.INITIAL);
         }
     }
 
@@ -68,10 +74,12 @@ public class InteractionManager {
      * Queues the specified events.
      */
     public static void pushAll(Collection<InteractionEvent> interactionEvents) {
-        if (interactionEvents == null) return;
+        if (interactionEvents == null)
+            return;
         synchronized (interactionEventQueue) {
             interactionEventQueue.addAll(interactionEvents);
-            if (waiter == null) triggerSend(TriggerType.INITIAL);
+            if (waiter == null)
+                triggerSend(TriggerType.INITIAL);
         }
     }
 
@@ -121,14 +129,19 @@ public class InteractionManager {
 
     /**
      * Sets the tick rate of the interaction manager.
+     *
      * @param milliSeconds the time, in milliseconds, between ticks.
      */
     public static void setTickRate(long milliSeconds) {
         if (tickFuture != null) {
             tickFuture.cancel(false);
         }
-        tickFuture = scheduledExecutor.scheduleAtFixedRate(InteractionManager::tick,
-                milliSeconds, milliSeconds, TimeUnit.MILLISECONDS);
+        tickFuture = scheduledExecutor.scheduleAtFixedRate(
+                InteractionManager::tick,
+                milliSeconds,
+                milliSeconds,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     private static void tick() {
@@ -141,6 +154,7 @@ public class InteractionManager {
 
     @FunctionalInterface
     public interface Waiter {
+
         boolean trigger(TriggerType triggerType);
 
         @SuppressWarnings("unused")
@@ -151,6 +165,7 @@ public class InteractionManager {
 
     @Deprecated
     public static class GuiConfirmWaiter implements Waiter {
+
         int triggers;
 
         public GuiConfirmWaiter(int triggers) {
@@ -164,13 +179,19 @@ public class InteractionManager {
     }
 
     public enum TriggerType {
-        INITIAL, CONTAINER_SLOT_UPDATE, GUI_CONFIRM, HELD_ITEM_CHANGE, TICK
+        INITIAL,
+        CONTAINER_SLOT_UPDATE,
+        GUI_CONFIRM,
+        HELD_ITEM_CHANGE,
+        TICK
     }
 
     @FunctionalInterface
     public interface InteractionEvent {
+
         /**
          * Sends the interaction to the server
+         *
          * @return the number of inventory packets to wait for
          */
         Waiter send();
@@ -178,6 +199,7 @@ public class InteractionManager {
 
     @FunctionalInterface
     public interface ClickEventFactory {
+
         /**
          * Creates an interaction event based on a click.
          */
@@ -185,6 +207,7 @@ public class InteractionManager {
     }
 
     public static class CallbackEvent implements InteractionEvent {
+
         private final Supplier<Waiter> callback;
 
         public CallbackEvent(Supplier<Waiter> callback) {
