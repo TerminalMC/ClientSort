@@ -47,6 +47,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -60,6 +62,8 @@ public class ControlButtonManager {
     // Alters whether buttons are arrayed horizontally, vertically or :/
     private static final int BUTTON_SHIFT_X = 0;
     private static final int BUTTON_SHIFT_Y = 1;
+
+    private static final Set<Class<?>> layoutClasses = new LinkedHashSet<>();
 
     private static final LinkedHashSet<ControlButton> containerButtons = new LinkedHashSet<>();
     private static final LinkedHashSet<ControlButton> playerButtons = new LinkedHashSet<>();
@@ -161,21 +165,8 @@ public class ControlButtonManager {
 
         // Retrieve the relevant container or GUI class
         Object object = container instanceof SimpleContainer ? screen.getMenu() : container;
-        // Check for perfect layout match
-        ButtonLayout layout = options().buttonLayouts.get(object.getClass().getName());
-        // If no perfect match, try to find a layout for any superclass
-        // TODO benchmark and if it's slow, consider caching
-        // TODO depending on benchmark, consider performing inheritance cross-
-        //  checks of instance-matching layouts to ensure that we always get
-        //  the closest one
-        if (layout == null) {
-            for (ButtonLayout l : options().buttonLayouts.values()) {
-                if (isInstanceOf(object, l.className)) {
-                    layout = l;
-                    break;
-                }
-            }
-        }
+        // Retrieve the associated layout, if any
+        ButtonLayout layout = getLayout(object.getClass());
 
         // Get the configured or default offset
         Vec2i offset;
@@ -240,17 +231,8 @@ public class ControlButtonManager {
             // Retrieve the relevant container or GUI class
             Object srcObject =
                     srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-            // Check for perfect layout match
-            srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
-            // If no perfect match, try to find a layout for any superclass
-            if (srcLayout == null) {
-                for (ButtonLayout l : options().buttonLayouts.values()) {
-                    if (isInstanceOf(srcObject, l.className)) {
-                        srcLayout = l;
-                        break;
-                    }
-                }
-            }
+            // Retrieve the associated layout, if any
+            srcLayout = getLayout(srcObject.getClass());
         }
         // Get the other container (if any), and its layout
         ButtonLayout dstLayout = null;
@@ -259,17 +241,8 @@ public class ControlButtonManager {
             // Retrieve the relevant container or GUI class
             Object dstObject =
                     dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-            // Check for perfect layout match
-            dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
-            // If no perfect match, try to find a layout for any superclass
-            if (dstLayout == null) {
-                for (ButtonLayout l : options().buttonLayouts.values()) {
-                    if (isInstanceOf(dstObject, l.className)) {
-                        dstLayout = l;
-                        break;
-                    }
-                }
-            }
+            // Retrieve the associated layout, if any
+            dstLayout = getLayout(dstObject.getClass());
         }
 
         // Get the configured or default offset
@@ -338,17 +311,8 @@ public class ControlButtonManager {
             // Retrieve the relevant container or GUI class
             Object srcObject =
                     srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-            // Check for perfect layout match
-            srcLayout = options().buttonLayouts.get(srcObject.getClass().getName());
-            // If no perfect match, try to find a layout for any superclass
-            if (srcLayout == null) {
-                for (ButtonLayout l : options().buttonLayouts.values()) {
-                    if (isInstanceOf(srcObject, l.className)) {
-                        srcLayout = l;
-                        break;
-                    }
-                }
-            }
+            // Retrieve the associated layout, if any
+            srcLayout = getLayout(srcObject.getClass());
         }
         // Get the other container (if any), and its layout
         ButtonLayout dstLayout = null;
@@ -357,17 +321,8 @@ public class ControlButtonManager {
             // Retrieve the relevant container or GUI class
             Object dstObject =
                     dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-            // Check for perfect layout match
-            dstLayout = options().buttonLayouts.get(dstObject.getClass().getName());
-            // If no perfect match, try to find a layout for any superclass
-            if (dstLayout == null) {
-                for (ButtonLayout l : options().buttonLayouts.values()) {
-                    if (isInstanceOf(dstObject, l.className)) {
-                        dstLayout = l;
-                        break;
-                    }
-                }
-            }
+            // Retrieve the associated layout, if any
+            dstLayout = getLayout(dstObject.getClass());
         }
 
         // Get the configured or default offset
@@ -410,23 +365,54 @@ public class ControlButtonManager {
     }
 
     /**
-     * @return {@code true} if the class name represents a valid and loadable class of which the
-     * object is an instance.
+     * Reloads the cache of layout configuration classes.
      */
-    public static boolean isInstanceOf(Object object, String className) {
-        try {
-            Class<?> clazz = Class.forName(className);
-            return clazz.isInstance(object);
-        } catch (ClassNotFoundException e) {
-            if (ClientSort.debug) {
-                ClientSort.LOG.warn(
-                        "Unable to check instance for object '{}': Class '{}' not found.",
-                        object.getClass().getName(),
-                        className
-                );
+    public static void reloadLayoutClasses(Set<String> classNames) {
+        layoutClasses.clear();
+        for (String className : classNames) {
+            try {
+                layoutClasses.add(Class.forName(className));
+            } catch (ClassNotFoundException e) {
+                if (ClientSort.debug) {
+                    ClientSort.LOG.warn(
+                            "Unable to load layout class '{}': Class not found.",
+                            className
+                    );
+                }
             }
-            return false;
         }
+    }
+
+    /**
+     * @return the lowest-degree matching layout for the specified class, if any exists.
+     */
+    public static ButtonLayout getLayout(Class<?> cls) {
+        // Check for a perfect match
+        ButtonLayout layout = options().buttonLayouts.get(cls.getName());
+        if (layout != null)
+            return layout;
+
+        // No perfect match; find all higher-degree matching classes
+        Set<Class<?>> matches = layoutClasses.stream()
+                .filter(c -> c.isAssignableFrom(cls))
+                .collect(Collectors.toSet());
+
+        // Double-iterate to find the lowest-degree match
+        for (Class<?> c1 : matches) {
+            boolean hasSubclass = false;
+            // If any c2 is a subclass of c1, c1 is not lowest
+            for (Class<?> c2 : matches) {
+                if (!c1.equals(c2) && c1.isAssignableFrom(c2)) {
+                    hasSubclass = true;
+                    break;
+                }
+            }
+            if (!hasSubclass) {
+                // No subclass found; return layout for c1
+                return options().buttonLayouts.get(c1.getName());
+            }
+        }
+        return null;
     }
 
     /**

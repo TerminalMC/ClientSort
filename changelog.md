@@ -7,6 +7,7 @@
   configured layout
 - Added a support workaround for supermartijn642corelib
 - Improved compatibility with sophisticatedcore
+- Added full inheritance checking for layout key classes
 
 ## 2.0.0-beta.4
 
