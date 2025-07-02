@@ -13,7 +13,7 @@
   "title.clientsort.groupSelector": "Редактор интерфейса ClientSort - Выберите виджет для редактирования",
 
   "title.clientsort.positionEditor": "Редактор интерфейса ClientSort",
-  
+
   "title.clientsort.confirm.saveAsDefault": "Сохранить смещение кнопок по умолчанию",
   "message.clientsort.confirm.saveAsDefault": "Вы уверены, что хотите сохранить это положение кнопки как по умолчанию? Если вы захотите сбросить положение по умолчанию в будущем, вам потребуется сделать это через главное меню настроек.",
 
@@ -35,10 +35,10 @@
   "button.clientsort.splitConfig.tooltip": "Создать уникальную конфигурацию для этого интерфейса (требует подтверждения).",
   "button.clientsort.saveAsDefault": "Сохранить как по умолчанию",
   "button.clientsort.saveAsDefault.tooltip": "Сохранить текущее смещение как значение по умолчанию (требует подтверждения).",
-  "button.clientsort.undoChanges": "Отменить изменения",
-  "button.clientsort.undoChanges.tooltip": "Отменить все несохранённые изменения, сделанные на этом экране. Не отменяет подтверждённые изменения.",
-  "button.clientsort.reselect": "Перевыбрать",
-  "button.clientsort.reselect.tooltip": "Выбрать другой набор кнопок.",
+  "button.clientsort.undoChanges": "Отменить изменения",
+  "button.clientsort.undoChanges.tooltip": "Отменить все несохранённые изменения, сделанные на этом экране. Не отменяет подтверждённые изменения.",
+  "button.clientsort.reselect": "Перевыбрать",
+  "button.clientsort.reselect.tooltip": "Выбрать другой набор кнопок.",
 
   "info.clientsort.offset": "Смещение: (%d, %d)",
   "info.clientsort.layoutKey.current": "Ключ макета: %s",
