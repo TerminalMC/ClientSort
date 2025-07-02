@@ -87,8 +87,8 @@ public class Config {
             NONE
         }
 
-        public static final boolean bundlesUseLeftClickDefault = false;
-        public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
+        public static final boolean bundlesUseRightClickDefault = false;
+        public boolean bundlesUseRightClick = bundlesUseRightClickDefault;
 
         // Sort order options
 
