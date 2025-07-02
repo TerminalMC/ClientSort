@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.gui.screen;
+package dev.terminalmc.clientsort.client.compat.modmenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
 
-public class ModMenuIntegration implements ModMenuApi {
+public class ModMenuImpl implements ModMenuApi {
     /**
      * Registers the config screen with ModMenu.
      */

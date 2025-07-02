@@ -1,40 +1,69 @@
+import util.PropUtil
+
 plugins {
     id("multiloader-loader")
     id("fabric-loom")
 }
 
+// Configure Fabric dependencies
 dependencies {
+    // Minecraft
     minecraft("com.mojang:minecraft:${minecraft_version}")
-    mappings loom.layered {
+
+    // Mappings
+    mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
+    })
+
+    // MixinExtras
+    if (mixinextras_jij_fabric == "true") {
+        include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
     }
 
-    // Fabric Loader and API
+    // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+
+    // Fabric API
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
-    // JiJ MixinExtras if required to be newer than minimum loader-provided version
-//    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
-
-    // ModMenu
-    modImplementation("maven.modrinth:mOgUt4GM:${modmenu_version}")
-    
-    // Cloth Config API
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${clothconfig_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
+    // Apply property-defined dependencies
+    final selector = (String type, dep) -> {
+        switch (type) {
+            case "anp": //noinspection DependencyNotationArgument
+                return annotationProcessor(dep)
+                break
+            case "api": //noinspection DependencyNotationArgument
+                return modApi(dep)
+                break
+            case "con": //noinspection DependencyNotationArgument
+                return modCompileOnly(dep)
+                break
+            case "imp": //noinspection DependencyNotationArgument
+                return modImplementation(dep)
+                break
+            case "inc": //noinspection DependencyNotationArgument
+                return include(dep)
+                break
+            case "-":
+                return dep
+                break
+            default:
+                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+        }
     }
-
-    // ItemLocks
-    modImplementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
+    new PropUtil(project).applyDependencies(project.name, selector)
 }
 
+// Configure Loom
 loom {
+    // Apply common AccessWidener if it exists
     def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
     if (aw.exists()) accessWidenerPath.set(aw)
     mixin {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
+    // Configure runs
     runs {
         client {
             client()

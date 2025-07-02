@@ -1,29 +1,21 @@
-# Builds the project on Linux and Windows, as a first line of defense against bad commits.
-name: Check Build
+# A Modrinth-only version of the normal release workflow.
+name: Release-Platform-Modrinth
 
 on:
-  push:
-    paths: [
-      '**src/**',
-      '**/*gradle*'
-    ]
-  pull_request:
-    paths: [
-      '**src/**',
-      '**/*gradle*'
-    ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  release:
     strategy:
       matrix:
         java: [
           21
         ]
         os: [
-          ubuntu-latest,
-          windows-latest
+          ubuntu-latest
         ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -42,7 +34,9 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build --stacktrace
+        run: ./gradlew build neoforge:publishModrinth fabric:publishModrinth --stacktrace
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       - name: Capture build artifacts
         if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
         uses: actions/upload-artifact@v4

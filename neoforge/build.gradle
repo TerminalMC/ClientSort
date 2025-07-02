@@ -1,46 +1,79 @@
+import util.PropUtil
+
 plugins {
     id("multiloader-loader")
     id("net.neoforged.moddev")
 }
 
+// Configure NeoForge dependencies
 dependencies {
-    // JiJ MixinExtras if required to be newer than minimum loader-provided version
-//    implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}"))
-    
-    // Cloth Config API
-    api("me.shedaniel.cloth:cloth-config-neoforge:${clothconfig_version}")
+    // MixinExtras
+    if (mixinextras_jij_neoforge == "true") {
+        implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}"))
+    }
 
-    // ItemLocks
-    implementation("maven.modrinth:tJzrFuyy:${itemlocks_version}")
+    // Apply property-defined dependencies
+    final selector = (String type, dep) -> {
+        switch (type) {
+            case "anp": //noinspection DependencyNotationArgument
+                return annotationProcessor(dep)
+                break
+            case "api": //noinspection DependencyNotationArgument
+                return api(dep)
+                break
+            case "con": //noinspection DependencyNotationArgument
+                return compileOnly(dep)
+                break
+            case "imp": //noinspection DependencyNotationArgument
+                return implementation(dep)
+                break
+            case "jar": //noinspection DependencyNotationArgument
+                return jarJar(dep)
+                break
+            case "-":
+                return dep
+                break
+            default:
+                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+        }
+    }
+    new PropUtil(project).applyDependencies(project.name, selector)
 }
 
+// Configure ModDevGradle
 neoForge {
     version = neoforge_version
-    // Automatically enable neoforge AccessTransformers if the file exists
+    // Apply common AccessTransformer if it exists
     def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) accessTransformers.from(at.absolutePath)
+    // Apply Parchment mappings
     parchment {
         minecraftVersion = parchment_minecraft_version
         mappingsVersion = parchment_version
     }
+    // Configure runs
     runs {
         configureEach {
             systemProperty("neoforge.enabledGameTestNamespaces", "${mod_id}")
-            // Unify the run config names with fabric
+            // Unify the run config names with Fabric
             ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
         }
         client {
+            //noinspection GroovyImplicitNullArgumentCall
             client()
         }
         server {
+            //noinspection GroovyImplicitNullArgumentCall
             server()
         }
     }
     mods {
         "${mod_id}" {
-            sourceSet sourceSets.main
+            //noinspection GroovyAssignabilityCheck
+            sourceSet(sourceSets.main)
         }
     }
 }
-
-sourceSets.main.resources { srcDir "src/generated/resources" }
+sourceSets.main.resources {
+    srcDir("src/generated/resources")
+}

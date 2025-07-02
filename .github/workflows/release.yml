@@ -1,8 +1,9 @@
-# Builds the project and publishes the artifacts to GitHub, Modrinth and CurseForge
-# Modrinth publishing requires a Modrinth PAT MODRINTH_TOKEN
-#   Will skip without error if not present
-# CurseForge publishing requires a CurseForge API token CURSEFORGE_TOKEN
-#   Will skip without error if not present
+# Builds the project and publishes the artifacts to GitHub, Modrinth and CurseForge.
+# Modrinth publishing requires a Modrinth PAT `MODRINTH_TOKEN`
+#   Will skip without error if not present.
+# CurseForge publishing requires a CurseForge API token `CURSEFORGE_TOKEN`
+#   Will skip without error if not present.
+# Preference using the root gradle.properties file to configure releases.
 name: Release
 
 on:
@@ -15,8 +16,12 @@ jobs:
   release:
     strategy:
       matrix:
-        java: [21]
-        os: [ubuntu-latest]
+        java: [
+          21
+        ]
+        os: [
+          ubuntu-latest
+        ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -34,9 +39,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-#        run: ./gradlew build neoforge:publishGithub fabric:publishGithub --stacktrace
-#        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth fabric:publishGithub fabric:publishModrinth --stacktrace
-        run: ./gradlew build neoforge:publishGithub neoforge:publishModrinth neoforge:publishCurseforge fabric:publishGithub fabric:publishModrinth fabric:publishCurseforge --stacktrace
+        run: ./gradlew build neoforge:publishModrinth neoforge:publishCurseforge neoforge:publishGithub fabric:publishModrinth fabric:publishCurseforge fabric:publishGithub --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
