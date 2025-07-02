@@ -28,7 +28,6 @@ import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -123,11 +122,6 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
      * @return the scope of the slot, or {@link Scope#INVALID} if the slot is not accessible.
      */
     public Scope getScope(Slot slot) {
-        // If the slot is not accessible, consider the scope invalid
-        if (!slot.mayPlace(ItemStack.EMPTY)) {
-            return Scope.INVALID;
-        }
-
         // Screen with only player inventory
         if (screen instanceof EffectRenderingInventoryScreen) {
             // Player inventory

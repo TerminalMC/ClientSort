@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.5
+
+- Improved compatibility with Neo/Forge modded containers extending ItemStackHandler
+
 ## 2.0.0-beta.4
 
 - Fixed an issue breaking button editor on modded inventory screens
