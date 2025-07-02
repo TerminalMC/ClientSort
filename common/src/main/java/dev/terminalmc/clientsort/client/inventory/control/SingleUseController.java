@@ -30,7 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -162,10 +162,10 @@ public abstract class SingleUseController {
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            CustomPacketPayload.Type<?> payloadType
+            ResourceLocation channel
     ) {
         if (options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(payloadType)) {
+                && ClientServices.PLATFORM.canSendToServer(channel)) {
             return new ServerController(screen, screenHelper, originSlot);
         }
 

@@ -245,7 +245,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
-                    SortPayload.TYPE
+                    SortPayload.ID
             ).sort(sortOrder);
             return true;
         }
@@ -258,7 +258,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                StackFillPayload.TYPE
+                StackFillPayload.ID
         ).fillStacks();
         return true;
     }
@@ -269,7 +269,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                TransferPayload.TYPE
+                TransferPayload.ID
         ).transfer();
         return true;
     }

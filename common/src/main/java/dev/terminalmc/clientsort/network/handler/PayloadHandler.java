@@ -19,7 +19,9 @@ package dev.terminalmc.clientsort.network.handler;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.platform.Services;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -52,8 +54,9 @@ public abstract class PayloadHandler {
             int containerId,
             ThrowingConsumer<AbstractContainerMenu> validator,
             Consumer<AbstractContainerMenu> operator,
-            CustomPacketPayload.Type<?> responseType,
-            Function<String, CustomPacketPayload> responseGenerator
+            ResourceLocation channel,
+            ResourceLocation responseChannel,
+            Function<String, Packet<ClientGamePacketListener>> responseGenerator
     ) {
         @Nullable AbstractContainerMenu menu = null;
         @Nullable String error = null;
@@ -75,7 +78,7 @@ public abstract class PayloadHandler {
                 error = PayloadHandlerException.GENERIC_MESSAGE;
                 ClientSort.LOG.error(
                         "Encountered an exception while handling '{}' payload from player '{}'",
-                        responseType.id(),
+                        channel,
                         player,
                         e
                 );
@@ -85,8 +88,12 @@ public abstract class PayloadHandler {
                 menu.resumeRemoteUpdates();
                 menu.broadcastChanges();
             }
-            if (Services.PLATFORM.canSendToPlayer(player, responseType)) {
-                Services.PLATFORM.sendToPlayer(player, responseGenerator.apply(error));
+            if (Services.PLATFORM.canSendToPlayer(player, responseChannel)) {
+                Services.PLATFORM.sendToPlayer(
+                        player,
+                        responseChannel,
+                        responseGenerator.apply(error)
+                );
             }
         }
     }
