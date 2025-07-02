@@ -128,7 +128,7 @@ public abstract class SingleUseController {
             if (screenHelper.getScope(slot) != scope)
                 continue;
             // Ignore inaccessible slots
-            if (player != null && !slot.mayPickup(player))
+            if (player != null && slot.hasItem() && !slot.mayPickup(player))
                 continue;
             // Ignore locked slots
             if (ItemLocksWrapper.isLocked(slot))

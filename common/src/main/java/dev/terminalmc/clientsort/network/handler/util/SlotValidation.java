@@ -115,7 +115,7 @@ public class SlotValidation {
 
             // Check that the slot is accessible
             Slot slot = menu.slots.get(slotId);
-            if (!slot.mayPickup(player)) {
+            if (slot.hasItem() && !slot.mayPickup(player)) {
                 throw new PayloadHandlerException(String.format(
                         "Slot array contains inaccessible slot %d with item '%s'!",
                         slotId,

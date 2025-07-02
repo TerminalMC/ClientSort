@@ -6,6 +6,7 @@
 - Fixed button layout class-name validator preventing config save after removing a mod with a
   configured layout
 - Added a support workaround for supermartijn642corelib
+- Improved compatibility with sophisticatedcore
 
 ## 2.0.0-beta.4
 
