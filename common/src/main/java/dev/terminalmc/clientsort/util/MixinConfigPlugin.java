@@ -42,6 +42,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("compat.emi")) {
             return Services.PLATFORM.isModLoaded("emi");
+        } else if (mixinClassName.contains("compat.supermartijn642corelib")) {
+            return Services.PLATFORM.isModLoaded("supermartijn642corelib");
         }
         return true;
     }
