@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Makes compat mixins apply only when the relevant mod is loaded.
  */
-public class ClientSortMixinPlugin implements IMixinConfigPlugin {
+public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {

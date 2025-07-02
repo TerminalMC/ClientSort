@@ -4,7 +4,7 @@
   "package": "dev.terminalmc.clientsort.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_${java_version}",
-  "plugin": "dev.terminalmc.clientsort.util.ClientSortMixinPlugin",
+  "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
   "mixins": [
   ],
   "client": [
