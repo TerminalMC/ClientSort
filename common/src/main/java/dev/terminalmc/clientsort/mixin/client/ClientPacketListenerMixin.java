@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.client.network.InteractionManager;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,10 +43,10 @@ public abstract class ClientPacketListenerMixin {
     }
 
     @Inject(
-            method = "handleSetCarriedItem",
+            method = "handleSetCursorItem",
             at = @At("HEAD")
     )
-    public void beforeHeldItemChange(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
+    public void beforeHeldItemChange(ClientboundSetCursorItemPacket packet, CallbackInfo ci) {
         InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
     }
 
