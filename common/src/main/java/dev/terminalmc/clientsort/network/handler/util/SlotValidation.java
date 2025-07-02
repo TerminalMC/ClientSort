@@ -193,7 +193,7 @@ public class SlotValidation {
 
             // Check that the destination slot is accessible
             Slot dstSlot = menu.slots.get(dstId);
-            if (!dstSlot.mayPlace(srcSlot.getItem())) {
+            if (srcSlot.hasItem() && dstSlot.hasItem() && !dstSlot.mayPlace(srcSlot.getItem())) {
                 throw new PayloadHandlerException(String.format(
                         "Slot mapping contains inaccessible slot %d with item '%s' which cannot receive item '%s' from slot %d!",
                         dstId,
