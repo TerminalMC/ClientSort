@@ -3,6 +3,8 @@
 ## 2.0.0-beta.5
 
 - Improved compatibility with Neo/Forge modded containers extending ItemStackHandler
+- Fixed button layout class-name validator preventing config save after removing a mod with a
+  configured layout
 
 ## 2.0.0-beta.4
 

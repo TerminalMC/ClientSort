@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.gui.screen;
+package dev.terminalmc.clientsort.client.gui.screen.config;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

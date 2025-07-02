@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client.compat.modmenu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
+import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 
 public class ModMenuImpl implements ModMenuApi {
 

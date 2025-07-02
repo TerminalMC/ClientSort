@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.gui.screen;
+package dev.terminalmc.clientsort.client.gui.screen.config;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
@@ -376,7 +376,7 @@ public class ClothScreenProvider {
                     int i = 0;
                     for (String string : list) {
                         try {
-                            ButtonLayout.fromDataString(string);
+                            ButtonLayout.fromDataString(string, options.buttonLayouts.keySet());
                         } catch (ParseException ex) {
                             return Optional.of(localized(
                                     "error",
@@ -394,14 +394,17 @@ public class ClothScreenProvider {
                     Set<ButtonLayout> layouts = new HashSet<>();
                     for (String string : list) {
                         try {
-                            ButtonLayout layout = ButtonLayout.fromDataString(string);
+                            ButtonLayout layout = ButtonLayout.fromDataString(
+                                    string,
+                                    options.buttonLayouts.keySet()
+                            );
                             layouts.add(layout);
                         } catch (ParseException ex) {
                             ClientSort.LOG.error(
-                                    "Encountered a button layout parsing error not caught by error checker: {}",
+                                    "Encountered a button layout parsing error on layout string '{}' not caught by error checker: {}",
+                                    string,
                                     ex.getMessage()
                             );
-                            break;
                         }
                     }
                     options.buttonLayouts.clear();

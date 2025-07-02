@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.client;
 
-import dev.terminalmc.clientsort.client.gui.screen.ConfigScreenProvider;
+import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

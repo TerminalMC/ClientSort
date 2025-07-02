@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.config;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +66,10 @@ public class ButtonLayout {
         );
     }
 
-    public static ButtonLayout fromDataString(String dataString) throws ParseException {
+    public static ButtonLayout fromDataString(
+            String dataString,
+            Set<String> originalClassNames
+    ) throws ParseException {
         dataString = dataString.strip();
 
         Matcher matcher = DATA_PATTERN.matcher(dataString);
@@ -85,17 +89,19 @@ public class ButtonLayout {
         boolean stackFillEnabled = matcher.group(5).equals("1");
         boolean transferEnabled = matcher.group(6).equals("1");
 
-        // Validate class name
-        try {
-            Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new ParseException(
-                    localized(
-                            "error",
-                            "buttonLayout.classNotFound",
-                            className
-                    ).getString(), 0
-            );
+        // Validate class name if modified
+        if (!originalClassNames.contains(className)) {
+            try {
+                Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new ParseException(
+                        localized(
+                                "error",
+                                "buttonLayout.classNotFound",
+                                className
+                        ).getString(), 0
+                );
+            }
         }
 
         // Parse and validate offset
