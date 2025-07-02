@@ -35,10 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * ClientSort buttons.
  */
 @Pseudo
-@Mixin(
-        targets = "com.supermartijn642.core.gui.WidgetContainerScreen",
-        remap = false
-)
+@Mixin(targets = "com.supermartijn642.core.gui.WidgetContainerScreen")
 @SuppressWarnings("JavadocReference")
 public class WidgetContainerScreenMixin extends Screen {
 
@@ -48,7 +45,7 @@ public class WidgetContainerScreenMixin extends Screen {
 
     @SuppressWarnings("UnresolvedMixinReference")
     @Inject(
-            method = "render",
+            method = "method_25394",
             at = @At("RETURN")
     )
     private void afterRender(
