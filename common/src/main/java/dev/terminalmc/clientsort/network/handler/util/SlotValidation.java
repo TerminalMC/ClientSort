@@ -18,12 +18,15 @@
 package dev.terminalmc.clientsort.network.handler.util;
 
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 /**
  * Provides validation methods for slot collections included in C2S payloads.
@@ -44,12 +47,13 @@ public class SlotValidation {
             ));
         }
 
-        // Check that the slot's index field matches its ID in the menu
-        if (menu.slots.get(slotId).index != slotId) {
+        // Do a reverse lookup for the slot ID to check that it matches
+        int realId = ((ISlot) menu.slots.get(slotId)).clientsort$getIdInContainer();
+        if (slotId != realId) {
             throw new PayloadHandlerException(String.format(
-                    "Payload contains invalid slot ID %d which does not match the index of that slot (%d)!",
+                    "Payload contains invalid slot ID %d which does not match the known ID of that slot (%d)!",
                     slotId,
-                    menu.slots.get(slotId).index
+                    realId
             ));
         }
     }
@@ -70,7 +74,7 @@ public class SlotValidation {
         Slot slot = menu.slots.get(slotId);
         if (container != slot.container) {
             throw new PayloadHandlerException(String.format(
-                    "Payload contains slots from different inventories, first: '%s', now: '%s'!",
+                    "Payload contains slots from different containers, first: '%s', now: '%s'!",
                     container,
                     slot.container
             ));
@@ -84,7 +88,7 @@ public class SlotValidation {
     public static void validateSlotArray(Player player, AbstractContainerMenu menu, int[] slotIds)
             throws PayloadHandlerException {
         // Check the length of the slot ID array
-        int minSlots = 2;
+        int minSlots = 1;
         if (slotIds.length < minSlots) {
             throw new PayloadHandlerException(String.format(
                     "Slot array contains too few slots! Expected at least %d, got %d!",
@@ -100,6 +104,7 @@ public class SlotValidation {
         Container container = menu.slots.get(slotIds[0]).container;
         IntSet checkedSlots = new IntAVLTreeSet();
 
+        ItemStack testItem = Items.LIGHT.getDefaultInstance();
         // For each slot
         for (int slotId : slotIds) {
             // Check that the slot is valid and in the same container
@@ -115,7 +120,17 @@ public class SlotValidation {
 
             // Check that the slot is accessible
             Slot slot = menu.slots.get(slotId);
-            if (slot.hasItem() && !slot.mayPickup(player)) {
+            boolean accessible = true;
+            if (slot.hasItem()) {
+                // Nonempty slot; check pickup
+                if (!slot.mayPickup(player))
+                    accessible = false;
+            } else {
+                // Empty slot; check arbitrary item placement
+                if (!slot.container.canPlaceItem(slotId, testItem) || !slot.mayPlace(testItem))
+                    accessible = false;
+            }
+            if (!accessible) {
                 throw new PayloadHandlerException(String.format(
                         "Slot array contains inaccessible slot %d with item '%s'!",
                         slotId,
@@ -135,7 +150,7 @@ public class SlotValidation {
             int[] slotMapping
     ) throws PayloadHandlerException {
         // Check the length of the slot mapping array
-        int minSlots = 4;
+        int minSlots = 2;
         if (slotMapping.length < minSlots) {
             throw new PayloadHandlerException(String.format(
                     "Slot mapping contains too few slots! Expected at least %d, got %d!",
@@ -173,8 +188,7 @@ public class SlotValidation {
                 ));
             }
 
-            // Check that the destination slot is valid and in the same
-            // container
+            // Check that the destination slot is valid and in the same container
             validateContainerSlot(menu, dstId, container);
 
             // Transferring items between the same slot is a no-op
@@ -193,7 +207,9 @@ public class SlotValidation {
 
             // Check that the destination slot is accessible
             Slot dstSlot = menu.slots.get(dstId);
-            if (srcSlot.hasItem() && dstSlot.hasItem() && !dstSlot.mayPlace(srcSlot.getItem())) {
+            if (srcSlot.hasItem()
+                    && (!dstSlot.mayPlace(srcSlot.getItem())
+                    || !container.canPlaceItem(dstId, srcSlot.getItem()))) {
                 throw new PayloadHandlerException(String.format(
                         "Slot mapping contains inaccessible slot %d with item '%s' which cannot receive item '%s' from slot %d!",
                         dstId,
