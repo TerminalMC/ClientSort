@@ -2,6 +2,7 @@ package dev.terminalmc.clientsort.util;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.util.inject.ISlot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
 @SuppressWarnings("unused")
@@ -15,8 +16,7 @@ public class SlotLogUtil {
             sb.append(slot.getItem().getCount());
             sb.append(" ");
             sb.append(slot.getItem().getHoverName().getString());
-            sb.append("]");
-            sb.append(", ");
+            sb.append("], ");
         }
         ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
     }
@@ -29,8 +29,7 @@ public class SlotLogUtil {
             sb.append(slot.getItem().getCount());
             sb.append(" ");
             sb.append(slot.getItem().getHoverName().getString());
-            sb.append("]");
-            sb.append(", ");
+            sb.append("], ");
         }
         ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
     }
@@ -53,5 +52,18 @@ public class SlotLogUtil {
             sb.append(", ");
         }
         ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+    }
+
+    private static void logContainerMenuSlots(AbstractContainerMenu menu) {
+        StringBuilder sb = new StringBuilder("[");
+        for (Slot slot : menu.slots) {
+            sb.append(slot.index);
+            sb.append(":[");
+            sb.append(slot.getItem().getCount());
+            sb.append(" ");
+            sb.append(slot.getItem().getDisplayName().getString());
+            sb.append("], ");
+        }
+        ClientSort.LOG.info(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
     }
 }

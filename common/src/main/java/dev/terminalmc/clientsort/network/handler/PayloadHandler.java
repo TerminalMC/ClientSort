@@ -23,7 +23,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,50 +120,5 @@ public abstract class PayloadHandler {
         }
 
         return menu;
-    }
-
-    /**
-     * Logs the list of slots in the menu.
-     */
-    @SuppressWarnings("unused")
-    private static void logScreenHandlerSlots(AbstractContainerMenu menu) {
-        StringBuilder sb = new StringBuilder("[");
-        for (Slot slot : menu.slots) {
-            sb.append(slot.index);
-            sb.append(":");
-            sb.append(slot.getItem().getCount());
-            sb.append(" ");
-            sb.append(slot.getItem().getDisplayName().getString());
-            sb.append(", ");
-        }
-        ClientSort.LOG.info(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
-    }
-
-    /**
-     * Logs the slot index array.
-     */
-    @SuppressWarnings("unused")
-    private static void logSlotArray(int[] indexes) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int id : indexes) {
-            sb.append(id);
-            sb.append(", ");
-        }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
-    }
-
-    /**
-     * Logs the slot mapping.
-     */
-    @SuppressWarnings("unused")
-    private static void logSlotMapping(int[] slotMapping) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < slotMapping.length - 1; i += 2) {
-            sb.append(slotMapping[i]);
-            sb.append("->");
-            sb.append(slotMapping[i + 1]);
-            sb.append(", ");
-        }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
     }
 }
