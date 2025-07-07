@@ -17,8 +17,11 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.network.handler.util.SlotValidation;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.SortResultPayload;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -55,18 +58,38 @@ public class SortHandler extends PayloadHandler {
         ));
     }
 
-    private static void sort(AbstractContainerMenu menu, int[] slotMapping) {
-        // Build reference maps
+    private static void sort(AbstractContainerMenu menu, int[] slotMapping)
+            throws PayloadHandlerException {
+        // Build reference map
         Map<Integer, ItemStack> stacks = new TreeMap<>();
-        for (Slot slot : menu.slots) {
-            stacks.put(slot.index, slot.getItem());
-        }
+        for (Slot slot : menu.slots)
+            stacks.put(((ISlot) slot).clientsort$getIdInContainer(), slot.getItem().copy());
         // Apply slot mapping
         for (int i = 0; i < slotMapping.length - 1; i += 2) {
             int srcSlotId = slotMapping[i];
             int dstSlotId = slotMapping[i + 1];
+            Slot dstSlot = menu.slots.get(dstSlotId);
             if (srcSlotId != dstSlotId) {
-                menu.slots.get(dstSlotId).setByPlayer(stacks.get(srcSlotId));
+                // Perform the mapping set
+                dstSlot.setByPlayer(stacks.get(srcSlotId));
+
+                // Check that the operation succeeded
+                if (!SlotValidation.isEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
+                    // Operation failed; attempt to revert all changes
+                    for (int j = 0; j <= i; j += 2) {
+                        srcSlotId = slotMapping[j];
+                        menu.slots.get(srcSlotId).set(stacks.get(srcSlotId));
+                        dstSlotId = slotMapping[j + 1];
+                        menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
+                    }
+                    throw new PayloadHandlerException(String.format(
+                            "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
+                            srcSlotId,
+                            dstSlotId,
+                            stacks.get(srcSlotId),
+                            dstSlot.getItem()
+                    ));
+                }
             }
         }
     }

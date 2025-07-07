@@ -16,6 +16,8 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.network.handler.util.SlotValidation;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.server.MinecraftServer;
@@ -54,21 +56,25 @@ public class TransferHandler extends PayloadHandler {
         ));
     }
 
-    private static void transfer(AbstractContainerMenu menu, int[] srcSlotIds, int[] dstSlotIds) {
+    private static void transfer(AbstractContainerMenu menu, int[] srcSlotIds, int[] dstSlotIds)
+            throws PayloadHandlerException {
         // Work backwards from the end of the source array, looking for a
         // nonempty stack
         for (int i = srcSlotIds.length - 1; i >= 0; i--) {
-            Slot srcSlot = menu.slots.get(srcSlotIds[i]);
+            int srcSlotId = srcSlotIds[i];
+            Slot srcSlot = menu.slots.get(srcSlotId);
             ItemStack srcStack = srcSlot.getItem();
+            ItemStack srcStackCopy = srcStack.copy();
 
             if (srcStack.isEmpty())
                 continue;
 
             // Nonempty stack found; work forwards from the start of the
             // destination array, looking for a partial stack of the same item
-            for (int slotId : dstSlotIds) {
-                Slot dstSlot = menu.slots.get(slotId);
+            for (int dstSlotId : dstSlotIds) {
+                Slot dstSlot = menu.slots.get(dstSlotId);
                 ItemStack dstStack = dstSlot.getItem();
+                ItemStack dstStackCopy = dstStack.copy();
 
                 if (dstStack.isEmpty())
                     continue;
@@ -80,6 +86,23 @@ public class TransferHandler extends PayloadHandler {
                 // Matching partial stack found; place as much of the source
                 // stack as possible
                 dstSlot.safeInsert(srcStack);
+
+                // Check that the operation succeeded
+                ItemStack expected = srcStackCopy.copyWithCount(Math.min(
+                        srcStackCopy.getCount() + dstStackCopy.getCount(),
+                        dstSlot.getMaxStackSize(srcStackCopy)
+                ));
+                if (!SlotValidation.isEqual(dstSlot.getItem(), expected)) {
+                    throw new PayloadHandlerException(String.format(
+                            "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                            srcSlotId,
+                            srcStackCopy,
+                            dstSlotId,
+                            dstStackCopy,
+                            expected,
+                            dstSlot.getItem()
+                    ));
+                }
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.isEmpty())
@@ -95,12 +118,31 @@ public class TransferHandler extends PayloadHandler {
             for (int dstSlotId : dstSlotIds) {
                 Slot dstSlot = menu.slots.get(dstSlotId);
                 ItemStack dstStack = dstSlot.getItem();
+                ItemStack dstStackCopy = dstStack.copy();
 
                 if (!dstStack.isEmpty())
                     continue;
 
                 // Empty slot found; place the source stack
                 dstSlot.safeInsert(srcStack);
+
+                // Check that the operation succeeded
+                ItemStack expected = srcStackCopy.copyWithCount(Math.min(
+                        srcStackCopy.getCount(),
+                        dstSlot.getMaxStackSize(srcStackCopy)
+                ));
+                if (!SlotValidation.isEqual(dstSlot.getItem(), expected)) {
+                    throw new PayloadHandlerException(String.format(
+                            "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                            srcSlotId,
+                            srcStackCopy,
+                            dstSlotId,
+                            dstStackCopy,
+                            expected,
+                            dstSlot.getItem()
+                    ));
+                }
+
                 break;
             }
         }

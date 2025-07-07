@@ -26,7 +26,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -50,7 +49,7 @@ public abstract class PayloadHandler {
             ServerPlayer player,
             int containerId,
             ThrowingConsumer<AbstractContainerMenu> validator,
-            Consumer<AbstractContainerMenu> operator,
+            ThrowingConsumer<AbstractContainerMenu> operator,
             CustomPacketPayload.Type<?> responseType,
             Function<String, CustomPacketPayload> responseGenerator
     ) {

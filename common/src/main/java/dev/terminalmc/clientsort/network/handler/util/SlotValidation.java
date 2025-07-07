@@ -33,6 +33,11 @@ import net.minecraft.world.item.Items;
  */
 public class SlotValidation {
 
+    public static boolean isEqual(ItemStack a, ItemStack b) {
+        return ItemStack.isSameItemSameComponents(a, b)
+                && a.getCount() == b.getCount();
+    }
+
     /**
      * @throws PayloadHandlerException if the slot ID is not valid in the menu.
      */
@@ -202,20 +207,6 @@ public class SlotValidation {
                         "Slot mapping contains inaccessible slot %d with item '%s'!",
                         srcId,
                         srcSlot.getItem()
-                ));
-            }
-
-            // Check that the destination slot is accessible
-            Slot dstSlot = menu.slots.get(dstId);
-            if (srcSlot.hasItem()
-                    && (!dstSlot.mayPlace(srcSlot.getItem())
-                    || !container.canPlaceItem(dstId, srcSlot.getItem()))) {
-                throw new PayloadHandlerException(String.format(
-                        "Slot mapping contains inaccessible slot %d with item '%s' which cannot receive item '%s' from slot %d!",
-                        dstId,
-                        dstSlot.getItem(),
-                        srcSlot.getItem(),
-                        srcId
                 ));
             }
         }
