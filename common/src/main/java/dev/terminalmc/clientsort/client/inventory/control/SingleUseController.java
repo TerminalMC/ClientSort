@@ -26,6 +26,8 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
+import dev.terminalmc.clientsort.util.SlotLogUtil;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -33,8 +35,10 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -93,7 +97,11 @@ public abstract class SingleUseController {
 
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
-        originScopeSlots = findSlotsInScope(originScope);
+        originScopeSlots = collectSlots(originScope);
+        if (ClientSort.debug) {
+            ClientSort.LOG.warn("Origin Scope Slot IDs ({})", originScopeSlots.length);
+            SlotLogUtil.logSlotIds(List.of(originScopeSlots));
+        }
         // Record stacks
         originScopeStacks = new ItemStack[originScopeSlots.length];
         for (int i = 0; i < originScopeSlots.length; i++) {
@@ -106,7 +114,11 @@ public abstract class SingleUseController {
             case CONTAINER_INV -> Scope.PLAYER_INV;
             default -> Scope.INVALID;
         };
-        otherScopeSlots = findSlotsInScope(otherScope);
+        otherScopeSlots = collectSlots(otherScope);
+        if (ClientSort.debug) {
+            ClientSort.LOG.warn("Other Scope Slot IDs ({})", otherScopeSlots.length);
+            SlotLogUtil.logSlotIds(List.of(otherScopeSlots));
+        }
         // Record stacks
         otherScopeStacks = new ItemStack[otherScopeSlots.length];
         for (int i = 0; i < otherScopeSlots.length; i++) {
@@ -115,21 +127,30 @@ public abstract class SingleUseController {
     }
 
     /**
-     * Finds all the inventory menu slots that are in {@code scope}.
+     * Finds all the valid inventory menu slots that are in {@code scope}.
      */
-    private Slot[] findSlotsInScope(Scope scope) {
+    private Slot[] collectSlots(Scope scope) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (scope == Scope.INVALID)
             return new Slot[0];
 
+        ItemStack testItem = Items.LIGHT.getDefaultInstance();
         ArrayList<Slot> collectedSlots = new ArrayList<>();
         for (Slot slot : screen.getMenu().slots) {
+            int slotId = ((ISlot) slot).clientsort$getIdInContainer();
             // Ignore slots in different scope
             if (screenHelper.getScope(slot) != scope)
                 continue;
             // Ignore inaccessible slots
-            if (player != null && slot.hasItem() && !slot.mayPickup(player))
-                continue;
+            if (slot.hasItem()) {
+                // Nonempty slot; check pickup
+                if (player != null && !slot.mayPickup(player))
+                    continue;
+            } else {
+                // Empty slot; check arbitrary item placement
+                if (!slot.container.canPlaceItem(slotId, testItem) || !slot.mayPlace(testItem))
+                    continue;
+            }
             // Ignore locked slots
             if (ItemLocksWrapper.isLocked(slot))
                 continue;
