@@ -20,7 +20,7 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
-import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;

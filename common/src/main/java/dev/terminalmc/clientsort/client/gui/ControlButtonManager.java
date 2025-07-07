@@ -31,6 +31,7 @@ import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -469,7 +470,7 @@ public class ControlButtonManager {
         return screen.getMenu().slots.stream()
                 .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
                 .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu)
-                        || slot.getContainerSlot() >= 2)
+                        || ((ISlot) slot).clientsort$getIndexInInv() >= 2)
                 .mapToInt(slot -> 1)
                 .sum();
     }

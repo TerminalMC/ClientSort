@@ -17,7 +17,7 @@
 package dev.terminalmc.clientsort.client.compat.itemlocks;
 
 import com.kirdow.itemlocks.client.LockManager;
-import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 

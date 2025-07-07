@@ -15,7 +15,7 @@
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
     "client.slot.CreativeSlotMixin",
-    "client.slot.SlotMixin"
+    "slot.SlotMixin"
   ],
   "server": [
   ],

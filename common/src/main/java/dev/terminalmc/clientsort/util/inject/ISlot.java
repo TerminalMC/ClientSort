@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.util.inject;
+package dev.terminalmc.clientsort.util.inject;
 
 public interface ISlot {
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.mixin.client.slot;
+package dev.terminalmc.clientsort.mixin.slot;
 
-import dev.terminalmc.clientsort.client.util.inject.ISlot;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
