@@ -9,6 +9,7 @@
 
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
   "message.clientsort.viewModrinth": "Посмотреть на Modrinth",
+  "message.clientsort.configReloaded": "Server configuration reloaded from '%s'!",
 
   "title.clientsort.groupSelector": "Редактор интерфейса ClientSort - Выберите виджет для редактирования",
 

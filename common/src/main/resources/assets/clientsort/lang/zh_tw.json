@@ -9,6 +9,7 @@
 
   "message.clientsort.installCloth": "安裝 Cloth Config API 以調整模組選項。",
   "message.clientsort.viewModrinth": "在 Modrinth 查看",
+  "message.clientsort.configReloaded": "Server configuration reloaded from '%s'!",
 
   "title.clientsort.groupSelector": "ClientSort GUI Editor - Select a Widget to Edit",
 

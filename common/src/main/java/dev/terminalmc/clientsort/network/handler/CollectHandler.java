@@ -16,17 +16,20 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
-import dev.terminalmc.clientsort.network.handler.util.SlotValidation;
+import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.validateSlotArray;
+import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
  * A handler for a {@link CollectPayload}.
@@ -46,6 +49,7 @@ public class CollectHandler extends PayloadHandler {
                 server,
                 player,
                 payload.containerId(),
+                (menu) -> checkPolicy(player, menu, payload.slotIds()),
                 (menu) -> validateSlotArray(player, menu, payload.slotIds()),
                 (menu) -> collect(menu, payload.slotIds()),
                 CollectResultPayload.TYPE,
@@ -91,7 +95,8 @@ public class CollectHandler extends PayloadHandler {
                         srcStackCopy.getCount() + dstStackCopy.getCount(),
                         dstSlot.getMaxStackSize(srcStackCopy)
                 ));
-                if (!SlotValidation.isEqual(dstSlot.getItem(), expected)) {
+                if (notEqual(dstSlot.getItem(), expected)) {
+                    setPolicy(menu, slotIds);
                     throw new PayloadHandlerException(String.format(
                             "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
@@ -109,5 +114,34 @@ public class CollectHandler extends PayloadHandler {
                 // Otherwise keep looking for another matching partial stack
             }
         }
+    }
+
+    /**
+     * @throws PayloadHandlerException if there is a policy for this context disallowing this
+     *                                 operation.
+     */
+    private static void checkPolicy(ServerPlayer player, AbstractContainerMenu menu, int[] slotIds)
+            throws PayloadHandlerException {
+        Container container = slotIds.length > 0
+                ? menu.slots.get(slotIds[0]).container
+                : null;
+        Object object = container instanceof SimpleContainer ? menu : container;
+
+        // Assume the player's own inventory is always safe to operate on
+        if (container != player.getInventory()) {
+            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sort);
+        }
+    }
+
+    /**
+     * Creates or updates a policy for this context to disallow this operation.
+     */
+    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds) {
+        Container container = slotIds.length > 0
+                ? menu.slots.get(slotIds[0]).container
+                : null;
+        Object object = container instanceof SimpleContainer ? menu : container;
+
+        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
     }
 }

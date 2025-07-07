@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,14 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.network.handler.util;
+package dev.terminalmc.clientsort.network.handler.validate;
 
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -31,11 +30,9 @@ import net.minecraft.world.item.Items;
 /**
  * Provides validation methods for slot collections included in C2S payloads.
  */
-public class SlotValidation {
+public class SchemaValidator {
 
-    public static boolean isEqual(ItemStack a, ItemStack b) {
-        return ItemStack.isSameItemSameComponents(a, b)
-                && a.getCount() == b.getCount();
+    private SchemaValidator() {
     }
 
     /**
@@ -65,7 +62,7 @@ public class SlotValidation {
 
     /**
      * @throws PayloadHandlerException if the slot ID does not refer to a slot in the container.
-     *                                 Includes a check of {@link SlotValidation#validateSlotId}.
+     *                                 Includes a check of {@link SchemaValidator#validateSlotId}.
      */
     public static void validateContainerSlot(
             AbstractContainerMenu menu,
@@ -90,8 +87,11 @@ public class SlotValidation {
      * @throws PayloadHandlerException if the list of slot IDs does not represent a sub-array of the
      *                                 slots in menu.
      */
-    public static void validateSlotArray(Player player, AbstractContainerMenu menu, int[] slotIds)
-            throws PayloadHandlerException {
+    public static void validateSlotArray(
+            ServerPlayer player,
+            AbstractContainerMenu menu,
+            int[] slotIds
+    ) throws PayloadHandlerException {
         // Check the length of the slot ID array
         int minSlots = 1;
         if (slotIds.length < minSlots) {
@@ -150,7 +150,7 @@ public class SlotValidation {
      *                                 the slots in the menu.
      */
     public static void validateSlotMapping(
-            Player player,
+            ServerPlayer player,
             AbstractContainerMenu menu,
             int[] slotMapping
     ) throws PayloadHandlerException {

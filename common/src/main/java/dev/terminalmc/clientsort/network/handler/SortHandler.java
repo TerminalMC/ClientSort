@@ -17,13 +17,16 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
-import dev.terminalmc.clientsort.network.handler.util.SlotValidation;
+import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.SortResultPayload;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.validateSlotMapping;
+import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotMapping;
 
 /**
  * A handler for a {@link SortPayload}.
@@ -51,6 +54,7 @@ public class SortHandler extends PayloadHandler {
                 server,
                 player,
                 payload.containerId(),
+                (menu) -> checkPolicy(player, menu, payload.slotMapping()),
                 (menu) -> validateSlotMapping(player, menu, payload.slotMapping()),
                 (menu) -> sort(menu, payload.slotMapping()),
                 SortResultPayload.TYPE,
@@ -74,7 +78,7 @@ public class SortHandler extends PayloadHandler {
                 dstSlot.setByPlayer(stacks.get(srcSlotId));
 
                 // Check that the operation succeeded
-                if (!SlotValidation.isEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
+                if (notEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
                     // Operation failed; attempt to revert all changes
                     for (int j = 0; j <= i; j += 2) {
                         srcSlotId = slotMapping[j];
@@ -82,6 +86,7 @@ public class SortHandler extends PayloadHandler {
                         dstSlotId = slotMapping[j + 1];
                         menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
                     }
+                    setPolicy(menu, slotMapping);
                     throw new PayloadHandlerException(String.format(
                             "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
@@ -92,5 +97,34 @@ public class SortHandler extends PayloadHandler {
                 }
             }
         }
+    }
+
+    /**
+     * @throws PayloadHandlerException if there is a policy for this context disallowing this
+     *                                 operation.
+     */
+    private static void checkPolicy(ServerPlayer player, AbstractContainerMenu menu, int[] slotIds)
+            throws PayloadHandlerException {
+        Container container = slotIds.length > 0
+                ? menu.slots.get(slotIds[0]).container
+                : null;
+        Object object = container instanceof SimpleContainer ? menu : container;
+
+        // Assume the player's own inventory is always safe to operate on
+        if (container != player.getInventory()) {
+            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sort);
+        }
+    }
+
+    /**
+     * Creates or updates a policy for this context to disallow this operation.
+     */
+    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds) {
+        Container container = slotIds.length > 0
+                ? menu.slots.get(slotIds[0]).container
+                : null;
+        Object object = container instanceof SimpleContainer ? menu : container;
+
+        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
     }
 }

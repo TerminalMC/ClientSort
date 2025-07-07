@@ -28,7 +28,7 @@ public class ClientSortFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Register keybindings
+        // Register all keybinds
         ClientSort.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
         // Register after-tick event

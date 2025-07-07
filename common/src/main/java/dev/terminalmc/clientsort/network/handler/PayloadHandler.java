@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,8 @@ public abstract class PayloadHandler {
             MinecraftServer server,
             ServerPlayer player,
             int containerId,
-            ThrowingConsumer<AbstractContainerMenu> validator,
+            ThrowingConsumer<AbstractContainerMenu> contextValidator,
+            ThrowingConsumer<AbstractContainerMenu> schemaValidator,
             ThrowingConsumer<AbstractContainerMenu> operator,
             CustomPacketPayload.Type<?> responseType,
             Function<String, CustomPacketPayload> responseGenerator
@@ -60,8 +62,11 @@ public abstract class PayloadHandler {
             menu = getMenu(player, containerId);
             menu.suppressRemoteUpdates();
 
-            // Validate payload slots
-            validator.accept(menu);
+            // Validate context
+            contextValidator.accept(menu);
+
+            // Validate schema
+            schemaValidator.accept(menu);
 
             // Operate
             operator.accept(menu);
@@ -119,5 +124,10 @@ public abstract class PayloadHandler {
         }
 
         return menu;
+    }
+
+    public static boolean notEqual(ItemStack a, ItemStack b) {
+        return !ItemStack.isSameItemSameComponents(a, b)
+                || a.getCount() != b.getCount();
     }
 }

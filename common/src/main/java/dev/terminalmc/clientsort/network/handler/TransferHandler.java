@@ -16,17 +16,20 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
-import dev.terminalmc.clientsort.network.handler.util.SlotValidation;
+import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import static dev.terminalmc.clientsort.network.handler.util.SlotValidation.validateSlotArray;
+import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
  * A handler for a {@link TransferPayload}.
@@ -46,6 +49,7 @@ public class TransferHandler extends PayloadHandler {
                 server,
                 player,
                 payload.srcContainerId(),
+                (menu) -> checkPolicy(menu, payload.srcSlotIds(), payload.dstSlotIds()),
                 (menu) -> {
                     validateSlotArray(player, menu, payload.srcSlotIds());
                     validateSlotArray(player, menu, payload.dstSlotIds());
@@ -92,7 +96,8 @@ public class TransferHandler extends PayloadHandler {
                         srcStackCopy.getCount() + dstStackCopy.getCount(),
                         dstSlot.getMaxStackSize(srcStackCopy)
                 ));
-                if (!SlotValidation.isEqual(dstSlot.getItem(), expected)) {
+                if (notEqual(dstSlot.getItem(), expected)) {
+                    setPolicy(menu, dstSlotIds);
                     throw new PayloadHandlerException(String.format(
                             "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
@@ -131,7 +136,8 @@ public class TransferHandler extends PayloadHandler {
                         srcStackCopy.getCount(),
                         dstSlot.getMaxStackSize(srcStackCopy)
                 ));
-                if (!SlotValidation.isEqual(dstSlot.getItem(), expected)) {
+                if (notEqual(dstSlot.getItem(), expected)) {
+                    setPolicy(menu, dstSlotIds);
                     throw new PayloadHandlerException(String.format(
                             "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
@@ -146,5 +152,41 @@ public class TransferHandler extends PayloadHandler {
                 break;
             }
         }
+    }
+
+    /**
+     * @throws PayloadHandlerException if there is a policy for this context disallowing this
+     *                                 operation.
+     */
+    private static void checkPolicy(
+            AbstractContainerMenu menu,
+            int[] srcSlotIds,
+            int[] dstSlotIds
+    ) throws PayloadHandlerException {
+        Container srcContainer = srcSlotIds.length > 0
+                ? menu.slots.get(srcSlotIds[0]).container
+                : null;
+        Object srcObject = srcContainer instanceof SimpleContainer ? menu : srcContainer;
+
+        Container dstContainer = dstSlotIds.length > 0
+                ? menu.slots.get(dstSlotIds[0]).container
+                : null;
+        Object dstObject = dstContainer instanceof SimpleContainer ? menu : dstContainer;
+
+        // Fail if there is a disallow policy for either reference object
+        PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.sort);
+        PolicyManager.checkPolicy(dstObject.getClass(), (bl) -> bl.sort);
+    }
+
+    /**
+     * Creates or updates a policy for this context to disallow this operation.
+     */
+    private static void setPolicy(AbstractContainerMenu menu, int[] dstSlotIds) {
+        Container dstContainer = dstSlotIds.length > 0
+                ? menu.slots.get(dstSlotIds[0]).container
+                : null;
+        Object object = dstContainer instanceof SimpleContainer ? menu : dstContainer;
+
+        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
     }
 }

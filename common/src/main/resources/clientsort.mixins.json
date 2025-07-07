@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
   "mixins": [
+    "slot.SlotMixin"
   ],
   "client": [
     "client.AbstractContainerScreenMixin",
@@ -14,8 +15,7 @@
     "client.accessor.AbstractContainerScreenAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
-    "client.slot.CreativeSlotMixin",
-    "slot.SlotMixin"
+    "client.slot.CreativeSlotMixin"
   ],
   "server": [
   ],

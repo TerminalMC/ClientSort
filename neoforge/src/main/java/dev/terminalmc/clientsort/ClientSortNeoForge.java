@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -34,6 +35,11 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 )
 public class ClientSortNeoForge {
 
+    public ClientSortNeoForge() {
+        // Initialize
+        ClientSort.init();
+    }
+
     /**
      * Registers all custom C2S payloads and their handlers.
      */
@@ -41,6 +47,24 @@ public class ClientSortNeoForge {
     static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1").optional();
         Registration.PAYLOADS_C2S.forEach((rp) -> registerC2S(registrar, rp));
+    }
+
+    @EventBusSubscriber(
+            modid = ClientSort.MOD_ID,
+            bus = EventBusSubscriber.Bus.GAME
+    )
+    static class GameEventHandler {
+
+        /**
+         * Registers all commands.
+         */
+        @SubscribeEvent
+        static void registerCommands(RegisterCommandsEvent event) {
+            ClientSort.COMMANDS.register(
+                    event.getDispatcher(),
+                    event.getBuildContext()
+            );
+        }
     }
 
     @EventBusSubscriber(
