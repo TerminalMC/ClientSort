@@ -19,12 +19,14 @@ package dev.terminalmc.clientsort.client.gui.screen.config;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.gui.entries.EnumListEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,6 +37,11 @@ import java.util.*;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClothScreenProvider {
+
+    // Mild shenanigans to allow cross-validation between selectors
+    private static EnumListEntry<?> firstSelector = null;
+    private static EnumListEntry<?> secondSelector = null;
+    private static EnumListEntry<?> thirdSelector = null;
 
     /**
      * Builds and returns a Cloth Config options screen.
@@ -296,35 +303,50 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.showButtons = val)
                 .build());
 
-        gui.addEntry(eb.startEnumSelector(
+        firstSelector = eb.startEnumSelector(
                         localized("option", "firstButton"),
-                        Config.Options.CONTROL_BUTTON.class,
+                        ControlButtonType.class,
                         options.firstButton
                 )
+                .setErrorSupplier((val) ->
+                        val.equals(getSecondSelector()) || val.equals(getThirdSelector())
+                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                : Optional.empty())
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
                 .setDefaultValue(Config.Options.firstButtonDefault)
                 .setSaveConsumer(val -> options.firstButton = val)
-                .build());
+                .build();
+        gui.addEntry(firstSelector);
 
-        gui.addEntry(eb.startEnumSelector(
+        secondSelector = eb.startEnumSelector(
                         localized("option", "secondButton"),
-                        Config.Options.CONTROL_BUTTON.class,
+                        ControlButtonType.class,
                         options.secondButton
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setErrorSupplier((val) ->
+                        val.equals(getFirstSelector()) || val.equals(getThirdSelector())
+                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                : Optional.empty())
                 .setDefaultValue(Config.Options.secondButtonDefault)
                 .setSaveConsumer(val -> options.secondButton = val)
-                .build());
+                .build();
+        gui.addEntry(secondSelector);
 
-        gui.addEntry(eb.startEnumSelector(
+        thirdSelector = eb.startEnumSelector(
                         localized("option", "thirdButton"),
-                        Config.Options.CONTROL_BUTTON.class,
+                        ControlButtonType.class,
                         options.thirdButton
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setErrorSupplier((val) ->
+                        val.equals(getFirstSelector()) || val.equals(getSecondSelector())
+                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                : Optional.empty())
                 .setDefaultValue(Config.Options.thirdButtonDefault)
                 .setSaveConsumer(val -> options.thirdButton = val)
-                .build());
+                .build();
+        gui.addEntry(thirdSelector);
 
         gui.addEntry(eb.startIntField(
                         localized("option", "buttonDefaultOffset.x"),
@@ -401,7 +423,7 @@ public class ClothScreenProvider {
                             layouts.add(layout);
                         } catch (ParseException ex) {
                             ClientSort.LOG.error(
-                                    "Encountered a button layout parsing error on layout string '{}' not caught by error checker: {}",
+                                    "Encountered a button layout parsing error on string '{}' not caught by error checker: {}",
                                     string,
                                     ex.getMessage()
                             );
@@ -424,5 +446,23 @@ public class ClothScreenProvider {
             strings.add(layout.toDataString());
         }
         return strings;
+    }
+
+    private static ControlButtonType getFirstSelector() {
+        return firstSelector == null
+                ? null
+                : (ControlButtonType) firstSelector.getValue();
+    }
+
+    private static ControlButtonType getSecondSelector() {
+        return secondSelector == null
+                ? null
+                : (ControlButtonType) secondSelector.getValue();
+    }
+
+    private static ControlButtonType getThirdSelector() {
+        return thirdSelector == null
+                ? null
+                : (ControlButtonType) thirdSelector.getValue();
     }
 }

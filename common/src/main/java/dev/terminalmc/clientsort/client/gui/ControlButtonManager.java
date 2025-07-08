@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.client.gui;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
-import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
@@ -130,7 +130,7 @@ public class ControlButtonManager {
             Slot refSlot,
             boolean isPlayerInv,
             boolean forceShow,
-            Config.Options.CONTROL_BUTTON type
+            ControlButtonType type
     ) {
         switch (type) {
             case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);

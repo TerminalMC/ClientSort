@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,20 +148,19 @@ public class Config {
         public static final boolean showButtonsDefault = false;
         public boolean showButtons = showButtonsDefault;
 
-        public static final CONTROL_BUTTON firstButtonDefault = CONTROL_BUTTON.SORT;
-        public CONTROL_BUTTON firstButton = firstButtonDefault;
+        public static final ControlButtonType firstButtonDefault = ControlButtonType.SORT;
+        public ControlButtonType firstButton = firstButtonDefault;
 
-        public static final CONTROL_BUTTON secondButtonDefault = CONTROL_BUTTON.STACK_FILL;
-        public CONTROL_BUTTON secondButton = secondButtonDefault;
+        public static final ControlButtonType secondButtonDefault = ControlButtonType.STACK_FILL;
+        public ControlButtonType secondButton = secondButtonDefault;
 
-        public static final CONTROL_BUTTON thirdButtonDefault = CONTROL_BUTTON.TRANSFER;
-        public CONTROL_BUTTON thirdButton = thirdButtonDefault;
+        public static final ControlButtonType thirdButtonDefault = ControlButtonType.TRANSFER;
+        public ControlButtonType thirdButton = thirdButtonDefault;
 
-        public enum CONTROL_BUTTON {
+        public enum ControlButtonType {
             SORT,
             STACK_FILL,
-            TRANSFER,
-            NONE
+            TRANSFER
         }
 
         public static final int BUTTON_DEFAULT_OFFSET_MIN = -100;
@@ -192,6 +193,7 @@ public class Config {
      * Ensures that all config values are valid.
      */
     private void validate() {
+        // Clamp numbered values
         options.interactionInterval = Math.clamp(
                 options.interactionInterval,
                 Options.INTERACTION_INTERVAL_MIN,
@@ -229,6 +231,28 @@ public class Config {
                         Options.BUTTON_DEFAULT_OFFSET_MAX
                 )
         );
+        // Validate ordering enum options
+        if (options.firstButton == null
+                || options.firstButton.equals(options.secondButton)
+                || options.firstButton.equals(options.thirdButton)
+                || !Arrays.stream(ControlButtonType.values()).toList()
+                .contains(options.firstButton)) {
+            options.firstButton = Options.firstButtonDefault;
+        }
+        if (options.secondButton == null
+                || options.secondButton.equals(options.firstButton)
+                || options.secondButton.equals(options.thirdButton)
+                || !Arrays.stream(ControlButtonType.values()).toList()
+                .contains(options.secondButton)) {
+            options.secondButton = Options.secondButtonDefault;
+        }
+        if (options.thirdButton == null
+                || options.thirdButton.equals(options.firstButton)
+                || options.thirdButton.equals(options.secondButton)
+                || !Arrays.stream(ControlButtonType.values()).toList()
+                .contains(options.thirdButton)) {
+            options.thirdButton = Options.thirdButtonDefault;
+        }
         // Sort the layouts by key for better UX
         Map<String, ButtonLayout> sortedLayouts = new LinkedHashMap<>();
         options.buttonLayouts.keySet()

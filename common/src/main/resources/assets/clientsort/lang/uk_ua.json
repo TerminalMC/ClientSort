@@ -129,5 +129,6 @@
   "error.clientsort.buttonLayout.parse": "Invalid button layout at entry %d: %s",
   "error.clientsort.buttonLayout.pattern": "Data does not match required pattern: %s",
   "error.clientsort.buttonLayout.classNotFound": "Could not find a class matching name: %s",
-  "error.clientsort.buttonLayout.parseOffset": "Could not parse an offset from data: (%s,%s)"
+  "error.clientsort.buttonLayout.parseOffset": "Could not parse an offset from data: (%s,%s)",
+  "error.clientsort.controlButton.duplicate": "Each button can only appear once"
 }

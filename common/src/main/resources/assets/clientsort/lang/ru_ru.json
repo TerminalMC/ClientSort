@@ -129,5 +129,6 @@
   "error.clientsort.buttonLayout.parse": "Недопустимый макет кнопок в записи %d: %s",
   "error.clientsort.buttonLayout.pattern": "Данные не соответствуют требуемому шаблону: %s",
   "error.clientsort.buttonLayout.classNotFound": "Класс с именем %s не найден",
-  "error.clientsort.buttonLayout.parseOffset": "Не удалось разобрать смещение: (%s,%s)"
+  "error.clientsort.buttonLayout.parseOffset": "Не удалось разобрать смещение: (%s,%s)",
+  "error.clientsort.controlButton.duplicate": "Each button can only appear once"
 }
