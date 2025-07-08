@@ -82,6 +82,6 @@ public class SortButton extends ControlButton {
 
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
-        return layout.sortEnabled;
+        return layout.sortEnabled();
     }
 }

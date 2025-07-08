@@ -170,21 +170,19 @@ public class ControlButtonManager {
         ButtonLayout layout = getLayout(object.getClass());
 
         // Get the configured or default offset
-        Vec2i offset;
-        if (layout != null) {
-            if (layout.offset != null) {
-                offset = layout.offset;
-            } else {
-                offset = options().buttonDefaultOffset;
-            }
-        } else {
-            offset = options().buttonDefaultOffset;
-        }
+        Vec2i offset = layout == null
+                ? options().layoutOffset
+                : layout.offset();
+
+        // Get the configured or default status
+        boolean enabled = layout == null
+                ? options().sortEnabled
+                : layout.sortEnabled();
 
         // Only add the button if it's whitelisted or forced, and if it's
         // forced, show it as inactive
         boolean active;
-        if (layout != null && layout.sortEnabled) {
+        if (layout != null && enabled) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -196,7 +194,7 @@ public class ControlButtonManager {
         SortButton button = new SortButton(
                 screen,
                 container,
-                layout == null ? null : layout.className,
+                layout == null ? null : layout.className(),
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -247,24 +245,23 @@ public class ControlButtonManager {
         }
 
         // Get the configured or default offset
-        Vec2i offset;
-        if (srcLayout != null) {
-            if (srcLayout.offset != null) {
-                offset = srcLayout.offset;
-            } else {
-                offset = options().buttonDefaultOffset;
-            }
-        } else {
-            offset = options().buttonDefaultOffset;
-        }
+        Vec2i offset = srcLayout == null
+                ? options().layoutOffset
+                : srcLayout.offset();
+
+        // Get the configured or default status
+        boolean srcEnabled = srcLayout == null
+                ? options().stackFillEnabled
+                : srcLayout.stackFillEnabled();
+        boolean dstEnabled = dstLayout == null
+                ? options().stackFillEnabled
+                : dstLayout.stackFillEnabled();
 
         // Only add the button if it's whitelisted or forced, and if it's
         // forced, show it as inactive
         boolean active;
-        if (srcLayout != null
-                && srcLayout.stackFillEnabled
-                && dstLayout != null
-                && dstLayout.stackFillEnabled) {
+        if (srcLayout != null && srcEnabled
+                && dstLayout != null && dstEnabled) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -276,7 +273,7 @@ public class ControlButtonManager {
         StackFillButton button = new StackFillButton(
                 screen,
                 srcContainer,
-                srcLayout == null ? null : srcLayout.className,
+                srcLayout == null ? null : srcLayout.className(),
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -327,24 +324,23 @@ public class ControlButtonManager {
         }
 
         // Get the configured or default offset
-        Vec2i offset;
-        if (srcLayout != null) {
-            if (srcLayout.offset != null) {
-                offset = srcLayout.offset;
-            } else {
-                offset = options().buttonDefaultOffset;
-            }
-        } else {
-            offset = options().buttonDefaultOffset;
-        }
+        Vec2i offset = srcLayout == null
+                ? options().layoutOffset
+                : srcLayout.offset();
+
+        // Get the configured or default status
+        boolean srcEnabled = srcLayout == null
+                ? options().transferEnabled
+                : srcLayout.transferEnabled();
+        boolean dstEnabled = dstLayout == null
+                ? options().transferEnabled
+                : dstLayout.transferEnabled();
 
         // Only add the button if it's whitelisted or forced, and if it's
         // forced, show it as inactive
         boolean active;
-        if (srcLayout != null
-                && srcLayout.transferEnabled
-                && dstLayout != null
-                && dstLayout.transferEnabled) {
+        if (srcLayout != null && srcEnabled
+                && dstLayout != null && dstEnabled) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -356,7 +352,7 @@ public class ControlButtonManager {
         TransferButton button = new TransferButton(
                 screen,
                 srcContainer,
-                srcLayout == null ? null : srcLayout.className,
+                srcLayout == null ? null : srcLayout.className(),
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),

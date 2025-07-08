@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.gui.screen.config;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.config.Config.Options;
 import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
@@ -27,6 +28,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.EnumListEntry;
+import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -348,41 +350,54 @@ public class ClothScreenProvider {
                 .build();
         gui.addEntry(thirdSelector);
 
-        gui.addEntry(eb.startIntField(
-                        localized("option", "buttonDefaultOffset.x"),
-                        options.buttonDefaultOffset.x()
+        SubCategoryBuilder layoutDefaults = eb.startSubCategory(
+                        localized("option", "layoutDefaults"))
+                .setTooltip(localized("option", "layoutDefaults.tooltip"))
+                .setExpanded(true);
+
+        layoutDefaults.add(eb.startIntField(
+                        localized("option", "layoutOffset.x"),
+                        options.layoutOffset.x()
                 )
-                .setTooltip(localized("option", "buttonDefaultOffset.tooltip"))
-                .setErrorSupplier(val -> {
-                    if (val < Config.Options.BUTTON_DEFAULT_OFFSET_MIN)
-                        return Optional.of(localized("error", "low"));
-                    else if (val > Config.Options.BUTTON_DEFAULT_OFFSET_MAX)
-                        return Optional.of(localized("error", "high"));
-                    else
-                        return Optional.empty();
-                })
-                .setDefaultValue(Config.Options.buttonDefaultOffsetDefault.x())
-                .setSaveConsumer(val -> options.buttonDefaultOffset =
-                        new Vec2i(val, options.buttonDefaultOffset.y()))
+                .setDefaultValue(Options.layoutOffsetDefault.x())
+                .setSaveConsumer(val -> options.layoutOffset =
+                        new Vec2i(val, options.layoutOffset.y()))
                 .build());
 
-        gui.addEntry(eb.startIntField(
-                        localized("option", "buttonDefaultOffset.y"),
-                        options.buttonDefaultOffset.y()
+        layoutDefaults.add(eb.startIntField(
+                        localized("option", "layoutOffset.y"),
+                        options.layoutOffset.y()
                 )
-                .setTooltip(localized("option", "buttonDefaultOffset.tooltip"))
-                .setErrorSupplier(val -> {
-                    if (val < Config.Options.BUTTON_DEFAULT_OFFSET_MIN)
-                        return Optional.of(localized("error", "low"));
-                    else if (val > Config.Options.BUTTON_DEFAULT_OFFSET_MAX)
-                        return Optional.of(localized("error", "high"));
-                    else
-                        return Optional.empty();
-                })
-                .setDefaultValue(Config.Options.buttonDefaultOffsetDefault.y())
-                .setSaveConsumer(val -> options.buttonDefaultOffset =
-                        new Vec2i(options.buttonDefaultOffset.x(), val))
+                .setDefaultValue(Options.layoutOffsetDefault.y())
+                .setSaveConsumer(val -> options.layoutOffset =
+                        new Vec2i(options.layoutOffset.x(), val))
                 .build());
+
+        layoutDefaults.add(eb.startBooleanToggle(
+                        localized("option", "sortEnabled"),
+                        options.sortEnabled
+                )
+                .setDefaultValue(Config.Options.sortEnabledDefault)
+                .setSaveConsumer(val -> options.sortEnabled = val)
+                .build());
+
+        layoutDefaults.add(eb.startBooleanToggle(
+                        localized("option", "stackFillEnabled"),
+                        options.stackFillEnabled
+                )
+                .setDefaultValue(Config.Options.stackFillEnabledDefault)
+                .setSaveConsumer(val -> options.stackFillEnabled = val)
+                .build());
+
+        layoutDefaults.add(eb.startBooleanToggle(
+                        localized("option", "transferEnabled"),
+                        options.transferEnabled
+                )
+                .setDefaultValue(Config.Options.transferEnabledDefault)
+                .setSaveConsumer(val -> options.transferEnabled = val)
+                .build());
+
+        gui.addEntry(layoutDefaults.build());
 
         gui.addEntry(eb.startStrList(
                         localized("option", "buttonLayouts"),
@@ -391,8 +406,15 @@ public class ClothScreenProvider {
                 .setTooltip(localized("option", "buttonLayouts.tooltip.1")
                         .append("\n")
                         .append(localized("option", "buttonLayouts.tooltip.2"))
+                        .append("\n  ")
+                        .append(localized("option", "buttonLayouts.tooltip.3"))
+                        .append("\n  ")
+                        .append(localized("option", "buttonLayouts.tooltip.4"))
+                        .append("\n  ")
+                        .append(localized("option", "buttonLayouts.tooltip.5"))
                         .append("\n")
-                        .append(localized("option", "buttonLayouts.tooltip.3")))
+                        .append(localized("option", "buttonLayouts.tooltip.6"))
+                )
                 .setExpanded(true)
                 .setErrorSupplier((list) -> {
                     int i = 0;
@@ -431,7 +453,7 @@ public class ClothScreenProvider {
                     }
                     options.buttonLayouts.clear();
                     layouts.forEach((layout) -> options.buttonLayouts.put(
-                            layout.className,
+                            layout.className(),
                             layout
                     ));
                 })

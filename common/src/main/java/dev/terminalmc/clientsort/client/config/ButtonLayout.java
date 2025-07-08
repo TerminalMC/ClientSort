@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
@@ -23,46 +24,31 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public class ButtonLayout {
+public record ButtonLayout(
+        String className,
+        @Nullable Vec2i offset,
+        @Nullable Boolean sortEnabled,
+        @Nullable Boolean stackFillEnabled,
+        @Nullable Boolean transferEnabled
+) {
 
-    public static final String DATA_FORMAT = "%s,%s,%d,%d,%d";
+    public static final String DATA_FORMAT = "%s,%s,%s,%s,%s";
     public static final String DATA_POS_FORMAT = "(%d,%d)";
     public static final String DATA_PATTERN_STRING =
-            "^(.+),(?:null|\\((-?\\d+),(-?\\d+)\\)),([01]),([01]),([01])$";
+            "^(.+),(?:-|\\((-?\\d+),(-?\\d+)\\)),(?:-|([01])),(?:-|([01])),(?:-|([01]))$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
-
-    public final String className;
-
-    public @Nullable Vec2i offset;
-
-    public boolean sortEnabled;
-    public boolean stackFillEnabled;
-    public boolean transferEnabled;
-
-    public ButtonLayout(
-            @Nullable String className,
-            @Nullable Vec2i offset,
-            boolean sortEnabled,
-            boolean stackFillEnabled,
-            boolean transferEnabled
-    ) {
-        this.className = className;
-        this.offset = offset;
-        this.sortEnabled = sortEnabled;
-        this.stackFillEnabled = stackFillEnabled;
-        this.transferEnabled = transferEnabled;
-    }
 
     public String toDataString() {
         return String.format(
                 DATA_FORMAT,
                 className,
-                offset == null ? "null" : String.format(DATA_POS_FORMAT, offset.x(), offset.y()),
-                sortEnabled ? 1 : 0,
-                stackFillEnabled ? 1 : 0,
-                transferEnabled ? 1 : 0
+                offset == null ? "-" : String.format(DATA_POS_FORMAT, offset.x(), offset.y()),
+                sortEnabled == null ? "-" : sortEnabled ? 1 : 0,
+                stackFillEnabled == null ? "-" : stackFillEnabled ? 1 : 0,
+                transferEnabled == null ? "-" : transferEnabled ? 1 : 0
         );
     }
 
@@ -83,13 +69,8 @@ public class ButtonLayout {
             );
         }
 
-        String className = matcher.group(1);
-        @Nullable Vec2i offset = null;
-        boolean sortEnabled = matcher.group(4).equals("1");
-        boolean stackFillEnabled = matcher.group(5).equals("1");
-        boolean transferEnabled = matcher.group(6).equals("1");
-
         // Validate class name if modified
+        String className = matcher.group(1);
         if (!originalClassNames.contains(className)) {
             try {
                 Class.forName(className);
@@ -104,25 +85,35 @@ public class ButtonLayout {
             }
         }
 
-        // Parse and validate offset
-        try {
-            if (matcher.group(2) != null) {
-                offset = new Vec2i(
-                        Integer.parseInt(matcher.group(2)),
-                        Integer.parseInt(matcher.group(3))
-                );
-            }
-        } catch (NumberFormatException e) {
-            throw new ParseException(
-                    localized(
-                            "error",
-                            "buttonLayout.parseOffset",
-                            matcher.group(2),
-                            matcher.group(3)
-                    ).getString(), 0
-            );
-        }
+        return new ButtonLayout(
+                className,
+                matcher.group(2) == null ? null
+                        : new Vec2i(
+                                Integer.parseInt(matcher.group(2)),
+                                Integer.parseInt(matcher.group(3))
+                        ),
+                matcher.group(4) == null ? null
+                        : matcher.group(4).equals("1"),
+                matcher.group(5) == null ? null
+                        : matcher.group(5).equals("1"),
+                matcher.group(6) == null ? null
+                        : matcher.group(6).equals("1")
+        );
+    }
 
-        return new ButtonLayout(className, offset, sortEnabled, stackFillEnabled, transferEnabled);
+    public @NotNull Vec2i offset() {
+        return offset == null ? options().layoutOffset : offset;
+    }
+
+    public @NotNull Boolean sortEnabled() {
+        return sortEnabled == null ? options().sortEnabled : sortEnabled;
+    }
+
+    public @NotNull Boolean stackFillEnabled() {
+        return stackFillEnabled == null ? options().stackFillEnabled : stackFillEnabled;
+    }
+
+    public @NotNull Boolean transferEnabled() {
+        return transferEnabled == null ? options().transferEnabled : transferEnabled;
     }
 }

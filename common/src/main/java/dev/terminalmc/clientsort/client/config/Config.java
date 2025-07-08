@@ -163,25 +163,32 @@ public class Config {
             TRANSFER
         }
 
-        public static final int BUTTON_DEFAULT_OFFSET_MIN = -100;
-        public static final int BUTTON_DEFAULT_OFFSET_MAX = 100;
-        public static final Vec2i buttonDefaultOffsetDefault = new Vec2i(-4, 0);
-        public Vec2i buttonDefaultOffset = buttonDefaultOffsetDefault;
+        public static final Vec2i layoutOffsetDefault = new Vec2i(-4, 0);
+        public Vec2i layoutOffset = layoutOffsetDefault;
+
+        public static final boolean sortEnabledDefault = true;
+        public boolean sortEnabled = sortEnabledDefault;
+
+        public static final boolean stackFillEnabledDefault = true;
+        public boolean stackFillEnabled = stackFillEnabledDefault;
+
+        public static final boolean transferEnabledDefault = true;
+        public boolean transferEnabled = transferEnabledDefault;
 
         public static final Supplier<List<ButtonLayout>> buttonLayoutsDefaultList = () -> List.of(
                 new ButtonLayout(Inventory.class.getName(), null, true, true, true),
-                new ButtonLayout(PlayerEnderChestContainer.class.getName(), null, true, true, true),
+                new ButtonLayout(ChestMenu.class.getName(), null, null, null, null),
+                new ButtonLayout(HopperMenu.class.getName(), null, false, false, null),
+                new ButtonLayout(HorseInventoryMenu.class.getName(), null, null, null, null),
+                new ButtonLayout(PlayerEnderChestContainer.class.getName(), null, null, null, null),
+                new ButtonLayout(ShulkerBoxMenu.class.getName(), null, null, null, null),
                 new ButtonLayout(
-                        RandomizableContainerBlockEntity.class.getName(), null, true, true, true
-                ),
-                new ButtonLayout(ChestMenu.class.getName(), null, true, true, true),
-                new ButtonLayout(ShulkerBoxMenu.class.getName(), null, true, true, true),
-                new ButtonLayout(HorseInventoryMenu.class.getName(), null, true, true, true),
-                new ButtonLayout(HopperMenu.class.getName(), null, false, false, true)
+                        RandomizableContainerBlockEntity.class.getName(), null, null, null, null
+                )
         );
         public static final Supplier<Map<String, ButtonLayout>> buttonLayoutsDefault = () -> {
             Map<String, ButtonLayout> map = new LinkedHashMap<>();
-            buttonLayoutsDefaultList.get().forEach((layout) -> map.put(layout.className, layout));
+            buttonLayoutsDefaultList.get().forEach((layout) -> map.put(layout.className(), layout));
             return map;
         };
         public Map<String, ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
@@ -218,18 +225,6 @@ public class Config {
                 options.soundVolume,
                 Options.SOUND_VOLUME_MIN,
                 Options.SOUND_VOLUME_MAX
-        );
-        options.buttonDefaultOffset = new Vec2i(
-                Math.clamp(
-                        options.buttonDefaultOffset.x(),
-                        Options.BUTTON_DEFAULT_OFFSET_MIN,
-                        Options.BUTTON_DEFAULT_OFFSET_MAX
-                ),
-                Math.clamp(
-                        options.buttonDefaultOffset.y(),
-                        Options.BUTTON_DEFAULT_OFFSET_MIN,
-                        Options.BUTTON_DEFAULT_OFFSET_MAX
-                )
         );
         // Validate ordering enum options
         if (options.firstButton == null

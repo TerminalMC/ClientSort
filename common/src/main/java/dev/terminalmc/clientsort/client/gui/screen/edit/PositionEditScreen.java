@@ -204,7 +204,7 @@ public abstract class PositionEditScreen extends Screen {
         Button moveToDefaultButton = Button.builder(
                         localized("button", "moveToDefault"), (button) -> {
                             Vec2i before = buttons.getFirst().offset;
-                            buttons.getFirst().offset = options().buttonDefaultOffset;
+                            buttons.getFirst().offset = options().layoutOffset;
                             repositionButtons(buttons.getFirst(), before);
                         }
                 )
@@ -262,7 +262,7 @@ public abstract class PositionEditScreen extends Screen {
                         (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
-                                        options().buttonDefaultOffset = buttons.getFirst().offset;
+                                        options().layoutOffset = buttons.getFirst().offset;
                                         Config.save();
                                         init();
                                     }
