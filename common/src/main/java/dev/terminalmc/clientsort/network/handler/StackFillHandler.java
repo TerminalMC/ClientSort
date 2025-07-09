@@ -87,15 +87,18 @@ public class StackFillHandler extends PayloadHandler {
                 if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
                     continue;
 
-                // Matching partial stack found; place as much of the source
-                // stack as possible
+                // Matching partial stack found
+
+                // Predict the result
+                ItemStack expected = srcStack.copyWithCount(Math.min(
+                        srcStack.getCount() + dstStack.getCount(),
+                        dstSlot.getMaxStackSize(dstStack)
+                ));
+
+                // Place as much of the source stack as possible
                 dstSlot.safeInsert(srcStack);
 
                 // Check that the operation succeeded
-                ItemStack expected = srcStackCopy.copyWithCount(Math.min(
-                        srcStackCopy.getCount() + dstStackCopy.getCount(),
-                        dstSlot.getMaxStackSize(srcStackCopy)
-                ));
                 if (notEqual(dstSlot.getItem(), expected)) {
                     setPolicy(menu, dstSlotIds);
                     throw new PayloadHandlerException(String.format(
