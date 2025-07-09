@@ -211,7 +211,7 @@ public class ControlButtonManager {
         // Get the policy key, if any, else get the 'lowest' potential policy key
         String policyKey = policy != null
                 ? policy.className
-                : null;
+                : lowestLayoutKey;
 
         // Create and add
         SortButton button = new SortButton(
@@ -327,7 +327,7 @@ public class ControlButtonManager {
         // Get the policy key, if any, else get the 'lowest' potential policy key
         String policyKey = policy != null
                 ? policy.className
-                : null;
+                : lowestLayoutKey;
 
         // Create and add
         StackFillButton button = new StackFillButton(
@@ -443,7 +443,7 @@ public class ControlButtonManager {
         // Get the policy key, if any, else get the 'lowest' potential policy key
         String policyKey = policy != null
                 ? policy.className
-                : null;
+                : lowestLayoutKey;
 
         // Create and add
         TransferButton button = new TransferButton(
