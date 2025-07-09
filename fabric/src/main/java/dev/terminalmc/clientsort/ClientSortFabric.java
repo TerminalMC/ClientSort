@@ -16,11 +16,13 @@
 
 package dev.terminalmc.clientsort;
 
+import dev.terminalmc.clientsort.command.Commands;
 import dev.terminalmc.clientsort.network.Registration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ClientSortFabric implements ModInitializer {
@@ -29,7 +31,7 @@ public class ClientSortFabric implements ModInitializer {
     public void onInitialize() {
         // Register all commands
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
-                ClientSort.COMMANDS.register(dispatcher, buildContext));
+                new Commands<CommandSourceStack>().register(dispatcher, buildContext));
 
         // Register all custom payloads
         Registration.PAYLOADS_C2S.forEach(ClientSortFabric::registerC2S);

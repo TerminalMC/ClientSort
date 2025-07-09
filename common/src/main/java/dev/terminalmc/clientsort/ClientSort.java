@@ -16,18 +16,15 @@
 
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.command.Commands;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.util.ModLogger;
-import net.minecraft.commands.CommandSourceStack;
 
 public class ClientSort {
 
     public static final String MOD_ID = "clientsort";
     public static final String MOD_NAME = "ClientSort";
     public static final ModLogger LOG = new ModLogger(MOD_NAME);
-    public static final Commands<CommandSourceStack> COMMANDS = new Commands<>();
 
     /**
      * Whether to show debug info on the GUI and write debug logs.
