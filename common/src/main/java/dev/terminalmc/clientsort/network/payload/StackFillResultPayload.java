@@ -17,39 +17,52 @@
 package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom S2C payload used to send feedback for an operation requested by a
  * {@link StackFillPayload} to a client.
- *
- * @param success whether the operation was successful.
- * @param message an optional message describing an error.
  */
-public record StackFillResultPayload(boolean success, String message)
-        implements CustomPacketPayload {
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, StackFillResultPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.BOOL,
-                    StackFillResultPayload::success,
-                    ByteBufCodecs.STRING_UTF8,
-                    StackFillResultPayload::message,
-                    StackFillResultPayload::new
-            );
+public class StackFillResultPayload implements Packet<ClientGamePacketListener> {
 
     public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_result_s2c");
+            new ResourceLocation(ClientSort.MOD_ID, "stack_fill_result_s2c");
 
-    public static final Type<StackFillResultPayload> TYPE = new Type<>(ID);
+    boolean success;
+    String message;
+
+    public StackFillResultPayload(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
+
+    public boolean success() {
+        return success;
+    }
+
+    public String message() {
+        return message;
+    }
+
+    public static StackFillResultPayload read(FriendlyByteBuf buf) {
+        return new StackFillResultPayload(
+                buf.readBoolean(),
+                buf.readUtf()
+        );
+    }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(@NotNull FriendlyByteBuf buf) {
+        buf.writeBoolean(success);
+        buf.writeUtf(message);
+    }
+
+    @Override
+    public void handle(@NotNull ClientGamePacketListener listener) {
+
     }
 }
