@@ -382,10 +382,10 @@ public abstract class PositionEditScreen extends Screen {
      * higher render layer, while still keeping the underlay detail discernible.
      */
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(@NotNull GuiGraphics graphics) {
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground();
+        super.renderBlurredBackground(graphics);
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 
