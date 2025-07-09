@@ -178,7 +178,9 @@ public abstract class PositionEditScreen extends Screen {
                         .append("\n\n")
                         .append(localized("button", "instructions.tooltip.2"))
                         .append("\n\n")
-                        .append(localized("button", "instructions.tooltip.3"))))
+                        .append(localized("button", "instructions.tooltip.3"))
+                        .append("\n\n")
+                        .append(localized("button", "instructions.tooltip.4"))))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
@@ -186,7 +188,7 @@ public abstract class PositionEditScreen extends Screen {
         addRenderableWidget(instructionsButton);
         movingY += 21;
 
-        // Toggle the status of all buttons
+        // Toggle the layout status of all buttons
         Button toggleAllButton = Button.builder(
                         localized("button", "toggleAll"), (button) -> {
                             boolean status = buttons.stream().noneMatch((b) -> b.active);
@@ -416,8 +418,13 @@ public abstract class PositionEditScreen extends Screen {
      */
     public void saveAndClose() {
         String layoutKey = rep.layoutKey == null ? lowestLayoutKey : rep.layoutKey;
-        if (buttons.stream().anyMatch((b) -> b.active)
-                || options().buttonLayouts.containsKey(layoutKey)) {
+        boolean anyActive = false;
+        for (ControlButton button : buttons) {
+            button.savePolicyState();
+            if (button.active)
+                anyActive = true;
+        }
+        if (anyActive || options().buttonLayouts.containsKey(layoutKey)) {
             options().buttonLayouts.put(
                     layoutKey, new ButtonLayout(
                             layoutKey,

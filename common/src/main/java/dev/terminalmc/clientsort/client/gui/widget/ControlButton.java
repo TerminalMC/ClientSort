@@ -24,19 +24,25 @@ import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScr
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PositionEditScreen;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public abstract class ControlButton extends Button {
 
@@ -47,7 +53,12 @@ public abstract class ControlButton extends Button {
 
     private final AbstractContainerScreen<?> screen;
     public final Container container;
+
     public final @Nullable String layoutKey;
+    public final String lowestLayoutKey;
+    public final String policyKey;
+    protected boolean disabledByPolicy;
+
     public final boolean isPlayerInv;
     private final Slot referenceSlot;
     private final WidgetSprites sprites;
@@ -58,6 +69,9 @@ public abstract class ControlButton extends Button {
             AbstractContainerScreen<?> screen,
             Container container,
             @Nullable String layoutKey,
+            String lowestLayoutKey,
+            String policyKey,
+            boolean disabledByPolicy,
             boolean isPlayerInv,
             Slot referenceSlot,
             WidgetSprites sprites,
@@ -81,6 +95,9 @@ public abstract class ControlButton extends Button {
         this.screen = screen;
         this.container = container;
         this.layoutKey = layoutKey;
+        this.lowestLayoutKey = lowestLayoutKey;
+        this.policyKey = policyKey;
+        this.disabledByPolicy = disabledByPolicy;
         this.isPlayerInv = isPlayerInv;
         this.referenceSlot = referenceSlot;
         this.sprites = sprites;
@@ -94,7 +111,11 @@ public abstract class ControlButton extends Button {
             boolean rightClick = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
             if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
                 if (rightClick) {
-                    active = !active;
+                    if (Screen.hasShiftDown()) {
+                        disabledByPolicy = !disabledByPolicy;
+                    } else {
+                        active = !active;
+                    }
                 }
                 return true;
             } else if (rightClick) {
@@ -144,12 +165,44 @@ public abstract class ControlButton extends Button {
                 0,
                 screen.height - HEIGHT
         );
-
         setX(newX);
         setY(newY);
 
+        // Draw texture
         ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
         graphics.blitSprite(texture, getX(), getY(), 0, width, height);
+
+        // Draw policy state indicator
+        if (disabledByPolicy) {
+            graphics.hLine(getX(), getX() + width - 1, getY() + height / 2, 0xFFFF0000);
+        }
+
+        // Refresh tooltip
+        if (isMouseOver(mouseX, mouseY)) {
+            if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+                Component layoutStatus = localized(
+                        "button", active
+                                ? "gui.enabled"
+                                : "gui.disabled"
+                )
+                        .withStyle(active
+                                ? ChatFormatting.GREEN
+                                : ChatFormatting.RED);
+                Component policyStatus = localized(
+                        "button", !disabledByPolicy
+                                ? "gui.enabled"
+                                : "gui.disabled"
+                )
+                        .withStyle(!disabledByPolicy
+                                ? ChatFormatting.GREEN
+                                : ChatFormatting.RED);
+                setTooltip(Tooltip.create(localized("button", "layout", layoutStatus)
+                        .append("\n")
+                        .append(localized("button", "policy", policyStatus))));
+            } else {
+                setTooltip(null);
+            }
+        }
     }
 
     @Override
@@ -186,4 +239,6 @@ public abstract class ControlButton extends Button {
     }
 
     public abstract boolean getLayoutStatus(ButtonLayout layout);
+
+    public abstract void savePolicyState();
 }

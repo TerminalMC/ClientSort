@@ -24,6 +24,7 @@ import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -413,8 +414,7 @@ public class ClothScreenProvider {
                         .append("\n  ")
                         .append(localized("option", "buttonLayouts.tooltip.5"))
                         .append("\n")
-                        .append(localized("option", "buttonLayouts.tooltip.6"))
-                )
+                        .append(localized("option", "buttonLayouts.tooltip.6")))
                 .setExpanded(true)
                 .setErrorSupplier((list) -> {
                     int i = 0;
@@ -459,6 +459,78 @@ public class ClothScreenProvider {
                 })
                 .build());
 
+        ConfigCategory policies = builder.getOrCreateCategory(localized("option", "policies"));
+
+        policies.addEntry(eb.startTextDescription(
+                        localized("option", "policies.description"))
+                .build());
+
+        policies.addEntry(eb.startBooleanToggle(
+                        localized("option", "applyPolicies"),
+                        options.applyPolicies
+                )
+                .setTooltip(localized("option", "applyPolicies.tooltip"))
+                .setDefaultValue(Config.Options.applyPoliciesDefault)
+                .setSaveConsumer(val -> options.applyPolicies = val)
+                .build());
+
+        policies.addEntry(eb.startStrList(
+                        localized("option", "classPolicies"),
+                        getPolicyStrings(options.classPolicies.values())
+                )
+                .setTooltip(localized("option", "classPolicies.tooltip.1")
+                        .append("\n")
+                        .append(localized("option", "classPolicies.tooltip.2"))
+                        .append("\n  ")
+                        .append(localized("option", "classPolicies.tooltip.3"))
+                        .append("\n  ")
+                        .append(localized("option", "classPolicies.tooltip.4"))
+                        .append("\n")
+                        .append(localized("option", "classPolicies.tooltip.5")))
+                .setExpanded(true)
+                .setErrorSupplier((list) -> {
+                    int i = 0;
+                    for (String string : list) {
+                        try {
+                            ClassPolicy.fromDataString(string, options.classPolicies.keySet());
+                        } catch (ParseException ex) {
+                            return Optional.of(localized(
+                                    "error",
+                                    "classPolicy.parse",
+                                    i + 1,
+                                    ex.getMessage()
+                            ));
+                        }
+                        i++;
+                    }
+                    return Optional.empty();
+                })
+                .setDefaultValue(getPolicyStrings(Config.Options.classPoliciesDefaultList.get()))
+                .setSaveConsumer((list) -> {
+                    Set<ClassPolicy> classPolicies = new HashSet<>();
+                    for (String string : list) {
+                        try {
+                            ClassPolicy policy = ClassPolicy.fromDataString(
+                                    string,
+                                    options.classPolicies.keySet()
+                            );
+                            classPolicies.add(policy);
+                        } catch (ParseException ex) {
+                            ClientSort.LOG.error(
+                                    "Encountered a class policy parsing error on string '{}' not caught by error checker: {}",
+                                    string,
+                                    ex.getMessage()
+                            );
+                        }
+                    }
+                    options.classPolicies.clear();
+                    classPolicies.forEach((policy) -> options.classPolicies.put(
+                            policy.className,
+                            policy
+                    ));
+                })
+                .build());
+
         return builder.build();
     }
 
@@ -466,6 +538,14 @@ public class ClothScreenProvider {
         List<String> strings = new ArrayList<>();
         for (ButtonLayout layout : layouts) {
             strings.add(layout.toDataString());
+        }
+        return strings;
+    }
+
+    private static List<String> getPolicyStrings(Collection<ClassPolicy> policies) {
+        List<String> strings = new ArrayList<>();
+        for (ClassPolicy policy : policies) {
+            strings.add(policy.toDataString());
         }
         return strings;
     }

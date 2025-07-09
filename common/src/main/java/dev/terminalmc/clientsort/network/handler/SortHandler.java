@@ -112,7 +112,7 @@ public class SortHandler extends PayloadHandler {
 
         // Assume the player's own inventory is always safe to operate on
         if (container != player.getInventory()) {
-            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sort);
+            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sortEnabled);
         }
     }
 
@@ -125,6 +125,6 @@ public class SortHandler extends PayloadHandler {
                 : null;
         Object object = container instanceof SimpleContainer ? menu : container;
 
-        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
+        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), false, true, true));
     }
 }

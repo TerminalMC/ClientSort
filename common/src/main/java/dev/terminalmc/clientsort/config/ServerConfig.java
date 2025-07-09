@@ -50,7 +50,12 @@ public class ServerConfig {
 
     public static class Options {
 
-        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = List::of;
+        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = () -> List.of(
+                new ClassPolicy(
+                        "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                        false, false, false
+                )
+        );
         public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((item) -> map.put(item.className, item));

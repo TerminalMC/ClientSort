@@ -174,8 +174,8 @@ public class TransferHandler extends PayloadHandler {
         Object dstObject = dstContainer instanceof SimpleContainer ? menu : dstContainer;
 
         // Fail if there is a disallow policy for either reference object
-        PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.sort);
-        PolicyManager.checkPolicy(dstObject.getClass(), (bl) -> bl.sort);
+        PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.transferEnabled);
+        PolicyManager.checkPolicy(dstObject.getClass(), (bl) -> bl.transferEnabled);
     }
 
     /**
@@ -187,6 +187,6 @@ public class TransferHandler extends PayloadHandler {
                 : null;
         Object object = dstContainer instanceof SimpleContainer ? menu : dstContainer;
 
-        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
+        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, true, false));
     }
 }

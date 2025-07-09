@@ -130,7 +130,7 @@ public class ClientCreativeController extends ClientController {
     }
 
     @Override
-    public void transfer() {
+    protected void transfer() {
         if (!canOperate())
             return;
         if (ClientSort.debug)
@@ -138,7 +138,7 @@ public class ClientCreativeController extends ClientController {
     }
 
     @Override
-    public void fillStacks() {
+    protected void fillStacks() {
         if (!canOperate())
             return;
         if (ClientSort.debug)

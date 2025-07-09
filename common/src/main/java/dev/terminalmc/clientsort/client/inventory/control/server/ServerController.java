@@ -49,7 +49,7 @@ public class ServerController extends SingleUseController {
     }
 
     @Override
-    public void sort(SortOrder sortOrder) {
+    protected void sort(SortOrder sortOrder) {
         if (!canOperate())
             return;
         CollectResultHandler.onSuccess = () -> {
@@ -69,7 +69,7 @@ public class ServerController extends SingleUseController {
     }
 
     @Override
-    public void fillStacks() {
+    protected void fillStacks() {
         if (!canOperate())
             return;
         if (originScopeSlots.length == 0)
@@ -91,7 +91,7 @@ public class ServerController extends SingleUseController {
     }
 
     @Override
-    public void transfer() {
+    protected void transfer() {
         if (!canOperate())
             return;
         if (originScopeSlots.length == 0)

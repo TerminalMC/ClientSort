@@ -19,10 +19,12 @@ package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,6 +32,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -44,7 +47,10 @@ public class SortButton extends ControlButton {
     public SortButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            String layoutKey,
+            @Nullable String layoutKey,
+            String lowestLayoutKey,
+            String policyKey,
+            boolean disabledByPolicy,
             boolean isPlayerInv,
             Slot referenceSlot,
             Vec2i offset,
@@ -54,6 +60,9 @@ public class SortButton extends ControlButton {
                 screen,
                 container,
                 layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 SPRITES,
@@ -69,12 +78,14 @@ public class SortButton extends ControlButton {
                     } else {
                         sortOrder = options().sortOrder;
                     }
-                    SingleUseController.getController(
+                    SingleUseController controller = SingleUseController.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
                             SortPayload.TYPE
-                    ).sort(sortOrder);
+                    );
+                    if (controller != null)
+                        controller.trySort(sortOrder);
                 },
                 active
         );
@@ -83,5 +94,16 @@ public class SortButton extends ControlButton {
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
         return layout.sortEnabled();
+    }
+
+    @Override
+    public void savePolicyState() {
+        ClassPolicy policy = options().classPolicies.get(policyKey);
+        if (policy != null) {
+            policy.sortEnabled = !disabledByPolicy;
+        } else if (disabledByPolicy) {
+            options().classPolicies.put(policyKey, new ClassPolicy(policyKey, false, true, true));
+        }
+        Config.save();
     }
 }

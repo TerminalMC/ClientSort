@@ -19,15 +19,20 @@ package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
+
+import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class TransferButton extends ControlButton {
 
@@ -54,7 +59,10 @@ public class TransferButton extends ControlButton {
     public TransferButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            String layoutKey,
+            @Nullable String layoutKey,
+            String lowestLayoutKey,
+            String policyKey,
+            boolean disabledByPolicy,
             boolean isPlayerInv,
             Slot referenceSlot,
             Vec2i offset,
@@ -64,16 +72,23 @@ public class TransferButton extends ControlButton {
                 screen,
                 container,
                 layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
                 offset,
-                (button) -> SingleUseController.getController(
-                        screen,
-                        ContainerScreenHelper.of(screen),
-                        referenceSlot,
-                        TransferPayload.TYPE
-                ).transfer(),
+                (button) -> {
+                    SingleUseController controller = SingleUseController.getController(
+                            screen,
+                            ContainerScreenHelper.of(screen),
+                            referenceSlot,
+                            TransferPayload.TYPE
+                    );
+                    if (controller != null)
+                        controller.tryTransfer();
+                },
                 active
         );
     }
@@ -81,5 +96,16 @@ public class TransferButton extends ControlButton {
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
         return layout.transferEnabled();
+    }
+
+    @Override
+    public void savePolicyState() {
+        ClassPolicy policy = options().classPolicies.get(policyKey);
+        if (policy != null) {
+            policy.transferEnabled = !disabledByPolicy;
+        } else if (disabledByPolicy) {
+            options().classPolicies.put(policyKey, new ClassPolicy(policyKey, true, true, false));
+        }
+        Config.save();
     }
 }

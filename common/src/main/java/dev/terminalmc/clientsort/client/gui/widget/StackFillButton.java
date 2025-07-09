@@ -19,15 +19,20 @@ package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
+
+import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class StackFillButton extends ControlButton {
 
@@ -57,7 +62,10 @@ public class StackFillButton extends ControlButton {
     public StackFillButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            String layoutKey,
+            @Nullable String layoutKey,
+            String lowestLayoutKey,
+            String policyKey,
+            boolean disabledByPolicy,
             boolean isPlayerInv,
             Slot referenceSlot,
             Vec2i offset,
@@ -67,16 +75,23 @@ public class StackFillButton extends ControlButton {
                 screen,
                 container,
                 layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
                 offset,
-                (button) -> SingleUseController.getController(
-                        screen,
-                        ContainerScreenHelper.of(screen),
-                        referenceSlot,
-                        StackFillPayload.TYPE
-                ).fillStacks(),
+                (button) -> {
+                    SingleUseController controller = SingleUseController.getController(
+                            screen,
+                            ContainerScreenHelper.of(screen),
+                            referenceSlot,
+                            StackFillPayload.TYPE
+                    );
+                    if (controller != null)
+                        controller.tryFillStacks();
+                },
                 active
         );
     }
@@ -84,5 +99,15 @@ public class StackFillButton extends ControlButton {
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
         return layout.stackFillEnabled();
+    }
+
+    public void savePolicyState() {
+        ClassPolicy policy = options().classPolicies.get(policyKey);
+        if (policy != null) {
+            policy.stackFillEnabled = !disabledByPolicy;
+        } else if (disabledByPolicy) {
+            options().classPolicies.put(policyKey, new ClassPolicy(policyKey, true, false, true));
+        }
+        Config.save();
     }
 }

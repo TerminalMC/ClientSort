@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -192,6 +193,24 @@ public class Config {
             return map;
         };
         public Map<String, ButtonLayout> buttonLayouts = buttonLayoutsDefault.get();
+
+        // Policy options
+
+        public static final boolean applyPoliciesDefault = true;
+        public boolean applyPolicies = applyPoliciesDefault;
+
+        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = () -> List.of(
+                new ClassPolicy(
+                        "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                        false, false, false
+                )
+        );
+        public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
+            Map<String, ClassPolicy> map = new LinkedHashMap<>();
+            classPoliciesDefaultList.get().forEach((policy) -> map.put(policy.className, policy));
+            return map;
+        };
+        public Map<String, ClassPolicy> classPolicies = classPoliciesDefault.get();
     }
 
     // Validation

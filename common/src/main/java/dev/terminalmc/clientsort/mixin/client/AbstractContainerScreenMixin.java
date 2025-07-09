@@ -241,12 +241,14 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         }
 
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            SingleUseController.getController(
+            SingleUseController controller = SingleUseController.getController(
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
                     SortPayload.TYPE
-            ).sort(sortOrder);
+            );
+            if (controller != null)
+                controller.trySort(sortOrder);
             return true;
         }
         return false;
@@ -254,23 +256,27 @@ public abstract class AbstractContainerScreenMixin extends Screen {
 
     @Unique
     private boolean clientsort$fillStacks() {
-        SingleUseController.getController(
+        SingleUseController controller = SingleUseController.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
                 StackFillPayload.TYPE
-        ).fillStacks();
+        );
+        if (controller != null)
+            controller.tryFillStacks();
         return true;
     }
 
     @Unique
     private boolean clientsort$transfer() {
-        SingleUseController.getController(
+        SingleUseController controller = SingleUseController.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
                 TransferPayload.TYPE
-        ).transfer();
+        );
+        if (controller != null)
+            controller.tryTransfer();
         return true;
     }
 

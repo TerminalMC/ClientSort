@@ -43,7 +43,7 @@ public abstract class ClientController extends SingleUseController {
      * Uses vanilla C2S inventory interaction packets to sort the inventory.
      */
     @Override
-    public void sort(SortOrder sortOrder) {
+    protected void sort(SortOrder sortOrder) {
         if (!canOperate())
             return;
 

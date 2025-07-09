@@ -137,8 +137,8 @@ public class StackFillHandler extends PayloadHandler {
         Object dstObject = dstContainer instanceof SimpleContainer ? menu : dstContainer;
 
         // Fail if there is a disallow policy for either reference object
-        PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.sort);
-        PolicyManager.checkPolicy(dstObject.getClass(), (bl) -> bl.sort);
+        PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.stackFillEnabled);
+        PolicyManager.checkPolicy(dstObject.getClass(), (bl) -> bl.stackFillEnabled);
     }
 
     /**

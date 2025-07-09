@@ -313,7 +313,7 @@ public class ClientSurvivalController extends ClientController {
      * using items from the origin scope.
      */
     @Override
-    public void fillStacks() {
+    protected void fillStacks() {
         if (!canOperate())
             return;
         if (otherScopeSlots.length == 0)
@@ -411,7 +411,7 @@ public class ClientSurvivalController extends ClientController {
      * other scope.
      */
     @Override
-    public void transfer() {
+    protected void transfer() {
         if (!canOperate())
             return;
         if (otherScopeSlots.length == 0)

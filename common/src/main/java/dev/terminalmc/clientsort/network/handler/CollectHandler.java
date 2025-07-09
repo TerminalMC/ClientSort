@@ -129,7 +129,7 @@ public class CollectHandler extends PayloadHandler {
 
         // Assume the player's own inventory is always safe to operate on
         if (container != player.getInventory()) {
-            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sort);
+            PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sortEnabled);
         }
     }
 

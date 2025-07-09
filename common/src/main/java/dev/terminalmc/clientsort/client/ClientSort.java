@@ -99,7 +99,8 @@ public class ClientSort {
         options.sortSoundLoc = ResourceLocation.tryParse(options.interactionSound);
         // Update interaction manager tick rate
         InteractionManager.setTickRate(options.interactionInterval);
-        // Update class cache
+        // Update class caches
         ControlButtonManager.reloadLayoutClasses(options.buttonLayouts.keySet());
+        ControlButtonManager.reloadPolicyClasses(options.classPolicies.keySet());
     }
 }

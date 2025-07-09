@@ -30,6 +30,7 @@ import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
+import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
@@ -65,6 +66,7 @@ public class ControlButtonManager {
     private static final int BUTTON_SHIFT_Y = 1;
 
     private static final Set<Class<?>> layoutClasses = new LinkedHashSet<>();
+    private static final Set<Class<?>> policyClasses = new LinkedHashSet<>();
 
     private static final LinkedHashSet<ControlButton> containerButtons = new LinkedHashSet<>();
     private static final LinkedHashSet<ControlButton> playerButtons = new LinkedHashSet<>();
@@ -146,41 +148,51 @@ public class ControlButtonManager {
             boolean forceShow
     ) {
         // Sanity check; we need a player to work with
-        LocalPlayer player = Minecraft.getInstance().player;
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
             return;
 
-        // Preliminary check; never display container buttons on player screen
+        // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv)
             return;
 
-        // Preliminary check; never display buttons on basic workstations
-        // or other minor inventories
+        // Preliminary check; never display buttons on basic workstations or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
-        // Get the container we're adding buttons for
-        Container container = isPlayerInv ? player.getInventory() : getContainer(player);
+        // Get the relevant container, if any
+        @Nullable Container container = isPlayerInv
+                ? player.getInventory()
+                : getContainer(player);
+        // Sanity check; we need a container to work with
         if (container == null)
             return;
 
-        // Retrieve the relevant container or GUI class
-        Object object = container instanceof SimpleContainer ? screen.getMenu() : container;
+        // Select the relevant container or GUI class
+        Object object = container instanceof SimpleContainer
+                ? screen.getMenu()
+                : container;
+
+        // Preliminary check; respect policy unless forced
+        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        boolean disabledByPolicy = policy != null && !policy.sortEnabled;
+        if (disabledByPolicy && !forceShow)
+            return;
+
         // Retrieve the associated layout, if any
-        ButtonLayout layout = getLayout(object.getClass());
+        @Nullable ButtonLayout layout = getLayout(object.getClass());
 
         // Get the configured or default offset
-        Vec2i offset = layout == null
-                ? options().layoutOffset
-                : layout.offset();
+        Vec2i offset = layout != null
+                ? layout.offset()
+                : options().layoutOffset;
 
         // Get the configured or default status
-        boolean enabled = layout == null
-                ? options().sortEnabled
-                : layout.sortEnabled();
+        boolean enabled = layout != null
+                ? layout.stackFillEnabled()
+                : options().sortEnabled;
 
-        // Only add the button if it's whitelisted or forced, and if it's
-        // forced, show it as inactive
+        // Only add the button if it's whitelisted or forced, and if it is forced, mark it inactive
         boolean active;
         if (layout != null && enabled) {
             active = true;
@@ -190,11 +202,25 @@ public class ControlButtonManager {
             return;
         }
 
+        // Get the layout key, if any
+        @Nullable String layoutKey = layout != null
+                ? layout.className()
+                : null;
+        // Get the 'lowest' potential layout key
+        String lowestLayoutKey = object.getClass().getName();
+        // Get the policy key, if any, else get the 'lowest' potential policy key
+        String policyKey = policy != null
+                ? policy.className
+                : null;
+
         // Create and add
         SortButton button = new SortButton(
                 screen,
                 container,
-                layout == null ? null : layout.className(),
+                layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -210,7 +236,7 @@ public class ControlButtonManager {
             boolean forceShow
     ) {
         // Sanity check; we need a player to work with
-        LocalPlayer player = Minecraft.getInstance().player;
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
             return;
 
@@ -218,50 +244,73 @@ public class ControlButtonManager {
         if (screen instanceof InventoryScreen && !isPlayerInv)
             return;
 
-        // Sanity check; never display buttons on basic workstations
-        // or other minor inventories
+        // Preliminary check; never display buttons on basic workstations or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
-        // Get the container we're adding buttons for, and its layout
-        ButtonLayout srcLayout = null;
-        Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
-        if (srcContainer != null) {
-            // Retrieve the relevant container or GUI class
-            Object srcObject =
-                    srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-            // Retrieve the associated layout, if any
-            srcLayout = getLayout(srcObject.getClass());
-        }
-        // Get the other container (if any), and its layout
-        ButtonLayout dstLayout = null;
-        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        if (dstContainer != null && srcContainer != dstContainer) {
-            // Retrieve the relevant container or GUI class
-            Object dstObject =
-                    dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-            // Retrieve the associated layout, if any
+        // Get the relevant container, if any
+        @Nullable Container container = isPlayerInv
+                ? player.getInventory()
+                : getContainer(player);
+        // Sanity check; we need a container to work with
+        if (container == null)
+            return;
+
+        // Select the relevant container or GUI class
+        Object object = container instanceof SimpleContainer
+                ? screen.getMenu()
+                : container;
+
+        // Preliminary check; respect policy unless forced
+        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        boolean disabledByPolicy = policy != null && !policy.stackFillEnabled;
+        if (disabledByPolicy && !forceShow)
+            return;
+
+        // Get the associated layout, if any
+        @Nullable ButtonLayout layout = getLayout(object.getClass());
+
+        // Get the configured or default offset
+        Vec2i offset = layout != null
+                ? layout.offset()
+                : options().layoutOffset;
+
+        // Get the configured or default status
+        boolean enabled = layout != null
+                ? layout.stackFillEnabled()
+                : options().stackFillEnabled;
+
+        // Get the destination container, if any
+        @Nullable Container dstContainer = isPlayerInv
+                ? getContainer(player)
+                : player.getInventory();
+
+        // Get the destination layout
+        @Nullable ButtonLayout dstLayout = null;
+        if (dstContainer != null) {
+            // Select the relevant container or GUI class
+            Object dstObject = dstContainer instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : dstContainer;
+
+            // Preliminary check; respect policy unless forced
+            @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
+            if (dstPolicy != null && !dstPolicy.stackFillEnabled && !forceShow)
+                return;
+
+            // Get the associated layout, if any
             dstLayout = getLayout(dstObject.getClass());
         }
 
-        // Get the configured or default offset
-        Vec2i offset = srcLayout == null
-                ? options().layoutOffset
-                : srcLayout.offset();
-
         // Get the configured or default status
-        boolean srcEnabled = srcLayout == null
-                ? options().stackFillEnabled
-                : srcLayout.stackFillEnabled();
-        boolean dstEnabled = dstLayout == null
-                ? options().stackFillEnabled
-                : dstLayout.stackFillEnabled();
+        boolean dstEnabled = dstLayout != null
+                ? dstLayout.stackFillEnabled()
+                : options().stackFillEnabled;
 
-        // Only add the button if it's whitelisted or forced, and if it's
-        // forced, show it as inactive
+        // Only add the button if both it and the other are whitelisted, or it's forced, and if it
+        // is forced, mark it inactive
         boolean active;
-        if (srcLayout != null && srcEnabled
-                && dstLayout != null && dstEnabled) {
+        if ((layout != null && enabled) && (dstLayout != null && dstEnabled)) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -269,11 +318,25 @@ public class ControlButtonManager {
             return;
         }
 
+        // Get the layout key, if any
+        @Nullable String layoutKey = layout != null
+                ? layout.className()
+                : null;
+        // Get the 'lowest' potential layout key
+        String lowestLayoutKey = object.getClass().getName();
+        // Get the policy key, if any, else get the 'lowest' potential policy key
+        String policyKey = policy != null
+                ? policy.className
+                : null;
+
         // Create and add
         StackFillButton button = new StackFillButton(
                 screen,
-                srcContainer,
-                srcLayout == null ? null : srcLayout.className(),
+                container,
+                layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -289,7 +352,7 @@ public class ControlButtonManager {
             boolean forceShow
     ) {
         // Sanity check; we need a player to work with
-        LocalPlayer player = Minecraft.getInstance().player;
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
             return;
 
@@ -297,50 +360,73 @@ public class ControlButtonManager {
         if (screen instanceof InventoryScreen && !isPlayerInv)
             return;
 
-        // Sanity check; never display buttons on basic workstations
-        // or other minor inventories
+        // Preliminary check; never display buttons on basic workstations or other minor inventories
         if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
-        // Get the container we're adding buttons for, and its layout
-        ButtonLayout srcLayout = null;
-        Container srcContainer = isPlayerInv ? player.getInventory() : getContainer(player);
-        if (srcContainer != null) {
-            // Retrieve the relevant container or GUI class
-            Object srcObject =
-                    srcContainer instanceof SimpleContainer ? screen.getMenu() : srcContainer;
-            // Retrieve the associated layout, if any
-            srcLayout = getLayout(srcObject.getClass());
-        }
-        // Get the other container (if any), and its layout
-        ButtonLayout dstLayout = null;
-        Container dstContainer = isPlayerInv ? getContainer(player) : player.getInventory();
-        if (dstContainer != null && srcContainer != dstContainer) {
-            // Retrieve the relevant container or GUI class
-            Object dstObject =
-                    dstContainer instanceof SimpleContainer ? screen.getMenu() : dstContainer;
-            // Retrieve the associated layout, if any
+        // Get the relevant container, if any
+        @Nullable Container container = isPlayerInv
+                ? player.getInventory()
+                : getContainer(player);
+        // Sanity check; we need a container to work with
+        if (container == null)
+            return;
+
+        // Select the relevant container or GUI class
+        Object object = container instanceof SimpleContainer
+                ? screen.getMenu()
+                : container;
+
+        // Preliminary check; respect policy unless forced
+        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        boolean disabledByPolicy = policy != null && !policy.transferEnabled;
+        if (disabledByPolicy && !forceShow)
+            return;
+
+        // Get the associated layout, if any
+        @Nullable ButtonLayout layout = getLayout(object.getClass());
+
+        // Get the configured or default offset
+        Vec2i offset = layout != null
+                ? layout.offset()
+                : options().layoutOffset;
+
+        // Get the configured or default status
+        boolean enabled = layout != null
+                ? layout.transferEnabled()
+                : options().transferEnabled;
+
+        // Get the destination container, if any
+        @Nullable Container dstContainer = isPlayerInv
+                ? getContainer(player)
+                : player.getInventory();
+
+        // Get the destination layout
+        @Nullable ButtonLayout dstLayout = null;
+        if (dstContainer != null) {
+            // Select the relevant container or GUI class
+            Object dstObject = dstContainer instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : dstContainer;
+
+            // Preliminary check; respect policy unless forced
+            @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
+            if (dstPolicy != null && !dstPolicy.transferEnabled && !forceShow)
+                return;
+
+            // Get the associated layout, if any
             dstLayout = getLayout(dstObject.getClass());
         }
 
-        // Get the configured or default offset
-        Vec2i offset = srcLayout == null
-                ? options().layoutOffset
-                : srcLayout.offset();
-
         // Get the configured or default status
-        boolean srcEnabled = srcLayout == null
-                ? options().transferEnabled
-                : srcLayout.transferEnabled();
-        boolean dstEnabled = dstLayout == null
-                ? options().transferEnabled
-                : dstLayout.transferEnabled();
+        boolean dstEnabled = dstLayout != null
+                ? dstLayout.transferEnabled()
+                : options().transferEnabled;
 
-        // Only add the button if it's whitelisted or forced, and if it's
-        // forced, show it as inactive
+        // Only add the button if both it and the other are whitelisted, or it's forced, and if it
+        // is forced, mark it inactive
         boolean active;
-        if (srcLayout != null && srcEnabled
-                && dstLayout != null && dstEnabled) {
+        if ((layout != null && enabled) && (dstLayout != null && dstEnabled)) {
             active = true;
         } else if (forceShow) {
             active = false;
@@ -348,11 +434,25 @@ public class ControlButtonManager {
             return;
         }
 
+        // Get the layout key, if any
+        @Nullable String layoutKey = layout != null
+                ? layout.className()
+                : null;
+        // Get the 'lowest' potential layout key
+        String lowestLayoutKey = object.getClass().getName();
+        // Get the policy key, if any, else get the 'lowest' potential policy key
+        String policyKey = policy != null
+                ? policy.className
+                : null;
+
         // Create and add
         TransferButton button = new TransferButton(
                 screen,
-                srcContainer,
-                srcLayout == null ? null : srcLayout.className(),
+                container,
+                layoutKey,
+                lowestLayoutKey,
+                policyKey,
+                disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
                 getShiftedOffset(offset, isPlayerInv),
@@ -381,9 +481,28 @@ public class ControlButtonManager {
     }
 
     /**
+     * Reloads the cache of policy configuration classes.
+     */
+    public static void reloadPolicyClasses(Set<String> classNames) {
+        policyClasses.clear();
+        for (String className : classNames) {
+            try {
+                policyClasses.add(Class.forName(className));
+            } catch (ClassNotFoundException e) {
+                if (ClientSort.debug) {
+                    ClientSort.LOG.warn(
+                            "Unable to load policy class '{}': Class not found.",
+                            className
+                    );
+                }
+            }
+        }
+    }
+
+    /**
      * @return the lowest-degree matching layout for the specified class, if any exists.
      */
-    public static ButtonLayout getLayout(Class<?> cls) {
+    public static @Nullable ButtonLayout getLayout(Class<?> cls) {
         // Check for a perfect match
         ButtonLayout layout = options().buttonLayouts.get(cls.getName());
         if (layout != null)
@@ -407,6 +526,42 @@ public class ControlButtonManager {
             if (!hasSubclass) {
                 // No subclass found; return layout for c1
                 return options().buttonLayouts.get(c1.getName());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return the lowest-degree matching policy for the specified class, if policies are enabled
+     * and any exists.
+     */
+    public static @Nullable ClassPolicy getPolicy(Class<?> cls) {
+        if (!options().applyPolicies)
+            return null;
+
+        // Check for a perfect match
+        ClassPolicy policy = options().classPolicies.get(cls.getName());
+        if (policy != null)
+            return policy;
+
+        // No perfect match; find all higher-degree matching classes
+        Set<Class<?>> matches = policyClasses.stream()
+                .filter(c -> c.isAssignableFrom(cls))
+                .collect(Collectors.toSet());
+
+        // Double-iterate to find the lowest-degree match
+        for (Class<?> c1 : matches) {
+            boolean hasSubclass = false;
+            // If any c2 is a subclass of c1, c1 is not lowest
+            for (Class<?> c2 : matches) {
+                if (!c1.equals(c2) && c1.isAssignableFrom(c2)) {
+                    hasSubclass = true;
+                    break;
+                }
+            }
+            if (!hasSubclass) {
+                // No subclass found; return policy for c1
+                return options().classPolicies.get(c1.getName());
             }
         }
         return null;

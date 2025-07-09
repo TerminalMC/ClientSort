@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.inventory.control;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
+import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientCreativeController;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientSurvivalController;
 import dev.terminalmc.clientsort.client.inventory.control.server.ServerController;
@@ -26,19 +27,27 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
+import dev.terminalmc.clientsort.config.ClassPolicy;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
+import dev.terminalmc.clientsort.network.payload.SortPayload;
+import dev.terminalmc.clientsort.network.payload.StackFillPayload;
+import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.util.SlotLogUtil;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -179,12 +188,23 @@ public abstract class SingleUseController {
     /**
      * @return an instance of {@link SingleUseController} optimized for the current game state.
      */
-    public static SingleUseController getController(
+    public static @Nullable SingleUseController getController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            CustomPacketPayload.Type<?> payloadType
+            Type<?> payloadType
     ) {
+        // Check policies
+        if (options().applyPolicies) {
+            Object object = originSlot.container instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : originSlot.container;
+            ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
+            if (policy != null && policyDisablesType(policy, payloadType)) {
+                return null;
+            }
+        }
+
         if (options().useServerAcceleration
                 && ClientServices.PLATFORM.canSendToServer(payloadType)) {
             return new ServerController(screen, screenHelper, originSlot);
@@ -199,20 +219,81 @@ public abstract class SingleUseController {
         return new ClientSurvivalController(screen, screenHelper, originSlot);
     }
 
+    public static boolean policyDisablesType(ClassPolicy policy, Type<?> payloadType) {
+        if (payloadType.equals(SortPayload.TYPE) || payloadType.equals(CollectPayload.TYPE)) {
+            return !policy.sortEnabled;
+        } else if (payloadType.equals(StackFillPayload.TYPE)) {
+            return !policy.stackFillEnabled;
+        } else if (payloadType.equals(TransferPayload.TYPE)) {
+            return !policy.transferEnabled;
+        } else {
+            throw new IllegalArgumentException("Invalid payload type '%s'".formatted(payloadType));
+        }
+    }
+
+    /**
+     * If allowed by policy, sorts the inventory according to {@code sortOrder}.
+     */
+    public void trySort(SortOrder sortOrder) {
+        if (policyAllowsOp(originScopeSlots, (p) -> p.sortEnabled))
+            return;
+        sort(sortOrder);
+    }
+
+    /**
+     * If allowed by policy, uses items in the scope of the origin slot to complete as many partial
+     * stacks as possible in the other container or inventory, if it exists.
+     */
+    public void tryFillStacks() {
+        if (policyAllowsOp(originScopeSlots, (p) -> p.stackFillEnabled))
+            return;
+        if (policyAllowsOp(otherScopeSlots, (p) -> p.stackFillEnabled))
+            return;
+        fillStacks();
+    }
+
+    /**
+     * If allowed by policy, transfers as many items as possible from the scope of the origin slot
+     * to the other container or inventory, if it exists.
+     */
+    public void tryTransfer() {
+        if (policyAllowsOp(originScopeSlots, (p) -> p.transferEnabled))
+            return;
+        if (policyAllowsOp(otherScopeSlots, (p) -> p.transferEnabled))
+            return;
+        transfer();
+    }
+
+    /**
+     * @return {@code true} if there exists a policy disallowing this operation in this context.
+     */
+    private boolean policyAllowsOp(Slot[] slots, Function<ClassPolicy, Boolean> check) {
+        if (slots.length == 0)
+            return false;
+        if (options().applyPolicies) {
+            Object object = slots[0].container instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : slots[0].container;
+            ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
+            return policy == null || check.apply(policy);
+        }
+        return false;
+    }
+
     /**
      * Sorts the inventory according to {@code sortOrder}.
      */
-    public abstract void sort(SortOrder sortOrder);
+    protected abstract void sort(SortOrder sortOrder);
 
     /**
      * Uses items in the scope of the origin slot to complete as many partial stacks as possible in
      * the other container or inventory, if it exists.
      */
-    public abstract void fillStacks();
+    protected abstract void fillStacks();
 
     /**
      * Transfers as many items as possible from the scope of the origin slot to the other container
      * or inventory, if it exists.
      */
-    public abstract void transfer();
+    protected abstract void transfer();
 }
