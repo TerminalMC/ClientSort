@@ -235,7 +235,7 @@ public abstract class SingleUseController {
      * If allowed by policy, sorts the inventory according to {@code sortOrder}.
      */
     public void trySort(SortOrder sortOrder) {
-        if (policyAllowsOp(originScopeSlots, (p) -> p.sortEnabled))
+        if (!policyAllowsOp(originScopeSlots, (p) -> p.sortEnabled))
             return;
         sort(sortOrder);
     }
@@ -245,9 +245,9 @@ public abstract class SingleUseController {
      * stacks as possible in the other container or inventory, if it exists.
      */
     public void tryFillStacks() {
-        if (policyAllowsOp(originScopeSlots, (p) -> p.stackFillEnabled))
+        if (!policyAllowsOp(originScopeSlots, (p) -> p.stackFillEnabled))
             return;
-        if (policyAllowsOp(otherScopeSlots, (p) -> p.stackFillEnabled))
+        if (!policyAllowsOp(otherScopeSlots, (p) -> p.stackFillEnabled))
             return;
         fillStacks();
     }
@@ -257,9 +257,9 @@ public abstract class SingleUseController {
      * to the other container or inventory, if it exists.
      */
     public void tryTransfer() {
-        if (policyAllowsOp(originScopeSlots, (p) -> p.transferEnabled))
+        if (!policyAllowsOp(originScopeSlots, (p) -> p.transferEnabled))
             return;
-        if (policyAllowsOp(otherScopeSlots, (p) -> p.transferEnabled))
+        if (!policyAllowsOp(otherScopeSlots, (p) -> p.transferEnabled))
             return;
         transfer();
     }
@@ -267,6 +267,7 @@ public abstract class SingleUseController {
     /**
      * @return {@code true} if there exists a policy disallowing this operation in this context.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean policyAllowsOp(Slot[] slots, Function<ClassPolicy, Boolean> check) {
         if (slots.length == 0)
             return false;
