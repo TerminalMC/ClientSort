@@ -189,7 +189,7 @@ public class ControlButtonManager {
 
         // Get the configured or default status
         boolean enabled = layout != null
-                ? layout.stackFillEnabled()
+                ? layout.sortEnabled()
                 : options().sortEnabled;
 
         // Only add the button if it's whitelisted or forced, and if it is forced, mark it inactive
