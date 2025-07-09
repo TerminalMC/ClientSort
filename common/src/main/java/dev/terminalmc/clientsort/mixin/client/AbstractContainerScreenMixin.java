@@ -245,7 +245,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
-                    SortPayload.TYPE
+                    SortPayload.ID
             );
             if (controller != null)
                 controller.trySort(sortOrder);
@@ -260,7 +260,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                StackFillPayload.TYPE
+                StackFillPayload.ID
         );
         if (controller != null)
             controller.tryFillStacks();
@@ -273,7 +273,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                TransferPayload.TYPE
+                TransferPayload.ID
         );
         if (controller != null)
             controller.tryTransfer();

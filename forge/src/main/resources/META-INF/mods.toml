@@ -1,0 +1,44 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "${mod_license}"
+#showAsResourcePack = true #optional:false
+#services = [] #optional:none
+#properties = {} #optional:none
+issueTrackerURL = "${issues_url}" #optional:none
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}" #optional:"1"
+displayName = "${mod_name}" #optional:modId
+description = '''${mod_description_forge}''' #optional:'''MISSING DESCRIPTION'''
+logoFile = "${mod_icon}" #optional:none
+#logoBlur = false #optional:true
+#updateJSONURL = "" #optional:none
+features = { java_version = "${java_versions_forge}" } #optional:none
+#modproperties = {} #optional:none
+credits = "${mod_contributors_string}" #optional:none
+authors = "${mod_authors_string}" #optional:none
+displayURL = "${homepage_url}" #optional:none
+#displayTest = "" #optional:"MATCH_VERSION"
+
+[[mixins]]
+config = "${mod_id}.mixins.json"
+[[mixins]]
+config = "${mod_id}.forge.mixins.json"
+
+[[dependencies."${mod_id}"]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft_versions_forge}" #optional:any
+#ordering = "" #optional:"NONE" #options:"BEFORE","AFTER"
+#side = "" #optional:"BOTH" #options:"CLIENT","SERVER","BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "forge"
+mandatory = true
+versionRange = "${forge_versions}"
+
+${ forge_all_deps }
+
+# https://docs.minecraftforge.net/en/latest/gettingstarted/modfiles
+# https://docs.minecraftforge.net/en/latest/misc/updatechecker

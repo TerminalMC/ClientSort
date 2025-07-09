@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.gui.widget;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
@@ -25,9 +24,7 @@ import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -35,26 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class TransferButton extends ControlButton {
-
-    private static final WidgetSprites SPRITES_UP = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_up"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_up_disabled"),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/transfer_up_highlighted"
-            )
-    );
-    private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/transfer_down"),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/transfer_down_disabled"
-            ),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/transfer_down_highlighted"
-            )
-    );
 
     public TransferButton(
             AbstractContainerScreen<?> screen,
@@ -77,14 +54,14 @@ public class TransferButton extends ControlButton {
                 disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
-                isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
+                new Vec2i(isPlayerInv ? 4 : 3, 0),
                 offset,
                 (button) -> {
                     SingleUseController controller = SingleUseController.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            TransferPayload.TYPE
+                            TransferPayload.ID
                     );
                     if (controller != null)
                         controller.tryTransfer();

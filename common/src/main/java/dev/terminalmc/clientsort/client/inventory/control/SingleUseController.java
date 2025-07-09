@@ -38,7 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -192,7 +192,7 @@ public abstract class SingleUseController {
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> payloadType
+            ResourceLocation channel
     ) {
         // Check policies
         if (options().applyPolicies) {
@@ -200,13 +200,13 @@ public abstract class SingleUseController {
                     ? screen.getMenu()
                     : originSlot.container;
             ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
-            if (policy != null && policyDisablesType(policy, payloadType)) {
+            if (policy != null && policyDisablesType(policy, channel)) {
                 return null;
             }
         }
 
         if (options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(payloadType)) {
+                && ClientServices.PLATFORM.canSendToServer(channel)) {
             return new ServerController(screen, screenHelper, originSlot);
         }
 
@@ -219,15 +219,15 @@ public abstract class SingleUseController {
         return new ClientSurvivalController(screen, screenHelper, originSlot);
     }
 
-    public static boolean policyDisablesType(ClassPolicy policy, Type<?> payloadType) {
-        if (payloadType.equals(SortPayload.TYPE) || payloadType.equals(CollectPayload.TYPE)) {
+    public static boolean policyDisablesType(ClassPolicy policy, ResourceLocation payloadId) {
+        if (payloadId.equals(SortPayload.ID) || payloadId.equals(CollectPayload.ID)) {
             return !policy.sortEnabled;
-        } else if (payloadType.equals(StackFillPayload.TYPE)) {
+        } else if (payloadId.equals(StackFillPayload.ID)) {
             return !policy.stackFillEnabled;
-        } else if (payloadType.equals(TransferPayload.TYPE)) {
+        } else if (payloadId.equals(TransferPayload.ID)) {
             return !policy.transferEnabled;
         } else {
-            throw new IllegalArgumentException("Invalid payload type '%s'".formatted(payloadType));
+            throw new IllegalArgumentException("Invalid payload type '%s'".formatted(payloadId));
         }
     }
 
