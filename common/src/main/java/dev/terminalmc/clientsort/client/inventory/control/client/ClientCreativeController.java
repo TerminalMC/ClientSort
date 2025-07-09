@@ -84,6 +84,10 @@ public class ClientCreativeController extends ClientController {
                 int dstSlotId = ((ISlot) dstSlot).clientsort$getIdInContainer();
                 InteractionManager.push(() -> {
                     //noinspection DataFlowIssue
+                    Minecraft.getInstance().player.inventoryMenu
+                            .getSlot(dstSlotId)
+                            .set(srcStack.copy());
+                    //noinspection DataFlowIssue
                     Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(
                             srcStack.copy(),
                             dstSlotId
@@ -114,6 +118,8 @@ public class ClientCreativeController extends ClientController {
             ItemStack srcItem = originScopeStacks[key[i]];
             int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIdInContainer();
             InteractionManager.push(() -> {
+                //noinspection DataFlowIssue
+                Minecraft.getInstance().player.inventoryMenu.getSlot(dstSlotId).set(srcItem);
                 //noinspection DataFlowIssue
                 Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);
                 if (playSound)

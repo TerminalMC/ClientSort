@@ -11,6 +11,7 @@
 Changes over v2.0.0-beta.6
 
 - Fixed command registration breaking other mods
+- Fixed an inconsistency with inventory updates when using client creative operations
 
 ## 2.0.0-beta.6
 
