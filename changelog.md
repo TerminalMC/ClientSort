@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-beta.6
+
+- Added serverside detection for invalid inventory state during an operation
+- Added serverside class-policy configuration with automatic blacklisting of inventories causing
+  invalid state
+- Added clientside class-policy configuration to manually disable operations
+- Disabled all operations on Create Toolboxes by default
+
 ## 2.0.0-beta.5
 
 - Improved compatibility with Neo/Forge modded containers extending ItemStackHandler
