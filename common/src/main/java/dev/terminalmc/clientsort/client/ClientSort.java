@@ -77,6 +77,10 @@ public class ClientSort {
 
     public static volatile boolean operatingClient = false;
 
+    public static boolean debug() {
+        return dev.terminalmc.clientsort.ClientSort.debug();
+    }
+
     public static void init() {
         Config.getAndSave();
     }

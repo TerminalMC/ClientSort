@@ -16,8 +16,10 @@
 
 package dev.terminalmc.clientsort.client.inventory.control.client;
 
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
+import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
@@ -40,12 +42,31 @@ public abstract class ClientController extends SingleUseController {
     }
 
     /**
+     * Sets a flag to indicate that a client interaction operation is in progress.
+     */
+    protected void raiseFlag() {
+        ClientSort.operatingClient = true;
+    }
+
+    /**
+     * Queues an interaction event to clear the flag set by {@link ClientController#raiseFlag()}.
+     */
+    protected void lowerFlag() {
+        InteractionManager.push(() -> {
+            ClientSort.operatingClient = false;
+            return InteractionManager.TICK_WAITER;
+        });
+    }
+
+    /**
      * Uses vanilla C2S inventory interaction packets to sort the inventory.
      */
     @Override
     protected void sort(SortOrder sortOrder) {
         if (!canOperate())
             return;
+
+        raiseFlag();
 
         // Collect partial stacks
         collect();
@@ -72,6 +93,8 @@ public abstract class ClientController extends SingleUseController {
 
         // Sort
         sort(key, playSound);
+
+        lowerFlag();
     }
 
     /**

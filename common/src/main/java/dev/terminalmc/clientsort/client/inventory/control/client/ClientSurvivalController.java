@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.inventory.control.client;
 
-import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
@@ -133,7 +132,6 @@ public class ClientSurvivalController extends ClientController {
      */
     @Override
     protected void sort(int[] sortedIds, boolean playSound) {
-        raiseFlag();
         final int slotCount = originScopeStacks.length;
 
         // sortedIds shows, for each slot index, which slot's stack should be
@@ -305,7 +303,6 @@ public class ClientSurvivalController extends ClientController {
                 // then we're finished with this chain
             } while (!done.get(dstId));
         }
-        lowerFlag();
     }
 
     /**
@@ -526,23 +523,5 @@ public class ClientSurvivalController extends ClientController {
             clickEvents.clear();
         }
         lowerFlag();
-    }
-
-    /**
-     * Sets a flag to indicate that a client-survival interaction operation is in progress.
-     */
-    private void raiseFlag() {
-        ClientSort.operatingClient = true;
-    }
-
-    /**
-     * Queues an interaction event to clear the flag set by
-     * {@link ClientSurvivalController#raiseFlag()}.
-     */
-    private void lowerFlag() {
-        InteractionManager.push(() -> {
-            ClientSort.operatingClient = false;
-            return InteractionManager.TICK_WAITER;
-        });
     }
 }

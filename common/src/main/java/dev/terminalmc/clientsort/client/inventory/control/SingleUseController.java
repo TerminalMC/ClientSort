@@ -17,7 +17,7 @@
 
 package dev.terminalmc.clientsort.client.inventory.control;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientCreativeController;
@@ -201,23 +201,28 @@ public abstract class SingleUseController {
                     ? screen.getMenu()
                     : originSlot.container;
             ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
-            if (policy != null && policyDisablesType(policy, payloadType)) {
+            if (policy != null && policyDisablesType(policy, payloadType))
                 return null;
-            }
         }
 
+        // Preference server-accelerated ops
         if (options().useServerAcceleration
                 && ClientServices.PLATFORM.canSendToServer(payloadType)) {
             return new ServerController(screen, screenHelper, originSlot);
         }
 
+        // Check that there is not already an op running
+        if (ClientSort.operatingClient)
+            return null;
+
+        // Select an appropriate client-side operator
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
             return new ClientCreativeController(screen, screenHelper, originSlot);
+        } else {
+            return new ClientSurvivalController(screen, screenHelper, originSlot);
         }
-
-        return new ClientSurvivalController(screen, screenHelper, originSlot);
     }
 
     public static boolean policyDisablesType(ClassPolicy policy, Type<?> payloadType) {
