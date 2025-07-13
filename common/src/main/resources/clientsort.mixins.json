@@ -13,6 +13,7 @@
     "client.ClientPacketListenerMixin",
     "client.LocalPlayerMixin",
     "client.accessor.AbstractContainerScreenAccessor",
+    "client.accessor.GuiGraphicsAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
     "client.slot.CreativeSlotMixin"
