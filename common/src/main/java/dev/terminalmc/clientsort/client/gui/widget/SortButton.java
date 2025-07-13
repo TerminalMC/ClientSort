@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.gui.widget;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
@@ -26,10 +25,8 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -37,12 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class SortButton extends ControlButton {
-
-    private static final WidgetSprites SPRITES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_highlighted")
-    );
 
     public SortButton(
             AbstractContainerScreen<?> screen,
@@ -65,7 +56,7 @@ public class SortButton extends ControlButton {
                 disabledByPolicy,
                 isPlayerInv,
                 referenceSlot,
-                SPRITES,
+                new Vec2i(0, 0),
                 offset,
                 (button) -> {
                     SortOrder sortOrder;
@@ -82,7 +73,7 @@ public class SortButton extends ControlButton {
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            SortPayload.TYPE
+                            SortPayload.ID
                     );
                     if (controller != null)
                         controller.trySort(sortOrder);
