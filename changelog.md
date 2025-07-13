@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.8
+
+- Fixed an issue causing items to be added to bundles
+
 ## 2.0.0-beta.7
 
 - Added serverside detection for invalid inventory state during an operation

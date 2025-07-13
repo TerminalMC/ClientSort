@@ -132,7 +132,7 @@ public abstract class SingleUseController {
         // Record stacks
         otherScopeStacks = new ItemStack[otherScopeSlots.length];
         for (int i = 0; i < otherScopeSlots.length; i++) {
-            otherScopeStacks[i] = otherScopeSlots[i].getItem();
+            otherScopeStacks[i] = otherScopeSlots[i].getItem().copy();
         }
     }
 
