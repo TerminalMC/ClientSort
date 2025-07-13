@@ -39,7 +39,10 @@ public abstract class ClientPacketListenerMixin {
             at = @At("HEAD")
     )
     private void beforeLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
+        // Reset state on relog
         ClientSort.searchOrderUpdated = false;
+        // Reset state on relog
+        ClientSort.operatingClient = false;
     }
 
     @Inject(
