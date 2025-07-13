@@ -22,38 +22,68 @@ A client-side inventory sorting mod with keybind and GUI support.
 
 ### Usage
 
-To sort an inventory, simply hover over it with your mouse and press the keybind (default: middle mouse button).
+To sort an inventory, simply hover over it with your mouse and press the keybind (default: middle
+mouse button).
 
-You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a different sorting order.
+You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a different sorting
+order.
 
-#### Other Actions (v2)
+#### Other Operations (`v2`)
 
-In addition to sorting, ClientSort v2 provides keybinds (unbound by default) for the following actions:
+In addition to sorting, ClientSort `v2.0.0-beta.1` and later versions include the following
+operations:
 
 - Stack Fill
-  - For all partial stacks in the other inventory, attempts to complete them using items in the target inventory.
+  - For all partial stacks in the other inventory, attempts to complete them using items in the
+    target inventory.
 - Transfer
   - Moves as many items as possible from the target inventory to the other inventory.
 
-#### Interaction GUI (v2)
+#### Interaction GUI (`v2`)
 
-ClientSort v2 includes support for adding interaction buttons to the inventory screen, as an alternative to using the
-keybinds.
+In addition to the keybinds, ClientSort `v2.0.0-beta.1` and later versions support adding small
+buttons to the inventory screen, which can be used to trigger operations.
 
-- All buttons are disabled by default, but can be enabled via the config menu.
-- When the buttons are visible, you can right-click on them to adjust the position and enable or disable specific ones.
-- If the buttons are enabled but not visible, you can use the editor keybind (unbound by default) to select a group of
-buttons to edit.
-- ClientSort uses a whitelist to decide when to show the buttons. You can enable or disable the buttons for a particular
-inventory via the position editor, or by manually editing the whitelist in the main config menu.
+- The GUI is disabled by default, but can be enabled via the config menu or the editor screen.
+- The editor screen can be opened via a keybind (unbound by default).
+- When the buttons are visible, you can right-click on them to open the editor screen, which allows
+  you to adjust the position and show or hide specific buttons.
+
+
+- ClientSort uses a whitelist system to decide when to show the buttons. You can enable or disable
+  the buttons for a particular inventory via the editor screen, or by manually editing the whitelist
+  in the main config menu.
+
+#### Blacklist Policies (v2)
+
+Separate to the button layout whitelist, ClientSort `v2.0.0-beta.6` and later versions support
+disabling individual operations in specific inventories client-side using a list of policies.
+
+- A Policy identifies the associated inventory type, and specifies which operations can be used.
+  - For example, the policy `com.simibubi.create.content.equipment.toolbox.ToolboxMenu,0,0,0`
+    disables all operations in the inventory menu of Create Toolboxes.
+  - If you have this rule and attempt to sort a toolbox (with server acceleration either on or off),
+    nothing will happen.
+- Policies *override* the button layout whitelist. That is, if you have configured a button layout
+  to show the interaction buttons in a particular inventory, and then you add a policy to disable
+  operations in that inventory, the buttons will be hidden automatically.
+
+
+- If installed on a server or in singleplayer, ClientSort automatically blacklists
+  server-accelerated operations when it detects an incorrect state (such as item duplication).
+- The blacklist is stored in the `clientsort-server.json` config file, which can be manually edited
+  and reloaded using the `/clientsort reload` command.
+- The serverside blacklist is *not* synced to clients, so connected clients may still attempt to
+  sort the blacklisted inventory (unless they have a client-side blacklist policy for it), but
+  nothing will happen.
 
 ### Installation
 
 #### Client Required, Server Optional
 
-As the name suggests, ClientSort works completely fine when it is only installed on the client. However, if it is also
-installed on a server, connected clients with the mod will be able to use 'instant' sorting instead of the normal
-rate-limited sort.
+As the name suggests, ClientSort is fully functional when it is only installed on the client.
+However, if it is also installed on a server, connected clients with the mod will be able to use
+near-instant operations instead of the normal rate-limited operations.
 
 ### Dependencies
 
@@ -63,17 +93,20 @@ Neo/Forge: [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
 ### Credits
 
-ClientSort uses code from the following mods, in both raw and modified form, in accordance with their respective
-licenses.
+ClientSort uses code from the following mods, in both modified and unmodified form, in accordance
+with their respective licenses.
 
-- [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) by [Siphalor](https://github.com/Siphalor)
+- [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie)
+  by [Siphalor](https://github.com/Siphalor) ([Apache-2.0](https://github.com/Siphalor/mouse-wheelie/blob/1.20.2/LICENSE)
+  license)
   - Item comparison
   - Client and server-side sorting
   - Client-side interaction manager
 
 
 - [Inventory Management](https://github.com/Roundaround/mc-fabric-inventory-management) by
-[Roundaround](https://github.com/Roundaround)
+  [Roundaround](https://github.com/Roundaround) ([MIT](https://github.com/Roundaround/mc-fabric-inventory-management/blob/1.21/LICENSE)
+  license)
   - Inventory control buttons
   - Button generation
   - Button position editor
@@ -81,8 +114,10 @@ licenses.
 ### Related Mods
 
 - [Mouse Tweaks](https://modrinth.com/mod/aC3cM3Vq) - item scrolling, mouse dragging.
-- [More Mouse Tweaks](https://modrinth.com/mod/S8drsznD) - single-click crafting and trading, quick-move and quick-drop.
-- [Tweakeroo](https://modrinth.com/mod/t5wuYk45) - hand restock, auto tool-switch, tool break prevention (+ lots more).
+- [More Mouse Tweaks](https://modrinth.com/mod/S8drsznD) - single-click crafting and trading,
+  quick-move and quick-drop.
+- [Tweakeroo](https://modrinth.com/mod/t5wuYk45) - hand restock, auto tool-switch, tool break
+  prevention and more.
 
 ### Contact
 
