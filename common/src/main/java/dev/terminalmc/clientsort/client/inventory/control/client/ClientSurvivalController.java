@@ -270,7 +270,7 @@ public class ClientSurvivalController extends ClientController {
                         && !(carriedStack.isEmpty());
                 boolean clickOnItemWithBundle = carriedStack.is(Items.BUNDLE)
                         && !(originScopeStacks[dstId].isEmpty());
-                if (options().bundlesUseLeftClick
+                if (!options().bundlesUseRightClick
                         && (clickOnBundleWithItem || clickOnItemWithBundle)) {
                     mouseButton = 1;
                 }
