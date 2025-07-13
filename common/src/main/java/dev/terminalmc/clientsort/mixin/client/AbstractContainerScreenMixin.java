@@ -305,8 +305,8 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                 );
 
         float scale = 0.7F;
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 0.0F);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
 
         for (Slot slot : menu.slots) {
             String slotId;
@@ -343,6 +343,6 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             );
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }
