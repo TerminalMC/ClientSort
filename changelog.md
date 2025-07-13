@@ -4,6 +4,7 @@
 
 - Fixed an issue causing items to be added to bundles
 - Prevented running multiple client-side operations simultaneously
+- Reduced redundant interactions when sorting client-side in creative-mode
 
 ## 2.0.0-beta.7
 

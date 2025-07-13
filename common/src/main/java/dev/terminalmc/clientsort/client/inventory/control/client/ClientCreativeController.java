@@ -118,16 +118,19 @@ public class ClientCreativeController extends ClientController {
     protected void sort(int[] key, boolean playSound) {
         for (int i = 0; i < key.length; i++) {
             ItemStack srcItem = originScopeStacks[key[i]];
-            int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIdInContainer();
-            InteractionManager.push(() -> {
-                //noinspection DataFlowIssue
-                Minecraft.getInstance().player.inventoryMenu.getSlot(dstSlotId).set(srcItem);
-                //noinspection DataFlowIssue
-                Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);
-                if (playSound)
-                    SoundManager.play();
-                return InteractionManager.TICK_WAITER;
-            });
+            ItemStack dstItem = originScopeStacks[i];
+            if (!srcItem.isEmpty() || !dstItem.isEmpty()) {
+                int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIdInContainer();
+                InteractionManager.push(() -> {
+                    //noinspection DataFlowIssue
+                    Minecraft.getInstance().player.inventoryMenu.getSlot(dstSlotId).set(srcItem);
+                    //noinspection DataFlowIssue
+                    Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(srcItem, dstSlotId);
+                    if (playSound)
+                        SoundManager.play();
+                    return InteractionManager.TICK_WAITER;
+                });
+            }
         }
         // Broadcast changes once operation is complete
         InteractionManager.push(() -> {
