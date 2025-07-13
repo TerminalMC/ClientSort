@@ -149,10 +149,10 @@ processResources {
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
             "fabric_api_versions_list": asJsonList(fabric_api_versions),
-            "fabric_entrypoints_main"   : asJsonList(fabric_entrypoints_main),
-            "fabric_entrypoints_client" : asJsonList(fabric_entrypoints_client),
-            "fabric_entrypoints_server" : asJsonList(fabric_entrypoints_server),
-            "fabric_entrypoints_modmenu": asJsonList(fabric_entrypoints_modmenu),
+            "fabric_entrypoints_main"   : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_client" : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_server" : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_modmenu": asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
             // NeoForge
             "neoforge_versions"      : neoforge_versions,
             // Dependencies:
@@ -229,6 +229,17 @@ static asJsonList(String csvString) {
     return csvString.split(",")
             .findAll { !it.isBlank() }
             .collect { "\"${it.strip()}\"" }
+            .join(",")
+}
+
+/**
+ * Converts a CSV list into an FMJ-usable list format, prefixing each element with the source
+ * package (${mod_group}.${mod_id}).
+ */
+static asJsonListPrefixed(String csvString, String prefix) {
+    return csvString.split(",")
+            .findAll { !it.isBlank() }
+            .collect { "\"${prefix}${it.strip()}\"" }
             .join(",")
 }
 

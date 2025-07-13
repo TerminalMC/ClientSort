@@ -46,6 +46,7 @@ neoForge {
     // Apply common AccessTransformer if it exists
     def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) accessTransformers.from(at.absolutePath)
+    validateAccessTransformers = true
     // Apply Parchment mappings
     parchment {
         minecraftVersion = parchment_minecraft_version
@@ -65,6 +66,8 @@ neoForge {
         server {
             //noinspection GroovyImplicitNullArgumentCall
             server()
+            //noinspection GroovyAssignabilityCheck
+            programArgument("--nogui")
         }
     }
     mods {

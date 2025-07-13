@@ -26,7 +26,7 @@ config = "${mod_id}.mixins.json"
 [[mixins]]
 config = "${mod_id}.neoforge.mixins.json"
 
-[[dependencies."${mod_id}"]]
+[[dependencies.${ mod_id }]]
 modId = "minecraft"
 #type = "" #optional:"required" #options:"required","optional","incompatible","discouraged"
 #reason = "" #optional:none
@@ -34,11 +34,11 @@ versionRange = "${minecraft_versions_neoforge}" #optional:any
 #ordering = "" #optional:"NONE" #options:"BEFORE","AFTER"
 #side = "" #optional:"BOTH" #options:"CLIENT","SERVER","BOTH"
 
-[[dependencies."${mod_id}"]]
+[[dependencies.${ mod_id }]]
 modId = "neoforge"
 versionRange = "${neoforge_versions}"
 
-${neoforge_all_deps}
+${ neoforge_all_deps }
 
 # https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
 # https://docs.neoforged.net/docs/misc/updatechecker

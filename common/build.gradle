@@ -61,6 +61,7 @@ neoForge {
     // Apply common AccessTransformer if it exists
     def at = file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) accessTransformers.from(at.absolutePath)
+    validateAccessTransformers = true
     // Apply Parchment mappings
     parchment {
         minecraftVersion = parchment_minecraft_version

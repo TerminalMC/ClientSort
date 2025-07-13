@@ -34,7 +34,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build neoforge:publishCurseforge fabric:publishCurseforge --stacktrace
+        run: ./gradlew build publishCurseforge --stacktrace
         env:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
       - name: Capture build artifacts

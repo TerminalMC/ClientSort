@@ -21,7 +21,18 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
+@SuppressWarnings("unused")
 public interface IPlatformServices {
+
+    /**
+     * @return {@code true} if in a development environment.
+     */
+    boolean isDevEnv();
+
+    /**
+     * @return {@code true} if the mod is loaded, false otherwise.
+     */
+    boolean isModLoaded(String modId);
 
     /**
      * @return the name of the current platform.
@@ -37,16 +48,6 @@ public interface IPlatformServices {
      * @return the configuration directory of the instance.
      */
     Path getConfigDir();
-
-    /**
-     * @return {@code true} if in a development environment.
-     */
-    boolean isDevEnv();
-
-    /**
-     * @return {@code true} if the mod is loaded, false otherwise.
-     */
-    boolean isModLoaded(String modId);
 
     /**
      * @return {@code true} if the payload type can be sent to the player.
