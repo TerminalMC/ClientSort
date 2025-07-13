@@ -31,7 +31,11 @@ public class ClientSort {
      * <p>
      * While this value can be set via the config menu, it is intentionally non-persistent.
      */
-    public static boolean debug;
+    public static boolean debugEnabled;
+
+    public static boolean debug() {
+        return debugEnabled;
+    }
 
     public static void init() {
         ServerConfig.getAndSave();

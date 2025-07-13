@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 
 public class PolicyManager {
@@ -44,7 +45,7 @@ public class PolicyManager {
             try {
                 policyClasses.add(Class.forName(className));
             } catch (ClassNotFoundException e) {
-                if (ClientSort.debug) {
+                if (debug()) {
                     ClientSort.LOG.warn(
                             "Unable to load policy class '{}': Class not found.",
                             className

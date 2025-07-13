@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class ControlButtonManager {
@@ -470,7 +471,7 @@ public class ControlButtonManager {
             try {
                 layoutClasses.add(Class.forName(className));
             } catch (ClassNotFoundException e) {
-                if (ClientSort.debug) {
+                if (debug()) {
                     ClientSort.LOG.warn(
                             "Unable to load layout class '{}': Class not found.",
                             className
@@ -489,7 +490,7 @@ public class ControlButtonManager {
             try {
                 policyClasses.add(Class.forName(className));
             } catch (ClassNotFoundException e) {
-                if (ClientSort.debug) {
+                if (debug()) {
                     ClientSort.LOG.warn(
                             "Unable to load policy class '{}': Class not found.",
                             className

@@ -145,11 +145,11 @@ public class ClothScreenProvider {
 
         general.addEntry(eb.startBooleanToggle(
                         localized("option", "showDebugInfo"),
-                        ClientSort.debug
+                        ClientSort.debugEnabled
                 )
                 .setTooltip(localized("option", "showDebugInfo.tooltip"))
                 .setDefaultValue(false)
-                .setSaveConsumer(val -> ClientSort.debug = val)
+                .setSaveConsumer(val -> ClientSort.debugEnabled = val)
                 .build());
 
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));

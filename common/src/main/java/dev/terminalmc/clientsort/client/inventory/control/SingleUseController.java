@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
@@ -107,7 +108,7 @@ public abstract class SingleUseController {
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
         originScopeSlots = collectSlots(originScope);
-        if (ClientSort.debug) {
+        if (debug()) {
             ClientSort.LOG.warn("Origin Scope Slot IDs ({})", originScopeSlots.length);
             SlotLogUtil.logSlotIds(List.of(originScopeSlots));
         }
@@ -124,7 +125,7 @@ public abstract class SingleUseController {
             default -> Scope.INVALID;
         };
         otherScopeSlots = collectSlots(otherScope);
-        if (ClientSort.debug) {
+        if (debug()) {
             ClientSort.LOG.warn("Other Scope Slot IDs ({})", otherScopeSlots.length);
             SlotLogUtil.logSlotIds(List.of(otherScopeSlots));
         }

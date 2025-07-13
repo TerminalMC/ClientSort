@@ -54,6 +54,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
@@ -294,7 +295,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             float partialTick,
             CallbackInfo ci
     ) {
-        if (!dev.terminalmc.clientsort.ClientSort.debug)
+        if (!debug())
             return;
 
         ContainerScreenHelper<?> helper =

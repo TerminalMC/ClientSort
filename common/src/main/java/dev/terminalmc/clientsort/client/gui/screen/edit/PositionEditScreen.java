@@ -40,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -121,7 +122,7 @@ public abstract class PositionEditScreen extends Screen {
         buttons.addAll(getButtons());
 
         if (buttons.size() != 3) {
-            if (dev.terminalmc.clientsort.ClientSort.debug) {
+            if (debug()) {
                 ClientSort.LOG.error(
                         "Failed to reload buttons on PositionEditScreen: Button list is too small (expected: {}, actual: {})",
                         3,

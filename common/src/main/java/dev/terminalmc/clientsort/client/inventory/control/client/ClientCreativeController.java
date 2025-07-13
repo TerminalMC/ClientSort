@@ -26,6 +26,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
+
 /**
  * Provides methods for manipulating the player's inventory or open container via creative mode
  * set-slot packets.
@@ -139,7 +141,7 @@ public class ClientCreativeController extends ClientController {
     protected void transfer() {
         if (!canOperate())
             return;
-        if (ClientSort.debug)
+        if (debug())
             ClientSort.LOG.warn("Transfer is not supported by {}", this.getClass().getSimpleName());
     }
 
@@ -147,7 +149,7 @@ public class ClientCreativeController extends ClientController {
     protected void fillStacks() {
         if (!canOperate())
             return;
-        if (ClientSort.debug)
+        if (debug())
             ClientSort.LOG.warn(
                     "Stack fill is not supported by {}",
                     this.getClass().getSimpleName()
