@@ -80,7 +80,7 @@ public class ClientSurvivalController extends ClientController {
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found; place as much as possible
@@ -193,7 +193,7 @@ public class ClientSurvivalController extends ClientController {
             int dstId = i;
             do {
                 // If the destination stack is nonempty and matches the carried stack
-                if (!empty.get(dstId) && ItemStack.isSameItemSameComponents(
+                if (!empty.get(dstId) && ItemStack.isSameItemSameTags(
                         carriedStack,
                         originScopeStacks[dstId]
                 )) {
@@ -350,7 +350,7 @@ public class ClientSurvivalController extends ClientController {
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found; place as much as possible
@@ -454,7 +454,7 @@ public class ClientSurvivalController extends ClientController {
                 }
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found; place as much as possible

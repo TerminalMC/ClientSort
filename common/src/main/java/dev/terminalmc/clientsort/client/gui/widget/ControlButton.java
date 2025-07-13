@@ -18,6 +18,7 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
@@ -30,13 +31,13 @@ import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,9 @@ public abstract class ControlButton extends Button {
     public static final int HALF_WIDTH = WIDTH / 2;
     public static final int HALF_HEIGHT = HEIGHT / 2;
 
+    private static final ResourceLocation TEXTURE =
+            new ResourceLocation(ClientSort.MOD_ID, "textures/gui.png");
+
     private final AbstractContainerScreen<?> screen;
     public final Container container;
 
@@ -61,7 +65,7 @@ public abstract class ControlButton extends Button {
 
     public final boolean isPlayerInv;
     private final Slot referenceSlot;
-    private final WidgetSprites sprites;
+    private final Vec2i spriteOffset;
 
     public Vec2i offset;
 
@@ -74,7 +78,7 @@ public abstract class ControlButton extends Button {
             boolean disabledByPolicy,
             boolean isPlayerInv,
             Slot referenceSlot,
-            WidgetSprites sprites,
+            Vec2i spriteOffset,
             Vec2i offset,
             OnPress onPress,
             boolean active
@@ -100,7 +104,7 @@ public abstract class ControlButton extends Button {
         this.disabledByPolicy = disabledByPolicy;
         this.isPlayerInv = isPlayerInv;
         this.referenceSlot = referenceSlot;
-        this.sprites = sprites;
+        this.spriteOffset = spriteOffset;
         this.offset = offset;
         this.active = active;
     }
@@ -155,12 +159,12 @@ public abstract class ControlButton extends Button {
         AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
 
         // Keep visible
-        int newX = Math.clamp(
+        int newX = Mth.clamp(
                 acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth() + offset.x(),
                 0,
                 screen.width - WIDTH
         );
-        int newY = Math.clamp(
+        int newY = Mth.clamp(
                 acs.clientsort$getTopPos() + Math.max(0, referenceSlot.y) + offset.y(),
                 0,
                 screen.height - HEIGHT
@@ -168,9 +172,16 @@ public abstract class ControlButton extends Button {
         setX(newX);
         setY(newY);
 
+        int u = spriteOffset.x() * WIDTH;
+        int v = spriteOffset.y() * HEIGHT;
+        if (!isActive()) {
+            v += HEIGHT * 2;
+        } else if (isHovered() || isFocused()) {
+            v += HEIGHT;
+        }
+
         // Draw texture
-        ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
-        graphics.blitSprite(texture, getX(), getY(), 0, width, height);
+        graphics.blit(TEXTURE, getX(), getY(), u, v, width, height);
 
         // Draw policy state indicator
         if (disabledByPolicy) {
@@ -209,8 +220,8 @@ public abstract class ControlButton extends Button {
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
         if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
-            int newX = Math.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
-            int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
+            int newX = Mth.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
+            int newY = Mth.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
 
             offset = new Vec2i(
                     newX - (acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth()),

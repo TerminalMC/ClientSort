@@ -21,9 +21,11 @@ import dev.terminalmc.clientsort.network.handler.SortHandler;
 import dev.terminalmc.clientsort.network.handler.StackFillHandler;
 import dev.terminalmc.clientsort.network.handler.TransferHandler;
 import dev.terminalmc.clientsort.network.payload.*;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -42,23 +44,28 @@ public class Registration {
      */
     public static final List<RegisterablePayloadC2S<?>> PAYLOADS_C2S = List.of(
             new RegisterablePayloadC2S<>(
-                    CollectPayload.TYPE,
-                    CollectPayload.STREAM_CODEC,
+                    CollectPayload.ID,
+                    CollectPayload.class,
+                    CollectPayload::write,
+                    CollectPayload::read,
                     CollectHandler::handle
-            ),
-            new RegisterablePayloadC2S<>(
-                    SortPayload.TYPE,
-                    SortPayload.STREAM_CODEC,
+            ), new RegisterablePayloadC2S<>(
+                    SortPayload.ID,
+                    SortPayload.class,
+                    SortPayload::write,
+                    SortPayload::read,
                     SortHandler::handle
-            ),
-            new RegisterablePayloadC2S<>(
-                    StackFillPayload.TYPE,
-                    StackFillPayload.STREAM_CODEC,
+            ), new RegisterablePayloadC2S<>(
+                    StackFillPayload.ID,
+                    StackFillPayload.class,
+                    StackFillPayload::write,
+                    StackFillPayload::read,
                     StackFillHandler::handle
-            ),
-            new RegisterablePayloadC2S<>(
-                    TransferPayload.TYPE,
-                    TransferPayload.STREAM_CODEC,
+            ), new RegisterablePayloadC2S<>(
+                    TransferPayload.ID,
+                    TransferPayload.class,
+                    TransferPayload::write,
+                    TransferPayload::read,
                     TransferHandler::handle
             )
     );
@@ -66,58 +73,88 @@ public class Registration {
     /**
      * S2C payloads without handlers.
      * <p>
-     * <b>Note:</b> this exists because S2C payloads must be registered in
-     * 'main' but the handlers cannot be accessed from there, and must instead be registered in
-     * 'client'. For this purpose they can be retrieved from
+     * <b>Note:</b> this exists because on Forge, all payloads must be
+     * registered in 'main'. For 'client' registration, handlers must be retrieved from
      * {@link dev.terminalmc.clientsort.client.network.ClientRegistration#PAYLOADS_S2C}.
      */
-    public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
+    public static final List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
             new RegisterablePayloadS2C<>(
-                    CollectResultPayload.TYPE,
-                    CollectResultPayload.STREAM_CODEC
-            ),
-            new RegisterablePayloadS2C<>(SortResultPayload.TYPE, SortResultPayload.STREAM_CODEC),
-            new RegisterablePayloadS2C<>(
-                    StackFillResultPayload.TYPE,
-                    StackFillResultPayload.STREAM_CODEC
+                    CollectResultPayload.ID,
+                    CollectResultPayload.class,
+                    CollectResultPayload::write,
+                    CollectResultPayload::read
             ),
             new RegisterablePayloadS2C<>(
-                    TransferResultPayload.TYPE,
-                    TransferResultPayload.STREAM_CODEC
+                    SortResultPayload.ID,
+                    SortResultPayload.class,
+                    SortResultPayload::write,
+                    SortResultPayload::read
+            ),
+            new RegisterablePayloadS2C<>(
+                    StackFillResultPayload.ID,
+                    StackFillResultPayload.class,
+                    StackFillResultPayload::write,
+                    StackFillResultPayload::read
+            ),
+            new RegisterablePayloadS2C<>(
+                    TransferResultPayload.ID,
+                    TransferResultPayload.class,
+                    TransferResultPayload::write,
+                    TransferResultPayload::read
             )
     );
 
     /**
      * Contains registration info for a custom payload.
      */
-    public abstract static class RegisterablePayload<T extends CustomPacketPayload> {
+    public abstract static class RegisterablePayload<T extends Packet<?>> {
 
-        public final CustomPacketPayload.Type<T> type;
-        public final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
+        public final ResourceLocation channel;
+        public final Class<T> clazz;
+        public final PayloadEncoder<T> encoder;
+        public final PayloadDecoder<T> decoder;
 
         public RegisterablePayload(
-                CustomPacketPayload.Type<T> type,
-                StreamCodec<RegistryFriendlyByteBuf, T> streamCodec
+                ResourceLocation id,
+                Class<T> clazz,
+                PayloadEncoder<T> encoder,
+                PayloadDecoder<T> decoder
         ) {
-            this.type = type;
-            this.streamCodec = streamCodec;
+            this.channel = id;
+            this.clazz = clazz;
+            this.encoder = encoder;
+            this.decoder = decoder;
+        }
+
+        @FunctionalInterface
+        public interface PayloadEncoder<T> {
+
+            void accept(T payload, FriendlyByteBuf byteBuf);
+        }
+
+        @FunctionalInterface
+        public interface PayloadDecoder<T> {
+
+            T apply(FriendlyByteBuf byteBuf);
         }
     }
 
     /**
      * Contains registration info for a custom C2S payload and its handler.
      */
-    public static class RegisterablePayloadC2S<T extends CustomPacketPayload>
+    public static class RegisterablePayloadC2S<T extends Packet<ServerGamePacketListener>>
             extends RegisterablePayload<T> {
 
         public final PayloadHandlerC2S<T> handler;
 
         public RegisterablePayloadC2S(
-                CustomPacketPayload.Type<T> type,
-                StreamCodec<RegistryFriendlyByteBuf, T> streamCodec,
+                ResourceLocation id,
+                Class<T> clazz,
+                PayloadEncoder<T> encoder,
+                PayloadDecoder<T> decoder,
                 PayloadHandlerC2S<T> handler
         ) {
-            super(type, streamCodec);
+            super(id, clazz, encoder, decoder);
             this.handler = handler;
         }
 
@@ -125,7 +162,7 @@ public class Registration {
          * Handles a custom S2C payload.
          */
         @FunctionalInterface
-        public interface PayloadHandlerC2S<T extends CustomPacketPayload> {
+        public interface PayloadHandlerC2S<T> {
 
             void accept(T payload, MinecraftServer server, ServerPlayer player);
         }
@@ -134,14 +171,16 @@ public class Registration {
     /**
      * Contains registration info for a custom S2C payload, but not its handler.
      */
-    public static class RegisterablePayloadS2C<T extends CustomPacketPayload>
+    public static class RegisterablePayloadS2C<T extends Packet<ClientGamePacketListener>>
             extends RegisterablePayload<T> {
 
         public RegisterablePayloadS2C(
-                CustomPacketPayload.Type<T> type,
-                StreamCodec<RegistryFriendlyByteBuf, T> streamCodec
+                ResourceLocation id,
+                Class<T> clazz,
+                PayloadEncoder<T> encoder,
+                PayloadDecoder<T> decoder
         ) {
-            super(type, streamCodec);
+            super(id, clazz, encoder, decoder);
         }
     }
 }
