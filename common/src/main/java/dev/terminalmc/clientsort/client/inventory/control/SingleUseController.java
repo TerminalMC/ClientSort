@@ -115,7 +115,7 @@ public abstract class SingleUseController {
         // Record stacks
         originScopeStacks = new ItemStack[originScopeSlots.length];
         for (int i = 0; i < originScopeSlots.length; i++) {
-            originScopeStacks[i] = originScopeSlots[i].getItem();
+            originScopeStacks[i] = originScopeSlots[i].getItem().copy();
         }
 
         // Collect slots in other container scope, if any

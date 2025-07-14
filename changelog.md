@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0-beta.9
+
+- Fixed another issue causing items to be added to bundles
+- Fixed detection of bundle variants (>= mc1.21.2)
+
 ## 2.0.0-beta.8
 
 - Fixed an issue causing items to be added to bundles
