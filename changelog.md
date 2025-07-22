@@ -2,6 +2,7 @@
 
 ## 2.0.0-beta.10
 
+- Re-enabled serverside loading on Fabric
 - Updated Russian translation (rfin0)
 
 ## 2.0.0-beta.9
