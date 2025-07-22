@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.10
+
+- Updated Russian translation (rfin0)
+
 ## 2.0.0-beta.9
 
 - Fixed another issue causing items to be added to bundles
