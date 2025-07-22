@@ -106,8 +106,8 @@
   "option.clientsort.buttonLayouts.tooltip.5": "статус кнопки: '1' — включено, '0' — отключено, '-' — по умолчанию.",
   "option.clientsort.buttonLayouts.tooltip.6": "Удалите запись, чтобы отключить кнопки для инвентарей этого класса.",
 
-  "option.clientsort.control": "Управление",
-  "option.clientsort.control.description": "Список политик ниже позволяет отключать интерфейс и горячие клавиши для определённых типов инвентарей. В случае конфликта этот список имеет приоритет над макетом интерфейса.",
+  "option.clientsort.policies": "Управление",
+  "option.clientsort.policies.description": "Список политик ниже позволяет отключать интерфейс и горячие клавиши для определённых типов инвентарей. В случае конфликта этот список имеет приоритет над макетом интерфейса.",
   "option.clientsort.applyPolicies": "Применить политики",
   "option.clientsort.applyPolicies.tooltip": "Определяет, применять ли политики из списка ниже.",
   "option.clientsort.classPolicies": "Политики классов",

@@ -106,8 +106,8 @@
   "option.clientsort.buttonLayouts.tooltip.5": "button status: '1' to enable, '0' to disable, or '-' to use the default.",
   "option.clientsort.buttonLayouts.tooltip.6": "Delete an entry to disable the buttons on inventories of that class.",
 
-  "option.clientsort.control": "Control",
-  "option.clientsort.control.description": "The policy list below allows you to disable the GUI and keybind operations for a particular type of inventory. In case of conflict, this list overrides the GUI layout list.",
+  "option.clientsort.policies": "Policies",
+  "option.clientsort.policies.description": "The policy list below allows you to disable the GUI and keybind operations for a particular type of inventory. In case of conflict, this list overrides the GUI layout list.",
   "option.clientsort.applyPolicies": "Apply Policies",
   "option.clientsort.applyPolicies.tooltip": "Whether to apply the policies listed below.",
   "option.clientsort.classPolicies": "Class Policies",
