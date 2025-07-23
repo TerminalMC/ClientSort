@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.gui.screen.edit;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.mixin.client.accessor.GuiGraphicsAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -99,7 +100,12 @@ public class GroupSelectorScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        underlay.renderBackground(graphics, mouseX, mouseY, partialTick);
         underlay.render(graphics, mouseX, mouseY, partialTick);
+
+        ((GuiGraphicsAccessor) graphics).clientsort$getGuiRenderState().nextStratum();
+        renderBlurredBackground(graphics);
+
         super.render(graphics, mouseX, mouseY, partialTick);
 
         for (ControlButton cb : buttons) {
@@ -107,12 +113,29 @@ public class GroupSelectorScreen extends Screen {
         }
     }
 
+    /**
+     * Removes the call to {@link Screen#renderBlurredBackground}, since we add a call in
+     * {@link GroupSelectorScreen#render} and the method can only be called once.
+     */
     @Override
-    protected void renderBlurredBackground() {
+    public void renderBackground(
+            @NotNull GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        if (Minecraft.getInstance().level == null) {
+            renderPanorama(graphics, partialTick);
+        }
+        renderMenuBackground(graphics);
+    }
+
+    @Override
+    protected void renderBlurredBackground(@NotNull GuiGraphics graphics) {
         // Heavy blur, we want the widgets to really stand out
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(6);
-        super.renderBlurredBackground();
+        super.renderBlurredBackground(graphics);
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 

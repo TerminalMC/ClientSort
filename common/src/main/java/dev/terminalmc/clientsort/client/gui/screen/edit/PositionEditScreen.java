@@ -23,6 +23,7 @@ import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.mixin.client.accessor.GuiGraphicsAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -332,7 +333,12 @@ public abstract class PositionEditScreen extends Screen {
      */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        underlay.renderBackground(graphics, mouseX, mouseY, partialTick);
         underlay.render(graphics, mouseX, mouseY, partialTick);
+
+        ((GuiGraphicsAccessor) graphics).clientsort$getGuiRenderState().nextStratum();
+        renderBlurredBackground(graphics);
+
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Safety net
@@ -377,16 +383,33 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
+     * Removes the call to {@link Screen#renderBlurredBackground}, since we add a call in
+     * {@link PositionEditScreen#render} and the method can only be called once.
+     */
+    @Override
+    public void renderBackground(
+            @NotNull GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        if (Minecraft.getInstance().level == null) {
+            renderPanorama(graphics, partialTick);
+        }
+        renderMenuBackground(graphics);
+    }
+
+    /**
      * Modifies the background blur to be constant irrespective of the configured value.
      * <p>
      * Minimal blur is used to prevent the editable widgets disappearing under underlay items on a
      * higher render layer, while still keeping the underlay detail discernible.
      */
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(@NotNull GuiGraphics graphics) {
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground();
+        super.renderBlurredBackground(graphics);
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 
