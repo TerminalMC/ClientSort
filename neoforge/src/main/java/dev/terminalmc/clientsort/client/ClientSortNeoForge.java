@@ -64,7 +64,7 @@ public class ClientSortNeoForge {
      */
     @SubscribeEvent
     static void registerKeybinds(RegisterKeyMappingsEvent event) {
-        if (!options().deconflictKeybinds) {
+        if (!options().isolateKeybinds) {
             Keybinds.KEYBINDS.forEach(event::register);
         }
     }

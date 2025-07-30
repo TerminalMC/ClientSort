@@ -31,7 +31,7 @@ public class ClientSortFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        if (!options().deconflictKeybinds) {
+        if (!options().isolateKeybinds) {
             // Register all keybinds
             Keybinds.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
         }

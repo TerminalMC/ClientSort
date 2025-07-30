@@ -148,8 +148,8 @@ public class Config {
 
         // Keybind options
 
-        public static final boolean deconflictKeybindsDefault = false;
-        public boolean deconflictKeybinds = deconflictKeybindsDefault;
+        public static final boolean isolateKeybindsDefault = false;
+        public boolean isolateKeybinds = isolateKeybindsDefault;
 
         public static final String editKeyDefault = InputConstants.UNKNOWN.getName();
         public String editKey = editKeyDefault;

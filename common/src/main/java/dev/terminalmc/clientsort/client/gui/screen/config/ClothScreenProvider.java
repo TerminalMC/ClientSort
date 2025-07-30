@@ -303,12 +303,12 @@ public class ClothScreenProvider {
         ConfigCategory keybinds = builder.getOrCreateCategory(localized("option", "keybinds"));
 
         keybinds.addEntry(eb.startBooleanToggle(
-                        localized("option", "deconflictKeybinds"),
-                        options.deconflictKeybinds
+                        localized("option", "isolateKeybinds"),
+                        options.isolateKeybinds
                 )
-                .setTooltip(localized("option", "deconflictKeybinds.tooltip"))
-                .setDefaultValue(Config.Options.deconflictKeybindsDefault)
-                .setSaveConsumer(val -> options.deconflictKeybinds = val)
+                .setTooltip(localized("option", "isolateKeybinds.tooltip"))
+                .setDefaultValue(Config.Options.isolateKeybindsDefault)
+                .setSaveConsumer(val -> options.isolateKeybinds = val)
                 .requireRestart()
                 .build());
 

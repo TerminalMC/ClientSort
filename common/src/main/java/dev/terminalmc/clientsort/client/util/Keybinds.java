@@ -31,10 +31,10 @@ import static dev.terminalmc.clientsort.util.Localization.translationKey;
  * To allow optionally isolating mod keybinds from MC keybinds, the value of all keybinds must be
  * synced between mod config and MC config.
  * <p>
- * If {@link Config.Options#deconflictKeybinds} is {@code true}, the keybinds will be set initially
+ * If {@link Config.Options#isolateKeybinds} is {@code true}, the keybinds will be set initially
  * by MC when MC config is loaded. The mod config values will not be read at all.
  * <p>
- * If {@link Config.Options#deconflictKeybinds} is {@code false}, keybinds will be set initially by
+ * If {@link Config.Options#isolateKeybinds} is {@code false}, keybinds will be set initially by
  * the mod after MC has finished loading. The mod config values will not be read again.
  * <p>
  * The mod config values are kept up-to-date with mod config changes by the CC option handers, and
@@ -99,7 +99,7 @@ public class Keybinds {
      */
     public static void bindKey(KeyMapping keybind, InputConstants.Key key) {
         keybind.setKey(key);
-        if (!options().deconflictKeybinds) {
+        if (!options().isolateKeybinds) {
             KeyMapping.resetMapping();
             Minecraft.getInstance().options.save();
         }

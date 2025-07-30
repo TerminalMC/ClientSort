@@ -73,13 +73,13 @@ public class ClientSort {
     }
 
     public static void afterGameStart() {
-        if (options().deconflictKeybinds) {
+        if (options().isolateKeybinds) {
             Keybinds.configToKeybinds();
         }
     }
 
     public static void afterKeyMapReset() {
-        if (!options().deconflictKeybinds) {
+        if (!options().isolateKeybinds) {
             Keybinds.keybindsToConfig();
         }
     }
