@@ -85,6 +85,10 @@
   "option.clientsort.allowSoundOverlap": "Allow Overlap",
   "option.clientsort.allowSoundOverlap.tooltip": "Whether to allow the previous sound to continue when starting a new sound",
 
+  "option.clientsort.keybinds": "Keybinds",
+  "option.clientsort.deconflictKeybinds": "Deconflict Keybinds",
+  "option.clientsort.deconflictKeybinds.tooltip": "If this is enabled, the keybinds will only be shown here and will not conflict with other keybinds outside of inventories. You must restart the game to apply changes to this option.",
+
   "option.clientsort.gui": "GUI",
   "option.clientsort.showButtons": "Show Buttons",
   "option.clientsort.showButtons.tooltip": "Whether to show extra buttons on the GUI for inventory operations.",

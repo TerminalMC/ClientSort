@@ -18,6 +18,7 @@ package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
+import dev.terminalmc.clientsort.client.util.Keybinds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -33,6 +34,8 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import static dev.terminalmc.clientsort.client.config.Config.options;
 
 @Mod(
         value = ClientSort.MOD_ID,
@@ -61,7 +64,9 @@ public class ClientSortNeoForge {
      */
     @SubscribeEvent
     static void registerKeybinds(RegisterKeyMappingsEvent event) {
-        ClientSort.KEYBINDS.forEach(event::register);
+        if (!options().deconflictKeybinds) {
+            Keybinds.KEYBINDS.forEach(event::register);
+        }
     }
 
     @EventBusSubscriber(

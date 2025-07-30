@@ -18,6 +18,8 @@ package dev.terminalmc.clientsort.client.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.InputConstants.Type;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.order.SortOrder;
@@ -143,6 +145,24 @@ public class Config {
 
         public static final boolean allowSoundOverlapDefault = true;
         public boolean allowSoundOverlap = allowSoundOverlapDefault;
+
+        // Keybind options
+
+        public static final boolean deconflictKeybindsDefault = false;
+        public boolean deconflictKeybinds = deconflictKeybindsDefault;
+
+        public static final String editKeyDefault = InputConstants.UNKNOWN.getName();
+        public String editKey = editKeyDefault;
+
+        public static final String sortKeyDefault =
+                Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_MIDDLE).getName();
+        public String sortKey = sortKeyDefault;
+
+        public static final String stackFillKeyDefault = InputConstants.UNKNOWN.getName();
+        public String stackFillKey = stackFillKeyDefault;
+
+        public static final String transferKeyDefault = InputConstants.UNKNOWN.getName();
+        public String transferKey = transferKeyDefault;
 
         // GUI options
 
@@ -376,7 +396,7 @@ public class Config {
                     StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING
             );
-            ClientSort.onConfigSaved(instance);
+            ClientSort.afterConfigSaved(instance);
         } catch (IOException e) {
             ClientSort.LOG.error("Unable to save config", e);
         }

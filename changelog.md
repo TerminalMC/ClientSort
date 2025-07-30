@@ -3,6 +3,8 @@
 ## 2.0.0-beta.11
 
 - Fixed an issue with serialization of defaulted layout values
+- Added support for configuring keybinds via mod options
+- Added an option to isolate mod keybinds from Minecraft keybinds
 
 ## 2.0.0-beta.10
 

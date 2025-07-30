@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.client.gui.screen.config;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ButtonLayout;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Config.Options;
@@ -24,7 +24,9 @@ import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.client.util.Keybinds;
 import dev.terminalmc.clientsort.config.ClassPolicy;
+import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
@@ -145,11 +147,11 @@ public class ClothScreenProvider {
 
         general.addEntry(eb.startBooleanToggle(
                         localized("option", "showDebugInfo"),
-                        ClientSort.debugEnabled
+                        dev.terminalmc.clientsort.ClientSort.debugEnabled
                 )
                 .setTooltip(localized("option", "showDebugInfo.tooltip"))
                 .setDefaultValue(false)
-                .setSaveConsumer(val -> ClientSort.debugEnabled = val)
+                .setSaveConsumer(val -> dev.terminalmc.clientsort.ClientSort.debugEnabled = val)
                 .build());
 
         ConfigCategory sort = builder.getOrCreateCategory(localized("option", "sorting"));
@@ -297,6 +299,62 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.allowSoundOverlapDefault)
                 .setSaveConsumer(val -> options.allowSoundOverlap = val)
                 .build());
+
+        ConfigCategory keybinds = builder.getOrCreateCategory(localized("option", "keybinds"));
+
+        keybinds.addEntry(eb.startBooleanToggle(
+                        localized("option", "deconflictKeybinds"),
+                        options.deconflictKeybinds
+                )
+                .setTooltip(localized("option", "deconflictKeybinds.tooltip"))
+                .setDefaultValue(Config.Options.deconflictKeybindsDefault)
+                .setSaveConsumer(val -> options.deconflictKeybinds = val)
+                .requireRestart()
+                .build());
+
+        keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "group.edit"),
+                        ((KeyMappingAccessor) Keybinds.EDIT_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(Keybinds.fromName(Options.editKeyDefault))
+                .setKeySaveConsumer((key) -> {
+                    Keybinds.bindKey(Keybinds.EDIT_KEY, key);
+                    options.editKey = key.getName();
+                })
+                .build()));
+
+        keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "group.op.sort"),
+                        ((KeyMappingAccessor) Keybinds.SORT_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(Keybinds.fromName(Options.sortKeyDefault))
+                .setKeySaveConsumer((key) -> {
+                    Keybinds.bindKey(Keybinds.SORT_KEY, key);
+                    options.sortKey = key.getName();
+                })
+                .build()));
+
+        keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "group.op.stackFill"),
+                        ((KeyMappingAccessor) Keybinds.STACK_FILL_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(Keybinds.fromName(Options.stackFillKeyDefault))
+                .setKeySaveConsumer((key) -> {
+                    Keybinds.bindKey(Keybinds.STACK_FILL_KEY, key);
+                    options.stackFillKey = key.getName();
+                })
+                .build()));
+
+        keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "group.op.transfer"),
+                        ((KeyMappingAccessor) Keybinds.TRANSFER_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(Keybinds.fromName(Options.transferKeyDefault))
+                .setKeySaveConsumer((key) -> {
+                    Keybinds.bindKey(Keybinds.TRANSFER_KEY, key);
+                    options.transferKey = key.getName();
+                })
+                .build()));
 
         ConfigCategory gui = builder.getOrCreateCategory(localized("option", "gui"));
 

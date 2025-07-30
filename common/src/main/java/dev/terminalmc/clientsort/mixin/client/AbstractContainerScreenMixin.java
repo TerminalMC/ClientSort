@@ -25,6 +25,7 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.Keybinds;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -178,7 +179,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             Function<KeyMapping, Boolean> inputMatcher
     ) {
         // If key is not edit key, check that we're hovering a slot
-        boolean isEditKey = inputMatcher.apply(ClientSort.EDIT_KEY);
+        boolean isEditKey = inputMatcher.apply(Keybinds.EDIT_KEY);
         if (!isEditKey && hoveredSlot == null)
             return null;
 
@@ -207,11 +208,11 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         // No vanilla operations; trigger mod operation
         if (isEditKey) {
             return this::clientsort$openEditor;
-        } else if (inputMatcher.apply(ClientSort.SORT_KEY)) {
+        } else if (inputMatcher.apply(Keybinds.SORT_KEY)) {
             return this::clientsort$sort;
-        } else if (inputMatcher.apply(ClientSort.STACK_FILL_KEY)) {
+        } else if (inputMatcher.apply(Keybinds.STACK_FILL_KEY)) {
             return this::clientsort$fillStacks;
-        } else if (inputMatcher.apply(ClientSort.TRANSFER_KEY)) {
+        } else if (inputMatcher.apply(Keybinds.TRANSFER_KEY)) {
             return this::clientsort$transfer;
         } else {
             return null;

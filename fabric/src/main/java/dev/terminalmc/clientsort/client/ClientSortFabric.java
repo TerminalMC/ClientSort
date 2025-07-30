@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
+import dev.terminalmc.clientsort.client.util.Keybinds;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -24,12 +25,16 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
+import static dev.terminalmc.clientsort.client.config.Config.options;
+
 public class ClientSortFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Register all keybinds
-        ClientSort.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
+        if (!options().deconflictKeybinds) {
+            // Register all keybinds
+            Keybinds.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
+        }
 
         // Register after-tick event
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);

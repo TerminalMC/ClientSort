@@ -11,8 +11,11 @@
   "client": [
     "client.AbstractContainerScreenMixin",
     "client.ClientPacketListenerMixin",
+    "client.KeyMappingMixin",
     "client.LocalPlayerMixin",
+    "client.MinecraftMixin",
     "client.accessor.AbstractContainerScreenAccessor",
+    "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
     "client.slot.CreativeSlotMixin"
