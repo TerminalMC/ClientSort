@@ -95,7 +95,7 @@ public class TransferButton extends ControlButton {
 
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
-        return layout.transferEnabled();
+        return layout.isTransferEnabled();
     }
 
     @Override

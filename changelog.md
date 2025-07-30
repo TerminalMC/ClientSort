@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.11
+
+- Fixed an issue with serialization of defaulted layout values
+
 ## 2.0.0-beta.10
 
 - Re-enabled serverside loading on Fabric

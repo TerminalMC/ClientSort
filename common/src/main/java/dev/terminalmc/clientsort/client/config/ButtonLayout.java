@@ -101,19 +101,19 @@ public record ButtonLayout(
         );
     }
 
-    public @NotNull Vec2i offset() {
+    public @NotNull Vec2i getOffset() {
         return offset == null ? options().layoutOffset : offset;
     }
 
-    public @NotNull Boolean sortEnabled() {
+    public @NotNull Boolean isSortEnabled() {
         return sortEnabled == null ? options().sortEnabled : sortEnabled;
     }
 
-    public @NotNull Boolean stackFillEnabled() {
+    public @NotNull Boolean isStackFillEnabled() {
         return stackFillEnabled == null ? options().stackFillEnabled : stackFillEnabled;
     }
 
-    public @NotNull Boolean transferEnabled() {
+    public @NotNull Boolean isTransferEnabled() {
         return transferEnabled == null ? options().transferEnabled : transferEnabled;
     }
 }

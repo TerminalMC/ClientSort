@@ -98,7 +98,7 @@ public class StackFillButton extends ControlButton {
 
     @Override
     public boolean getLayoutStatus(ButtonLayout layout) {
-        return layout.stackFillEnabled();
+        return layout.isStackFillEnabled();
     }
 
     public void savePolicyState() {

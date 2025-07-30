@@ -185,12 +185,12 @@ public class ControlButtonManager {
 
         // Get the configured or default offset
         Vec2i offset = layout != null
-                ? layout.offset()
+                ? layout.getOffset()
                 : options().layoutOffset;
 
         // Get the configured or default status
         boolean enabled = layout != null
-                ? layout.sortEnabled()
+                ? layout.isSortEnabled()
                 : options().sortEnabled;
 
         // Only add the button if it's whitelisted or forced, and if it is forced, mark it inactive
@@ -273,12 +273,12 @@ public class ControlButtonManager {
 
         // Get the configured or default offset
         Vec2i offset = layout != null
-                ? layout.offset()
+                ? layout.getOffset()
                 : options().layoutOffset;
 
         // Get the configured or default status
         boolean enabled = layout != null
-                ? layout.stackFillEnabled()
+                ? layout.isStackFillEnabled()
                 : options().stackFillEnabled;
 
         // Get the destination container, if any
@@ -305,7 +305,7 @@ public class ControlButtonManager {
 
         // Get the configured or default status
         boolean dstEnabled = dstLayout != null
-                ? dstLayout.stackFillEnabled()
+                ? dstLayout.isStackFillEnabled()
                 : options().stackFillEnabled;
 
         // Only add the button if both it and the other are whitelisted, or it's forced, and if it
@@ -389,12 +389,12 @@ public class ControlButtonManager {
 
         // Get the configured or default offset
         Vec2i offset = layout != null
-                ? layout.offset()
+                ? layout.getOffset()
                 : options().layoutOffset;
 
         // Get the configured or default status
         boolean enabled = layout != null
-                ? layout.transferEnabled()
+                ? layout.isTransferEnabled()
                 : options().transferEnabled;
 
         // Get the destination container, if any
@@ -421,7 +421,7 @@ public class ControlButtonManager {
 
         // Get the configured or default status
         boolean dstEnabled = dstLayout != null
-                ? dstLayout.transferEnabled()
+                ? dstLayout.isTransferEnabled()
                 : options().transferEnabled;
 
         // Only add the button if both it and the other are whitelisted, or it's forced, and if it
