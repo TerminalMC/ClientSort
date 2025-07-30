@@ -76,7 +76,10 @@ public class Registration {
                     CollectResultPayload.TYPE,
                     CollectResultPayload.STREAM_CODEC
             ),
-            new RegisterablePayloadS2C<>(SortResultPayload.TYPE, SortResultPayload.STREAM_CODEC),
+            new RegisterablePayloadS2C<>(
+                    SortResultPayload.TYPE,
+                    SortResultPayload.STREAM_CODEC
+            ),
             new RegisterablePayloadS2C<>(
                     StackFillResultPayload.TYPE,
                     StackFillResultPayload.STREAM_CODEC
