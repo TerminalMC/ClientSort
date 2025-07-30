@@ -5,6 +5,7 @@
 - Fixed an issue with serialization of defaulted layout values
 - Added support for configuring keybinds via mod options
 - Added an option to isolate mod keybinds from Minecraft keybinds
+- Renamed 'GUI' options tab to 'Buttons' for consistency
 
 ## 2.0.0-beta.10
 

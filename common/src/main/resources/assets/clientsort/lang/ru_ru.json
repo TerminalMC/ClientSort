@@ -20,9 +20,9 @@
   "title.clientsort.confirm.splitConfig": "Разделить эту конфигурацию",
   "message.clientsort.confirm.splitConfig": "Этот макет в настоящее время задан ключом '%s'. Вы уверены, что хотите создать новый макет под ключом '%s'? Если вы захотите отменить это изменение в будущем, вам потребуется удалить последнюю запись в главном меню настроек.",
 
-  "button.clientsort.gui": "Интерфейс",
-  "button.clientsort.gui.enabled": "Включено",
-  "button.clientsort.gui.disabled": "Выключено",
+  "button.clientsort.buttons": "Интерфейс",
+  "button.clientsort.buttons.enabled": "Включено",
+  "button.clientsort.buttons.disabled": "Выключено",
   "button.clientsort.instructions": "Инструкции",
   "button.clientsort.instructions.tooltip.1": "Нажмите и перетащите, чтобы переместить кнопки, или используйте стрелки на клавиатуре.",
   "button.clientsort.instructions.tooltip.2": "Удерживайте SHIFT и нажимайте стрелки для быстрого перемещения.",
@@ -88,7 +88,7 @@
   "option.clientsort.deconflictKeybinds": "Deconflict Keybinds",
   "option.clientsort.deconflictKeybinds.tooltip": "If this is enabled, the keybinds will only be shown here and will not conflict with other keybinds outside of inventories. You must restart the game to apply changes to this option.",
 
-  "option.clientsort.gui": "Интерфейс",
+  "option.clientsort.buttons": "Интерфейс",
   "option.clientsort.showButtons": "Показывать кнопки",
   "option.clientsort.showButtons.tooltip": "Показывать ли дополнительные кнопки в интерфейсе для операций с инвентарём.",
   "option.clientsort.firstButton": "Первая кнопка",

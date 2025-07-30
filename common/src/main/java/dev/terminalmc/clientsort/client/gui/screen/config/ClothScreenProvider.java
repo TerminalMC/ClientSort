@@ -356,9 +356,12 @@ public class ClothScreenProvider {
                 })
                 .build()));
 
-        ConfigCategory gui = builder.getOrCreateCategory(localized("option", "gui"));
+        ConfigCategory buttons = builder.getOrCreateCategory(localized("option", "buttons"));
 
-        gui.addEntry(eb.startBooleanToggle(localized("option", "showButtons"), options.showButtons)
+        buttons.addEntry(eb.startBooleanToggle(
+                        localized("option", "showButtons"),
+                        options.showButtons
+                )
                 .setTooltip(localized("option", "showButtons.tooltip"))
                 .setDefaultValue(Config.Options.showButtonsDefault)
                 .setSaveConsumer(val -> options.showButtons = val)
@@ -377,7 +380,7 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.firstButtonDefault)
                 .setSaveConsumer(val -> options.firstButton = val)
                 .build();
-        gui.addEntry(firstSelector);
+        buttons.addEntry(firstSelector);
 
         secondSelector = eb.startEnumSelector(
                         localized("option", "secondButton"),
@@ -392,7 +395,7 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.secondButtonDefault)
                 .setSaveConsumer(val -> options.secondButton = val)
                 .build();
-        gui.addEntry(secondSelector);
+        buttons.addEntry(secondSelector);
 
         thirdSelector = eb.startEnumSelector(
                         localized("option", "thirdButton"),
@@ -407,7 +410,7 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.thirdButtonDefault)
                 .setSaveConsumer(val -> options.thirdButton = val)
                 .build();
-        gui.addEntry(thirdSelector);
+        buttons.addEntry(thirdSelector);
 
         SubCategoryBuilder layoutDefaults = eb.startSubCategory(
                         localized("option", "layoutDefaults"))
@@ -456,9 +459,9 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.transferEnabled = val)
                 .build());
 
-        gui.addEntry(layoutDefaults.build());
+        buttons.addEntry(layoutDefaults.build());
 
-        gui.addEntry(eb.startStrList(
+        buttons.addEntry(eb.startStrList(
                         localized("option", "buttonLayouts"),
                         getLayoutStrings(options.buttonLayouts.values())
                 )
