@@ -1,11 +1,10 @@
 {
   "clientsort.name": "ClientSort",
 
-  "key.clientsort.group": "ClientSort",
-  "key.clientsort.group.edit": "Открыть редактор интерфейса",
-  "key.clientsort.group.op.sort": "Сортировать",
-  "key.clientsort.group.op.stackFill": "Заполнить стаки",
-  "key.clientsort.group.op.transfer": "Переместить",
+  "key.clientsort.edit": "Открыть редактор интерфейса",
+  "key.clientsort.op.sort": "Сортировать",
+  "key.clientsort.op.stackFill": "Заполнить стаки",
+  "key.clientsort.op.transfer": "Переместить",
 
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
   "message.clientsort.viewModrinth": "Посмотреть на Modrinth",

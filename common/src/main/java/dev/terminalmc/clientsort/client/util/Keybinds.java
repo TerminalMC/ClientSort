@@ -43,28 +43,28 @@ import static dev.terminalmc.clientsort.util.Localization.translationKey;
 public class Keybinds {
 
     public static final KeyMapping EDIT_KEY = new KeyMapping(
-            translationKey("key", "group.edit"),
+            translationKey("key", "edit"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("key", "group")
+            translationKey("name")
     );
     public static final KeyMapping SORT_KEY = new KeyMapping(
-            translationKey("key", "group.op.sort"),
+            translationKey("key", "op.sort"),
             InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE,
-            translationKey("key", "group")
+            translationKey("name")
     );
     public static final KeyMapping STACK_FILL_KEY = new KeyMapping(
-            translationKey("key", "group.op.stackFill"),
+            translationKey("key", "op.stackFill"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("key", "group")
+            translationKey("name")
     );
     public static final KeyMapping TRANSFER_KEY = new KeyMapping(
-            translationKey("key", "group.op.transfer"),
+            translationKey("key", "op.transfer"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("key", "group")
+            translationKey("name")
     );
     public static final List<KeyMapping> KEYBINDS = List.of(
             EDIT_KEY,

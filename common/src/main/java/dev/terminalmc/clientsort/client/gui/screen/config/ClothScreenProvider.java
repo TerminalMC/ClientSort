@@ -313,7 +313,7 @@ public class ClothScreenProvider {
                 .build());
 
         keybinds.addEntry((eb.startKeyCodeField(
-                        localized("key", "group.edit"),
+                        localized("key", "edit"),
                         ((KeyMappingAccessor) Keybinds.EDIT_KEY).clientsort$getKey()
                 )
                 .setDefaultValue(Keybinds.fromName(Options.editKeyDefault))
@@ -324,7 +324,7 @@ public class ClothScreenProvider {
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
-                        localized("key", "group.op.sort"),
+                        localized("key", "op.sort"),
                         ((KeyMappingAccessor) Keybinds.SORT_KEY).clientsort$getKey()
                 )
                 .setDefaultValue(Keybinds.fromName(Options.sortKeyDefault))
@@ -335,7 +335,7 @@ public class ClothScreenProvider {
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
-                        localized("key", "group.op.stackFill"),
+                        localized("key", "op.stackFill"),
                         ((KeyMappingAccessor) Keybinds.STACK_FILL_KEY).clientsort$getKey()
                 )
                 .setDefaultValue(Keybinds.fromName(Options.stackFillKeyDefault))
@@ -346,7 +346,7 @@ public class ClothScreenProvider {
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
-                        localized("key", "group.op.transfer"),
+                        localized("key", "op.transfer"),
                         ((KeyMappingAccessor) Keybinds.TRANSFER_KEY).clientsort$getKey()
                 )
                 .setDefaultValue(Keybinds.fromName(Options.transferKeyDefault))

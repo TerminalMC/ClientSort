@@ -1,11 +1,10 @@
 {
   "clientsort.name": "用戶端排序",
 
-  "key.clientsort.group": "用戶端排序",
-  "key.clientsort.group.edit": "Open GUI Editor",
-  "key.clientsort.group.op.sort": "Sort",
-  "key.clientsort.group.op.stackFill": "Stack Fill",
-  "key.clientsort.group.op.transfer": "Transfer",
+  "key.clientsort.edit": "Open GUI Editor",
+  "key.clientsort.op.sort": "Sort",
+  "key.clientsort.op.stackFill": "Stack Fill",
+  "key.clientsort.op.transfer": "Transfer",
 
   "message.clientsort.installCloth": "安裝 Cloth Config API 以調整模組選項。",
   "message.clientsort.viewModrinth": "在 Modrinth 查看",
