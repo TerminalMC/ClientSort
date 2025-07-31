@@ -21,6 +21,7 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -43,9 +44,10 @@ public class ClientSurvivalController extends ClientController {
     public ClientSurvivalController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot
+            Slot originSlot,
+            Type<?> type
     ) {
-        super(screen, screenHelper, originSlot);
+        super(screen, screenHelper, originSlot, type);
     }
 
     /**

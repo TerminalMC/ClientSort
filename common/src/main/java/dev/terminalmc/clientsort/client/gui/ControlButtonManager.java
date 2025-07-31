@@ -18,19 +18,18 @@
 package dev.terminalmc.clientsort.client.gui;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.config.ButtonLayout;
-import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerCombinedEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerCombinedEditScreen;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
 import dev.terminalmc.clientsort.client.gui.widget.SortButton;
 import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
-import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
@@ -66,7 +65,6 @@ public class ControlButtonManager {
     private static final int BUTTON_SHIFT_X = 0;
     private static final int BUTTON_SHIFT_Y = 1;
 
-    private static final Set<Class<?>> layoutClasses = new LinkedHashSet<>();
     private static final Set<Class<?>> policyClasses = new LinkedHashSet<>();
 
     private static final LinkedHashSet<ControlButton> containerButtons = new LinkedHashSet<>();
@@ -101,26 +99,26 @@ public class ControlButtonManager {
         if (currentScreen instanceof GroupSelectorScreen) {
             forceShowContainer = true;
             forceShowPlayer = true;
-        } else if (currentScreen instanceof ContainerPositionEditScreen) {
+        } else if (currentScreen instanceof ContainerCombinedEditScreen) {
             forceShowContainer = true;
-        } else if (currentScreen instanceof PlayerPositionEditScreen) {
+        } else if (currentScreen instanceof PlayerCombinedEditScreen) {
             forceShowPlayer = true;
         }
 
         // Generate container-side buttons
         Slot containerRefSlot = getReferenceSlot(acs, false);
         if (containerRefSlot != null) {
-            generate(acs, containerRefSlot, false, forceShowContainer, options().firstButton);
-            generate(acs, containerRefSlot, false, forceShowContainer, options().secondButton);
-            generate(acs, containerRefSlot, false, forceShowContainer, options().thirdButton);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().firstButtonOp);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().secondButtonOp);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().thirdButtonOp);
         }
 
         // Generate player-side buttons
         Slot playerRefSlot = getReferenceSlot(acs, true);
         if (playerRefSlot != null) {
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().firstButton);
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().secondButton);
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().thirdButton);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().firstButtonOp);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().secondButtonOp);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().thirdButtonOp);
         }
     }
 
@@ -133,7 +131,7 @@ public class ControlButtonManager {
             Slot refSlot,
             boolean isPlayerInv,
             boolean forceShow,
-            ControlButtonType type
+            Operation type
     ) {
         switch (type) {
             case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
@@ -174,58 +172,25 @@ public class ControlButtonManager {
                 ? screen.getMenu()
                 : container;
 
-        // Preliminary check; respect policy unless forced
+        // Retrieve the relevant policy, if any
         @Nullable ClassPolicy policy = getPolicy(object.getClass());
-        boolean disabledByPolicy = policy != null && !policy.sortEnabled;
-        if (disabledByPolicy && !forceShow)
+        if ((policy == null || !policy.showSortButton()) && !forceShow)
             return;
-
-        // Retrieve the associated layout, if any
-        @Nullable ButtonLayout layout = getLayout(object.getClass());
 
         // Get the configured or default offset
-        Vec2i offset = layout != null
-                ? layout.getOffset()
+        Vec2i offset = policy != null
+                ? policy.getButtonOffset()
                 : options().layoutOffset;
-
-        // Get the configured or default status
-        boolean enabled = layout != null
-                ? layout.isSortEnabled()
-                : options().sortEnabled;
-
-        // Only add the button if it's whitelisted or forced, and if it is forced, mark it inactive
-        boolean active;
-        if (layout != null && enabled) {
-            active = true;
-        } else if (forceShow) {
-            active = false;
-        } else {
-            return;
-        }
-
-        // Get the layout key, if any
-        @Nullable String layoutKey = layout != null
-                ? layout.className()
-                : null;
-        // Get the 'lowest' potential layout key
-        String lowestLayoutKey = object.getClass().getName();
-        // Get the policy key, if any, else get the 'lowest' potential policy key
-        String policyKey = policy != null
-                ? policy.className
-                : lowestLayoutKey;
 
         // Create and add
         SortButton button = new SortButton(
                 screen,
                 container,
-                layoutKey,
-                lowestLayoutKey,
-                policyKey,
-                disabledByPolicy,
-                isPlayerInv,
                 referenceSlot,
-                getShiftedOffset(offset, isPlayerInv),
-                active
+                isPlayerInv,
+                policy,
+                object.getClass().getName(),
+                getShiftedOffset(offset, isPlayerInv)
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -262,86 +227,41 @@ public class ControlButtonManager {
                 ? screen.getMenu()
                 : container;
 
-        // Preliminary check; respect policy unless forced
+        // Check the relevant policy, if any
         @Nullable ClassPolicy policy = getPolicy(object.getClass());
-        boolean disabledByPolicy = policy != null && !policy.stackFillEnabled;
-        if (disabledByPolicy && !forceShow)
+        if ((policy == null || !policy.showStackFillButton()) && !forceShow)
             return;
 
-        // Get the associated layout, if any
-        @Nullable ButtonLayout layout = getLayout(object.getClass());
-
         // Get the configured or default offset
-        Vec2i offset = layout != null
-                ? layout.getOffset()
+        Vec2i offset = policy != null
+                ? policy.getButtonOffset()
                 : options().layoutOffset;
-
-        // Get the configured or default status
-        boolean enabled = layout != null
-                ? layout.isStackFillEnabled()
-                : options().stackFillEnabled;
 
         // Get the destination container, if any
         @Nullable Container dstContainer = isPlayerInv
                 ? getContainer(player)
                 : player.getInventory();
-
-        // Get the destination layout
-        @Nullable ButtonLayout dstLayout = null;
         if (dstContainer != null) {
             // Select the relevant container or GUI class
             Object dstObject = dstContainer instanceof SimpleContainer
                     ? screen.getMenu()
                     : dstContainer;
 
-            // Preliminary check; respect policy unless forced
+            // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
-            if (dstPolicy != null && !dstPolicy.stackFillEnabled && !forceShow)
+            if ((dstPolicy == null || !dstPolicy.showStackFillButton()) && !forceShow)
                 return;
-
-            // Get the associated layout, if any
-            dstLayout = getLayout(dstObject.getClass());
         }
-
-        // Get the configured or default status
-        boolean dstEnabled = dstLayout != null
-                ? dstLayout.isStackFillEnabled()
-                : options().stackFillEnabled;
-
-        // Only add the button if both it and the other are whitelisted, or it's forced, and if it
-        // is forced, mark it inactive
-        boolean active;
-        if ((layout != null && enabled) && (dstLayout != null && dstEnabled)) {
-            active = true;
-        } else if (forceShow) {
-            active = false;
-        } else {
-            return;
-        }
-
-        // Get the layout key, if any
-        @Nullable String layoutKey = layout != null
-                ? layout.className()
-                : null;
-        // Get the 'lowest' potential layout key
-        String lowestLayoutKey = object.getClass().getName();
-        // Get the policy key, if any, else get the 'lowest' potential policy key
-        String policyKey = policy != null
-                ? policy.className
-                : lowestLayoutKey;
 
         // Create and add
         StackFillButton button = new StackFillButton(
                 screen,
                 container,
-                layoutKey,
-                lowestLayoutKey,
-                policyKey,
-                disabledByPolicy,
-                isPlayerInv,
                 referenceSlot,
-                getShiftedOffset(offset, isPlayerInv),
-                active
+                isPlayerInv,
+                policy,
+                object.getClass().getName(),
+                getShiftedOffset(offset, isPlayerInv)
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -378,107 +298,43 @@ public class ControlButtonManager {
                 ? screen.getMenu()
                 : container;
 
-        // Preliminary check; respect policy unless forced
+        // Check the relevant policy, if any
         @Nullable ClassPolicy policy = getPolicy(object.getClass());
-        boolean disabledByPolicy = policy != null && !policy.transferEnabled;
-        if (disabledByPolicy && !forceShow)
+        if ((policy == null || !policy.showTransferButton()) && !forceShow)
             return;
 
-        // Get the associated layout, if any
-        @Nullable ButtonLayout layout = getLayout(object.getClass());
-
         // Get the configured or default offset
-        Vec2i offset = layout != null
-                ? layout.getOffset()
+        Vec2i offset = policy != null
+                ? policy.getButtonOffset()
                 : options().layoutOffset;
-
-        // Get the configured or default status
-        boolean enabled = layout != null
-                ? layout.isTransferEnabled()
-                : options().transferEnabled;
 
         // Get the destination container, if any
         @Nullable Container dstContainer = isPlayerInv
                 ? getContainer(player)
                 : player.getInventory();
-
-        // Get the destination layout
-        @Nullable ButtonLayout dstLayout = null;
         if (dstContainer != null) {
             // Select the relevant container or GUI class
             Object dstObject = dstContainer instanceof SimpleContainer
                     ? screen.getMenu()
                     : dstContainer;
 
-            // Preliminary check; respect policy unless forced
+            // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
-            if (dstPolicy != null && !dstPolicy.transferEnabled && !forceShow)
+            if ((dstPolicy == null || !dstPolicy.showTransferButton()) && !forceShow)
                 return;
-
-            // Get the associated layout, if any
-            dstLayout = getLayout(dstObject.getClass());
         }
-
-        // Get the configured or default status
-        boolean dstEnabled = dstLayout != null
-                ? dstLayout.isTransferEnabled()
-                : options().transferEnabled;
-
-        // Only add the button if both it and the other are whitelisted, or it's forced, and if it
-        // is forced, mark it inactive
-        boolean active;
-        if ((layout != null && enabled) && (dstLayout != null && dstEnabled)) {
-            active = true;
-        } else if (forceShow) {
-            active = false;
-        } else {
-            return;
-        }
-
-        // Get the layout key, if any
-        @Nullable String layoutKey = layout != null
-                ? layout.className()
-                : null;
-        // Get the 'lowest' potential layout key
-        String lowestLayoutKey = object.getClass().getName();
-        // Get the policy key, if any, else get the 'lowest' potential policy key
-        String policyKey = policy != null
-                ? policy.className
-                : lowestLayoutKey;
 
         // Create and add
         TransferButton button = new TransferButton(
                 screen,
                 container,
-                layoutKey,
-                lowestLayoutKey,
-                policyKey,
-                disabledByPolicy,
-                isPlayerInv,
                 referenceSlot,
-                getShiftedOffset(offset, isPlayerInv),
-                active
+                isPlayerInv,
+                policy,
+                object.getClass().getName(),
+                getShiftedOffset(offset, isPlayerInv)
         );
         addButton(screen, button, isPlayerInv);
-    }
-
-    /**
-     * Reloads the cache of layout configuration classes.
-     */
-    public static void reloadLayoutClasses(Set<String> classNames) {
-        layoutClasses.clear();
-        for (String className : classNames) {
-            try {
-                layoutClasses.add(Class.forName(className));
-            } catch (ClassNotFoundException e) {
-                if (debug()) {
-                    ClientSort.LOG.warn(
-                            "Unable to load layout class '{}': Class not found.",
-                            className
-                    );
-                }
-            }
-        }
     }
 
     /**
@@ -501,45 +357,9 @@ public class ControlButtonManager {
     }
 
     /**
-     * @return the lowest-degree matching layout for the specified class, if any exists.
-     */
-    public static @Nullable ButtonLayout getLayout(Class<?> cls) {
-        // Check for a perfect match
-        ButtonLayout layout = options().buttonLayouts.get(cls.getName());
-        if (layout != null)
-            return layout;
-
-        // No perfect match; find all higher-degree matching classes
-        Set<Class<?>> matches = layoutClasses.stream()
-                .filter(c -> c.isAssignableFrom(cls))
-                .collect(Collectors.toSet());
-
-        // Double-iterate to find the lowest-degree match
-        for (Class<?> c1 : matches) {
-            boolean hasSubclass = false;
-            // If any c2 is a subclass of c1, c1 is not lowest
-            for (Class<?> c2 : matches) {
-                if (!c1.equals(c2) && c1.isAssignableFrom(c2)) {
-                    hasSubclass = true;
-                    break;
-                }
-            }
-            if (!hasSubclass) {
-                // No subclass found; return layout for c1
-                return options().buttonLayouts.get(c1.getName());
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return the lowest-degree matching policy for the specified class, if policies are enabled
-     * and any exists.
+     * @return the lowest-degree matching policy for the specified class, if any exists.
      */
     public static @Nullable ClassPolicy getPolicy(Class<?> cls) {
-        if (!options().applyPolicies)
-            return null;
-
         // Check for a perfect match
         ClassPolicy policy = options().classPolicies.get(cls.getName());
         if (policy != null)

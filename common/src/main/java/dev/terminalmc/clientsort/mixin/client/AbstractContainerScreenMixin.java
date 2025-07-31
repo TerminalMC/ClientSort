@@ -19,6 +19,9 @@ package dev.terminalmc.clientsort.mixin.client;
 
 import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
+import dev.terminalmc.clientsort.client.gui.screen.edit.CombinedEditScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
@@ -38,6 +41,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -62,7 +66,7 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Enables triggering inventory operations via mouseclick or keypress.
  */
 @Mixin(AbstractContainerScreen.class)
-public abstract class AbstractContainerScreenMixin extends Screen {
+public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
 
     protected AbstractContainerScreenMixin(Component title) {
         super(title);
@@ -80,6 +84,9 @@ public abstract class AbstractContainerScreenMixin extends Screen {
 
     @Shadow
     protected abstract void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
+
+    @Shadow
+    public abstract T getMenu();
 
     /**
      * When a client-side survival inventory interaction operation is triggered by a button click
@@ -296,41 +303,61 @@ public abstract class AbstractContainerScreenMixin extends Screen {
             float partialTick,
             CallbackInfo ci
     ) {
-        if (!debug())
+        if (!debug() || !this.equals(Minecraft.getInstance().screen))
             return;
 
-        ContainerScreenHelper<?> helper =
-                ContainerScreenHelper.of(
-                        (AbstractContainerScreen<?>) (Object) this,
-                        (a, b, c, d) -> null
-                );
+        ContainerScreenHelper<?> helper = ContainerScreenHelper.of(
+                (AbstractContainerScreen<?>) (Object) this,
+                (a, b, c, d) -> null
+        );
 
         float scale = 0.7F;
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 0.0F);
 
         for (Slot slot : menu.slots) {
-            String slotId;
-            if (hasShiftDown()) {
-                slotId = String.valueOf(((ISlot) slot).clientsort$getIndexInInv());
-            } else if (hasControlDown()) {
-                slotId = String.valueOf(slot.getContainerSlot());
-            } else {
-                slotId = String.valueOf(((ISlot) slot).clientsort$getIdInContainer());
+            int slotId = ((ISlot) slot).clientsort$getIdInContainer();
+
+            // Draw disabled indicator, top left
+            if (!(Minecraft.getInstance().screen instanceof CombinedEditScreen)) {
+                Object object = slot.container instanceof SimpleContainer
+                        ? getMenu()
+                        : slot.container;
+                if (ControlButtonManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
+                        && cp.ignoredSlots().contains(slotId)) {
+                    //noinspection UnnecessaryUnicodeEscape
+                    graphics.drawString(
+                            Minecraft.getInstance().font,
+                            "\u274C",
+                            (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
+                                    + slot.x)
+                                    / scale),
+                            (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
+                                    + slot.y)
+                                    / scale),
+                            0xFF0000
+                    );
+                }
             }
-            // Draw slot ID
+
+            if (hasShiftDown()) {
+                slotId = ((ISlot) slot).clientsort$getIndexInInv();
+            } else if (hasControlDown()) {
+                slotId = slot.getContainerSlot();
+            }
+            // Draw slot ID, bottom left
             graphics.drawString(
                     Minecraft.getInstance().font,
-                    slotId,
+                    String.valueOf(slotId),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
                             + slot.x)
                             / scale),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
-                            + slot.y)
+                            + slot.y + 12)
                             / scale),
                     0xFFFFFF
             );
-            // Draw slot scope
+            // Draw slot scope, bottom right
             graphics.drawString(
                     Minecraft.getInstance().font,
                     String.valueOf(helper.getScope(slot).ordinal()),
@@ -338,7 +365,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
                             + slot.x + 12)
                             / scale),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
-                            + slot.y)
+                            + slot.y + 12)
                             / scale),
                     0xFFFFFF
             );

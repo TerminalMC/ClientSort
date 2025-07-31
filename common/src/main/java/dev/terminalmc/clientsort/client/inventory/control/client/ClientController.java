@@ -25,6 +25,7 @@ import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.sound.SoundManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.Slot;
 
 /**
@@ -36,9 +37,10 @@ public abstract class ClientController extends SingleUseController {
     public ClientController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot
+            Slot originSlot,
+            Type<?> type
     ) {
-        super(screen, screenHelper, originSlot);
+        super(screen, screenHelper, originSlot, type);
     }
 
     /**

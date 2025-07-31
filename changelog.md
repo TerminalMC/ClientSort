@@ -2,10 +2,14 @@
 
 ## 2.0.0-beta.11
 
+Warning: this beta version includes breaking changes to mod config, and downgrading to previous
+versions will result in data loss.
+
 - Fixed an issue with serialization of defaulted layout values
 - Added support for configuring keybinds via mod options
 - Added an option to isolate mod keybinds from Minecraft keybinds
-- Renamed 'GUI' options tab to 'Buttons' for consistency
+- Redesigned policy system and layout data-string configuration
+- Added support for ignoring specific slots when performing operations
 
 ## 2.0.0-beta.10
 

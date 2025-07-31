@@ -50,18 +50,21 @@ public class ServerConfig {
 
     public static class Options {
 
-        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = () -> List.of(
-                new ClassPolicy(
+        public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
+                () -> List.of(
+                        new ServerClassPolicy(
                         "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
-                        false, false, false
+                                false,
+                                false,
+                                false
                 )
         );
-        public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
-            Map<String, ClassPolicy> map = new LinkedHashMap<>();
+        public static final Supplier<Map<String, ServerClassPolicy>> classPoliciesDefault = () -> {
+            Map<String, ServerClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((item) -> map.put(item.className, item));
             return map;
         };
-        public Map<String, ClassPolicy> classPolicies = classPoliciesDefault.get();
+        public Map<String, ServerClassPolicy> classPolicies = classPoliciesDefault.get();
     }
 
     // Validation
@@ -71,7 +74,7 @@ public class ServerConfig {
      */
     private void validate() {
         // Sort the policy list by key for better UX
-        Map<String, ClassPolicy> sortedPolicies = new LinkedHashMap<>();
+        Map<String, ServerClassPolicy> sortedPolicies = new LinkedHashMap<>();
         options.classPolicies.keySet()
                 .stream()
                 .sorted()
@@ -97,6 +100,7 @@ public class ServerConfig {
         return instance;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static ServerConfig reloadAndSave() {
         instance = load();
         return instance;

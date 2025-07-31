@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
-import dev.terminalmc.clientsort.config.ClassPolicy;
+import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -153,6 +153,11 @@ public class StackFillHandler extends PayloadHandler {
                 : null;
         Object object = dstContainer instanceof SimpleContainer ? menu : dstContainer;
 
-        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), true, false, true));
+        PolicyManager.setPolicy(new ServerClassPolicy(
+                object.getClass().getName(),
+                true,
+                false,
+                true
+        ));
     }
 }

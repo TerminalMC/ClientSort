@@ -17,7 +17,7 @@
 package dev.terminalmc.clientsort.network.handler.validate;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.config.ClassPolicy;
+import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 
@@ -55,8 +55,8 @@ public class PolicyManager {
         }
     }
 
-    public static void setPolicy(ClassPolicy classPolicy) {
-        ClassPolicy existingPolicy = serverOptions().classPolicies.get(classPolicy.className);
+    public static void setPolicy(ServerClassPolicy classPolicy) {
+        ServerClassPolicy existingPolicy = serverOptions().classPolicies.get(classPolicy.className);
         if (existingPolicy != null) {
             existingPolicy.setFrom(classPolicy);
             ClientSort.LOG.info(
@@ -76,9 +76,9 @@ public class PolicyManager {
     /**
      * @throws PayloadHandlerException if the server policy disallows the operation.
      */
-    public static void checkPolicy(Class<?> cls, Function<ClassPolicy, Boolean> op)
+    public static void checkPolicy(Class<?> cls, Function<ServerClassPolicy, Boolean> op)
             throws PayloadHandlerException {
-        ClassPolicy configClassPolicy = getClassPolicy(cls);
+        ServerClassPolicy configClassPolicy = getClassPolicy(cls);
         if (configClassPolicy != null && !op.apply(configClassPolicy)) {
             throw new PayloadHandlerException(String.format(
                     "Server policy does not allow this operation for class '%s'!",
@@ -90,9 +90,9 @@ public class PolicyManager {
     /**
      * @return the lowest-degree matching item for the specified class, if any exists.
      */
-    private static ClassPolicy getClassPolicy(Class<?> cls) {
+    private static ServerClassPolicy getClassPolicy(Class<?> cls) {
         // Check for a perfect match
-        ClassPolicy layout = serverOptions().classPolicies.get(cls.getName());
+        ServerClassPolicy layout = serverOptions().classPolicies.get(cls.getName());
         if (layout != null)
             return layout;
 

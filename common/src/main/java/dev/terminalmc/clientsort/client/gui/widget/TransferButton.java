@@ -18,12 +18,12 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -31,6 +31,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -59,26 +62,23 @@ public class TransferButton extends ControlButton {
     public TransferButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            @Nullable String layoutKey,
-            String lowestLayoutKey,
-            String policyKey,
-            boolean disabledByPolicy,
-            boolean isPlayerInv,
             Slot referenceSlot,
-            Vec2i offset,
-            boolean active
+            boolean isPlayerInv,
+            @Nullable ClassPolicy policy,
+            String lowestPolicyKey,
+            Vec2i offset
     ) {
         super(
                 screen,
                 container,
-                layoutKey,
-                lowestLayoutKey,
-                policyKey,
-                disabledByPolicy,
-                isPlayerInv,
                 referenceSlot,
+                isPlayerInv,
                 isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
+                policy == null ? null : policy.className(),
+                lowestPolicyKey,
                 offset,
+                policy == null || policy.canTransfer(),
+                policy != null && policy.showTransferButton(),
                 (button) -> {
                     SingleUseController controller = SingleUseController.getController(
                             screen,
@@ -88,23 +88,48 @@ public class TransferButton extends ControlButton {
                     );
                     if (controller != null)
                         controller.tryTransfer();
-                },
-                active
+                }
         );
     }
 
     @Override
-    public boolean getLayoutStatus(ButtonLayout layout) {
-        return layout.isTransferEnabled();
+    public boolean getPolicyStatus(ClassPolicy policy) {
+        return policy.showTransferButton();
     }
 
     @Override
-    public void savePolicyState() {
-        ClassPolicy policy = options().classPolicies.get(policyKey);
+    public void savePolicy(@Nullable Vec2i offset, Collection<Integer> slots) {
+        @Nullable ClassPolicy policy = null;
+        if (activePolicyKey != null)
+            policy = options().classPolicies.get(activePolicyKey);
         if (policy != null) {
-            policy.transferEnabled = !disabledByPolicy;
-        } else if (disabledByPolicy) {
-            options().classPolicies.put(policyKey, new ClassPolicy(policyKey, true, true, false));
+            options().classPolicies.put(
+                    activePolicyKey,
+                    new ClassPolicy(
+                            activePolicyKey,
+                            offset,
+                            policy.sortPolicy(),
+                            policy.stackFillPolicy(),
+                            operationAllowed
+                                    ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
+                                    : Policy.NONE,
+                            new TreeSet<>(slots)
+                    )
+            );
+        } else {
+            options().classPolicies.put(
+                    lowestPolicyKey,
+                    new ClassPolicy(
+                            lowestPolicyKey,
+                            offset,
+                            Policy.KEYBIND,
+                            Policy.KEYBIND,
+                            operationAllowed
+                                    ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
+                                    : Policy.NONE,
+                            new TreeSet<>(slots)
+                    )
+            );
         }
         Config.save();
     }

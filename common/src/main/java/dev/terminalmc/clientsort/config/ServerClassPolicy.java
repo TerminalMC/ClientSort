@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public class ClassPolicy {
+public class ServerClassPolicy {
 
     public static final String DATA_FORMAT = "%s,%d,%d,%d";
     public static final String DATA_PATTERN_STRING =
@@ -36,7 +36,7 @@ public class ClassPolicy {
     public boolean stackFillEnabled;
     public boolean transferEnabled;
 
-    public ClassPolicy(
+    public ServerClassPolicy(
             String className,
             boolean sortEnabled,
             boolean stackFillEnabled,
@@ -48,7 +48,7 @@ public class ClassPolicy {
         this.transferEnabled = transferEnabled;
     }
 
-    public void setFrom(ClassPolicy classPolicy) {
+    public void setFrom(ServerClassPolicy classPolicy) {
         this.sortEnabled = sortEnabled && classPolicy.sortEnabled;
         this.stackFillEnabled = stackFillEnabled && classPolicy.stackFillEnabled;
         this.transferEnabled = transferEnabled && classPolicy.transferEnabled;
@@ -64,7 +64,7 @@ public class ClassPolicy {
         );
     }
 
-    public static ClassPolicy fromDataString(
+    public static ServerClassPolicy fromDataString(
             String dataString,
             Set<String> originalClassNames
     ) throws ParseException {
@@ -97,7 +97,7 @@ public class ClassPolicy {
             }
         }
 
-        return new ClassPolicy(
+        return new ServerClassPolicy(
                 className,
                 matcher.group(2).equals("1"),
                 matcher.group(3).equals("1"),

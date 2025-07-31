@@ -74,14 +74,14 @@ public class GroupSelectorScreen extends Screen {
 
         CycleButton<Boolean> toggleButton =
                 CycleButton.booleanBuilder(
-                        localized("button", "gui.enabled").withStyle(ChatFormatting.GREEN),
-                        localized("button", "gui.disabled").withStyle(ChatFormatting.RED)
+                        localized("editor", "enabled").withStyle(ChatFormatting.GREEN),
+                        localized("editor", "disabled").withStyle(ChatFormatting.RED)
                 ).withInitialValue(options().showButtons).create(
                         width / 2 - 125,
                         height - 22,
                         120,
                         20,
-                        localized("button", "gui"),
+                        localized("editor", "buttons"),
                         (buttons, status) -> {
                             options().showButtons = status;
                             Config.save();
@@ -119,7 +119,7 @@ public class GroupSelectorScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        if (lastScreen instanceof PositionEditScreen pes && !options().showButtons) {
+        if (lastScreen instanceof CombinedEditScreen pes && !options().showButtons) {
             pes.onClose();
         } else {
             lastScreen.init(Minecraft.getInstance(), width, height);

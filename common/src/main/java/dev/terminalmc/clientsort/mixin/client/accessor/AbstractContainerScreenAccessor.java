@@ -37,4 +37,7 @@ public interface AbstractContainerScreenAccessor {
 
     @Invoker("slotClicked")
     void clientsort$slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
+
+    @Invoker("isHovering")
+    boolean clientsort$isHovering(Slot slot, double mouseX, double mouseY);
 }

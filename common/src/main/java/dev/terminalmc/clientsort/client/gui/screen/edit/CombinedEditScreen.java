@@ -1,5 +1,4 @@
 /*
- * Copyright 2021 Evan Steinkerchner (Roundaround)
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +18,13 @@ package dev.terminalmc.clientsort.client.gui.screen.edit;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,23 +37,27 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public abstract class PositionEditScreen extends Screen {
+public abstract class CombinedEditScreen extends Screen {
 
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
     private final LinkedList<ControlButton> buttons = new LinkedList<>();
+    public final Set<Integer> ignoredSlots = new TreeSet<>();
 
     /**
-     * An element of {@link PositionEditScreen#buttons} which 'represents' the whole set of
+     * An element of {@link CombinedEditScreen#buttons} which 'represents' the whole set of
      * buttons.
      * <p>
      * This can be any element, and the specific choice is only relevant when repositioning via
@@ -60,25 +66,25 @@ public abstract class PositionEditScreen extends Screen {
     private ControlButton rep;
 
     /**
-     * The class name of either {@link PositionEditScreen#rep}'s {@link ControlButton#container}, or
-     * {@link PositionEditScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
+     * The class name of either {@link CombinedEditScreen#rep}'s {@link ControlButton#container}, or
+     * {@link CombinedEditScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
      * is {@code null}.
      * <p>
-     * This value represents the lowest-level key on which a {@link ButtonLayout} can be created,
-     * and may differ from {@link PositionEditScreen#rep}'s {@link ControlButton#layoutKey}.
+     * This value represents the lowest-level key on which a {@link ClassPolicy} can be created, and
+     * may differ from {@link CombinedEditScreen#rep}'s {@link ControlButton#activePolicyKey}.
      */
-    private String lowestLayoutKey;
+    private String lowestPolicyKey;
 
     /**
      * A flag to assist repositioning buttons via click-drag.
      */
     private boolean dragging;
 
-    public PositionEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
+    public CombinedEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
         this(underlay, button, underlay);
     }
 
-    public PositionEditScreen(
+    public CombinedEditScreen(
             AbstractContainerScreen<?> underlay,
             ControlButton button,
             Screen lastScreen
@@ -92,7 +98,7 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
-     * Re-initializes {@link PositionEditScreen#underlay}, then this screen's GUI elements.
+     * Re-initializes {@link CombinedEditScreen#underlay}, then this screen's GUI elements.
      */
     @Override
     public void init() {
@@ -102,7 +108,7 @@ public abstract class PositionEditScreen extends Screen {
         underlay.init(Minecraft.getInstance(), width, height);
 
         // Reload buttons from the manager
-        if (!reloadButtons()) {
+        if (!reloadButtonsAndIgnoredSlots()) {
             // Failure
             clearWidgets();
             return;
@@ -113,10 +119,11 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
-     * Reloads the list of editable buttons.
+     * Reloads the lists of editable buttons and ignored slots.
      */
-    private boolean reloadButtons() {
+    private boolean reloadButtonsAndIgnoredSlots() {
         buttons.clear();
+        ignoredSlots.clear();
 
         // Retrieve the buttons from the manager
         buttons.addAll(getButtons());
@@ -135,17 +142,18 @@ public abstract class PositionEditScreen extends Screen {
         // Pick an arbitrary representative
         rep = buttons.getFirst();
 
-        // Enable buttons that are enabled in config but disabled due to GUI
-        // state, such as transfer buttons when no second inventory is open
-        ButtonLayout layout = options().buttonLayouts.get(rep.layoutKey);
-        if (layout != null) {
-            buttons.forEach((button) -> button.active = button.getLayoutStatus(layout));
+        // Activate buttons that are enabled in config but inactive due to GUI state, such as
+        // transfer buttons when no second inventory is open
+        ClassPolicy policy = options().classPolicies.get(rep.activePolicyKey);
+        if (policy != null) {
+            buttons.forEach((button) -> button.active = button.getPolicyStatus(policy));
+            ignoredSlots.addAll(policy.ignoredSlots());
         }
 
-        // Retrieve the layout key in the same way as the manager
+        // Retrieve the policy key in the same way as the manager
         Object keyObject =
                 rep.container instanceof SimpleContainer ? underlay.getMenu() : rep.container;
-        lowestLayoutKey = keyObject.getClass().getName();
+        lowestPolicyKey = keyObject.getClass().getName();
 
         return true;
     }
@@ -164,7 +172,7 @@ public abstract class PositionEditScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        int numButtons = 9;
+        int numButtons = 10;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
@@ -172,16 +180,18 @@ public abstract class PositionEditScreen extends Screen {
 
         // Instructions tooltip button
         Button instructionsButton = Button.builder(
-                        localized("button", "instructions"), (button) -> {
+                        localized("editor", "instructions"), (button) -> {
                         }
                 )
-                .tooltip(Tooltip.create(localized("button", "instructions.tooltip.1")
+                .tooltip(Tooltip.create(localized("editor", "instructions.tooltip.1")
                         .append("\n\n")
-                        .append(localized("button", "instructions.tooltip.2"))
+                        .append(localized("editor", "instructions.tooltip.2"))
                         .append("\n\n")
-                        .append(localized("button", "instructions.tooltip.3"))
+                        .append(localized("editor", "instructions.tooltip.3"))
                         .append("\n\n")
-                        .append(localized("button", "instructions.tooltip.4"))))
+                        .append(localized("editor", "instructions.tooltip.4"))
+                        .append("\n\n")
+                        .append(localized("editor", "instructions.tooltip.5"))))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
@@ -190,78 +200,48 @@ public abstract class PositionEditScreen extends Screen {
         movingY += 21;
 
         // Toggle the layout status of all buttons
-        Button toggleAllButton = Button.builder(
-                        localized("button", "toggleAll"), (button) -> {
+        Button toggleVisibilityButton = Button.builder(
+                        localized("editor", "toggleVisibility"), (button) -> {
                             boolean status = buttons.stream().noneMatch((b) -> b.active);
                             buttons.forEach((b) -> b.active = status);
                         }
                 )
-                .tooltip(Tooltip.create(localized("button", "toggleAll.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "toggleVisibility.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        addRenderableWidget(toggleAllButton);
+        addRenderableWidget(toggleVisibilityButton);
+        movingY += 21;
+
+        // Clear the ignored slots list
+        Button unignoreSlotsButton = Button.builder(
+                        localized("editor", "unignoreSlots"), (button) -> ignoredSlots.clear()
+                )
+                .tooltip(Tooltip.create(localized("editor", "unignoreSlots.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(unignoreSlotsButton);
         movingY += 21;
 
         // Move the button to the default position
         Button moveToDefaultButton = Button.builder(
-                        localized("button", "moveToDefault"), (button) -> {
+                        localized("editor", "moveToDefault"), (button) -> {
                             Vec2i before = buttons.getFirst().offset;
                             buttons.getFirst().offset = options().layoutOffset;
                             repositionButtons(buttons.getFirst(), before);
                         }
                 )
-                .tooltip(Tooltip.create(localized("button", "moveToDefault.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "moveToDefault.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
         addRenderableWidget(moveToDefaultButton);
         movingY += 21;
 
-        // Split the current config off the parent class key
-        Button splitConfigButton = Button.builder(
-                        localized("button", "splitConfig"),
-                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
-                                (confirm) -> {
-                                    if (confirm) {
-                                        options().buttonLayouts.put(
-                                                lowestLayoutKey, new ButtonLayout(
-                                                        lowestLayoutKey,
-                                                        buttons.getFirst().offset,
-                                                        buttons.getFirst().active,
-                                                        buttons.get(1).active,
-                                                        buttons.get(2).active
-                                                )
-                                        );
-                                        Config.save();
-                                        init();
-                                    }
-                                    Minecraft.getInstance().setScreen(this);
-                                },
-                                localized("title", "confirm.splitConfig"),
-                                localized(
-                                        "message",
-                                        "confirm.splitConfig",
-                                        Component.literal(rep.layoutKey == null
-                                                ? lowestLayoutKey
-                                                : rep.layoutKey
-                                        ).withStyle(ChatFormatting.GOLD),
-                                        Component.literal(lowestLayoutKey)
-                                                .withStyle(ChatFormatting.GOLD)
-                                )
-                        ))
-                )
-                .tooltip(Tooltip.create(localized("button", "splitConfig.tooltip")))
-                .pos(x, movingY)
-                .size(width, height)
-                .build();
-        splitConfigButton.active = rep.layoutKey != null && !rep.layoutKey.equals(lowestLayoutKey);
-        addRenderableWidget(splitConfigButton);
-        movingY += 21;
-
         // Save the current position as default
         Button saveAsDefaultButton = Button.builder(
-                        localized("button", "saveAsDefault"),
+                        localized("editor", "saveAsDefault"),
                         (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
@@ -275,19 +255,74 @@ public abstract class PositionEditScreen extends Screen {
                                 localized("message", "confirm.saveAsDefault")
                         ))
                 )
-                .tooltip(Tooltip.create(localized("button", "saveAsDefault.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "saveAsDefault.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
         addRenderableWidget(saveAsDefaultButton);
         movingY += 21;
 
+        // Split the current config off the parent class key
+        Button splitPolicyButton = Button.builder(
+                        localized("editor", "splitPolicy"),
+                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
+                                (confirm) -> {
+                                    if (confirm) {
+                                        options().classPolicies.put(
+                                                lowestPolicyKey, new ClassPolicy(
+                                                        lowestPolicyKey,
+                                                        buttons.getFirst().offset,
+                                                        buttons.getFirst().operationAllowed
+                                                                ? buttons.getFirst().active
+                                                                ? Policy.KEYBIND_BUTTON
+                                                                : Policy.KEYBIND
+                                                                : Policy.NONE,
+                                                        buttons.get(1).operationAllowed
+                                                                ? buttons.getFirst().active
+                                                                ? Policy.KEYBIND_BUTTON
+                                                                : Policy.KEYBIND
+                                                                : Policy.NONE,
+                                                        buttons.get(2).operationAllowed
+                                                                ? buttons.getFirst().active
+                                                                ? Policy.KEYBIND_BUTTON
+                                                                : Policy.KEYBIND
+                                                                : Policy.NONE,
+                                                        new TreeSet<>(ignoredSlots)
+                                                )
+                                        );
+                                        Config.save();
+                                        init();
+                                    }
+                                    Minecraft.getInstance().setScreen(this);
+                                },
+                                localized("title", "confirm.splitPolicy"),
+                                localized(
+                                        "message",
+                                        "confirm.splitPolicy",
+                                        Component.literal(rep.activePolicyKey == null
+                                                ? lowestPolicyKey
+                                                : rep.activePolicyKey
+                                        ).withStyle(ChatFormatting.GOLD),
+                                        Component.literal(lowestPolicyKey)
+                                                .withStyle(ChatFormatting.GOLD)
+                                )
+                        ))
+                )
+                .tooltip(Tooltip.create(localized("editor", "splitPolicy.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        splitPolicyButton.active =
+                rep.activePolicyKey != null && !rep.activePolicyKey.equals(lowestPolicyKey);
+        addRenderableWidget(splitPolicyButton);
+        movingY += 21;
+
         // Re-generates the screen to undo all changes made since opening
         Button undoChangesButton = Button.builder(
-                        localized("button", "undoChanges"),
+                        localized("editor", "undoChanges"),
                         (button) -> init()
                 )
-                .tooltip(Tooltip.create(localized("button", "undoChanges.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "undoChanges.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
@@ -296,7 +331,7 @@ public abstract class PositionEditScreen extends Screen {
 
         // Open group selector screen
         Button reselectButton = Button.builder(
-                        localized("button", "reselect"),
+                        localized("editor", "reselect"),
                         (button) -> {
                             onClose();
                             Minecraft.getInstance().setScreen(
@@ -304,7 +339,7 @@ public abstract class PositionEditScreen extends Screen {
                             );
                         }
                 )
-                .tooltip(Tooltip.create(localized("button", "reselect.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "reselect.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
@@ -335,6 +370,20 @@ public abstract class PositionEditScreen extends Screen {
         underlay.render(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
+        // Render disabled-slot indicators
+        for (int slotId : ignoredSlots) {
+            Slot slot = underlay.getMenu().slots.get(slotId);
+            // Draw lock icon, top left
+            //noinspection UnnecessaryUnicodeEscape
+            graphics.drawString(
+                    Minecraft.getInstance().font,
+                    "\u274C",
+                    ((AbstractContainerScreenAccessor) (underlay)).clientsort$getLeftPos() + slot.x,
+                    ((AbstractContainerScreenAccessor) (underlay)).clientsort$getTopPos() + slot.y,
+                    0xFF0000
+            );
+        }
+
         // Safety net
         if (buttons.isEmpty())
             return;
@@ -346,7 +395,7 @@ public abstract class PositionEditScreen extends Screen {
         Vec2i offset = buttons.getFirst().offset;
         graphics.drawString(
                 font,
-                localized("info", "offset", offset.x(), offset.y()).getString(),
+                localized("editor", "offset", offset.x(), offset.y()).getString(),
                 105,
                 height - (font.lineHeight + 1) * 3,
                 0xFFFFFFFF
@@ -354,9 +403,12 @@ public abstract class PositionEditScreen extends Screen {
         graphics.drawString(
                 font,
                 localized(
-                        "info",
-                        "layoutKey.current",
-                        rep.layoutKey == null ? localized("info", "layoutKey.unset") : rep.layoutKey
+                        "editor",
+                        "policyKey.current",
+                        rep.activePolicyKey
+                                == null
+                                ? localized("editor", "policyKey.unset")
+                                : rep.activePolicyKey
                 ),
                 105,
                 height - (font.lineHeight + 1) * 2,
@@ -364,7 +416,7 @@ public abstract class PositionEditScreen extends Screen {
         );
         graphics.drawString(
                 font,
-                localized("info", "layoutKey.menu", lowestLayoutKey),
+                localized("editor", "policyKey.menu", lowestPolicyKey),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
@@ -405,7 +457,7 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
-     * Closes this screen and shows {@link PositionEditScreen#lastScreen} instead.
+     * Closes this screen and shows {@link CombinedEditScreen#lastScreen} instead.
      */
     @Override
     public void onClose() {
@@ -415,27 +467,10 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
-     * Saves any altered values, then calls {@link PositionEditScreen#onClose}.
+     * Saves any altered values, then calls {@link CombinedEditScreen#onClose}.
      */
     public void saveAndClose() {
-        String layoutKey = rep.layoutKey == null ? lowestLayoutKey : rep.layoutKey;
-        boolean anyActive = false;
-        for (ControlButton button : buttons) {
-            button.savePolicyState();
-            if (button.active)
-                anyActive = true;
-        }
-        if (anyActive || options().buttonLayouts.containsKey(layoutKey)) {
-            options().buttonLayouts.put(
-                    layoutKey, new ButtonLayout(
-                            layoutKey,
-                            buttons.getFirst().offset,
-                            buttons.getFirst().active,
-                            buttons.get(1).active,
-                            buttons.get(2).active
-                    )
-            );
-        }
+        buttons.getFirst().savePolicy(buttons.getFirst().offset, ignoredSlots);
         Config.save();
         onClose();
     }
@@ -481,6 +516,21 @@ public abstract class PositionEditScreen extends Screen {
                     return true;
                 }
             }
+            for (Slot slot : underlay.getMenu().slots) {
+                if (((AbstractContainerScreenAccessor) underlay)
+                        .clientsort$isHovering(slot, mouseX, mouseY)) {
+                    Object object = slot.container instanceof SimpleContainer
+                            ? underlay.getMenu()
+                            : slot.container;
+                    if (object.getClass().getName().equals(lowestPolicyKey)) {
+                        int slotId = ((ISlot) slot).clientsort$getIdInContainer();
+                        if (ignoredSlots.contains(slotId))
+                            ignoredSlots.remove(slotId);
+                        else
+                            ignoredSlots.add(slotId);
+                    }
+                }
+            }
             return false;
         }
     }
@@ -517,7 +567,7 @@ public abstract class PositionEditScreen extends Screen {
     }
 
     /**
-     * If {@code before} does not match the current offset of {@code button}, moves all other
+     * If {@code before} does not match the current buttonOffset of {@code button}, moves all other
      * widgets to match how {@code button} was moved.
      */
     private void repositionButtons(ControlButton button, Vec2i before) {

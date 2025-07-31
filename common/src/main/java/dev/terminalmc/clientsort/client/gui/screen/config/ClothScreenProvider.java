@@ -17,15 +17,14 @@
 package dev.terminalmc.clientsort.client.gui.screen.config;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Config.Options;
-import dev.terminalmc.clientsort.client.config.Config.Options.ControlButtonType;
+import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.Keybinds;
-import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -196,9 +195,9 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.altSortOrderStr = (String) val)
                 .build());
 
-        ConfigCategory sound = builder.getOrCreateCategory(localized("option", "sound"));
+        ConfigCategory sounds = builder.getOrCreateCategory(localized("option", "sounds"));
 
-        sound.addEntry(eb.startBooleanToggle(
+        sounds.addEntry(eb.startBooleanToggle(
                         localized("option", "playSoundSort"),
                         options.playSoundSort
                 )
@@ -207,7 +206,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.playSoundSort = val)
                 .build());
 
-        sound.addEntry(eb.startBooleanToggle(
+        sounds.addEntry(eb.startBooleanToggle(
                         localized("option", "playSoundOther"),
                         options.playSoundOther
                 )
@@ -216,7 +215,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.playSoundOther = val)
                 .build());
 
-        sound.addEntry(eb.startStrField(
+        sounds.addEntry(eb.startStrField(
                         localized("option", "interactionSound"),
                         options.interactionSound
                 )
@@ -230,7 +229,10 @@ public class ClothScreenProvider {
                 })
                 .build());
 
-        sound.addEntry(eb.startIntField(localized("option", "soundInterval"), options.soundInterval)
+        sounds.addEntry(eb.startIntField(
+                        localized("option", "soundInterval"),
+                        options.soundInterval
+                )
                 .setTooltip(localized("option", "soundInterval.tooltip"))
                 .setErrorSupplier(val -> {
                     if (val < Config.Options.SOUND_INTERVAL_MIN)
@@ -244,7 +246,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.soundInterval = val)
                 .build());
 
-        sound.addEntry(eb.startFloatField(
+        sounds.addEntry(eb.startFloatField(
                         localized("option", "soundPitchMin"),
                         options.soundPitchMin
                 )
@@ -261,7 +263,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.soundPitchMin = val)
                 .build());
 
-        sound.addEntry(eb.startFloatField(
+        sounds.addEntry(eb.startFloatField(
                         localized("option", "soundPitchMax"),
                         options.soundPitchMax
                 )
@@ -278,7 +280,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.soundPitchMax = val)
                 .build());
 
-        sound.addEntry(eb.startFloatField(localized("option", "soundVolume"), options.soundVolume)
+        sounds.addEntry(eb.startFloatField(localized("option", "soundVolume"), options.soundVolume)
                 .setErrorSupplier(val -> {
                     if (val < Config.Options.SOUND_VOLUME_MIN)
                         return Optional.of(localized("error", "low"));
@@ -291,7 +293,7 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.soundVolume = val)
                 .build());
 
-        sound.addEntry(eb.startBooleanToggle(
+        sounds.addEntry(eb.startBooleanToggle(
                         localized("option", "allowSoundOverlap"),
                         options.allowSoundOverlap
                 )
@@ -368,47 +370,47 @@ public class ClothScreenProvider {
                 .build());
 
         firstSelector = eb.startEnumSelector(
-                        localized("option", "firstButton"),
-                        ControlButtonType.class,
-                        options.firstButton
+                        localized("option", "firstButtonOp"),
+                        Operation.class,
+                        options.firstButtonOp
                 )
                 .setErrorSupplier((val) ->
                         val.equals(getSecondSelector()) || val.equals(getThirdSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
-                .setDefaultValue(Config.Options.firstButtonDefault)
-                .setSaveConsumer(val -> options.firstButton = val)
+                .setDefaultValue(Config.Options.firstButtonOpDefault)
+                .setSaveConsumer(val -> options.firstButtonOp = val)
                 .build();
         buttons.addEntry(firstSelector);
 
         secondSelector = eb.startEnumSelector(
-                        localized("option", "secondButton"),
-                        ControlButtonType.class,
-                        options.secondButton
+                        localized("option", "secondButtonOp"),
+                        Operation.class,
+                        options.secondButtonOp
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
                 .setErrorSupplier((val) ->
                         val.equals(getFirstSelector()) || val.equals(getThirdSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
-                .setDefaultValue(Config.Options.secondButtonDefault)
-                .setSaveConsumer(val -> options.secondButton = val)
+                .setDefaultValue(Config.Options.secondButtonOpDefault)
+                .setSaveConsumer(val -> options.secondButtonOp = val)
                 .build();
         buttons.addEntry(secondSelector);
 
         thirdSelector = eb.startEnumSelector(
-                        localized("option", "thirdButton"),
-                        ControlButtonType.class,
-                        options.thirdButton
+                        localized("option", "thirdButtonOp"),
+                        Operation.class,
+                        options.thirdButtonOp
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
                 .setErrorSupplier((val) ->
                         val.equals(getFirstSelector()) || val.equals(getSecondSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
-                .setDefaultValue(Config.Options.thirdButtonDefault)
-                .setSaveConsumer(val -> options.thirdButton = val)
+                .setDefaultValue(Config.Options.thirdButtonOpDefault)
+                .setSaveConsumer(val -> options.thirdButtonOp = val)
                 .build();
         buttons.addEntry(thirdSelector);
 
@@ -435,119 +437,32 @@ public class ClothScreenProvider {
                         new Vec2i(options.layoutOffset.x(), val))
                 .build());
 
-        layoutDefaults.add(eb.startBooleanToggle(
-                        localized("option", "sortEnabled"),
-                        options.sortEnabled
-                )
-                .setDefaultValue(Config.Options.sortEnabledDefault)
-                .setSaveConsumer(val -> options.sortEnabled = val)
-                .build());
-
-        layoutDefaults.add(eb.startBooleanToggle(
-                        localized("option", "stackFillEnabled"),
-                        options.stackFillEnabled
-                )
-                .setDefaultValue(Config.Options.stackFillEnabledDefault)
-                .setSaveConsumer(val -> options.stackFillEnabled = val)
-                .build());
-
-        layoutDefaults.add(eb.startBooleanToggle(
-                        localized("option", "transferEnabled"),
-                        options.transferEnabled
-                )
-                .setDefaultValue(Config.Options.transferEnabledDefault)
-                .setSaveConsumer(val -> options.transferEnabled = val)
-                .build());
-
         buttons.addEntry(layoutDefaults.build());
-
-        buttons.addEntry(eb.startStrList(
-                        localized("option", "buttonLayouts"),
-                        getLayoutStrings(options.buttonLayouts.values())
-                )
-                .setTooltip(localized("option", "buttonLayouts.tooltip.1")
-                        .append("\n")
-                        .append(localized("option", "buttonLayouts.tooltip.2"))
-                        .append("\n  ")
-                        .append(localized("option", "buttonLayouts.tooltip.3"))
-                        .append("\n  ")
-                        .append(localized("option", "buttonLayouts.tooltip.4"))
-                        .append("\n  ")
-                        .append(localized("option", "buttonLayouts.tooltip.5"))
-                        .append("\n")
-                        .append(localized("option", "buttonLayouts.tooltip.6")))
-                .setExpanded(true)
-                .setErrorSupplier((list) -> {
-                    int i = 0;
-                    for (String string : list) {
-                        try {
-                            ButtonLayout.fromDataString(string, options.buttonLayouts.keySet());
-                        } catch (ParseException ex) {
-                            return Optional.of(localized(
-                                    "error",
-                                    "buttonLayout.parse",
-                                    i + 1,
-                                    ex.getMessage()
-                            ));
-                        }
-                        i++;
-                    }
-                    return Optional.empty();
-                })
-                .setDefaultValue(getLayoutStrings(Config.Options.buttonLayoutsDefaultList.get()))
-                .setSaveConsumer((list) -> {
-                    Set<ButtonLayout> layouts = new HashSet<>();
-                    for (String string : list) {
-                        try {
-                            ButtonLayout layout = ButtonLayout.fromDataString(
-                                    string,
-                                    options.buttonLayouts.keySet()
-                            );
-                            layouts.add(layout);
-                        } catch (ParseException ex) {
-                            ClientSort.LOG.error(
-                                    "Encountered a button layout parsing error on string '{}' not caught by error checker: {}",
-                                    string,
-                                    ex.getMessage()
-                            );
-                        }
-                    }
-                    options.buttonLayouts.clear();
-                    layouts.forEach((layout) -> options.buttonLayouts.put(
-                            layout.className(),
-                            layout
-                    ));
-                })
-                .build());
 
         ConfigCategory policies = builder.getOrCreateCategory(localized("option", "policies"));
 
-        policies.addEntry(eb.startTextDescription(
-                        localized("option", "policies.description"))
-                .build());
-
-        policies.addEntry(eb.startBooleanToggle(
-                        localized("option", "applyPolicies"),
-                        options.applyPolicies
-                )
-                .setTooltip(localized("option", "applyPolicies.tooltip"))
-                .setDefaultValue(Config.Options.applyPoliciesDefault)
-                .setSaveConsumer(val -> options.applyPolicies = val)
-                .build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.1")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.2")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.3")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.4")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.5")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.6")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.7")).build());
+        policies.addEntry(
+                eb.startTextDescription(localized("option", "policies.description.8")).build());
 
         policies.addEntry(eb.startStrList(
                         localized("option", "classPolicies"),
                         getPolicyStrings(options.classPolicies.values())
                 )
-                .setTooltip(localized("option", "classPolicies.tooltip.1")
-                        .append("\n")
-                        .append(localized("option", "classPolicies.tooltip.2"))
-                        .append("\n  ")
-                        .append(localized("option", "classPolicies.tooltip.3"))
-                        .append("\n  ")
-                        .append(localized("option", "classPolicies.tooltip.4"))
-                        .append("\n")
-                        .append(localized("option", "classPolicies.tooltip.5")))
+                .setTooltip(localized("option", "classPolicies.tooltip"))
                 .setExpanded(true)
                 .setErrorSupplier((list) -> {
                     int i = 0;
@@ -586,21 +501,13 @@ public class ClothScreenProvider {
                     }
                     options.classPolicies.clear();
                     classPolicies.forEach((policy) -> options.classPolicies.put(
-                            policy.className,
+                            policy.className(),
                             policy
                     ));
                 })
                 .build());
 
         return builder.build();
-    }
-
-    private static List<String> getLayoutStrings(Collection<ButtonLayout> layouts) {
-        List<String> strings = new ArrayList<>();
-        for (ButtonLayout layout : layouts) {
-            strings.add(layout.toDataString());
-        }
-        return strings;
     }
 
     private static List<String> getPolicyStrings(Collection<ClassPolicy> policies) {
@@ -611,21 +518,21 @@ public class ClothScreenProvider {
         return strings;
     }
 
-    private static ControlButtonType getFirstSelector() {
+    private static Operation getFirstSelector() {
         return firstSelector == null
                 ? null
-                : (ControlButtonType) firstSelector.getValue();
+                : (Operation) firstSelector.getValue();
     }
 
-    private static ControlButtonType getSecondSelector() {
+    private static Operation getSecondSelector() {
         return secondSelector == null
                 ? null
-                : (ControlButtonType) secondSelector.getValue();
+                : (Operation) secondSelector.getValue();
     }
 
-    private static ControlButtonType getThirdSelector() {
+    private static Operation getThirdSelector() {
         return thirdSelector == null
                 ? null
-                : (ControlButtonType) thirdSelector.getValue();
+                : (Operation) thirdSelector.getValue();
     }
 }

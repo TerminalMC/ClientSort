@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.inventory.control;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientCreativeController;
 import dev.terminalmc.clientsort.client.inventory.control.client.ClientSurvivalController;
@@ -27,7 +28,6 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
-import dev.terminalmc.clientsort.config.ClassPolicy;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -47,7 +47,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -58,12 +57,16 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Note: A {@link SingleUseController} instance must be used one time immediately after creation
  * then promptly discarded, because the inventory state is stored on initialization and never
  * updated.
+ * <p>
+ * Additionally, due to policy constraints, a {@link SingleUseController} is only valid for the type
+ * of operation specified when it was created.
  */
 public abstract class SingleUseController {
 
     protected boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
+    protected final Type<?> type;
     /**
      * The slot that was hovered when sorting was triggered.
      */
@@ -99,11 +102,13 @@ public abstract class SingleUseController {
     public SingleUseController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot
+            Slot originSlot,
+            Type<?> type
     ) {
         this.screen = screen;
         this.screenHelper = screenHelper;
         this.originSlot = originSlot;
+        this.type = type;
 
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
@@ -164,6 +169,13 @@ public abstract class SingleUseController {
             // Ignore locked slots
             if (ItemLocksWrapper.isLocked(slot))
                 continue;
+            // Ignore ignored slots
+            Object object = slot.container instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : slot.container;
+            if (ControlButtonManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
+                    && cp.ignoredSlots().contains(slotId))
+                continue;
             // Slot is valid
             collectedSlots.add(slot);
         }
@@ -188,27 +200,24 @@ public abstract class SingleUseController {
 
     /**
      * @return an instance of {@link SingleUseController} optimized for the current game state.
+     * The returned instance is only valid for the type of operation specified here.
      */
     public static @Nullable SingleUseController getController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> payloadType
+            Type<?> type
     ) {
         // Check policies
-        if (options().applyPolicies) {
-            Object object = originSlot.container instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : originSlot.container;
-            ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
-            if (policy != null && policyDisablesType(policy, payloadType))
-                return null;
-        }
+        Object object = originSlot.container instanceof SimpleContainer
+                ? screen.getMenu()
+                : originSlot.container;
+        if (!opAllowed(ControlButtonManager.getPolicy(object.getClass()), type))
+            return null;
 
         // Preference server-accelerated ops
-        if (options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(payloadType)) {
-            return new ServerController(screen, screenHelper, originSlot);
+        if (options().useServerAcceleration && ClientServices.PLATFORM.canSendToServer(type)) {
+            return new ServerController(screen, screenHelper, originSlot, type);
         }
 
         // Check that there is not already an op running
@@ -219,21 +228,23 @@ public abstract class SingleUseController {
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
-            return new ClientCreativeController(screen, screenHelper, originSlot);
+            return new ClientCreativeController(screen, screenHelper, originSlot, type);
         } else {
-            return new ClientSurvivalController(screen, screenHelper, originSlot);
+            return new ClientSurvivalController(screen, screenHelper, originSlot, type);
         }
     }
 
-    public static boolean policyDisablesType(ClassPolicy policy, Type<?> payloadType) {
-        if (payloadType.equals(SortPayload.TYPE) || payloadType.equals(CollectPayload.TYPE)) {
-            return !policy.sortEnabled;
-        } else if (payloadType.equals(StackFillPayload.TYPE)) {
-            return !policy.stackFillEnabled;
-        } else if (payloadType.equals(TransferPayload.TYPE)) {
-            return !policy.transferEnabled;
+    public static boolean opAllowed(@Nullable ClassPolicy policy, Type<?> type) {
+        if (policy == null)
+            return true;
+        if (type.equals(SortPayload.TYPE) || type.equals(CollectPayload.TYPE)) {
+            return policy.canSort();
+        } else if (type.equals(StackFillPayload.TYPE)) {
+            return policy.canStackFill();
+        } else if (type.equals(TransferPayload.TYPE)) {
+            return policy.canTransfer();
         } else {
-            throw new IllegalArgumentException("Invalid payload type '%s'".formatted(payloadType));
+            throw new IllegalArgumentException("Invalid op type '%s'".formatted(type));
         }
     }
 
@@ -241,7 +252,7 @@ public abstract class SingleUseController {
      * If allowed by policy, sorts the inventory according to {@code sortOrder}.
      */
     public void trySort(SortOrder sortOrder) {
-        if (!policyAllowsOp(originScopeSlots, (p) -> p.sortEnabled))
+        if (!type.equals(SortPayload.TYPE))
             return;
         sort(sortOrder);
     }
@@ -251,9 +262,7 @@ public abstract class SingleUseController {
      * stacks as possible in the other container or inventory, if it exists.
      */
     public void tryFillStacks() {
-        if (!policyAllowsOp(originScopeSlots, (p) -> p.stackFillEnabled))
-            return;
-        if (!policyAllowsOp(otherScopeSlots, (p) -> p.stackFillEnabled))
+        if (!type.equals(StackFillPayload.TYPE))
             return;
         fillStacks();
     }
@@ -263,28 +272,9 @@ public abstract class SingleUseController {
      * to the other container or inventory, if it exists.
      */
     public void tryTransfer() {
-        if (!policyAllowsOp(originScopeSlots, (p) -> p.transferEnabled))
-            return;
-        if (!policyAllowsOp(otherScopeSlots, (p) -> p.transferEnabled))
+        if (!type.equals(TransferPayload.TYPE))
             return;
         transfer();
-    }
-
-    /**
-     * @return {@code true} if there exists a policy disallowing this operation in this context.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean policyAllowsOp(Slot[] slots, Function<ClassPolicy, Boolean> check) {
-        if (slots.length == 0)
-            return false;
-        if (options().applyPolicies) {
-            Object object = slots[0].container instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : slots[0].container;
-            ClassPolicy policy = ControlButtonManager.getPolicy(object.getClass());
-            return policy == null || check.apply(policy);
-        }
-        return false;
     }
 
     /**

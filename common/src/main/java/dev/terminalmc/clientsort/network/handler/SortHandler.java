@@ -17,7 +17,7 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
-import dev.terminalmc.clientsort.config.ClassPolicy;
+import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
@@ -125,6 +125,11 @@ public class SortHandler extends PayloadHandler {
                 : null;
         Object object = container instanceof SimpleContainer ? menu : container;
 
-        PolicyManager.setPolicy(new ClassPolicy(object.getClass().getName(), false, true, true));
+        PolicyManager.setPolicy(new ServerClassPolicy(
+                object.getClass().getName(),
+                false,
+                true,
+                true
+        ));
     }
 }

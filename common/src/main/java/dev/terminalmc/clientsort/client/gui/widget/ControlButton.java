@@ -18,11 +18,11 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.terminalmc.clientsort.client.config.ButtonLayout;
+import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerPositionEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerPositionEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.PositionEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.CombinedEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerCombinedEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerCombinedEditScreen;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -42,6 +42,8 @@ import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public abstract class ControlButton extends Button {
@@ -53,31 +55,29 @@ public abstract class ControlButton extends Button {
 
     private final AbstractContainerScreen<?> screen;
     public final Container container;
-
-    public final @Nullable String layoutKey;
-    public final String lowestLayoutKey;
-    public final String policyKey;
-    protected boolean disabledByPolicy;
-
-    public final boolean isPlayerInv;
     private final Slot referenceSlot;
+    public final boolean isPlayerInv;
+
     private final WidgetSprites sprites;
 
+    public final @Nullable String activePolicyKey;
+    public final String lowestPolicyKey;
+
     public Vec2i offset;
+    public boolean operationAllowed;
 
     protected ControlButton(
             AbstractContainerScreen<?> screen,
             Container container,
-            @Nullable String layoutKey,
-            String lowestLayoutKey,
-            String policyKey,
-            boolean disabledByPolicy,
-            boolean isPlayerInv,
             Slot referenceSlot,
+            boolean isPlayerInv,
             WidgetSprites sprites,
+            @Nullable String activePolicyKey,
+            String lowestPolicyKey,
             Vec2i offset,
-            OnPress onPress,
-            boolean active
+            boolean operationAllowed,
+            boolean active,
+            OnPress onPress
     ) {
         super(
                 ((AbstractContainerScreenAccessor) screen).clientsort$getLeftPos()
@@ -94,14 +94,13 @@ public abstract class ControlButton extends Button {
         );
         this.screen = screen;
         this.container = container;
-        this.layoutKey = layoutKey;
-        this.lowestLayoutKey = lowestLayoutKey;
-        this.policyKey = policyKey;
-        this.disabledByPolicy = disabledByPolicy;
-        this.isPlayerInv = isPlayerInv;
         this.referenceSlot = referenceSlot;
+        this.isPlayerInv = isPlayerInv;
         this.sprites = sprites;
         this.offset = offset;
+        this.activePolicyKey = activePolicyKey;
+        this.lowestPolicyKey = lowestPolicyKey;
+        this.operationAllowed = operationAllowed;
         this.active = active;
     }
 
@@ -109,10 +108,10 @@ public abstract class ControlButton extends Button {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (isMouseOver(mouseX, mouseY)) {
             boolean rightClick = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
-            if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+            if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
                 if (rightClick) {
                     if (Screen.hasShiftDown()) {
-                        disabledByPolicy = !disabledByPolicy;
+                        operationAllowed = !operationAllowed;
                     } else {
                         active = !active;
                     }
@@ -140,8 +139,8 @@ public abstract class ControlButton extends Button {
     public void openEditScreen() {
         Minecraft.getInstance().setScreen(
                 isPlayerInv
-                        ? new PlayerPositionEditScreen(screen, this)
-                        : new ContainerPositionEditScreen(screen, this)
+                        ? new PlayerCombinedEditScreen(screen, this)
+                        : new ContainerCombinedEditScreen(screen, this)
         );
     }
 
@@ -173,32 +172,26 @@ public abstract class ControlButton extends Button {
         graphics.blitSprite(texture, getX(), getY(), 0, width, height);
 
         // Draw policy state indicator
-        if (disabledByPolicy) {
+        if (!operationAllowed) {
             graphics.hLine(getX(), getX() + width - 1, getY() + height / 2, 0xFFFF0000);
         }
 
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
-            if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
-                Component layoutStatus = localized(
-                        "button", active
-                                ? "gui.enabled"
-                                : "gui.disabled"
-                )
+            if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
+                Component visibilityStatus = localized(
+                        "editor", active ? "enabled" : "disabled")
                         .withStyle(active
                                 ? ChatFormatting.GREEN
                                 : ChatFormatting.RED);
-                Component policyStatus = localized(
-                        "button", !disabledByPolicy
-                                ? "gui.enabled"
-                                : "gui.disabled"
-                )
-                        .withStyle(!disabledByPolicy
+                Component operationStatus = localized(
+                        "editor", operationAllowed ? "enabled" : "disabled")
+                        .withStyle(operationAllowed
                                 ? ChatFormatting.GREEN
                                 : ChatFormatting.RED);
-                setTooltip(Tooltip.create(localized("button", "layout", layoutStatus)
+                setTooltip(Tooltip.create(localized("editor", "visibility", visibilityStatus)
                         .append("\n")
-                        .append(localized("button", "policy", policyStatus))));
+                        .append(localized("editor", "operation", operationStatus))));
             } else {
                 setTooltip(null);
             }
@@ -207,7 +200,7 @@ public abstract class ControlButton extends Button {
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        if (Minecraft.getInstance().screen instanceof PositionEditScreen) {
+        if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
             int newX = Math.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
             int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
@@ -238,7 +231,7 @@ public abstract class ControlButton extends Button {
             super.setFocused(false);
     }
 
-    public abstract boolean getLayoutStatus(ButtonLayout layout);
+    public abstract boolean getPolicyStatus(ClassPolicy policy);
 
-    public abstract void savePolicyState();
+    public abstract void savePolicy(@Nullable Vec2i offset, Collection<Integer> slots);
 }
