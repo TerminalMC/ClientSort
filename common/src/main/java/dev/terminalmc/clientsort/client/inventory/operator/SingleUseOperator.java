@@ -176,8 +176,8 @@ public abstract class SingleUseOperator<T extends Operation> {
             Object object = slot.container instanceof SimpleContainer
                     ? screen.getMenu()
                     : slot.container;
-            if (PolicyManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
-                    && cp.ignoredSlots().contains(slotId))
+            @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+            if (policy != null && policy.ignoredSlots().contains(slotId))
                 continue;
             // Slot is valid
             collectedSlots.add(slot);

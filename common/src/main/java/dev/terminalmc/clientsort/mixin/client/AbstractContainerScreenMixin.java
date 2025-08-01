@@ -321,8 +321,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 Object object = slot.container instanceof SimpleContainer
                         ? getMenu()
                         : slot.container;
-                if (PolicyManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
-                        && cp.ignoredSlots().contains(slotId)) {
+                @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+                if (policy != null && policy.ignoredSlots().contains(slotId)) {
                     //noinspection UnnecessaryUnicodeEscape
                     graphics.drawString(
                             Minecraft.getInstance().font,
