@@ -88,7 +88,7 @@
 
   "option.clientsort.keybinds": "Keybinds",
   "option.clientsort.isolateKeybinds": "Isolate Keybinds",
-  "option.clientsort.isolateKeybinds.tooltip": "If this is enabled, the keybinds will only be shown here and will not conflict with other keybinds outside of inventories. You must restart the game to apply changes to this option.",
+  "option.clientsort.isolateKeybinds.tooltip": "If this is enabled, ClientSort will attempt to remove its own keybinds from Minecraft's map. This may help prevent conflicts, but may not be compatible with mods that alter the keybind system.",
 
   "option.clientsort.buttons": "Интерфейс",
   "option.clientsort.showButtons": "Показывать кнопки",

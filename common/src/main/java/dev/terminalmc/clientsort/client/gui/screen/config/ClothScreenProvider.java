@@ -312,51 +312,42 @@ public class ClothScreenProvider {
                 .setTooltip(localized("option", "isolateKeybinds.tooltip"))
                 .setDefaultValue(Config.Options.isolateKeybindsDefault)
                 .setSaveConsumer(val -> options.isolateKeybinds = val)
-                .requireRestart()
                 .build());
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "edit"),
                         ((KeyMappingAccessor) KeybindManager.EDIT_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(KeybindManager.fromName(Options.editKeyDefault))
-                .setKeySaveConsumer((key) -> {
-                    KeybindManager.bindKey(KeybindManager.EDIT_KEY, key);
-                    options.editKey = key.getName();
-                })
+                .setDefaultValue(KeybindManager.EDIT_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.EDIT_KEY, key))
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.sort"),
                         ((KeyMappingAccessor) KeybindManager.SORT_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(KeybindManager.fromName(Options.sortKeyDefault))
-                .setKeySaveConsumer((key) -> {
-                    KeybindManager.bindKey(KeybindManager.SORT_KEY, key);
-                    options.sortKey = key.getName();
-                })
+                .setDefaultValue(KeybindManager.SORT_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.SORT_KEY, key))
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.stackFill"),
                         ((KeyMappingAccessor) KeybindManager.STACK_FILL_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(KeybindManager.fromName(Options.stackFillKeyDefault))
-                .setKeySaveConsumer((key) -> {
-                    KeybindManager.bindKey(KeybindManager.STACK_FILL_KEY, key);
-                    options.stackFillKey = key.getName();
-                })
+                .setDefaultValue(KeybindManager.STACK_FILL_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.STACK_FILL_KEY, key))
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.transfer"),
                         ((KeyMappingAccessor) KeybindManager.TRANSFER_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(KeybindManager.fromName(Options.transferKeyDefault))
-                .setKeySaveConsumer((key) -> {
-                    KeybindManager.bindKey(KeybindManager.TRANSFER_KEY, key);
-                    options.transferKey = key.getName();
-                })
+                .setDefaultValue(KeybindManager.TRANSFER_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.TRANSFER_KEY, key))
                 .build()));
 
         ConfigCategory buttons = builder.getOrCreateCategory(localized("option", "buttons"));

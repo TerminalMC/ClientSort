@@ -25,16 +25,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import static dev.terminalmc.clientsort.client.config.Config.options;
-
 public class ClientSortFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        if (!options().isolateKeybinds) {
-            // Register all keybinds
-            KeybindManager.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
-        }
+        // Register all keybinds
+        KeybindManager.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
         // Register after-tick event
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);

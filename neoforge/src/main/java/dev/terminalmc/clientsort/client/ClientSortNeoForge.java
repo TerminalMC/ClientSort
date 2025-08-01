@@ -35,8 +35,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-import static dev.terminalmc.clientsort.client.config.Config.options;
-
 @Mod(
         value = ClientSort.MOD_ID,
         dist = Dist.CLIENT
@@ -64,9 +62,7 @@ public class ClientSortNeoForge {
      */
     @SubscribeEvent
     static void registerKeybinds(RegisterKeyMappingsEvent event) {
-        if (!options().isolateKeybinds) {
-            KeybindManager.KEYBINDS.forEach(event::register);
-        }
+        KeybindManager.KEYBINDS.forEach(event::register);
     }
 
     @EventBusSubscriber(

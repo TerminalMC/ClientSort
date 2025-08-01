@@ -18,13 +18,10 @@ package dev.terminalmc.clientsort.client.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.InputConstants.Type;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -179,29 +176,8 @@ public class Config {
 
         // Keybind options
 
-        public static final boolean isolateKeybindsDefault = false;
+        public static final boolean isolateKeybindsDefault = true;
         public boolean isolateKeybinds = isolateKeybindsDefault;
-
-        public static final String editKeyDefault = InputConstants.UNKNOWN.getName();
-        public String editKey = editKeyDefault;
-        public static Validator<String> editKeyValidator = (val) ->
-                KeybindManager.fromName(val).getName();
-
-        public static final String sortKeyDefault =
-                Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_MIDDLE).getName();
-        public String sortKey = sortKeyDefault;
-        public static Validator<String> sortKeyValidator = (val) ->
-                KeybindManager.fromName(val).getName();
-
-        public static final String stackFillKeyDefault = InputConstants.UNKNOWN.getName();
-        public String stackFillKey = stackFillKeyDefault;
-        public static Validator<String> stackFillKeyValidator = (val) ->
-                KeybindManager.fromName(val).getName();
-
-        public static final String transferKeyDefault = InputConstants.UNKNOWN.getName();
-        public String transferKey = transferKeyDefault;
-        public static Validator<String> transferKeyValidator = (val) ->
-                KeybindManager.fromName(val).getName();
 
         // Button options
 
@@ -431,14 +407,6 @@ public class Config {
                 Options.soundPitchMaxValidator.validate(options.soundPitchMax, options);
         options.soundVolume =
                 Options.soundVolumeValidator.validate(options.soundVolume);
-        options.editKey =
-                Options.editKeyValidator.validate(options.editKey);
-        options.sortKey =
-                Options.sortKeyValidator.validate(options.sortKey);
-        options.stackFillKey =
-                Options.stackFillKeyValidator.validate(options.stackFillKey);
-        options.transferKey =
-                Options.transferKeyValidator.validate(options.transferKey);
         options.firstButtonOp =
                 Options.firstButtonOpValidator.validate(options.firstButtonOp, options);
         options.secondButtonOp =

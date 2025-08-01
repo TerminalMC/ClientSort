@@ -70,17 +70,13 @@ public class ClientSort {
         InteractionManager.setTickRate(options.interactionInterval);
         // Update class cache
         PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
+        // Isolate keybinds
+        if (options().isolateKeybinds)
+            KeybindManager.isolateKeybinds();
     }
 
     public static void afterGameStart() {
-        if (options().isolateKeybinds) {
-            KeybindManager.configToKeybinds();
-        }
-    }
-
-    public static void afterKeyMapReset() {
-        if (!options().isolateKeybinds) {
-            KeybindManager.keybindsToConfig();
-        }
+        if (options().isolateKeybinds)
+            KeybindManager.isolateKeybinds();
     }
 }
