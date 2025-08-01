@@ -5,11 +5,12 @@
 Warning: this beta version includes breaking changes to mod config, and downgrading to previous
 versions will result in data loss.
 
-- Fixed an issue with serialization of defaulted layout values
+- Fixed an issue with serialization of defaulted offset values
 - Added support for configuring keybinds via mod options
 - Added an option to isolate mod keybinds from Minecraft keybinds
 - Redesigned policy system and layout data-string configuration
 - Added support for ignoring specific slots when performing operations
+- Improved robustness of config deserializer
 
 ## 2.0.0-beta.10
 

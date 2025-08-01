@@ -53,33 +53,58 @@ public class ServerConfig {
         public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
                 () -> List.of(
                         new ServerClassPolicy(
-                        "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                                "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
                                 false,
                                 false,
                                 false
-                )
-        );
+                        )
+                );
         public static final Supplier<Map<String, ServerClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ServerClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((item) -> map.put(item.className, item));
             return map;
         };
         public Map<String, ServerClassPolicy> classPolicies = classPoliciesDefault.get();
+        public static Validator<Map<String, ServerClassPolicy>> classPoliciesValidator = (val) -> {
+            Map<String, ServerClassPolicy> validPolicies = new LinkedHashMap<>();
+            if (val == null)
+                return validPolicies;
+            val.values().forEach((cp) -> {
+                if (cp != null && cp.className != null && !cp.className.isBlank()) {
+                    validPolicies.put(
+                            cp.className,
+                            new ServerClassPolicy(
+                                    cp.className,
+                                    cp.sortEnabled,
+                                    cp.stackFillEnabled,
+                                    cp.transferEnabled
+                            )
+                    );
+                }
+            });
+            // Sort the policies by key for better UX
+            Map<String, ServerClassPolicy> sortedPolicies = new LinkedHashMap<>();
+            validPolicies.keySet().stream().sorted()
+                    .forEach((k) -> sortedPolicies.put(k, validPolicies.get(k)));
+            return sortedPolicies;
+        };
     }
 
     // Validation
+
+    // Validation
+
+    @FunctionalInterface
+    public interface Validator<T> {
+
+        @NotNull T validate(@Nullable T obj);
+    }
 
     /**
      * Ensures that all config values are valid.
      */
     private void validate() {
-        // Sort the policy list by key for better UX
-        Map<String, ServerClassPolicy> sortedPolicies = new LinkedHashMap<>();
-        options.classPolicies.keySet()
-                .stream()
-                .sorted()
-                .forEach((k) -> sortedPolicies.put(k, options.classPolicies.get(k)));
-        options.classPolicies = sortedPolicies;
+        options.classPolicies = Options.classPoliciesValidator.validate(options.classPolicies);
     }
 
     // Instance management

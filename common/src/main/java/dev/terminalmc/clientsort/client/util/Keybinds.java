@@ -21,6 +21,7 @@ import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -116,7 +117,9 @@ public class Keybinds {
      * @return the key identified by the name, or {@link InputConstants#UNKNOWN} if the name is
      * invalid.
      */
-    public static InputConstants.Key fromName(String name) {
+    public static InputConstants.Key fromName(@Nullable String name) {
+        if (name == null)
+            return InputConstants.UNKNOWN;
         try {
             return InputConstants.getKey(name);
         } catch (IllegalArgumentException e) {

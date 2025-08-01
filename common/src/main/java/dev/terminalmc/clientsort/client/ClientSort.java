@@ -59,10 +59,10 @@ public class ClientSort {
     public static void afterConfigSaved(Config config) {
         Config.Options options = config.options;
         // Convert config sort order strings into enum values
-        options.sortOrder = SortOrder.SORT_MODES.get(options.sortOrderStr);
-        options.shiftSortOrder = SortOrder.SORT_MODES.get(options.shiftSortOrderStr);
-        options.ctrlSortOrder = SortOrder.SORT_MODES.get(options.ctrlSortOrderStr);
-        options.altSortOrder = SortOrder.SORT_MODES.get(options.altSortOrderStr);
+        options.sortOrder = SortOrder.SORT_ORDERS.get(options.sortOrderStr);
+        options.shiftSortOrder = SortOrder.SORT_ORDERS.get(options.shiftSortOrderStr);
+        options.ctrlSortOrder = SortOrder.SORT_ORDERS.get(options.ctrlSortOrderStr);
+        options.altSortOrder = SortOrder.SORT_ORDERS.get(options.altSortOrderStr);
         // Parse sound location string
         options.sortSoundLoc = ResourceLocation.tryParse(options.interactionSound);
         // Update interaction manager tick rate

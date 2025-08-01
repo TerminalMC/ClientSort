@@ -21,9 +21,9 @@ import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Type;
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.client.util.Keybinds;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -63,6 +63,8 @@ public class Config {
         public static final int INTERACTION_INTERVAL_MAX = 100;
         public static final int interactionIntervalDefault = 10;
         public int interactionInterval = interactionIntervalDefault;
+        public static Validator<Integer> interactionIntervalValidator = (val) ->
+                Math.clamp(unbox(val), INTERACTION_INTERVAL_MIN, INTERACTION_INTERVAL_MAX);
 
         public static final boolean useServerAccelerationDefault = true;
         public boolean useServerAcceleration = useServerAccelerationDefault;
@@ -70,17 +72,17 @@ public class Config {
         public static final boolean optimizeCreativeSortingDefault = true;
         public boolean optimizeCreativeSorting = optimizeCreativeSortingDefault;
 
-        public static final HotbarScope hotbarScopeDefault = HotbarScope.HOTBAR;
-        public HotbarScope hotbarScope = hotbarScopeDefault;
-
         public enum HotbarScope {
             HOTBAR,
             INVENTORY,
             NONE
         }
 
-        public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.EXTRA;
-        public ExtraSlotScope extraSlotScope = extraSlotScopeDefault;
+        public static final HotbarScope hotbarScopeDefault = HotbarScope.HOTBAR;
+        public HotbarScope hotbarScope = hotbarScopeDefault;
+        public static Validator<HotbarScope> hotbarScopeValidator = (val) ->
+                val != null && Arrays.stream(HotbarScope.values()).toList().contains(val)
+                        ? val : hotbarScopeDefault;
 
         public enum ExtraSlotScope {
             EXTRA,
@@ -89,25 +91,40 @@ public class Config {
             NONE
         }
 
+        public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.EXTRA;
+        public ExtraSlotScope extraSlotScope = extraSlotScopeDefault;
+        public static Validator<ExtraSlotScope> extraSlotScopeValidator = (val) ->
+                val != null && Arrays.stream(ExtraSlotScope.values()).toList().contains(val)
+                        ? val : extraSlotScopeDefault;
+
+
         public static final boolean bundlesUseLeftClickDefault = false;
         public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
 
         // Sort order options
 
-        public static final String sortOrderDefault = SortOrder.CREATIVE.name;
-        public String sortOrderStr = sortOrderDefault;
+        public static final String sortOrderStrDefault = SortOrder.CREATIVE.name;
+        public String sortOrderStr = sortOrderStrDefault;
+        public static Validator<String> sortOrderStrValidator = (val) -> val != null
+                && SortOrder.SORT_ORDERS.containsKey(val) ? val : sortOrderStrDefault;
         public transient SortOrder sortOrder;
 
-        public static final String shiftSortOrderDefault = SortOrder.QUANTITY.name;
-        public String shiftSortOrderStr = shiftSortOrderDefault;
+        public static final String shiftSortOrderStrDefault = SortOrder.QUANTITY.name;
+        public String shiftSortOrderStr = shiftSortOrderStrDefault;
+        public static Validator<String> shiftSortOrderStrValidator = (val) -> val != null
+                && SortOrder.SORT_ORDERS.containsKey(val) ? val : shiftSortOrderStrDefault;
         public transient SortOrder shiftSortOrder;
 
-        public static final String ctrlSortOrderDefault = SortOrder.ALPHABET.name;
-        public String ctrlSortOrderStr = ctrlSortOrderDefault;
+        public static final String ctrlSortOrderStrDefault = SortOrder.ALPHABET.name;
+        public String ctrlSortOrderStr = ctrlSortOrderStrDefault;
+        public static Validator<String> ctrlSortOrderStrValidator = (val) -> val != null
+                && SortOrder.SORT_ORDERS.containsKey(val) ? val : ctrlSortOrderStrDefault;
         public transient SortOrder ctrlSortOrder;
 
-        public static final String altSortOrderDefault = SortOrder.RAW_ID.name;
-        public String altSortOrderStr = altSortOrderDefault;
+        public static final String altSortOrderStrDefault = SortOrder.RAW_ID.name;
+        public String altSortOrderStr = altSortOrderStrDefault;
+        public static Validator<String> altSortOrderStrValidator = (val) -> val != null
+                && SortOrder.SORT_ORDERS.containsKey(val) ? val : altSortOrderStrDefault;
         public transient SortOrder altSortOrder;
 
         // Interaction sound options
@@ -120,25 +137,41 @@ public class Config {
 
         public static final String interactionSoundDefault = "minecraft:block.note_block.xylophone";
         public String interactionSound = interactionSoundDefault;
+        public static Validator<String> interactionSoundValidator = (val) -> val != null
+                && ResourceLocation.tryParse(val) != null ? val : interactionSoundDefault;
         public transient @Nullable ResourceLocation sortSoundLoc = null;
 
         public static final int SOUND_INTERVAL_MIN = 1;
         public static final int SOUND_INTERVAL_MAX = 100;
         public static final int soundIntervalDefault = 1;
         public int soundInterval = soundIntervalDefault;
+        public static Validator<Integer> soundIntervalValidator = (val) ->
+                Math.clamp(unbox(val), SOUND_INTERVAL_MIN, SOUND_INTERVAL_MAX);
 
         public static final float SOUND_PITCH_MIN = 0.5F;
         public static final float SOUND_PITCH_MAX = 2.0F;
         public static final float soundPitchMinDefault = 0.5F;
         public float soundPitchMin = soundPitchMinDefault;
+        public static AwareValidator<Float> soundPitchMinValidator = (val, options) -> Math.clamp(
+                unbox(val),
+                SOUND_PITCH_MIN,
+                Math.clamp(options.soundPitchMax, SOUND_PITCH_MIN, SOUND_PITCH_MAX)
+        );
 
         public static final float soundPitchMaxDefault = 2.0F;
         public float soundPitchMax = soundPitchMaxDefault;
+        public static AwareValidator<Float> soundPitchMaxValidator = (val, options) -> Math.clamp(
+                unbox(val),
+                Math.clamp(options.soundPitchMin, SOUND_PITCH_MIN, SOUND_PITCH_MAX),
+                SOUND_PITCH_MAX
+        );
 
         public static final float SOUND_VOLUME_MIN = 0.0F;
         public static final float SOUND_VOLUME_MAX = 1.0F;
         public static final float soundVolumeDefault = 0.2F;
         public float soundVolume = soundVolumeDefault;
+        public static Validator<Float> soundVolumeValidator = (val) ->
+                Math.clamp(unbox(val), SOUND_VOLUME_MIN, SOUND_VOLUME_MAX);
 
         public static final boolean allowSoundOverlapDefault = true;
         public boolean allowSoundOverlap = allowSoundOverlapDefault;
@@ -150,30 +183,29 @@ public class Config {
 
         public static final String editKeyDefault = InputConstants.UNKNOWN.getName();
         public String editKey = editKeyDefault;
+        public static Validator<String> editKeyValidator = (val) ->
+                Keybinds.fromName(val).getName();
 
         public static final String sortKeyDefault =
                 Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_MIDDLE).getName();
         public String sortKey = sortKeyDefault;
+        public static Validator<String> sortKeyValidator = (val) ->
+                Keybinds.fromName(val).getName();
 
         public static final String stackFillKeyDefault = InputConstants.UNKNOWN.getName();
         public String stackFillKey = stackFillKeyDefault;
+        public static Validator<String> stackFillKeyValidator = (val) ->
+                Keybinds.fromName(val).getName();
 
         public static final String transferKeyDefault = InputConstants.UNKNOWN.getName();
         public String transferKey = transferKeyDefault;
+        public static Validator<String> transferKeyValidator = (val) ->
+                Keybinds.fromName(val).getName();
 
         // Button options
 
         public static final boolean showButtonsDefault = false;
         public boolean showButtons = showButtonsDefault;
-
-        public static final Operation firstButtonOpDefault = Operation.SORT;
-        public Operation firstButtonOp = firstButtonOpDefault;
-
-        public static final Operation secondButtonOpDefault = Operation.STACK_FILL;
-        public Operation secondButtonOp = secondButtonOpDefault;
-
-        public static final Operation thirdButtonOpDefault = Operation.TRANSFER;
-        public Operation thirdButtonOp = thirdButtonOpDefault;
 
         public enum Operation {
             SORT,
@@ -181,8 +213,41 @@ public class Config {
             TRANSFER
         }
 
+        private static Operation validateUniqueOp(
+                @Nullable Operation val,
+                @Nullable Operation... others
+        ) {
+            if (others.length >= Operation.values().length)
+                throw new IllegalArgumentException();
+            Set<Operation> ops = new HashSet<>(Arrays.stream(Operation.values()).toList());
+            if (val != null && ops.contains(val) && !Arrays.stream(others).toList().contains(val)) {
+                return val;
+            } else {
+                Arrays.stream(others).forEach(ops::remove);
+                //noinspection OptionalGetWithoutIsPresent
+                return ops.stream().findAny().get();
+            }
+        }
+
+        public static final Operation firstButtonOpDefault = Operation.SORT;
+        public Operation firstButtonOp = firstButtonOpDefault;
+        public static AwareValidator<Operation> firstButtonOpValidator = (val, options) ->
+                validateUniqueOp(val, options.secondButtonOp, options.thirdButtonOp);
+
+        public static final Operation secondButtonOpDefault = Operation.STACK_FILL;
+        public Operation secondButtonOp = secondButtonOpDefault;
+        public static AwareValidator<Operation> secondButtonOpValidator = (val, options) ->
+                validateUniqueOp(val, options.firstButtonOp, options.thirdButtonOp);
+
+        public static final Operation thirdButtonOpDefault = Operation.TRANSFER;
+        public Operation thirdButtonOp = thirdButtonOpDefault;
+        public static AwareValidator<Operation> thirdButtonOpValidator = (val, options) ->
+                validateUniqueOp(val, options.firstButtonOp, options.secondButtonOp);
+
         public static final Vec2i layoutOffsetDefault = new Vec2i(-4, 0);
         public Vec2i layoutOffset = layoutOffsetDefault;
+        public static Validator<Vec2i> layoutOffsetValidator = (val) ->
+                val != null ? val : layoutOffsetDefault;
 
         // Policy options
 
@@ -258,12 +323,63 @@ public class Config {
             return map;
         };
         public Map<String, ClassPolicy> classPolicies = classPoliciesDefault.get();
+        @SuppressWarnings("ConstantValue")
+        public static Validator<Map<String, ClassPolicy>> classPoliciesValidator = (val) -> {
+            Map<String, ClassPolicy> validPolicies = new LinkedHashMap<>();
+            if (val == null)
+                return validPolicies;
+            val.values().forEach((cp) -> {
+                if (cp != null && cp.className() != null && !cp.className().isBlank()) {
+                    validPolicies.put(
+                            cp.className(),
+                            new ClassPolicy(
+                                    cp.className(),
+                                    cp.buttonOffset(),
+                                    Options.policyValidator.validate(cp.sortPolicy()),
+                                    Options.policyValidator.validate(cp.stackFillPolicy()),
+                                    Options.policyValidator.validate(cp.transferPolicy()),
+                                    cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
+                            )
+                    );
+                }
+            });
+            // Sort the policies by key for better UX
+            Map<String, ClassPolicy> sortedPolicies = new LinkedHashMap<>();
+            validPolicies.keySet().stream().sorted()
+                    .forEach((k) -> sortedPolicies.put(k, validPolicies.get(k)));
+            return sortedPolicies;
+        };
+        public static Validator<Policy> policyValidator = (val) ->
+                val != null && Arrays.stream(Policy.values()).toList().contains(val)
+                        ? val : Policy.NONE;
 
         // Legacy from pre v2.0.0-beta.11
         public @Nullable Map<String, ButtonLayout> buttonLayouts;
     }
 
+    // Utils
+
+    private static int unbox(@Nullable Integer val) {
+        return val != null ? val : 0;
+    }
+
+    private static float unbox(@Nullable Float val) {
+        return val != null ? val : 0F;
+    }
+
     // Validation
+
+    @FunctionalInterface
+    public interface Validator<T> {
+
+        @NotNull T validate(@Nullable T obj);
+    }
+
+    @FunctionalInterface
+    public interface AwareValidator<T> {
+
+        @NotNull T validate(@Nullable T obj, @NotNull Options options);
+    }
 
     /**
      * Updates legacy config fields.
@@ -287,25 +403,7 @@ public class Config {
                     )
             ));
             // Validate everything, including upgrading old ClassPolicies
-            Map<String, ClassPolicy> classPoliciesNew = new LinkedHashMap<>();
-            options.classPolicies.values().forEach((cp) -> {
-                if (!cp.className().isBlank()) {
-                    //noinspection ConstantValue
-                    classPoliciesNew.put(
-                            cp.className(), new ClassPolicy(
-                                    cp.className(),
-                                    cp.buttonOffset(),
-                                    cp.sortPolicy() == null ? Policy.NONE : cp.sortPolicy(),
-                                    cp.stackFillPolicy() == null
-                                            ? Policy.NONE
-                                            : cp.stackFillPolicy(),
-                                    cp.transferPolicy() == null ? Policy.NONE : cp.transferPolicy(),
-                                    cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
-                            )
-                    );
-                }
-            });
-            options.classPolicies = classPoliciesNew;
+            options.classPolicies = Options.classPoliciesValidator.validate(options.classPolicies);
         }
         options.buttonLayouts = null;
     }
@@ -314,61 +412,48 @@ public class Config {
      * Ensures that all config values are valid.
      */
     private void validate() {
-        // Clamp numbered values
-        options.interactionInterval = Math.clamp(
-                options.interactionInterval,
-                Options.INTERACTION_INTERVAL_MIN,
-                Options.INTERACTION_INTERVAL_MAX
-        );
-        options.soundInterval = Math.clamp(
-                options.soundInterval,
-                Options.SOUND_INTERVAL_MIN,
-                Options.SOUND_INTERVAL_MAX
-        );
-        options.soundPitchMin = Math.clamp(
-                options.soundPitchMin,
-                Options.SOUND_PITCH_MIN,
-                Options.SOUND_PITCH_MAX
-        );
-        options.soundPitchMax = Math.clamp(
-                options.soundPitchMax,
-                options.soundPitchMin, // Not less than configured min
-                Options.SOUND_PITCH_MAX
-        );
-        options.soundVolume = Math.clamp(
-                options.soundVolume,
-                Options.SOUND_VOLUME_MIN,
-                Options.SOUND_VOLUME_MAX
-        );
-        // Validate ordering enum options
-        if (options.firstButtonOp == null
-                || options.firstButtonOp.equals(options.secondButtonOp)
-                || options.firstButtonOp.equals(options.thirdButtonOp)
-                || !Arrays.stream(Operation.values()).toList()
-                .contains(options.firstButtonOp)) {
-            options.firstButtonOp = Options.firstButtonOpDefault;
-        }
-        if (options.secondButtonOp == null
-                || options.secondButtonOp.equals(options.firstButtonOp)
-                || options.secondButtonOp.equals(options.thirdButtonOp)
-                || !Arrays.stream(Operation.values()).toList()
-                .contains(options.secondButtonOp)) {
-            options.secondButtonOp = Options.secondButtonOpDefault;
-        }
-        if (options.thirdButtonOp == null
-                || options.thirdButtonOp.equals(options.firstButtonOp)
-                || options.thirdButtonOp.equals(options.secondButtonOp)
-                || !Arrays.stream(Operation.values()).toList()
-                .contains(options.thirdButtonOp)) {
-            options.thirdButtonOp = Options.thirdButtonOpDefault;
-        }
-        // Sort the policies by key for better UX
-        Map<String, ClassPolicy> sortedPolicies = new LinkedHashMap<>();
-        options.classPolicies.keySet()
-                .stream()
-                .sorted()
-                .forEach((k) -> sortedPolicies.put(k, options.classPolicies.get(k)));
-        options.classPolicies = sortedPolicies;
+        options.interactionInterval =
+                Options.interactionIntervalValidator.validate(options.interactionInterval);
+        options.hotbarScope =
+                Options.hotbarScopeValidator.validate(options.hotbarScope);
+        options.extraSlotScope =
+                Options.extraSlotScopeValidator.validate(options.extraSlotScope);
+        options.sortOrderStr =
+                Options.sortOrderStrValidator.validate(options.sortOrderStr);
+        options.shiftSortOrderStr =
+                Options.shiftSortOrderStrValidator.validate(options.shiftSortOrderStr);
+        options.ctrlSortOrderStr =
+                Options.ctrlSortOrderStrValidator.validate(options.ctrlSortOrderStr);
+        options.altSortOrderStr =
+                Options.altSortOrderStrValidator.validate(options.altSortOrderStr);
+        options.interactionSound =
+                Options.interactionSoundValidator.validate(options.interactionSound);
+        options.soundInterval =
+                Options.soundIntervalValidator.validate(options.soundInterval);
+        options.soundPitchMin =
+                Options.soundPitchMinValidator.validate(options.soundPitchMin, options);
+        options.soundPitchMax =
+                Options.soundPitchMaxValidator.validate(options.soundPitchMax, options);
+        options.soundVolume =
+                Options.soundVolumeValidator.validate(options.soundVolume);
+        options.editKey =
+                Options.editKeyValidator.validate(options.editKey);
+        options.sortKey =
+                Options.sortKeyValidator.validate(options.sortKey);
+        options.stackFillKey =
+                Options.stackFillKeyValidator.validate(options.stackFillKey);
+        options.transferKey =
+                Options.transferKeyValidator.validate(options.transferKey);
+        options.firstButtonOp =
+                Options.firstButtonOpValidator.validate(options.firstButtonOp, options);
+        options.secondButtonOp =
+                Options.secondButtonOpValidator.validate(options.secondButtonOp, options);
+        options.thirdButtonOp =
+                Options.thirdButtonOpValidator.validate(options.thirdButtonOp, options);
+        options.layoutOffset =
+                Options.layoutOffsetValidator.validate(options.layoutOffset);
+        options.classPolicies =
+                Options.classPoliciesValidator.validate(options.classPolicies);
     }
 
     // Instance management

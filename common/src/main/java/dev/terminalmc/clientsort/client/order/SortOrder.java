@@ -52,7 +52,7 @@ public abstract class SortOrder {
     /**
      * All registered sort orders, mapped by name.
      */
-    public static final Map<String, SortOrder> SORT_MODES = new HashMap<>();
+    public static final Map<String, SortOrder> SORT_ORDERS = new HashMap<>();
     /**
      * No-op.
      */
@@ -77,7 +77,7 @@ public abstract class SortOrder {
     public static final SortOrder RAW_ID;
 
     public static <T extends SortOrder> T register(T sortOrder) {
-        SORT_MODES.put(sortOrder.name, sortOrder);
+        SORT_ORDERS.put(sortOrder.name, sortOrder);
         return sortOrder;
     }
 

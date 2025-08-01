@@ -157,41 +157,41 @@ public class ClothScreenProvider {
 
         sort.addEntry(eb.startSelector(
                         localized("option", "sortOrder"),
-                        SortOrder.SORT_MODES.keySet().toArray(),
+                        SortOrder.SORT_ORDERS.keySet().toArray(),
                         options.sortOrderStr
                 )
                 .setNameProvider(val -> localized("sortOrder", (String) val))
-                .setDefaultValue(Config.Options.sortOrderDefault)
+                .setDefaultValue(Config.Options.sortOrderStrDefault)
                 .setSaveConsumer(val -> options.sortOrderStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(
                         localized("option", "shiftSortOrder"),
-                        SortOrder.SORT_MODES.keySet().toArray(),
+                        SortOrder.SORT_ORDERS.keySet().toArray(),
                         options.shiftSortOrderStr
                 )
                 .setNameProvider(val -> localized("sortOrder", (String) val))
-                .setDefaultValue(Config.Options.shiftSortOrderDefault)
+                .setDefaultValue(Config.Options.shiftSortOrderStrDefault)
                 .setSaveConsumer(val -> options.shiftSortOrderStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(
                         localized("option", "ctrlSortOrder"),
-                        SortOrder.SORT_MODES.keySet().toArray(),
+                        SortOrder.SORT_ORDERS.keySet().toArray(),
                         options.ctrlSortOrderStr
                 )
                 .setNameProvider(val -> localized("sortOrder", (String) val))
-                .setDefaultValue(Config.Options.ctrlSortOrderDefault)
+                .setDefaultValue(Config.Options.ctrlSortOrderStrDefault)
                 .setSaveConsumer(val -> options.ctrlSortOrderStr = (String) val)
                 .build());
 
         sort.addEntry(eb.startSelector(
                         localized("option", "altSortOrder"),
-                        SortOrder.SORT_MODES.keySet().toArray(),
+                        SortOrder.SORT_ORDERS.keySet().toArray(),
                         options.altSortOrderStr
                 )
                 .setNameProvider(val -> localized("sortOrder", (String) val))
-                .setDefaultValue(Config.Options.altSortOrderDefault)
+                .setDefaultValue(Config.Options.altSortOrderStrDefault)
                 .setSaveConsumer(val -> options.altSortOrderStr = (String) val)
                 .build());
 
