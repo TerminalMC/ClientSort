@@ -17,7 +17,7 @@
 package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
-import dev.terminalmc.clientsort.client.util.Keybinds;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -33,7 +33,7 @@ public class ClientSortFabric implements ClientModInitializer {
     public void onInitializeClient() {
         if (!options().isolateKeybinds) {
             // Register all keybinds
-            Keybinds.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
+            KeybindManager.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
         }
 
         // Register after-tick event

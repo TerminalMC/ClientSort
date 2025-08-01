@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.control.client;
+package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.SoundManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
@@ -32,9 +32,9 @@ import net.minecraft.world.inventory.Slot;
  * Provides methods for manipulating the player's inventory or open container via vanilla C2S
  * inventory interaction packets.
  */
-public abstract class ClientController extends SingleUseController {
+public abstract class ClientOperator extends SingleUseOperator {
 
-    public ClientController(
+    public ClientOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
@@ -51,7 +51,7 @@ public abstract class ClientController extends SingleUseController {
     }
 
     /**
-     * Queues an interaction event to clear the flag set by {@link ClientController#raiseFlag()}.
+     * Queues an interaction event to clear the flag set by {@link ClientOperator#raiseFlag()}.
      */
     protected void lowerFlag() {
         InteractionManager.push(() -> {

@@ -24,7 +24,7 @@ import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.util.Keybinds;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -43,6 +43,7 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 public class ClothScreenProvider {
 
     // Mild shenanigans to allow cross-validation between selectors
+
     private static EnumListEntry<?> firstSelector = null;
     private static EnumListEntry<?> secondSelector = null;
     private static EnumListEntry<?> thirdSelector = null;
@@ -316,44 +317,44 @@ public class ClothScreenProvider {
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "edit"),
-                        ((KeyMappingAccessor) Keybinds.EDIT_KEY).clientsort$getKey()
+                        ((KeyMappingAccessor) KeybindManager.EDIT_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(Keybinds.fromName(Options.editKeyDefault))
+                .setDefaultValue(KeybindManager.fromName(Options.editKeyDefault))
                 .setKeySaveConsumer((key) -> {
-                    Keybinds.bindKey(Keybinds.EDIT_KEY, key);
+                    KeybindManager.bindKey(KeybindManager.EDIT_KEY, key);
                     options.editKey = key.getName();
                 })
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.sort"),
-                        ((KeyMappingAccessor) Keybinds.SORT_KEY).clientsort$getKey()
+                        ((KeyMappingAccessor) KeybindManager.SORT_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(Keybinds.fromName(Options.sortKeyDefault))
+                .setDefaultValue(KeybindManager.fromName(Options.sortKeyDefault))
                 .setKeySaveConsumer((key) -> {
-                    Keybinds.bindKey(Keybinds.SORT_KEY, key);
+                    KeybindManager.bindKey(KeybindManager.SORT_KEY, key);
                     options.sortKey = key.getName();
                 })
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.stackFill"),
-                        ((KeyMappingAccessor) Keybinds.STACK_FILL_KEY).clientsort$getKey()
+                        ((KeyMappingAccessor) KeybindManager.STACK_FILL_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(Keybinds.fromName(Options.stackFillKeyDefault))
+                .setDefaultValue(KeybindManager.fromName(Options.stackFillKeyDefault))
                 .setKeySaveConsumer((key) -> {
-                    Keybinds.bindKey(Keybinds.STACK_FILL_KEY, key);
+                    KeybindManager.bindKey(KeybindManager.STACK_FILL_KEY, key);
                     options.stackFillKey = key.getName();
                 })
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.transfer"),
-                        ((KeyMappingAccessor) Keybinds.TRANSFER_KEY).clientsort$getKey()
+                        ((KeyMappingAccessor) KeybindManager.TRANSFER_KEY).clientsort$getKey()
                 )
-                .setDefaultValue(Keybinds.fromName(Options.transferKeyDefault))
+                .setDefaultValue(KeybindManager.fromName(Options.transferKeyDefault))
                 .setKeySaveConsumer((key) -> {
-                    Keybinds.bindKey(Keybinds.TRANSFER_KEY, key);
+                    KeybindManager.bindKey(KeybindManager.TRANSFER_KEY, key);
                     options.transferKey = key.getName();
                 })
                 .build()));
@@ -517,6 +518,8 @@ public class ClothScreenProvider {
         }
         return strings;
     }
+
+    // Mild shenanigans to allow cross-validation between selectors
 
     private static Operation getFirstSelector() {
         return firstSelector == null

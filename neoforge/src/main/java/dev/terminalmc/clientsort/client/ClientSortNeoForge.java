@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
-import dev.terminalmc.clientsort.client.util.Keybinds;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -65,7 +65,7 @@ public class ClientSortNeoForge {
     @SubscribeEvent
     static void registerKeybinds(RegisterKeyMappingsEvent event) {
         if (!options().isolateKeybinds) {
-            Keybinds.KEYBINDS.forEach(event::register);
+            KeybindManager.KEYBINDS.forEach(event::register);
         }
     }
 

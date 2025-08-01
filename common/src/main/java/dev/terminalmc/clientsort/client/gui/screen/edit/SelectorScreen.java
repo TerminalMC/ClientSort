@@ -17,8 +17,8 @@
 package dev.terminalmc.clientsort.client.gui.screen.edit;
 
 import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
-import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
+import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,17 +35,17 @@ import java.util.LinkedList;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public class GroupSelectorScreen extends Screen {
+public class SelectorScreen extends Screen {
 
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
-    private final LinkedList<ControlButton> buttons = new LinkedList<>();
+    private final LinkedList<TriggerButton> buttons = new LinkedList<>();
 
-    public GroupSelectorScreen(AbstractContainerScreen<?> underlay) {
+    public SelectorScreen(AbstractContainerScreen<?> underlay) {
         this(underlay, underlay);
     }
 
-    public GroupSelectorScreen(AbstractContainerScreen<?> underlay, Screen lastScreen) {
+    public SelectorScreen(AbstractContainerScreen<?> underlay, Screen lastScreen) {
         super(localized("title", "groupSelector"));
         this.font = Minecraft.getInstance().font;
         this.underlay = underlay;
@@ -62,8 +62,8 @@ public class GroupSelectorScreen extends Screen {
 
     private void reloadButtons() {
         buttons.clear();
-        buttons.addAll(ControlButtonManager.getContainerButtons());
-        buttons.addAll(ControlButtonManager.getPlayerButtons());
+        buttons.addAll(TriggerButtonManager.getContainerButtons());
+        buttons.addAll(TriggerButtonManager.getPlayerButtons());
     }
 
     private void rebuildGui() {
@@ -102,7 +102,7 @@ public class GroupSelectorScreen extends Screen {
         underlay.render(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
-        for (ControlButton cb : buttons) {
+        for (TriggerButton cb : buttons) {
             cb.renderWidget(graphics, mouseX, mouseY, partialTick);
         }
     }
@@ -119,7 +119,7 @@ public class GroupSelectorScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        if (lastScreen instanceof CombinedEditScreen pes && !options().showButtons) {
+        if (lastScreen instanceof EditorScreen pes && !options().showButtons) {
             pes.onClose();
         } else {
             lastScreen.init(Minecraft.getInstance(), width, height);
@@ -132,7 +132,7 @@ public class GroupSelectorScreen extends Screen {
         if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
             return true;
         } else {
-            for (ControlButton cb : buttons) {
+            for (TriggerButton cb : buttons) {
                 if (cb.isMouseOver(mouseX, mouseY)) {
                     cb.playDownSound(Minecraft.getInstance().getSoundManager());
                     onClose();

@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.control.client;
+package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
-import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.SoundManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.ClickType;
@@ -39,9 +38,9 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Valid for use in all screens (and all game-modes) EXCEPT
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
-public class ClientSurvivalController extends ClientController {
+public class ClientSurvivalOperator extends ClientOperator {
 
-    public ClientSurvivalController(
+    public ClientSurvivalOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,

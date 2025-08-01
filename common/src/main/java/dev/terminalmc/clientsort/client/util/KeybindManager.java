@@ -41,7 +41,7 @@ import static dev.terminalmc.clientsort.util.Localization.translationKey;
  * The mod config values are kept up-to-date with mod config changes by the CC option handers, and
  * with MC config changes by the {@link KeyMapping#resetMapping} listener.
  */
-public class Keybinds {
+public class KeybindManager {
 
     public static final KeyMapping EDIT_KEY = new KeyMapping(
             translationKey("key", "edit"),

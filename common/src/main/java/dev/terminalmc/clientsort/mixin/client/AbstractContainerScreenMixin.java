@@ -20,15 +20,15 @@ package dev.terminalmc.clientsort.mixin.client;
 import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
-import dev.terminalmc.clientsort.client.gui.screen.edit.CombinedEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
-import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
+import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.sound.SoundManager;
-import dev.terminalmc.clientsort.client.util.Keybinds;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
+import dev.terminalmc.clientsort.client.util.PolicyManager;
+import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -186,7 +186,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             Function<KeyMapping, Boolean> inputMatcher
     ) {
         // If key is not edit key, check that we're hovering a slot
-        boolean isEditKey = inputMatcher.apply(Keybinds.EDIT_KEY);
+        boolean isEditKey = inputMatcher.apply(KeybindManager.EDIT_KEY);
         if (!isEditKey && hoveredSlot == null)
             return null;
 
@@ -215,11 +215,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         // No vanilla operations; trigger mod operation
         if (isEditKey) {
             return this::clientsort$openEditor;
-        } else if (inputMatcher.apply(Keybinds.SORT_KEY)) {
+        } else if (inputMatcher.apply(KeybindManager.SORT_KEY)) {
             return this::clientsort$sort;
-        } else if (inputMatcher.apply(Keybinds.STACK_FILL_KEY)) {
+        } else if (inputMatcher.apply(KeybindManager.STACK_FILL_KEY)) {
             return this::clientsort$fillStacks;
-        } else if (inputMatcher.apply(Keybinds.TRANSFER_KEY)) {
+        } else if (inputMatcher.apply(KeybindManager.TRANSFER_KEY)) {
             return this::clientsort$transfer;
         } else {
             return null;
@@ -229,7 +229,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Unique
     private boolean clientsort$openEditor() {
         Minecraft.getInstance()
-                .setScreen(new GroupSelectorScreen((AbstractContainerScreen<?>) (Object) this));
+                .setScreen(new SelectorScreen((AbstractContainerScreen<?>) (Object) this));
         return true;
     }
 
@@ -250,7 +250,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         }
 
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            SingleUseController controller = SingleUseController.getController(
+            SingleUseOperator controller = SingleUseOperator.getController(
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
@@ -265,7 +265,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Unique
     private boolean clientsort$fillStacks() {
-        SingleUseController controller = SingleUseController.getController(
+        SingleUseOperator controller = SingleUseOperator.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
@@ -278,7 +278,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Unique
     private boolean clientsort$transfer() {
-        SingleUseController controller = SingleUseController.getController(
+        SingleUseOperator controller = SingleUseOperator.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
@@ -319,11 +319,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             int slotId = ((ISlot) slot).clientsort$getIdInContainer();
 
             // Draw disabled indicator, top left
-            if (!(Minecraft.getInstance().screen instanceof CombinedEditScreen)) {
+            if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
                 Object object = slot.container instanceof SimpleContainer
                         ? getMenu()
                         : slot.container;
-                if (ControlButtonManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
+                if (PolicyManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
                         && cp.ignoredSlots().contains(slotId)) {
                     //noinspection UnnecessaryUnicodeEscape
                     graphics.drawString(

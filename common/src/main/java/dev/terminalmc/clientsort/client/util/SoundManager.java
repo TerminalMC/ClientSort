@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.sound;
+package dev.terminalmc.clientsort.client.util;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

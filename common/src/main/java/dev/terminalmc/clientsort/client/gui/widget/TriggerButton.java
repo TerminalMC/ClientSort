@@ -20,9 +20,9 @@ package dev.terminalmc.clientsort.client.gui.widget;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.gui.screen.edit.CombinedEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerCombinedEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerCombinedEditScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -46,7 +46,7 @@ import java.util.Collection;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public abstract class ControlButton extends Button {
+public abstract class TriggerButton extends Button {
 
     public static final int WIDTH = 13;
     public static final int HEIGHT = 13;
@@ -66,7 +66,7 @@ public abstract class ControlButton extends Button {
     public Vec2i offset;
     public boolean operationAllowed;
 
-    protected ControlButton(
+    protected TriggerButton(
             AbstractContainerScreen<?> screen,
             Container container,
             Slot referenceSlot,
@@ -108,7 +108,7 @@ public abstract class ControlButton extends Button {
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (isMouseOver(mouseX, mouseY)) {
             boolean rightClick = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
-            if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
+            if (Minecraft.getInstance().screen instanceof EditorScreen) {
                 if (rightClick) {
                     if (Screen.hasShiftDown()) {
                         operationAllowed = !operationAllowed;
@@ -139,8 +139,8 @@ public abstract class ControlButton extends Button {
     public void openEditScreen() {
         Minecraft.getInstance().setScreen(
                 isPlayerInv
-                        ? new PlayerCombinedEditScreen(screen, this)
-                        : new ContainerCombinedEditScreen(screen, this)
+                        ? new PlayerEditorScreen(screen, this)
+                        : new ContainerEditorScreen(screen, this)
         );
     }
 
@@ -178,7 +178,7 @@ public abstract class ControlButton extends Button {
 
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
-            if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
+            if (Minecraft.getInstance().screen instanceof EditorScreen) {
                 Component visibilityStatus = localized(
                         "editor", active ? "enabled" : "disabled")
                         .withStyle(active
@@ -200,7 +200,7 @@ public abstract class ControlButton extends Button {
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        if (Minecraft.getInstance().screen instanceof CombinedEditScreen) {
+        if (Minecraft.getInstance().screen instanceof EditorScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
             int newX = Math.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
             int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);

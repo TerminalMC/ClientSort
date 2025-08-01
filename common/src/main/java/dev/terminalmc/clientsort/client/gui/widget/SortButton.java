@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
@@ -39,7 +39,7 @@ import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
-public class SortButton extends ControlButton {
+public class SortButton extends TriggerButton {
 
     private static final WidgetSprites SPRITES = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort"),
@@ -78,7 +78,7 @@ public class SortButton extends ControlButton {
                     } else {
                         sortOrder = options().sortOrder;
                     }
-                    @Nullable SingleUseController controller = SingleUseController.getController(
+                    @Nullable SingleUseOperator controller = SingleUseOperator.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,

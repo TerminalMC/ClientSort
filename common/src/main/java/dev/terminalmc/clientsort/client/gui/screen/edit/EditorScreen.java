@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.ChatFormatting;
@@ -49,29 +49,29 @@ import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
-public abstract class CombinedEditScreen extends Screen {
+public abstract class EditorScreen extends Screen {
 
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
-    private final LinkedList<ControlButton> buttons = new LinkedList<>();
+    private final LinkedList<TriggerButton> buttons = new LinkedList<>();
     public final Set<Integer> ignoredSlots = new TreeSet<>();
 
     /**
-     * An element of {@link CombinedEditScreen#buttons} which 'represents' the whole set of
+     * An element of {@link EditorScreen#buttons} which 'represents' the whole set of
      * buttons.
      * <p>
      * This can be any element, and the specific choice is only relevant when repositioning via
      * mouse drag.
      */
-    private ControlButton rep;
+    private TriggerButton rep;
 
     /**
-     * The class name of either {@link CombinedEditScreen#rep}'s {@link ControlButton#container}, or
-     * {@link CombinedEditScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
+     * The class name of either {@link EditorScreen#rep}'s {@link TriggerButton#container}, or
+     * {@link EditorScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
      * is {@code null}.
      * <p>
      * This value represents the lowest-level key on which a {@link ClassPolicy} can be created, and
-     * may differ from {@link CombinedEditScreen#rep}'s {@link ControlButton#activePolicyKey}.
+     * may differ from {@link EditorScreen#rep}'s {@link TriggerButton#activePolicyKey}.
      */
     private String lowestPolicyKey;
 
@@ -80,13 +80,13 @@ public abstract class CombinedEditScreen extends Screen {
      */
     private boolean dragging;
 
-    public CombinedEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
+    public EditorScreen(AbstractContainerScreen<?> underlay, TriggerButton button) {
         this(underlay, button, underlay);
     }
 
-    public CombinedEditScreen(
+    public EditorScreen(
             AbstractContainerScreen<?> underlay,
-            ControlButton button,
+            TriggerButton button,
             Screen lastScreen
     ) {
         super(localized("title", "positionEditor"));
@@ -98,7 +98,7 @@ public abstract class CombinedEditScreen extends Screen {
     }
 
     /**
-     * Re-initializes {@link CombinedEditScreen#underlay}, then this screen's GUI elements.
+     * Re-initializes {@link EditorScreen#underlay}, then this screen's GUI elements.
      */
     @Override
     public void init() {
@@ -161,7 +161,7 @@ public abstract class CombinedEditScreen extends Screen {
     /**
      * Retrieves the list of editable buttons from the source.
      */
-    protected abstract LinkedList<ControlButton> getButtons();
+    protected abstract LinkedList<TriggerButton> getButtons();
 
     /**
      * Clears and re-populates this screen's GUI.
@@ -335,7 +335,7 @@ public abstract class CombinedEditScreen extends Screen {
                         (button) -> {
                             onClose();
                             Minecraft.getInstance().setScreen(
-                                    new GroupSelectorScreen(underlay, this)
+                                    new SelectorScreen(underlay, this)
                             );
                         }
                 )
@@ -423,7 +423,7 @@ public abstract class CombinedEditScreen extends Screen {
         );
 
         // Render editable widgets again, above background blur
-        for (ControlButton cb : buttons) {
+        for (TriggerButton cb : buttons) {
             cb.renderWidget(graphics, mouseX, mouseY, partialTick);
         }
     }
@@ -446,7 +446,7 @@ public abstract class CombinedEditScreen extends Screen {
      * Draws a horizontal and a vertical line to trace this widget back to its positional origin
      * point.
      */
-    private void drawLineFor(GuiGraphics graphics, ControlButton button) {
+    private void drawLineFor(GuiGraphics graphics, TriggerButton button) {
         graphics.hLine(button.getX() - button.offset.x(), button.getX(), button.getY(), 0xFFBBBBBB);
         graphics.vLine(
                 button.getX() - button.offset.x(),
@@ -457,7 +457,7 @@ public abstract class CombinedEditScreen extends Screen {
     }
 
     /**
-     * Closes this screen and shows {@link CombinedEditScreen#lastScreen} instead.
+     * Closes this screen and shows {@link EditorScreen#lastScreen} instead.
      */
     @Override
     public void onClose() {
@@ -467,7 +467,7 @@ public abstract class CombinedEditScreen extends Screen {
     }
 
     /**
-     * Saves any altered values, then calls {@link CombinedEditScreen#onClose}.
+     * Saves any altered values, then calls {@link EditorScreen#onClose}.
      */
     public void saveAndClose() {
         buttons.getFirst().savePolicy(buttons.getFirst().offset, ignoredSlots);
@@ -508,7 +508,7 @@ public abstract class CombinedEditScreen extends Screen {
             dragging = false;
             return true;
         } else {
-            for (ControlButton cb : buttons) {
+            for (TriggerButton cb : buttons) {
                 if (cb.isMouseOver(mouseX, mouseY)) {
                     cb.mouseClicked(mouseX, mouseY, mouseButton);
                     rep = cb;
@@ -570,10 +570,10 @@ public abstract class CombinedEditScreen extends Screen {
      * If {@code before} does not match the current buttonOffset of {@code button}, moves all other
      * widgets to match how {@code button} was moved.
      */
-    private void repositionButtons(ControlButton button, Vec2i before) {
+    private void repositionButtons(TriggerButton button, Vec2i before) {
         if (!button.offset.equals(before)) {
             Vec2i diff = button.offset.subtract(before);
-            for (ControlButton cb : buttons) {
+            for (TriggerButton cb : buttons) {
                 if (cb != button) {
                     cb.offset = cb.offset.add(diff);
                 }

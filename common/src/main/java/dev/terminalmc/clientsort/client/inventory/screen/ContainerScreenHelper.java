@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.client.inventory.screen;
 
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
-import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

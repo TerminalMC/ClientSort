@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.control.client;
+package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
-import dev.terminalmc.clientsort.client.sound.SoundManager;
+import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -36,9 +36,9 @@ import static dev.terminalmc.clientsort.ClientSort.debug;
  * Valid for use ONLY in
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
-public class ClientCreativeController extends ClientController {
+public class ClientCreativeOperator extends ClientOperator {
 
-    public ClientCreativeController(
+    public ClientCreativeOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,

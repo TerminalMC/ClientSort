@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.mixin.client.compat.supermartijn642corelib;
 
-import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -56,7 +56,7 @@ public class WidgetContainerScreenMixin extends Screen {
             CallbackInfo ci
     ) {
         this.children().forEach((child) -> {
-            if (child instanceof ControlButton button) {
+            if (child instanceof TriggerButton button) {
                 button.render(graphics, mouseX, mouseY, partialTick);
             }
         });

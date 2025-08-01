@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -37,7 +37,7 @@ import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
-public class StackFillButton extends ControlButton {
+public class StackFillButton extends TriggerButton {
 
     private static final WidgetSprites SPRITES_UP = new WidgetSprites(
             ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up"),
@@ -83,7 +83,7 @@ public class StackFillButton extends ControlButton {
                 policy == null || policy.canStackFill(),
                 policy != null && policy.showStackFillButton(),
                 (button) -> {
-                    SingleUseController controller = SingleUseController.getController(
+                    SingleUseOperator controller = SingleUseOperator.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,

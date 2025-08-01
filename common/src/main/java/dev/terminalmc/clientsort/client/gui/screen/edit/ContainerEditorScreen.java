@@ -16,23 +16,23 @@
 
 package dev.terminalmc.clientsort.client.gui.screen.edit;
 
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
-import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
+import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import java.util.LinkedList;
 
 /**
- * An implementation of {@link CombinedEditScreen} for editing player inventory buttons.
+ * An implementation of {@link EditorScreen} for editing container buttons.
  */
-public class PlayerCombinedEditScreen extends CombinedEditScreen {
+public class ContainerEditorScreen extends EditorScreen {
 
-    public PlayerCombinedEditScreen(AbstractContainerScreen<?> underlay, ControlButton button) {
+    public ContainerEditorScreen(AbstractContainerScreen<?> underlay, TriggerButton button) {
         super(underlay, button);
     }
 
     @Override
-    protected LinkedList<ControlButton> getButtons() {
-        return ControlButtonManager.getPlayerButtons();
+    protected LinkedList<TriggerButton> getButtons() {
+        return TriggerButtonManager.getContainerButtons();
     }
 }

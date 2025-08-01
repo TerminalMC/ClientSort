@@ -17,10 +17,11 @@
 package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
+import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.util.Keybinds;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
+import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -53,7 +54,7 @@ public class ClientSort {
     }
 
     public static void afterScreenInit(Screen screen) {
-        ControlButtonManager.afterScreenInit(screen);
+        TriggerButtonManager.afterScreenInit(screen);
     }
 
     public static void afterConfigSaved(Config config) {
@@ -68,18 +69,18 @@ public class ClientSort {
         // Update interaction manager tick rate
         InteractionManager.setTickRate(options.interactionInterval);
         // Update class cache
-        ControlButtonManager.reloadPolicyClasses(options.classPolicies.keySet());
+        PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
     }
 
     public static void afterGameStart() {
         if (options().isolateKeybinds) {
-            Keybinds.configToKeybinds();
+            KeybindManager.configToKeybinds();
         }
     }
 
     public static void afterKeyMapReset() {
         if (!options().isolateKeybinds) {
-            Keybinds.keybindsToConfig();
+            KeybindManager.keybindsToConfig();
         }
     }
 }

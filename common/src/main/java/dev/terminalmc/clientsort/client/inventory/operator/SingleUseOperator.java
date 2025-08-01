@@ -1,5 +1,4 @@
 /*
- * Copyright 2022 Siphalor
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +14,19 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.control;
+package dev.terminalmc.clientsort.client.inventory.operator;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.gui.ControlButtonManager;
-import dev.terminalmc.clientsort.client.inventory.control.client.ClientCreativeController;
-import dev.terminalmc.clientsort.client.inventory.control.client.ClientSurvivalController;
-import dev.terminalmc.clientsort.client.inventory.control.server.ServerController;
+import dev.terminalmc.clientsort.client.inventory.operator.client.ClientCreativeOperator;
+import dev.terminalmc.clientsort.client.inventory.operator.client.ClientSurvivalOperator;
+import dev.terminalmc.clientsort.client.inventory.operator.server.ServerOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
+import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -54,14 +53,14 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
 /**
  * Provides methods for manipulating the player's inventory or open container.
  * <p>
- * Note: A {@link SingleUseController} instance must be used one time immediately after creation
+ * Note: A {@link SingleUseOperator} instance must be used one time immediately after creation
  * then promptly discarded, because the inventory state is stored on initialization and never
  * updated.
  * <p>
- * Additionally, due to policy constraints, a {@link SingleUseController} is only valid for the type
+ * Additionally, due to policy constraints, a {@link SingleUseOperator} is only valid for the type
  * of operation specified when it was created.
  */
-public abstract class SingleUseController {
+public abstract class SingleUseOperator {
 
     protected boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
@@ -73,33 +72,33 @@ public abstract class SingleUseController {
     protected final Slot originSlot;
     /**
      * A potentially noncontiguous sub-array of slots in the same scope as
-     * {@link SingleUseController#originSlot}.
+     * {@link SingleUseOperator#originSlot}.
      * <p>
      * Must NOT be used by client-side operations to track and update simulation state. Instead, use
-     * {@link SingleUseController#originScopeStacks}.
+     * {@link SingleUseOperator#originScopeStacks}.
      */
     protected final Slot[] originScopeSlots;
     /**
-     * A 1:1 equivalent of {@link SingleUseController#originScopeSlots}, keeping a logical record of
+     * A 1:1 equivalent of {@link SingleUseOperator#originScopeSlots}, keeping a logical record of
      * the stack stored in each slot.
      */
     protected final ItemStack[] originScopeStacks;
     /**
      * A potentially noncontiguous sub-array of slots not in the same scope as
-     * {@link SingleUseController#originSlot}, but in still in either {@link Scope#CONTAINER_INV} or
+     * {@link SingleUseOperator#originSlot}, but in still in either {@link Scope#CONTAINER_INV} or
      * {@link Scope#PLAYER_INV}.
      * <p>
      * Must NOT be used by client-side operations to track and update simulation state. Instead, use
-     * {@link SingleUseController#originScopeStacks}.
+     * {@link SingleUseOperator#originScopeStacks}.
      */
     protected final Slot[] otherScopeSlots;
     /**
-     * A 1:1 equivalent of {@link SingleUseController#otherScopeSlots}, keeping a logical record of
+     * A 1:1 equivalent of {@link SingleUseOperator#otherScopeSlots}, keeping a logical record of
      * the stack stored in each slot.
      */
     protected final ItemStack[] otherScopeStacks;
 
-    public SingleUseController(
+    public SingleUseOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
@@ -173,7 +172,7 @@ public abstract class SingleUseController {
             Object object = slot.container instanceof SimpleContainer
                     ? screen.getMenu()
                     : slot.container;
-            if (ControlButtonManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
+            if (PolicyManager.getPolicy(object.getClass()) instanceof ClassPolicy cp
                     && cp.ignoredSlots().contains(slotId))
                 continue;
             // Slot is valid
@@ -199,10 +198,10 @@ public abstract class SingleUseController {
     }
 
     /**
-     * @return an instance of {@link SingleUseController} optimized for the current game state.
+     * @return an instance of {@link SingleUseOperator} optimized for the current game state.
      * The returned instance is only valid for the type of operation specified here.
      */
-    public static @Nullable SingleUseController getController(
+    public static @Nullable SingleUseOperator getController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
@@ -212,12 +211,12 @@ public abstract class SingleUseController {
         Object object = originSlot.container instanceof SimpleContainer
                 ? screen.getMenu()
                 : originSlot.container;
-        if (!opAllowed(ControlButtonManager.getPolicy(object.getClass()), type))
+        if (!opAllowed(PolicyManager.getPolicy(object.getClass()), type))
             return null;
 
         // Preference server-accelerated ops
         if (options().useServerAcceleration && ClientServices.PLATFORM.canSendToServer(type)) {
-            return new ServerController(screen, screenHelper, originSlot, type);
+            return new ServerOperator(screen, screenHelper, originSlot, type);
         }
 
         // Check that there is not already an op running
@@ -228,9 +227,9 @@ public abstract class SingleUseController {
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
-            return new ClientCreativeController(screen, screenHelper, originSlot, type);
+            return new ClientCreativeOperator(screen, screenHelper, originSlot, type);
         } else {
-            return new ClientSurvivalController(screen, screenHelper, originSlot, type);
+            return new ClientSurvivalOperator(screen, screenHelper, originSlot, type);
         }
     }
 

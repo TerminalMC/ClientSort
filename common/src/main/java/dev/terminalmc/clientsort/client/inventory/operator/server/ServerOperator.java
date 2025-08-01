@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.control.server;
+package dev.terminalmc.clientsort.client.inventory.operator.server;
 
-import dev.terminalmc.clientsort.client.inventory.control.SingleUseController;
+import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
@@ -39,9 +39,9 @@ import net.minecraft.world.inventory.Slot;
  * <p>
  * Valid for use ONLY if the mod is also present server-side.
  */
-public class ServerController extends SingleUseController {
+public class ServerOperator extends SingleUseOperator {
 
-    public ServerController(
+    public ServerOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
@@ -55,7 +55,7 @@ public class ServerController extends SingleUseController {
         if (!canOperate())
             return;
         CollectResultHandler.onSuccess = () -> {
-            ServerController sorter = new ServerController(
+            ServerOperator sorter = new ServerOperator(
                     screen,
                     screenHelper,
                     originSlot,

@@ -1,5 +1,4 @@
 /*
- * Copyright 2021 Evan Steinkerchner (Roundaround)
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,19 +16,19 @@
 
 package dev.terminalmc.clientsort.client.gui;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerCombinedEditScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.GroupSelectorScreen;
-import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerCombinedEditScreen;
-import dev.terminalmc.clientsort.client.gui.widget.ControlButton;
+import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
+import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
 import dev.terminalmc.clientsort.client.gui.widget.SortButton;
 import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
+import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
+import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
@@ -48,15 +47,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
-public class ControlButtonManager {
+public class TriggerButtonManager {
 
-    private ControlButtonManager() {
+    private TriggerButtonManager() {
     }
 
     private static final int BUTTON_SPACING = 1;
@@ -65,16 +61,14 @@ public class ControlButtonManager {
     private static final int BUTTON_SHIFT_X = 0;
     private static final int BUTTON_SHIFT_Y = 1;
 
-    private static final Set<Class<?>> policyClasses = new LinkedHashSet<>();
+    private static final LinkedHashSet<TriggerButton> containerButtons = new LinkedHashSet<>();
+    private static final LinkedHashSet<TriggerButton> playerButtons = new LinkedHashSet<>();
 
-    private static final LinkedHashSet<ControlButton> containerButtons = new LinkedHashSet<>();
-    private static final LinkedHashSet<ControlButton> playerButtons = new LinkedHashSet<>();
-
-    public static LinkedList<ControlButton> getContainerButtons() {
+    public static LinkedList<TriggerButton> getContainerButtons() {
         return new LinkedList<>(containerButtons);
     }
 
-    public static LinkedList<ControlButton> getPlayerButtons() {
+    public static LinkedList<TriggerButton> getPlayerButtons() {
         return new LinkedList<>(playerButtons);
     }
 
@@ -96,12 +90,12 @@ public class ControlButtonManager {
         boolean forceShowContainer = false;
         boolean forceShowPlayer = false;
         Screen currentScreen = Minecraft.getInstance().screen;
-        if (currentScreen instanceof GroupSelectorScreen) {
+        if (currentScreen instanceof SelectorScreen) {
             forceShowContainer = true;
             forceShowPlayer = true;
-        } else if (currentScreen instanceof ContainerCombinedEditScreen) {
+        } else if (currentScreen instanceof ContainerEditorScreen) {
             forceShowContainer = true;
-        } else if (currentScreen instanceof PlayerCombinedEditScreen) {
+        } else if (currentScreen instanceof PlayerEditorScreen) {
             forceShowPlayer = true;
         }
 
@@ -173,7 +167,7 @@ public class ControlButtonManager {
                 : container;
 
         // Retrieve the relevant policy, if any
-        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
         if ((policy == null || !policy.showSortButton()) && !forceShow)
             return;
 
@@ -228,7 +222,7 @@ public class ControlButtonManager {
                 : container;
 
         // Check the relevant policy, if any
-        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
         if ((policy == null || !policy.showStackFillButton()) && !forceShow)
             return;
 
@@ -248,7 +242,7 @@ public class ControlButtonManager {
                     : dstContainer;
 
             // Check the relevant policy, if any
-            @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
+            @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
             if ((dstPolicy == null || !dstPolicy.showStackFillButton()) && !forceShow)
                 return;
         }
@@ -299,7 +293,7 @@ public class ControlButtonManager {
                 : container;
 
         // Check the relevant policy, if any
-        @Nullable ClassPolicy policy = getPolicy(object.getClass());
+        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
         if ((policy == null || !policy.showTransferButton()) && !forceShow)
             return;
 
@@ -319,7 +313,7 @@ public class ControlButtonManager {
                     : dstContainer;
 
             // Check the relevant policy, if any
-            @Nullable ClassPolicy dstPolicy = getPolicy(dstObject.getClass());
+            @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
             if ((dstPolicy == null || !dstPolicy.showTransferButton()) && !forceShow)
                 return;
         }
@@ -338,57 +332,6 @@ public class ControlButtonManager {
     }
 
     /**
-     * Reloads the cache of policy configuration classes.
-     */
-    public static void reloadPolicyClasses(Set<String> classNames) {
-        policyClasses.clear();
-        for (String className : classNames) {
-            try {
-                policyClasses.add(Class.forName(className));
-            } catch (ClassNotFoundException e) {
-                if (debug()) {
-                    ClientSort.LOG.warn(
-                            "Unable to load policy class '{}': Class not found.",
-                            className
-                    );
-                }
-            }
-        }
-    }
-
-    /**
-     * @return the lowest-degree matching policy for the specified class, if any exists.
-     */
-    public static @Nullable ClassPolicy getPolicy(Class<?> cls) {
-        // Check for a perfect match
-        ClassPolicy policy = options().classPolicies.get(cls.getName());
-        if (policy != null)
-            return policy;
-
-        // No perfect match; find all higher-degree matching classes
-        Set<Class<?>> matches = policyClasses.stream()
-                .filter(c -> c.isAssignableFrom(cls))
-                .collect(Collectors.toSet());
-
-        // Double-iterate to find the lowest-degree match
-        for (Class<?> c1 : matches) {
-            boolean hasSubclass = false;
-            // If any c2 is a subclass of c1, c1 is not lowest
-            for (Class<?> c2 : matches) {
-                if (!c1.equals(c2) && c1.isAssignableFrom(c2)) {
-                    hasSubclass = true;
-                    break;
-                }
-            }
-            if (!hasSubclass) {
-                // No subclass found; return policy for c1
-                return options().classPolicies.get(c1.getName());
-            }
-        }
-        return null;
-    }
-
-    /**
      * @return the container associated with the player's container menu, if it exists.
      */
     public static @Nullable Container getContainer(Player player) {
@@ -404,7 +347,7 @@ public class ControlButtonManager {
      */
     private static void addButton(
             AbstractContainerScreen<?> screen,
-            ControlButton button,
+            TriggerButton button,
             boolean isPlayerInv
     ) {
         ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
@@ -455,8 +398,8 @@ public class ControlButtonManager {
     public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {
         int index = (isPlayerInv ? playerButtons : containerButtons).size();
 
-        int x = offset.x() + BUTTON_SHIFT_X * (ControlButton.WIDTH + BUTTON_SPACING) * index;
-        int y = offset.y() + BUTTON_SHIFT_Y * (ControlButton.HEIGHT + BUTTON_SPACING) * index;
+        int x = offset.x() + BUTTON_SHIFT_X * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
+        int y = offset.y() + BUTTON_SHIFT_Y * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
 
         return new Vec2i(x, y);
     }
