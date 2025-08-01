@@ -25,57 +25,70 @@ A client-side inventory sorting mod with keybind and GUI support.
 To sort an inventory, simply hover over it with your mouse and press the keybind (default: middle
 mouse button).
 
-You can hold `Shift`, `Control` or `Alt` when pressing the sort button to use a different sorting
-order.
+The following sorting variations can be applied using modifier keys (`Shift`, `Control`, `Alt`).
 
-#### Other Operations (`v2`)
+- Creative inventory search order
+- Descending order of quantity
+- Alphabetical order
+- Ascending order of item ID
 
 In addition to sorting, ClientSort `v2.0.0-beta.1` and later versions include the following
 operations:
 
 - Stack Fill
-  - For all partial stacks in the other inventory, attempts to complete them using items in the
-    target inventory.
+  - Attempts to complete all partial stacks in the other inventory using items in the target
+    inventory.
 - Transfer
-  - Moves as many items as possible from the target inventory to the other inventory.
+  - Attempts to move all items from the target inventory to the other inventory.
 
-#### Interaction GUI (`v2`)
+<table style="width:100%;">
+  <tr>
+    <td style="width:33%;"><img alt="Sort demo" src="assets/images/sort_01.gif" style="width:100%;"></td>
+    <td style="width:33%;"><img alt="Stack-fill demo" src="assets/images/stack_fill_01.gif" style="width:100%;"></td>
+    <td style="width:33%;"><img alt="Transfer demo" src="assets/images/transfer_01.gif" style="width:100%;"></td>
+  </tr>
+</table>
 
-In addition to the keybinds, ClientSort `v2.0.0-beta.1` and later versions support adding small
-buttons to the inventory screen, which can be used to trigger operations.
+#### Trigger Buttons (`v2`)
 
-- The GUI is disabled by default, but can be enabled via the config menu or the editor screen.
-- The editor screen can be opened via a keybind (unbound by default).
-- When the buttons are visible, you can right-click on them to open the editor screen, which allows
-  you to adjust the position and show or hide specific buttons.
+In addition to keybinds, ClientSort can add small buttons to the inventory screen, which can be used
+to trigger operations.
 
+- All buttons are disabled by default, but can be enabled via the config menu or the editor screen.
+- The editor screen can be opened via a keybind (unbound by default) when viewing an inventory.
+- When the buttons are visible, you can right-click on them to open the editor screen.
 
-- ClientSort uses a whitelist system to decide when to show the buttons. You can enable or disable
-  the buttons for a particular inventory via the editor screen, or by manually editing the whitelist
-  in the main config menu.
+<table style="width:100%;">
+  <tr>
+    <td style="width:50%;"><img alt="GUI demo" src="assets/images/gui_01.png" style="width:100%;"></td>
+    <td style="width:50%;"><img alt="Editor demo" src="assets/images/editor_01.png" style="width:100%;"></td>
+  </tr>
+</table>
 
-#### Blacklist Policies (v2)
+#### Slot Ignoring (`v2`)
 
-Separate to the button layout whitelist, ClientSort `v2.0.0-beta.6` and later versions support
-disabling individual operations in specific inventories client-side using a list of policies.
+If you want operations to ignore specific slots, you can click on the slots while viewing the editor
+screen to add them to the ignore-list for that inventory.
 
-- A Policy identifies the associated inventory type, and specifies which operations can be used.
-  - For example, the policy `com.simibubi.create.content.equipment.toolbox.ToolboxMenu,0,0,0`
-    disables all operations in the inventory menu of Create Toolboxes.
-  - If you have this rule and attempt to sort a toolbox (with server acceleration either on or off),
-    nothing will happen.
-- Policies *override* the button layout whitelist. That is, if you have configured a button layout
-  to show the interaction buttons in a particular inventory, and then you add a policy to disable
-  operations in that inventory, the buttons will be hidden automatically.
+#### Clientside Policies (`v2`)
 
+ClientSort uses a policy system to determine when to allow operations, when to show the trigger
+buttons, and when to ignore slots. The policy can be configured either via the editor screen or via
+the `Policies` tab of the mod options.
 
-- If installed on a server or in singleplayer, ClientSort automatically blacklists
-  server-accelerated operations when it detects an incorrect state (such as item duplication).
-- The blacklist is stored in the `clientsort-server.json` config file, which can be manually edited
-  and reloaded using the `/clientsort reload` command.
-- The serverside blacklist is *not* synced to clients, so connected clients may still attempt to
-  sort the blacklisted inventory (unless they have a client-side blacklist policy for it), but
-  nothing will happen.
+Read the in-game instructions for more information on editing policies.
+
+#### Serverside Policies (`v2`)
+
+If installed on a server or in singleplayer, ClientSort uses policies to automatically disable
+server-accelerated operations when it detects an incorrect state (such as item duplication).
+
+The policy list is stored in the `clientsort-server.json` config file, which can be manually edited
+and reloaded using the `/clientsort reload` command.
+
+Serverside policies are *not* synced to clients, so connected clients may still attempt to sort a
+disabled inventory (unless they have a client-side policy disabling it), but the server will not
+perform the operation.
 
 ### Installation
 
@@ -83,9 +96,9 @@ disabling individual operations in specific inventories client-side using a list
 
 As the name suggests, ClientSort is fully functional when it is only installed on the client.
 However, if it is also installed on a server, connected clients with the mod will be able to use
-near-instant operations instead of the normal rate-limited operations.
+server-accelerated (near-instant) operations instead of the normal rate-limited operations.
 
-### Dependencies
+#### Dependencies
 
 Fabric: [Fabric API](https://modrinth.com/mod/P7dR8mSH), [ModMenu](https://modrinth.com/mod/mOgUt4GM), [Cloth Config API](https://modrinth.com/mod/9s6osm5g)
 
