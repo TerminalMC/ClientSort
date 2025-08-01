@@ -195,7 +195,7 @@ public abstract class SingleUseOperator<T extends Operation> {
      * @return an instance of {@link SingleUseOperator} optimized for the current game state. The
      * returned instance is only valid for the type of operation specified here.
      */
-    public static @Nullable SingleUseOperator<Operation> getController(
+    public static @Nullable SingleUseOperator<Operation> getOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,

@@ -78,14 +78,14 @@ public class SortButton extends TriggerButton {
                     } else {
                         sortOrder = options().sortOrder;
                     }
-                    @Nullable SingleUseOperator<?> controller = SingleUseOperator.getController(
+                    @Nullable SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
                             Operation.SORT
                     );
-                    if (controller != null)
-                        controller.trySort(sortOrder);
+                    if (operator != null)
+                        operator.trySort(sortOrder);
                 }
         );
     }

@@ -83,14 +83,14 @@ public class StackFillButton extends TriggerButton {
                 policy == null || policy.canStackFill(),
                 policy != null && policy.showStackFillButton(),
                 (button) -> {
-                    SingleUseOperator<?> controller = SingleUseOperator.getController(
+                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
                             Operation.STACK_FILL
                     );
-                    if (controller != null)
-                        controller.tryFillStacks();
+                    if (operator != null)
+                        operator.tryFillStacks();
                 }
         );
     }

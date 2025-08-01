@@ -80,14 +80,14 @@ public class TransferButton extends TriggerButton {
                 policy == null || policy.canTransfer(),
                 policy != null && policy.showTransferButton(),
                 (button) -> {
-                    SingleUseOperator<?> controller = SingleUseOperator.getController(
+                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
                             Operation.TRANSFER
                     );
-                    if (controller != null)
-                        controller.tryTransfer();
+                    if (operator != null)
+                        operator.tryTransfer();
                 }
         );
     }

@@ -248,14 +248,14 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         }
 
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            SingleUseOperator<?> controller = SingleUseOperator.getController(
+            SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
                     Operation.SORT
             );
-            if (controller != null)
-                controller.trySort(sortOrder);
+            if (operator != null)
+                operator.trySort(sortOrder);
             return true;
         }
         return false;
@@ -263,27 +263,27 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Unique
     private boolean clientsort$fillStacks() {
-        SingleUseOperator<?> controller = SingleUseOperator.getController(
+        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
                 Operation.STACK_FILL
         );
-        if (controller != null)
-            controller.tryFillStacks();
+        if (operator != null)
+            operator.tryFillStacks();
         return true;
     }
 
     @Unique
     private boolean clientsort$transfer() {
-        SingleUseOperator<?> controller = SingleUseOperator.getController(
+        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
                 Operation.TRANSFER
         );
-        if (controller != null)
-            controller.tryTransfer();
+        if (operator != null)
+            operator.tryTransfer();
         return true;
     }
 
