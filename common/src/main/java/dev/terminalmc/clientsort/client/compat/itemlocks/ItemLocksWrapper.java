@@ -16,6 +16,8 @@
 
 package dev.terminalmc.clientsort.client.compat.itemlocks;
 
+import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.inventory.Slot;
 
 public class ItemLocksWrapper {
@@ -36,6 +38,15 @@ public class ItemLocksWrapper {
             return ItemLocksCompat.isLocked(slot);
         } catch (NoClassDefFoundError | NoSuchMethodError ignored) {
             hasFailed = true;
+            ClientSort.LOG.info("ItemLocks not found: compat is now disabled");
+            return false;
+        } catch (Exception e) {
+            hasFailed = true;
+            ClientSort.LOG.error(
+                    "ItemLocks threw an unexpected error when checking slot {}: compat is now disabled",
+                    ((ISlot) slot).clientsort$getIdInContainer()
+            );
+            ClientSort.LOG.error(e.getLocalizedMessage());
             return false;
         }
     }
