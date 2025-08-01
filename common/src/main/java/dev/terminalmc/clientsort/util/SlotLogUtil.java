@@ -16,7 +16,6 @@
 
 package dev.terminalmc.clientsort.util;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -24,7 +23,7 @@ import net.minecraft.world.inventory.Slot;
 @SuppressWarnings("unused")
 public class SlotLogUtil {
 
-    public static void logSlotIndexes(Iterable<Slot> slots) {
+    public static String listSlotIndexes(Iterable<Slot> slots) {
         StringBuilder sb = new StringBuilder("[");
         for (Slot slot : slots) {
             sb.append(((ISlot) slot).clientsort$getIndexInInv());
@@ -34,10 +33,10 @@ public class SlotLogUtil {
             sb.append(slot.getItem().getHoverName().getString());
             sb.append("], ");
         }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+        return sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]";
     }
 
-    public static void logSlotIds(Iterable<Slot> slots) {
+    public static String listSlotIds(Iterable<Slot> slots) {
         StringBuilder sb = new StringBuilder("[");
         for (Slot slot : slots) {
             sb.append(((ISlot) slot).clientsort$getIdInContainer());
@@ -47,19 +46,19 @@ public class SlotLogUtil {
             sb.append(slot.getItem().getHoverName().getString());
             sb.append("], ");
         }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+        return sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]";
     }
 
-    public static void logSlotIndexArray(int[] indexes) {
+    public static String listSlotIndexArray(int[] indexes) {
         StringBuilder sb = new StringBuilder("[");
         for (int id : indexes) {
             sb.append(id);
             sb.append(", ");
         }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+        return sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]";
     }
 
-    public static void logSlotMappingArray(int[] slotMapping) {
+    public static String listSlotMappingArray(int[] slotMapping) {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < slotMapping.length - 1; i += 2) {
             sb.append(slotMapping[i]);
@@ -67,10 +66,10 @@ public class SlotLogUtil {
             sb.append(slotMapping[i + 1]);
             sb.append(", ");
         }
-        ClientSort.LOG.warn(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+        return sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]";
     }
 
-    private static void logContainerMenuSlots(AbstractContainerMenu menu) {
+    private static String listContainerMenuSlots(AbstractContainerMenu menu) {
         StringBuilder sb = new StringBuilder("[");
         for (Slot slot : menu.slots) {
             sb.append(slot.index);
@@ -80,6 +79,6 @@ public class SlotLogUtil {
             sb.append(slot.getItem().getDisplayName().getString());
             sb.append("], ");
         }
-        ClientSort.LOG.info(sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]");
+        return sb.length() == 1 ? "[]" : sb.substring(0, sb.length() - 2) + "]";
     }
 }

@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
@@ -32,6 +33,8 @@ import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
+
+import static dev.terminalmc.clientsort.ClientSort.debug;
 
 /**
  * Provides methods for manipulating the player's inventory or open container via custom payload
@@ -52,6 +55,12 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
 
     @Override
     protected void sort(SortOrder sortOrder) {
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation SORT: origin scope is empty!");
+            return;
+        }
+
         CollectResultHandler.onSuccess = () -> {
             ServerOperator<?> sorter = new ServerOperator<>(
                     screen,
@@ -61,6 +70,8 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
             );
             int[] slotMapping = sorter.createSlotMapping(sortOrder);
             InteractionManager.now(() -> {
+                if (debug())
+                    ClientSort.LOG.info("Sending payload for operation SORT");
                 ClientServices.PLATFORM.sendToServer(new SortPayload(
                         screen.getMenu().containerId,
                         slotMapping
@@ -75,15 +86,23 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
 
     @Override
     protected void fillStacks() {
-        if (originScopeSlots.length == 0)
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation STACK_FILL: origin scope is empty!");
             return;
-        if (otherScopeSlots.length == 0)
+        }
+        if (otherScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation STACK_FILL: other scope is empty!");
             return;
+        }
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
+            if (debug())
+                ClientSort.LOG.info("Sending payload for operation STACK_FILL");
             ClientServices.PLATFORM.sendToServer(new StackFillPayload(
                     screen.getMenu().containerId,
                     srcSlotIds,
@@ -95,15 +114,23 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
 
     @Override
     protected void transfer() {
-        if (originScopeSlots.length == 0)
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin scope is empty!");
             return;
-        if (otherScopeSlots.length == 0)
+        }
+        if (otherScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation TRANSFER: other scope is empty!");
             return;
+        }
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {
+            if (debug())
+                ClientSort.LOG.info("Sending payload for operation TRANSFER");
             ClientServices.PLATFORM.sendToServer(new TransferPayload(
                     screen.getMenu().containerId,
                     srcSlotIds,
@@ -125,6 +152,8 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
 
     private void sendCollectPayload(int[] scopeArray) {
         InteractionManager.now(() -> {
+            if (debug())
+                ClientSort.LOG.info("Sending payload for operation COLLECT");
             ClientServices.PLATFORM.sendToServer(new CollectPayload(
                     screen.getMenu().containerId,
                     scopeArray

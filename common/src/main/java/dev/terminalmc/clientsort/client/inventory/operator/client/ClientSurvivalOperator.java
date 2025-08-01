@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.Items;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 
+import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
@@ -55,6 +57,13 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void collect() {
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation COLLECT: origin scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation COLLECT");
         // Queue click events before sending, to allow cancellation
         ArrayDeque<InteractionManager.InteractionEvent> clickEvents = new ArrayDeque<>();
 
@@ -126,6 +135,12 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
             // Reset the queue
             clickEvents.clear();
         }
+        if (debug()) {
+            InteractionManager.push(() -> {
+                ClientSort.LOG.info("Finished operation COLLECT");
+                return InteractionManager.TICK_WAITER;
+            });
+        }
     }
 
     /**
@@ -133,6 +148,13 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void sort(int[] sortedIds, boolean playSound) {
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation SORT: origin scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation SORT");
         final int slotCount = originScopeStacks.length;
 
         // sortedIds shows, for each slot index, which slot's stack should be
@@ -304,6 +326,12 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 // then we're finished with this chain
             } while (!done.get(dstId));
         }
+        if (debug()) {
+            InteractionManager.push(() -> {
+                ClientSort.LOG.info("Finished operation SORT");
+                return InteractionManager.TICK_WAITER;
+            });
+        }
     }
 
     /**
@@ -312,8 +340,18 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void fillStacks() {
-        if (otherScopeSlots.length == 0)
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation STACK_FILL: origin scope is empty!");
             return;
+        }
+        if (otherScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation STACK_FILL: other scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation STACK_FILL");
         raiseFlag();
 
         // Prepare sounds
@@ -400,6 +438,12 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
             clickEvents.clear();
         }
         lowerFlag();
+        if (debug()) {
+            InteractionManager.push(() -> {
+                ClientSort.LOG.info("Finished operation STACK_FILL");
+                return InteractionManager.TICK_WAITER;
+            });
+        }
     }
 
     /**
@@ -408,8 +452,18 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void transfer() {
-        if (otherScopeSlots.length == 0)
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin scope is empty!");
             return;
+        }
+        if (otherScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation TRANSFER: other scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation TRANSFER");
         raiseFlag();
 
         // Prepare sounds
@@ -520,5 +574,11 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
             clickEvents.clear();
         }
         lowerFlag();
+        if (debug()) {
+            InteractionManager.push(() -> {
+                ClientSort.LOG.info("Finished operation TRANSFER");
+                return InteractionManager.TICK_WAITER;
+            });
+        }
     }
 }

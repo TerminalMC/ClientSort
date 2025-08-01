@@ -22,6 +22,8 @@ import dev.terminalmc.clientsort.network.payload.SortResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
+import static dev.terminalmc.clientsort.client.ClientSort.debug;
+
 public class SortResultHandler {
 
     private SortResultHandler() {
@@ -42,6 +44,8 @@ public class SortResultHandler {
                     CollectResultPayload.ID,
                     payload.message()
             );
+        } else if (debug()) {
+            ClientSort.LOG.info("Received success result for operation SORT");
         }
 
         player.inventoryMenu.broadcastChanges();

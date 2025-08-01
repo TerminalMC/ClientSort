@@ -53,6 +53,14 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void collect() {
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation COLLECT: origin scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation COLLECT");
+
         // Work backwards from the end, looking for a partial stack
         for (int i = originScopeSlots.length - 1; i >= 0; i--) {
             Slot srcSlot = originScopeSlots[i];
@@ -109,6 +117,8 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
         InteractionManager.push(() -> {
             //noinspection DataFlowIssue
             Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
+            if (debug())
+                ClientSort.LOG.info("Finished operation COLLECT");
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -118,6 +128,13 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
      */
     @Override
     protected void sort(int[] key, boolean playSound) {
+        if (originScopeSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation SORT: origin scope is empty!");
+            return;
+        }
+        if (debug())
+            ClientSort.LOG.info("Starting operation SORT");
         for (int i = 0; i < key.length; i++) {
             ItemStack srcItem = originScopeStacks[key[i]];
             ItemStack dstItem = originScopeStacks[i];
@@ -138,6 +155,8 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
         InteractionManager.push(() -> {
             //noinspection DataFlowIssue
             Minecraft.getInstance().player.inventoryMenu.broadcastChanges();
+            if (debug())
+                ClientSort.LOG.info("Finished operation SORT");
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -145,14 +164,17 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
     @Override
     protected void transfer() {
         if (debug())
-            ClientSort.LOG.warn("Transfer is not supported by {}", this.getClass().getSimpleName());
+            ClientSort.LOG.warn(
+                    "Operation TRANSFER is not supported by {}",
+                    this.getClass().getSimpleName()
+            );
     }
 
     @Override
     protected void fillStacks() {
         if (debug())
             ClientSort.LOG.warn(
-                    "Stack-fill is not supported by {}",
+                    "Operation STACK_FILL is not supported by {}",
                     this.getClass().getSimpleName()
             );
     }

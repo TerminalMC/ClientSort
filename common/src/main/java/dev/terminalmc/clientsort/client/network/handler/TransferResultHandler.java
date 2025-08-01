@@ -21,6 +21,8 @@ import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
+import static dev.terminalmc.clientsort.client.ClientSort.debug;
+
 public class TransferResultHandler {
 
     private TransferResultHandler() {
@@ -41,6 +43,8 @@ public class TransferResultHandler {
                     TransferResultPayload.ID,
                     payload.message()
             );
+        } else if (debug()) {
+            ClientSort.LOG.info("Received success result for operation TRANSFER");
         }
 
         player.inventoryMenu.broadcastChanges();

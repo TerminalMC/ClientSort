@@ -23,6 +23,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 
+import static dev.terminalmc.clientsort.client.ClientSort.debug;
+
 public class CollectResultHandler {
 
     private CollectResultHandler() {
@@ -48,6 +50,8 @@ public class CollectResultHandler {
                     CollectResultPayload.ID,
                     payload.message()
             );
+        } else if (debug()) {
+            ClientSort.LOG.info("Received success result for operation COLLECT");
         }
 
         if (payload.success() && onSuccess != null) {

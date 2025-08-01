@@ -22,6 +22,8 @@ import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
+import static dev.terminalmc.clientsort.client.ClientSort.debug;
+
 public class StackFillResultHandler {
 
     private StackFillResultHandler() {
@@ -42,6 +44,8 @@ public class StackFillResultHandler {
                     StackFillPayload.ID,
                     payload.message()
             );
+        } else if (debug()) {
+            ClientSort.LOG.info("Received success result for operation STACK_FILL");
         }
 
         player.inventoryMenu.broadcastChanges();

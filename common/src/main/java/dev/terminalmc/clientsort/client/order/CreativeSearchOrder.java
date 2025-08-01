@@ -17,7 +17,7 @@
 
 package dev.terminalmc.clientsort.client.order;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -70,7 +70,7 @@ public class CreativeSearchOrder {
      */
     public static void tryRefreshStackPositionMap() {
         if (Config.options().optimizeCreativeSorting) {
-            if (dev.terminalmc.clientsort.client.ClientSort.emiReloading) {
+            if (ClientSort.emiReloading) {
                 dev.terminalmc.clientsort.client.ClientSort.updateBlockedByEmi = true;
                 ClientSort.LOG.info("Search order update blocked by EMI reload, waiting...");
             } else {

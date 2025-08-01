@@ -107,8 +107,13 @@ public abstract class SingleUseOperator<T extends Operation> {
         Scope originScope = screenHelper.getScope(originSlot);
         originScopeSlots = collectSlots(originScope);
         if (debug()) {
-            ClientSort.LOG.warn("Origin Scope Slot IDs ({})", originScopeSlots.length);
-            SlotLogUtil.logSlotIds(List.of(originScopeSlots));
+            ClientSort.LOG.info(
+                    "Discovered {} slots in origin scope ({} - {}):",
+                    originScopeSlots.length,
+                    originScope.ordinal(),
+                    originScope.name()
+            );
+            ClientSort.LOG.info(SlotLogUtil.listSlotIds(List.of(originScopeSlots)));
         }
         // Record stacks
         originScopeStacks = new ItemStack[originScopeSlots.length];
@@ -124,8 +129,13 @@ public abstract class SingleUseOperator<T extends Operation> {
         };
         otherScopeSlots = collectSlots(otherScope);
         if (debug()) {
-            ClientSort.LOG.warn("Other Scope Slot IDs ({})", otherScopeSlots.length);
-            SlotLogUtil.logSlotIds(List.of(otherScopeSlots));
+            ClientSort.LOG.info(
+                    "Discovered {} slots in other scope ({} - {}):",
+                    otherScopeSlots.length,
+                    otherScope.ordinal(),
+                    otherScope.name()
+            );
+            ClientSort.LOG.info(SlotLogUtil.listSlotIds(List.of(otherScopeSlots)));
         }
         // Record stacks
         otherScopeStacks = new ItemStack[otherScopeSlots.length];
@@ -177,23 +187,40 @@ public abstract class SingleUseOperator<T extends Operation> {
     }
 
     /**
-     * @return {@code true} if this instance has not previously performed an operation (and
-     * therefore is able to perform one).
+     * @return {@code true} if this instance was created for the same type of operation.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean canOperate() {
-        if (hasOperated) {
-            ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
+    private boolean canPerform(Operation op) {
+        if (!operation.equals(op)) {
+            ClientSort.LOG.warn(
+                    "Cannot perform op {} using an operator created for op {}!",
+                    op,
+                    operation
+            );
             return false;
         } else {
-            hasOperated = true;
             return true;
         }
     }
 
     /**
-     * @return an instance of {@link SingleUseOperator} optimized for the current game state. The
-     * returned instance is only valid for the type of operation specified here.
+     * @return {@code true} if this instance has not previously performed an operation (and
+     * therefore is able to perform one).
+     */
+    private boolean hasOperated() {
+        if (hasOperated) {
+            ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
+            return true;
+        } else {
+            hasOperated = true;
+            return false;
+        }
+    }
+
+    /**
+     * @return an instance of {@link SingleUseOperator} optimized for the current game state and
+     * valid for a single operation of the specified type, or {@code null} if the operation is
+     * disallowed by policy.
      */
     public static @Nullable SingleUseOperator<Operation> getOperator(
             AbstractContainerScreen<?> screen,
@@ -201,50 +228,65 @@ public abstract class SingleUseOperator<T extends Operation> {
             Slot originSlot,
             Operation operation
     ) {
-        // Check policies
+        // Check policy
         Object object = originSlot.container instanceof SimpleContainer
                 ? screen.getMenu()
                 : originSlot.container;
-        if (!opAllowed(PolicyManager.getPolicy(object.getClass()), operation))
-            return null;
+        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+        if (policy != null) {
+            if (!switch (operation) {
+                case SORT -> policy.canSort();
+                case STACK_FILL -> policy.canStackFill();
+                case TRANSFER -> policy.canTransfer();
+            }) {
+                if (debug())
+                    ClientSort.LOG.warn(
+                            "Operation {} is disallowed by policy for class {}!",
+                            operation.name(),
+                            policy.getClass()
+                    );
+                return null;
+            }
+        }
 
         // Preference server-accelerated ops
         if (options().useServerAcceleration
                 && ClientServices.PLATFORM.canSendToServer(operation.type)) {
+            if (debug())
+                ClientSort.LOG.info("Preparing server operator for {}", operation.name());
             return new ServerOperator<>(screen, screenHelper, originSlot, operation);
         }
 
         // Check that there is not already an op running
-        if (ClientSort.operatingClient)
+        if (ClientSort.operatingClient) {
+            if (debug())
+                ClientSort.LOG.warn(
+                        "Client operation is unavailable: another operation is in progress!"
+                );
             return null;
+        }
 
         // Select an appropriate client-side operator
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
+            if (debug())
+                ClientSort.LOG.info("Preparing client-creative operator for {}", operation.name());
             return new ClientCreativeOperator<>(screen, screenHelper, originSlot, operation);
         } else {
+            if (debug())
+                ClientSort.LOG.info("Preparing client-survival operator for {}", operation.name());
             return new ClientSurvivalOperator<>(screen, screenHelper, originSlot, operation);
         }
-    }
-
-    public static boolean opAllowed(@Nullable ClassPolicy policy, Operation op) {
-        if (policy == null)
-            return true;
-        return switch (op) {
-            case SORT -> policy.canSort();
-            case STACK_FILL -> policy.canStackFill();
-            case TRANSFER -> policy.canTransfer();
-        };
     }
 
     /**
      * Sorts the inventory according to {@code sortOrder}.
      */
     public void trySort(SortOrder sortOrder) {
-        if (!operation.equals(Operation.SORT))
+        if (!canPerform(Operation.SORT))
             return;
-        if (!canOperate())
+        if (hasOperated())
             return;
         sort(sortOrder);
     }
@@ -254,9 +296,9 @@ public abstract class SingleUseOperator<T extends Operation> {
      * the other container or inventory, if it exists.
      */
     public void tryFillStacks() {
-        if (!operation.equals(Operation.STACK_FILL))
+        if (!canPerform(Operation.STACK_FILL))
             return;
-        if (!canOperate())
+        if (hasOperated())
             return;
         fillStacks();
     }
@@ -266,9 +308,9 @@ public abstract class SingleUseOperator<T extends Operation> {
      * or inventory, if it exists.
      */
     public void tryTransfer() {
-        if (!operation.equals(Operation.TRANSFER))
+        if (!canPerform(Operation.TRANSFER))
             return;
-        if (!canOperate())
+        if (hasOperated())
             return;
         transfer();
     }
