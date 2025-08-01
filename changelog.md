@@ -11,6 +11,7 @@ versions will result in data loss.
 - Redesigned policy system and layout data-string configuration
 - Added support for ignoring specific slots when performing operations
 - Improved robustness of config deserializer
+- Fixed an issue with stack collection in creative client sorting
 
 ## 2.0.0-beta.10
 
