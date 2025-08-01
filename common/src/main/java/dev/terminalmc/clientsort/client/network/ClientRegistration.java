@@ -27,9 +27,9 @@ import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -46,23 +46,31 @@ public class ClientRegistration {
      */
     public static List<RegisterablePayloadS2C<?>> PAYLOADS_S2C = List.of(
             new RegisterablePayloadS2C<>(
-                    CollectResultPayload.TYPE,
-                    CollectResultPayload.STREAM_CODEC,
+                    CollectResultPayload.ID,
+                    CollectResultPayload.class,
+                    CollectResultPayload::write,
+                    CollectResultPayload::read,
                     CollectResultHandler::handle
             ),
             new RegisterablePayloadS2C<>(
-                    SortResultPayload.TYPE,
-                    SortResultPayload.STREAM_CODEC,
+                    SortResultPayload.ID,
+                    SortResultPayload.class,
+                    SortResultPayload::write,
+                    SortResultPayload::read,
                     SortResultHandler::handle
             ),
             new RegisterablePayloadS2C<>(
-                    StackFillResultPayload.TYPE,
-                    StackFillResultPayload.STREAM_CODEC,
+                    StackFillResultPayload.ID,
+                    StackFillResultPayload.class,
+                    StackFillResultPayload::write,
+                    StackFillResultPayload::read,
                     StackFillResultHandler::handle
             ),
             new RegisterablePayloadS2C<>(
-                    TransferResultPayload.TYPE,
-                    TransferResultPayload.STREAM_CODEC,
+                    TransferResultPayload.ID,
+                    TransferResultPayload.class,
+                    TransferResultPayload::write,
+                    TransferResultPayload::read,
                     TransferResultHandler::handle
             )
     );
@@ -70,17 +78,19 @@ public class ClientRegistration {
     /**
      * Contains registration info for a custom S2C payload and its handler.
      */
-    public static class RegisterablePayloadS2C<T extends CustomPacketPayload>
+    public static class RegisterablePayloadS2C<T extends Packet<ClientGamePacketListener>>
             extends Registration.RegisterablePayload<T> {
 
         public final PayloadHandlerS2C<T> handler;
 
         public RegisterablePayloadS2C(
-                CustomPacketPayload.Type<T> type,
-                StreamCodec<RegistryFriendlyByteBuf, T> streamCodec,
+                ResourceLocation id,
+                Class<T> clazz,
+                PayloadEncoder<T> encoder,
+                PayloadDecoder<T> decoder,
                 PayloadHandlerS2C<T> handler
         ) {
-            super(type, streamCodec);
+            super(id, clazz, encoder, decoder);
             this.handler = handler;
         }
 
@@ -88,7 +98,7 @@ public class ClientRegistration {
          * Handles a custom S2C payload.
          */
         @FunctionalInterface
-        public interface PayloadHandlerS2C<T extends CustomPacketPayload> {
+        public interface PayloadHandlerS2C<T> {
 
             void accept(T payload, Minecraft mc, LocalPlayer player);
         }
