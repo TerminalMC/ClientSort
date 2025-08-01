@@ -22,6 +22,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Type;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.platform.Services;
@@ -206,12 +207,6 @@ public class Config {
 
         public static final boolean showButtonsDefault = false;
         public boolean showButtons = showButtonsDefault;
-
-        public enum Operation {
-            SORT,
-            STACK_FILL,
-            TRANSFER
-        }
 
         private static Operation validateUniqueOp(
                 @Nullable Operation val,

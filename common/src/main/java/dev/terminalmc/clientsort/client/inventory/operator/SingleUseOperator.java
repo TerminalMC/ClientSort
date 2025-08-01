@@ -27,17 +27,12 @@ import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
-import dev.terminalmc.clientsort.network.payload.CollectPayload;
-import dev.terminalmc.clientsort.network.payload.SortPayload;
-import dev.terminalmc.clientsort.network.payload.StackFillPayload;
-import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.util.SlotLogUtil;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -53,19 +48,18 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
 /**
  * Provides methods for manipulating the player's inventory or open container.
  * <p>
- * Note: A {@link SingleUseOperator} instance must be used one time immediately after creation
- * then promptly discarded, because the inventory state is stored on initialization and never
- * updated.
+ * Note: A {@link SingleUseOperator} instance must be used one time immediately after creation then
+ * promptly discarded, because the inventory state is stored on initialization and never updated.
  * <p>
  * Additionally, due to policy constraints, a {@link SingleUseOperator} is only valid for the type
  * of operation specified when it was created.
  */
-public abstract class SingleUseOperator {
+public abstract class SingleUseOperator<T extends Operation> {
 
-    protected boolean hasOperated = false;
+    private boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
-    protected final Type<?> type;
+    protected final T operation;
     /**
      * The slot that was hovered when sorting was triggered.
      */
@@ -102,12 +96,12 @@ public abstract class SingleUseOperator {
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> type
+            T operation
     ) {
         this.screen = screen;
         this.screenHelper = screenHelper;
         this.originSlot = originSlot;
-        this.type = type;
+        this.operation = operation;
 
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
@@ -187,7 +181,7 @@ public abstract class SingleUseOperator {
      * therefore is able to perform one).
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    protected boolean canOperate() {
+    private boolean canOperate() {
         if (hasOperated) {
             ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
             return false;
@@ -198,25 +192,26 @@ public abstract class SingleUseOperator {
     }
 
     /**
-     * @return an instance of {@link SingleUseOperator} optimized for the current game state.
-     * The returned instance is only valid for the type of operation specified here.
+     * @return an instance of {@link SingleUseOperator} optimized for the current game state. The
+     * returned instance is only valid for the type of operation specified here.
      */
-    public static @Nullable SingleUseOperator getController(
+    public static @Nullable SingleUseOperator<Operation> getController(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> type
+            Operation operation
     ) {
         // Check policies
         Object object = originSlot.container instanceof SimpleContainer
                 ? screen.getMenu()
                 : originSlot.container;
-        if (!opAllowed(PolicyManager.getPolicy(object.getClass()), type))
+        if (!opAllowed(PolicyManager.getPolicy(object.getClass()), operation))
             return null;
 
         // Preference server-accelerated ops
-        if (options().useServerAcceleration && ClientServices.PLATFORM.canSendToServer(type)) {
-            return new ServerOperator(screen, screenHelper, originSlot, type);
+        if (options().useServerAcceleration
+                && ClientServices.PLATFORM.canSendToServer(operation.type)) {
+            return new ServerOperator<>(screen, screenHelper, originSlot, operation);
         }
 
         // Check that there is not already an op running
@@ -227,51 +222,53 @@ public abstract class SingleUseOperator {
         //noinspection DataFlowIssue
         if (Minecraft.getInstance().player.isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
-            return new ClientCreativeOperator(screen, screenHelper, originSlot, type);
+            return new ClientCreativeOperator<>(screen, screenHelper, originSlot, operation);
         } else {
-            return new ClientSurvivalOperator(screen, screenHelper, originSlot, type);
+            return new ClientSurvivalOperator<>(screen, screenHelper, originSlot, operation);
         }
     }
 
-    public static boolean opAllowed(@Nullable ClassPolicy policy, Type<?> type) {
+    public static boolean opAllowed(@Nullable ClassPolicy policy, Operation op) {
         if (policy == null)
             return true;
-        if (type.equals(SortPayload.TYPE) || type.equals(CollectPayload.TYPE)) {
-            return policy.canSort();
-        } else if (type.equals(StackFillPayload.TYPE)) {
-            return policy.canStackFill();
-        } else if (type.equals(TransferPayload.TYPE)) {
-            return policy.canTransfer();
-        } else {
-            throw new IllegalArgumentException("Invalid op type '%s'".formatted(type));
-        }
+        return switch (op) {
+            case SORT -> policy.canSort();
+            case STACK_FILL -> policy.canStackFill();
+            case TRANSFER -> policy.canTransfer();
+        };
     }
 
     /**
-     * If allowed by policy, sorts the inventory according to {@code sortOrder}.
+     * Sorts the inventory according to {@code sortOrder}.
      */
     public void trySort(SortOrder sortOrder) {
-        if (!type.equals(SortPayload.TYPE))
+        if (!operation.equals(Operation.SORT))
+            return;
+        if (!canOperate())
             return;
         sort(sortOrder);
     }
 
     /**
-     * If allowed by policy, uses items in the scope of the origin slot to complete as many partial
-     * stacks as possible in the other container or inventory, if it exists.
+     * Uses items in the scope of the origin slot to complete as many partial stacks as possible in
+     * the other container or inventory, if it exists.
      */
     public void tryFillStacks() {
-        if (!type.equals(StackFillPayload.TYPE))
+        if (!operation.equals(Operation.STACK_FILL))
+            return;
+        if (!canOperate())
             return;
         fillStacks();
     }
 
     /**
-     * If allowed by policy, transfers as many items as possible from the scope of the origin slot
-     * to the other container or inventory, if it exists.
+     * Transfers as many items as possible from the scope of the origin slot to the other container
+     * or inventory, if it exists.
      */
     public void tryTransfer() {
-        if (!type.equals(TransferPayload.TYPE))
+        if (!operation.equals(Operation.TRANSFER))
+            return;
+        if (!canOperate())
             return;
         transfer();
     }

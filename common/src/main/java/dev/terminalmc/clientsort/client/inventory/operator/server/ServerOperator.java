@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
@@ -30,7 +31,6 @@ import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.Slot;
 
 /**
@@ -39,27 +39,25 @@ import net.minecraft.world.inventory.Slot;
  * <p>
  * Valid for use ONLY if the mod is also present server-side.
  */
-public class ServerOperator extends SingleUseOperator {
+public class ServerOperator<T extends Operation> extends SingleUseOperator<Operation> {
 
     public ServerOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> type
+            T operation
     ) {
-        super(screen, screenHelper, originSlot, type);
+        super(screen, screenHelper, originSlot, operation);
     }
 
     @Override
     protected void sort(SortOrder sortOrder) {
-        if (!canOperate())
-            return;
         CollectResultHandler.onSuccess = () -> {
-            ServerOperator sorter = new ServerOperator(
+            ServerOperator<?> sorter = new ServerOperator<>(
                     screen,
                     screenHelper,
                     originSlot,
-                    SortPayload.TYPE
+                    Operation.SORT
             );
             int[] slotMapping = sorter.createSlotMapping(sortOrder);
             InteractionManager.now(() -> {
@@ -77,8 +75,6 @@ public class ServerOperator extends SingleUseOperator {
 
     @Override
     protected void fillStacks() {
-        if (!canOperate())
-            return;
         if (originScopeSlots.length == 0)
             return;
         if (otherScopeSlots.length == 0)
@@ -99,8 +95,6 @@ public class ServerOperator extends SingleUseOperator {
 
     @Override
     protected void transfer() {
-        if (!canOperate())
-            return;
         if (originScopeSlots.length == 0)
             return;
         if (otherScopeSlots.length == 0)

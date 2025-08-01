@@ -22,6 +22,7 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
@@ -30,9 +31,6 @@ import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
-import dev.terminalmc.clientsort.network.payload.SortPayload;
-import dev.terminalmc.clientsort.network.payload.StackFillPayload;
-import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -250,11 +248,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         }
 
         if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            SingleUseOperator controller = SingleUseOperator.getController(
+            SingleUseOperator<?> controller = SingleUseOperator.getController(
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
-                    SortPayload.TYPE
+                    Operation.SORT
             );
             if (controller != null)
                 controller.trySort(sortOrder);
@@ -265,11 +263,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Unique
     private boolean clientsort$fillStacks() {
-        SingleUseOperator controller = SingleUseOperator.getController(
+        SingleUseOperator<?> controller = SingleUseOperator.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                StackFillPayload.TYPE
+                Operation.STACK_FILL
         );
         if (controller != null)
             controller.tryFillStacks();
@@ -278,11 +276,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Unique
     private boolean clientsort$transfer() {
-        SingleUseOperator controller = SingleUseOperator.getController(
+        SingleUseOperator<?> controller = SingleUseOperator.getController(
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                TransferPayload.TYPE
+                Operation.TRANSFER
         );
         if (controller != null)
             controller.tryTransfer();

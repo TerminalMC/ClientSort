@@ -17,7 +17,6 @@
 package dev.terminalmc.clientsort.client.gui;
 
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.config.Config.Options.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
@@ -26,6 +25,7 @@ import dev.terminalmc.clientsort.client.gui.widget.SortButton;
 import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
 import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
@@ -125,9 +125,9 @@ public class TriggerButtonManager {
             Slot refSlot,
             boolean isPlayerInv,
             boolean forceShow,
-            Operation type
+            Operation op
     ) {
-        switch (type) {
+        switch (op) {
             case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
             case STACK_FILL -> generateStackFillButton(screen, refSlot, isPlayerInv, forceShow);
             case TRANSFER -> generateTransferButton(screen, refSlot, isPlayerInv, forceShow);

@@ -22,9 +22,9 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -80,11 +80,11 @@ public class TransferButton extends TriggerButton {
                 policy == null || policy.canTransfer(),
                 policy != null && policy.showTransferButton(),
                 (button) -> {
-                    SingleUseOperator controller = SingleUseOperator.getController(
+                    SingleUseOperator<?> controller = SingleUseOperator.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            TransferPayload.TYPE
+                            Operation.TRANSFER
                     );
                     if (controller != null)
                         controller.tryTransfer();

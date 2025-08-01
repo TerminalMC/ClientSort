@@ -16,11 +16,11 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -38,15 +38,15 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Valid for use in all screens (and all game-modes) EXCEPT
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
-public class ClientSurvivalOperator extends ClientOperator {
+public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<Operation> {
 
     public ClientSurvivalOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> type
+            T operation
     ) {
-        super(screen, screenHelper, originSlot, type);
+        super(screen, screenHelper, originSlot, operation);
     }
 
     /**
@@ -312,8 +312,6 @@ public class ClientSurvivalOperator extends ClientOperator {
      */
     @Override
     protected void fillStacks() {
-        if (!canOperate())
-            return;
         if (otherScopeSlots.length == 0)
             return;
         raiseFlag();
@@ -410,8 +408,6 @@ public class ClientSurvivalOperator extends ClientOperator {
      */
     @Override
     protected void transfer() {
-        if (!canOperate())
-            return;
         if (otherScopeSlots.length == 0)
             return;
         raiseFlag();

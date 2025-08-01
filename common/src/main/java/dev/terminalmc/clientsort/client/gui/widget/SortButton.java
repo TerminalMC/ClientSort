@@ -22,10 +22,10 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.network.payload.SortPayload;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -78,11 +78,11 @@ public class SortButton extends TriggerButton {
                     } else {
                         sortOrder = options().sortOrder;
                     }
-                    @Nullable SingleUseOperator controller = SingleUseOperator.getController(
+                    @Nullable SingleUseOperator<?> controller = SingleUseOperator.getController(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            SortPayload.TYPE
+                            Operation.SORT
                     );
                     if (controller != null)
                         controller.trySort(sortOrder);

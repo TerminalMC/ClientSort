@@ -17,13 +17,13 @@
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,15 +36,15 @@ import static dev.terminalmc.clientsort.ClientSort.debug;
  * Valid for use ONLY in
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
-public class ClientCreativeOperator extends ClientOperator {
+public class ClientCreativeOperator<T extends Operation> extends ClientOperator<Operation> {
 
     public ClientCreativeOperator(
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Type<?> type
+            T operation
     ) {
-        super(screen, screenHelper, originSlot, type);
+        super(screen, screenHelper, originSlot, operation);
     }
 
     /**
@@ -144,19 +144,15 @@ public class ClientCreativeOperator extends ClientOperator {
 
     @Override
     protected void transfer() {
-        if (!canOperate())
-            return;
         if (debug())
             ClientSort.LOG.warn("Transfer is not supported by {}", this.getClass().getSimpleName());
     }
 
     @Override
     protected void fillStacks() {
-        if (!canOperate())
-            return;
         if (debug())
             ClientSort.LOG.warn(
-                    "Stack fill is not supported by {}",
+                    "Stack-fill is not supported by {}",
                     this.getClass().getSimpleName()
             );
     }
