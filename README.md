@@ -1,7 +1,7 @@
 <!--suppress HtmlDeprecatedAttribute, HtmlDeprecatedTag, XmlDeprecatedElement -->
 <div align="center"><center>
 
-<img alt="Icon" width=100 src="https://raw.githubusercontent.com/TerminalMC/ClientSort/HEAD/common/src/main/resources/assets/clientsort/icon.png">
+<img alt="Icon" width=100 src="./common/src/main/resources/assets/clientsort/icon.png">
 
 ## ClientSort
 
@@ -43,9 +43,9 @@ operations:
 
 <table style="width:100%;">
   <tr>
-    <td style="width:33%;"><img alt="Sort demo" src="assets/images/sort_01.gif" style="width:100%;"></td>
-    <td style="width:33%;"><img alt="Stack-fill demo" src="assets/images/stack_fill_01.gif" style="width:100%;"></td>
-    <td style="width:33%;"><img alt="Transfer demo" src="assets/images/transfer_01.gif" style="width:100%;"></td>
+    <td style="width:33%;"><img alt="Sort demo" src="./assets/images/sort_01.gif" style="width:100%;"></td>
+    <td style="width:33%;"><img alt="Stack-fill demo" src="./assets/images/stack_fill_01.gif" style="width:100%;"></td>
+    <td style="width:33%;"><img alt="Transfer demo" src="./assets/images/transfer_01.gif" style="width:100%;"></td>
   </tr>
 </table>
 
@@ -60,8 +60,8 @@ to trigger operations.
 
 <table style="width:100%;">
   <tr>
-    <td style="width:50%;"><img alt="GUI demo" src="assets/images/gui_01.png" style="width:100%;"></td>
-    <td style="width:50%;"><img alt="Editor demo" src="assets/images/editor_01.png" style="width:100%;"></td>
+    <td style="width:50%;"><img alt="GUI demo" src="./assets/images/gui_01.png" style="width:100%;"></td>
+    <td style="width:50%;"><img alt="Editor demo" src="./assets/images/editor_01.png" style="width:100%;"></td>
   </tr>
 </table>
 
