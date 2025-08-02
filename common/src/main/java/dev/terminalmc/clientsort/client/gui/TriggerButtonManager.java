@@ -1,4 +1,5 @@
 /*
+ * Copyright 2021 Evan Steinkerchner (Roundaround)
  * Copyright 2025 TerminalMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
