@@ -471,12 +471,10 @@ public abstract class EditorScreen extends Screen {
      * Saves any altered values, then calls {@link EditorScreen#onClose}.
      */
     public void saveAndClose() {
-        buttons.getFirst().savePolicy(
-                buttons.getFirst().offset.equals(options().layoutOffset)
-                        ? null
-                        : buttons.getFirst().offset,
-                ignoredSlots
-        );
+        @Nullable Vec2i offset = buttons.getFirst().offset.equals(options().layoutOffset)
+                ? null
+                : buttons.getFirst().offset;
+        buttons.forEach((b) -> b.savePolicy(offset, ignoredSlots));
         Config.save();
         onClose();
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.12
+
+- Fixed button status not saving when changed via editor screen
+
 ## 2.0.0-beta.11
 
 Warning: this beta version includes breaking changes to mod config, and downgrading to previous
