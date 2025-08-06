@@ -14,6 +14,8 @@
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
     "client.accessor.AbstractContainerScreenAccessor",
+    "client.accessor.GuiGraphicsAccessor",
+    "client.accessor.GuiRenderStateAccessor",
     "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",

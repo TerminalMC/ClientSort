@@ -310,8 +310,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         );
 
         float scale = 0.7F;
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 0.0F);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
 
         for (Slot slot : menu.slots) {
             int slotId = ((ISlot) slot).clientsort$getIdInContainer();
@@ -333,7 +333,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                             (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                                     + slot.y)
                                     / scale),
-                            0xFF0000
+                            0xFFFF0000
                     );
                 }
             }
@@ -353,7 +353,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
             // Draw slot scope, bottom right
             graphics.drawString(
@@ -365,10 +365,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }

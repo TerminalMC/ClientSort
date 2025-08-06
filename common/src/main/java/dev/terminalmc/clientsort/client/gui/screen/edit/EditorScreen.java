@@ -25,6 +25,8 @@ import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import dev.terminalmc.clientsort.mixin.client.accessor.GuiGraphicsAccessor;
+import dev.terminalmc.clientsort.mixin.client.accessor.GuiRenderStateAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -58,8 +60,7 @@ public abstract class EditorScreen extends Screen {
     public final Set<Integer> ignoredSlots = new TreeSet<>();
 
     /**
-     * An element of {@link EditorScreen#buttons} which 'represents' the whole set of
-     * buttons.
+     * An element of {@link EditorScreen#buttons} which 'represents' the whole set of buttons.
      * <p>
      * This can be any element, and the specific choice is only relevant when repositioning via
      * mouse drag.
@@ -68,8 +69,8 @@ public abstract class EditorScreen extends Screen {
 
     /**
      * The class name of either {@link EditorScreen#rep}'s {@link TriggerButton#container}, or
-     * {@link EditorScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
-     * is {@code null}.
+     * {@link EditorScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former is
+     * {@code null}.
      * <p>
      * This value represents the lowest-level key on which a {@link ClassPolicy} can be created, and
      * may differ from {@link EditorScreen#rep}'s {@link TriggerButton#activePolicyKey}.
@@ -368,7 +369,15 @@ public abstract class EditorScreen extends Screen {
      */
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        underlay.renderBackground(graphics, mouseX, mouseY, partialTick);
         underlay.render(graphics, mouseX, mouseY, partialTick);
+
+        // Workaround for other mods adding blur when rendering the underlay
+        ((GuiRenderStateAccessor) ((GuiGraphicsAccessor) graphics).clientsort$getGuiRenderState())
+                .clientsort$setFirstStratumAfterBlur(Integer.MAX_VALUE);
+        graphics.nextStratum();
+        renderBlurredBackground(graphics);
+
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Render disabled-slot indicators
@@ -381,7 +390,7 @@ public abstract class EditorScreen extends Screen {
                     "\u274C",
                     ((AbstractContainerScreenAccessor) (underlay)).clientsort$getLeftPos() + slot.x,
                     ((AbstractContainerScreenAccessor) (underlay)).clientsort$getTopPos() + slot.y,
-                    0xFF0000
+                    0xFFFF0000
             );
         }
 
@@ -430,16 +439,33 @@ public abstract class EditorScreen extends Screen {
     }
 
     /**
+     * Removes the call to {@link Screen#renderBlurredBackground}, since we add a call in
+     * {@link EditorScreen#render} and the method can only be called once.
+     */
+    @Override
+    public void renderBackground(
+            @NotNull GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        if (Minecraft.getInstance().level == null) {
+            renderPanorama(graphics, partialTick);
+        }
+        renderMenuBackground(graphics);
+    }
+
+    /**
      * Modifies the background blur to be constant irrespective of the configured value.
      * <p>
      * Minimal blur is used to prevent the editable widgets disappearing under underlay items on a
      * higher render layer, while still keeping the underlay detail discernible.
      */
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(@NotNull GuiGraphics graphics) {
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground();
+        super.renderBlurredBackground(graphics);
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 
