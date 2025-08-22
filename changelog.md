@@ -9,6 +9,7 @@
 ## 2.0.0-beta.12
 
 - Fixed button status not saving when changed via editor screen
+- Added compatibility with Blur+ mod on 1.21.6+
 
 ## 2.0.0-beta.11
 
