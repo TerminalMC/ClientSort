@@ -24,6 +24,7 @@ import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.Item;
@@ -63,7 +64,7 @@ public class Config {
         public static final int interactionIntervalDefault = 10;
         public int interactionInterval = interactionIntervalDefault;
         public static Validator<Integer> interactionIntervalValidator = (val) ->
-                Math.clamp(unbox(val), INTERACTION_INTERVAL_MIN, INTERACTION_INTERVAL_MAX);
+                Mth.clamp(unbox(val), INTERACTION_INTERVAL_MIN, INTERACTION_INTERVAL_MAX);
 
         public static final boolean useServerAccelerationDefault = true;
         public boolean useServerAcceleration = useServerAccelerationDefault;
@@ -172,23 +173,23 @@ public class Config {
         public static final int soundIntervalDefault = 1;
         public int soundInterval = soundIntervalDefault;
         public static Validator<Integer> soundIntervalValidator = (val) ->
-                Math.clamp(unbox(val), SOUND_INTERVAL_MIN, SOUND_INTERVAL_MAX);
+                Mth.clamp(unbox(val), SOUND_INTERVAL_MIN, SOUND_INTERVAL_MAX);
 
         public static final float SOUND_PITCH_MIN = 0.5F;
         public static final float SOUND_PITCH_MAX = 2.0F;
         public static final float soundPitchMinDefault = 0.5F;
         public float soundPitchMin = soundPitchMinDefault;
-        public static AwareValidator<Float> soundPitchMinValidator = (val, options) -> Math.clamp(
+        public static AwareValidator<Float> soundPitchMinValidator = (val, options) -> Mth.clamp(
                 unbox(val),
                 SOUND_PITCH_MIN,
-                Math.clamp(options.soundPitchMax, SOUND_PITCH_MIN, SOUND_PITCH_MAX)
+                Mth.clamp(options.soundPitchMax, SOUND_PITCH_MIN, SOUND_PITCH_MAX)
         );
 
         public static final float soundPitchMaxDefault = 2.0F;
         public float soundPitchMax = soundPitchMaxDefault;
-        public static AwareValidator<Float> soundPitchMaxValidator = (val, options) -> Math.clamp(
+        public static AwareValidator<Float> soundPitchMaxValidator = (val, options) -> Mth.clamp(
                 unbox(val),
-                Math.clamp(options.soundPitchMin, SOUND_PITCH_MIN, SOUND_PITCH_MAX),
+                Mth.clamp(options.soundPitchMin, SOUND_PITCH_MIN, SOUND_PITCH_MAX),
                 SOUND_PITCH_MAX
         );
 
@@ -197,7 +198,7 @@ public class Config {
         public static final float soundVolumeDefault = 0.2F;
         public float soundVolume = soundVolumeDefault;
         public static Validator<Float> soundVolumeValidator = (val) ->
-                Math.clamp(unbox(val), SOUND_VOLUME_MIN, SOUND_VOLUME_MAX);
+                Mth.clamp(unbox(val), SOUND_VOLUME_MIN, SOUND_VOLUME_MAX);
 
         public static final boolean allowSoundOverlapDefault = true;
         public boolean allowSoundOverlap = allowSoundOverlapDefault;
