@@ -83,10 +83,9 @@ public class ClientSort {
 
     public static void updateItemTags(Config.Options options) {
         options.typeMatchItems.clear();
-        BuiltInRegistries.ITEM.getTags().forEach((pair) -> {
-            if (options.typeMatchTags.contains(pair.getFirst().location().getPath())) {
-                pair.getSecond().forEach((itemHolder) ->
-                        options.typeMatchItems.add(itemHolder.value()));
+        BuiltInRegistries.ITEM.getTags().forEach((named) -> {
+            if (options.typeMatchTags.contains(named.key().location().getPath())) {
+                named.forEach((itemHolder) -> options.typeMatchItems.add(itemHolder.value()));
             }
         });
     }

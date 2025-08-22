@@ -23,10 +23,10 @@ import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.ArrayDeque;
 import java.util.BitSet;
@@ -290,11 +290,11 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
 
                 // Modify standard click if required for bundles
                 int mouseButton = 0;
-                boolean clickOnBundleWithItem = originScopeStacks[dstId].is(Items.BUNDLE)
+                boolean clickOnBundleWithItem = originScopeStacks[dstId].is(ItemTags.BUNDLES)
                         && !(carriedStack.isEmpty());
-                boolean clickOnItemWithBundle = carriedStack.is(Items.BUNDLE)
+                boolean clickOnItemWithBundle = carriedStack.is(ItemTags.BUNDLES)
                         && !(originScopeStacks[dstId].isEmpty());
-                if (options().bundlesUseLeftClick
+                if (!options().bundlesUseRightClick
                         && (clickOnBundleWithItem || clickOnItemWithBundle)) {
                     mouseButton = 1;
                 }

@@ -60,8 +60,8 @@
   "option.clientsort.optimizeCreativeSorting.tooltip": "Повышать производительность сортировки в творческом режиме за счёт сохранения порядка в памяти",
   "option.clientsort.hotbarScope": "Область панели быстрого доступа",
   "option.clientsort.extraSlotScope": "Область дополнительных слотов",
-  "option.clientsort.bundlesUseLeftClick": "Пакеты используют ЛКМ",
-  "option.clientsort.bundlesUseLeftClick.tooltip": "С версии 1.21.2+ для загрузки пакетов используется ЛКМ, что может мешать сортировке. Если вы играете на сервере 1.21.2+, включите эту опцию.",
+  "option.clientsort.bundlesUseRightClick": "Пакеты используют ПКМ",
+  "option.clientsort.bundlesUseRightClick.tooltip": "До версии 1.21.2 для загрузки пакетов использовалась ПКМ, что нарушало сортировку. Если вы играете на сервере 1.21.1 или более ранней версии, включите эту опцию.",
   "option.clientsort.showDebugInfo": "Показать отладочную информацию",
   "option.clientsort.showDebugInfo.tooltip": "Показывать отладочную информацию в интерфейсе и включать логирование. Значение сбрасывается при перезапуске игры.",
 
