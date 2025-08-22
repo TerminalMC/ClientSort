@@ -441,10 +441,10 @@ public abstract class EditorScreen extends Screen {
      * higher render layer, while still keeping the underlay detail discernible.
      */
     @Override
-    protected void renderBlurredBackground(float partialTick) {
+    protected void renderBlurredBackground() {
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground(partialTick);
+        super.renderBlurredBackground();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 

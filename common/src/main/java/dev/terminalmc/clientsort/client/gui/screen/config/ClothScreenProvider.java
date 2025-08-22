@@ -135,13 +135,13 @@ public class ClothScreenProvider {
                 .build());
 
         general.addEntry(eb.startBooleanToggle(
-                        localized("option", "bundlesUseLeftClick"),
-                        options.bundlesUseLeftClick
+                        localized("option", "bundlesUseRightClick"),
+                        options.bundlesUseRightClick
                 )
-                .setTooltip(localized("option", "bundlesUseLeftClick.tooltip"))
-                .setDefaultValue(Config.Options.bundlesUseLeftClickDefault)
+                .setTooltip(localized("option", "bundlesUseRightClick.tooltip"))
+                .setDefaultValue(Config.Options.bundlesUseRightClickDefault)
                 .setSaveConsumer(val -> {
-                    options.bundlesUseLeftClick = val;
+                    options.bundlesUseRightClick = val;
                     if (val)
                         CreativeSearchOrder.tryRefreshStackPositionMap();
                 })
