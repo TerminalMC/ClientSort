@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 public enum Operation {
     SORT(SortPayload.TYPE),
     STACK_FILL(StackFillPayload.TYPE),
+    MATCH_TRANSFER(TransferPayload.TYPE),
     TRANSFER(TransferPayload.TYPE);
 
     public final CustomPacketPayload.Type<?> type;

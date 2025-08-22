@@ -129,11 +129,11 @@ public abstract class EditorScreen extends Screen {
         // Retrieve the buttons from the manager
         buttons.addAll(getButtons());
 
-        if (buttons.size() != 3) {
+        if (buttons.size() != 4) {
             if (debug()) {
                 ClientSort.LOG.error(
                         "Failed to reload buttons on PositionEditScreen: Button list is too small (expected: {}, actual: {})",
-                        3,
+                        4,
                         buttons.size()
                 );
             }
@@ -284,6 +284,11 @@ public abstract class EditorScreen extends Screen {
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
                                                         buttons.get(2).operationAllowed
+                                                                ? buttons.getFirst().active
+                                                                ? Policy.KEYBIND_BUTTON
+                                                                : Policy.KEYBIND
+                                                                : Policy.NONE,
+                                                        buttons.get(3).operationAllowed
                                                                 ? buttons.getFirst().active
                                                                 ? Policy.KEYBIND_BUTTON
                                                                 : Policy.KEYBIND

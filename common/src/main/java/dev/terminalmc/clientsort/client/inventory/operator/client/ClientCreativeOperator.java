@@ -163,19 +163,28 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
     }
 
     @Override
-    protected void transfer() {
+    protected void fillStacks() {
         if (debug())
             ClientSort.LOG.warn(
-                    "Operation TRANSFER is not supported by {}",
+                    "Operation STACK_FILL is not supported by {}",
                     this.getClass().getSimpleName()
             );
     }
 
     @Override
-    protected void fillStacks() {
+    protected void matchTransfer() {
         if (debug())
             ClientSort.LOG.warn(
-                    "Operation STACK_FILL is not supported by {}",
+                    "Operation MATCH_TRANSFER is not supported by {}",
+                    this.getClass().getSimpleName()
+            );
+    }
+
+    @Override
+    protected void transfer() {
+        if (debug())
+            ClientSort.LOG.warn(
+                    "Operation TRANSFER is not supported by {}",
                     this.getClass().getSimpleName()
             );
     }

@@ -26,6 +26,7 @@ import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -98,6 +99,19 @@ public class Config {
 
         public static final boolean bundlesUseLeftClickDefault = false;
         public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
+
+        public static final boolean alwaysMatchByTypeDefault = false;
+        public boolean alwaysMatchByType = alwaysMatchByTypeDefault;
+
+        public static final Supplier<List<String>> typeMatchTagsDefault = () -> List.of(
+                "enchantable/weapon",
+                "enchantable/mining",
+                "enchantable/armor"
+        );
+        public List<String> typeMatchTags = typeMatchTagsDefault.get();
+        public static Validator<List<String>> typeMatchTagsValidator = (val) -> val != null
+                ? val : typeMatchTagsDefault.get();
+        public transient final HashSet<Item> typeMatchItems = new HashSet<>();
 
         // Sort order options
 
@@ -203,17 +217,42 @@ public class Config {
         public static final Operation firstButtonOpDefault = Operation.SORT;
         public Operation firstButtonOp = firstButtonOpDefault;
         public static AwareValidator<Operation> firstButtonOpValidator = (val, options) ->
-                validateUniqueOp(val, options.secondButtonOp, options.thirdButtonOp);
+                validateUniqueOp(
+                        val,
+                        options.secondButtonOp,
+                        options.thirdButtonOp,
+                        options.fourthButtonOp
+                );
 
         public static final Operation secondButtonOpDefault = Operation.STACK_FILL;
         public Operation secondButtonOp = secondButtonOpDefault;
         public static AwareValidator<Operation> secondButtonOpValidator = (val, options) ->
-                validateUniqueOp(val, options.firstButtonOp, options.thirdButtonOp);
+                validateUniqueOp(
+                        val,
+                        options.firstButtonOp,
+                        options.thirdButtonOp,
+                        options.fourthButtonOp
+                );
 
-        public static final Operation thirdButtonOpDefault = Operation.TRANSFER;
+        public static final Operation thirdButtonOpDefault = Operation.MATCH_TRANSFER;
         public Operation thirdButtonOp = thirdButtonOpDefault;
         public static AwareValidator<Operation> thirdButtonOpValidator = (val, options) ->
-                validateUniqueOp(val, options.firstButtonOp, options.secondButtonOp);
+                validateUniqueOp(
+                        val,
+                        options.firstButtonOp,
+                        options.secondButtonOp,
+                        options.fourthButtonOp
+                );
+
+        public static final Operation fourthButtonOpDefault = Operation.TRANSFER;
+        public Operation fourthButtonOp = fourthButtonOpDefault;
+        public static AwareValidator<Operation> fourthButtonOpValidator = (val, options) ->
+                validateUniqueOp(
+                        val,
+                        options.firstButtonOp,
+                        options.secondButtonOp,
+                        options.thirdButtonOp
+                );
 
         public static final Vec2i layoutOffsetDefault = new Vec2i(-4, 0);
         public Vec2i layoutOffset = layoutOffsetDefault;
@@ -229,11 +268,13 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND_BUTTON,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
                         ChestMenu.class.getName(),
                         null,
+                        Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -245,11 +286,13 @@ public class Config {
                         Policy.KEYBIND,
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND_BUTTON,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
                         HorseInventoryMenu.class.getName(),
                         null,
+                        Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -261,11 +304,13 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND_BUTTON,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
                         ShulkerBoxMenu.class.getName(),
                         null,
+                        Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -277,11 +322,13 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND_BUTTON,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
                         "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
                         null,
+                        Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -308,6 +355,7 @@ public class Config {
                                     cp.buttonOffset(),
                                     Options.policyValidator.validate(cp.sortPolicy()),
                                     Options.policyValidator.validate(cp.stackFillPolicy()),
+                                    Options.policyValidator.validate(cp.matchTransferPolicy()),
                                     Options.policyValidator.validate(cp.transferPolicy()),
                                     cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
                             )
@@ -368,6 +416,7 @@ public class Config {
                                     ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
                             Boolean.TRUE.equals(bl.stackFillEnabled())
                                     ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
+                            Policy.KEYBIND,
                             Boolean.TRUE.equals(bl.transferEnabled())
                                     ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
                             new TreeSet<>()
@@ -389,6 +438,8 @@ public class Config {
                 Options.hotbarScopeValidator.validate(options.hotbarScope);
         options.extraSlotScope =
                 Options.extraSlotScopeValidator.validate(options.extraSlotScope);
+        options.typeMatchTags =
+                Options.typeMatchTagsValidator.validate(options.typeMatchTags);
         options.sortOrderStr =
                 Options.sortOrderStrValidator.validate(options.sortOrderStr);
         options.shiftSortOrderStr =
@@ -413,6 +464,8 @@ public class Config {
                 Options.secondButtonOpValidator.validate(options.secondButtonOp, options);
         options.thirdButtonOp =
                 Options.thirdButtonOpValidator.validate(options.thirdButtonOp, options);
+        options.fourthButtonOp =
+                Options.fourthButtonOpValidator.validate(options.fourthButtonOp, options);
         options.layoutOffset =
                 Options.layoutOffsetValidator.validate(options.layoutOffset);
         options.classPolicies =

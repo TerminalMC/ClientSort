@@ -35,6 +35,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
+import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
  * Provides methods for manipulating the player's inventory or open container via custom payload
@@ -113,10 +114,29 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
     }
 
     @Override
+    protected void matchTransfer() {
+        transfer(collectMatchingSlots(
+                originScopeSlots,
+                otherScopeStacks,
+                options().alwaysMatchByType,
+                options().typeMatchItems
+        ));
+    }
+
+    @Override
     protected void transfer() {
+        transfer(originScopeSlots);
+    }
+
+    private void transfer(Slot[] originSlots) {
         if (originScopeSlots.length == 0) {
             if (debug())
                 ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin scope is empty!");
+            return;
+        }
+        if (originSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin slots is empty!");
             return;
         }
         if (otherScopeSlots.length == 0) {
@@ -125,7 +145,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
             return;
         }
 
-        int[] srcSlotIds = createSlotIdArray(originScopeSlots);
+        int[] srcSlotIds = createSlotIdArray(originSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
         InteractionManager.now(() -> {

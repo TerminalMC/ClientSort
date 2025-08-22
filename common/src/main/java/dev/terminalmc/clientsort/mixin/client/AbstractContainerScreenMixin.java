@@ -217,6 +217,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             return this::clientsort$sort;
         } else if (inputMatcher.apply(KeybindManager.STACK_FILL_KEY)) {
             return this::clientsort$fillStacks;
+        } else if (inputMatcher.apply(KeybindManager.MATCH_TRANSFER_KEY)) {
+            return this::clientsort$matchTransfer;
         } else if (inputMatcher.apply(KeybindManager.TRANSFER_KEY)) {
             return this::clientsort$transfer;
         } else {
@@ -271,6 +273,19 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         );
         if (operator != null)
             operator.tryFillStacks();
+        return true;
+    }
+
+    @Unique
+    private boolean clientsort$matchTransfer() {
+        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                (AbstractContainerScreen<?>) (Object) this,
+                clientsort$screenHelper.get(),
+                hoveredSlot,
+                Operation.MATCH_TRANSFER
+        );
+        if (operator != null)
+            operator.tryMatchTransfer();
         return true;
     }
 

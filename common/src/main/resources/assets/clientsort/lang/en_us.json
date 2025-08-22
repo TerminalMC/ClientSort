@@ -3,7 +3,8 @@
 
   "key.clientsort.edit": "Open Editor",
   "key.clientsort.op.sort": "Sort",
-  "key.clientsort.op.stackFill": "Stack Fill",
+  "key.clientsort.op.stackFill": "Fill Stacks",
+  "key.clientsort.op.matchTransfer": "Transfer Matching",
   "key.clientsort.op.transfer": "Transfer",
 
   "message.clientsort.installCloth": "Install Cloth Config API to access mod options.",
@@ -70,6 +71,14 @@
   "option.clientsort.ctrlSortOrder": "Ctrl Sort Order",
   "option.clientsort.altSortOrder": "Alt Sort Order",
 
+  "option.clientsort.matching": "Matching",
+  "option.clientsort.alwaysMatchByType": "Always Match by Type",
+  "option.clientsort.alwaysMatchByType.tooltip": "Item-matching operations will always match items with the same type.",
+  "option.clientsort.typeMatchTags": "Type Match Tags",
+  "option.clientsort.typeMatchTags.tooltip.1": "Items with any of the tags in this list will be matched by type only.",
+  "option.clientsort.typeMatchTags.tooltip.2": "Only used if 'Always Match by Type' is disabled.",
+  "option.clientsort.typeMatchTags.tooltip.3": "See %s for a list of tags.",
+
   "option.clientsort.sounds": "Sounds",
   "option.clientsort.playSoundSort": "Play Sorting Sounds",
   "option.clientsort.playSoundSort.tooltip": "Whether to play sounds when sorting without server acceleration.",
@@ -96,6 +105,7 @@
   "option.clientsort.firstButtonOp": "First Button Operation",
   "option.clientsort.secondButtonOp": "Second Button Operation",
   "option.clientsort.thirdButtonOp": "Third Button Operation",
+  "option.clientsort.fourthButtonOp": "Fourth Button Operation",
   "option.clientsort.layoutDefaults": "Layout Defaults",
   "option.clientsort.layoutDefaults.tooltip": "These values are used by policies that have the respective value set to '-'.",
   "option.clientsort.layoutOffset.x": "Offset X",
@@ -105,7 +115,7 @@
   "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and button operations for each inventory type.",
   "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using the keybind when viewing an inventory.",
   "option.clientsort.policies.description.3": "Data Format",
-  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort status>,<stack-fill status>,<transfer status>,(<ignored slots>)",
+  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<stack-fill>,<match-transfer>,<transfer>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "class: the full name of the inventory class or superclass.",
   "option.clientsort.policies.description.6": "offset: 'x,y', or '-' to use the default.",
   "option.clientsort.policies.description.7": "status: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
@@ -137,6 +147,7 @@
 
   "controlButton.clientsort.SORT": "Sort",
   "controlButton.clientsort.STACK_FILL": "Fill Stacks",
+  "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
   "controlButton.clientsort.TRANSFER": "Transfer",
   "controlButton.clientsort.NONE": "None",
 

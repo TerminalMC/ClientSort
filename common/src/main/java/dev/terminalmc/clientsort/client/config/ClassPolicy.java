@@ -35,6 +35,7 @@ public record ClassPolicy(
         @Nullable Vec2i buttonOffset,
         @NotNull Policy sortPolicy,
         @NotNull Policy stackFillPolicy,
+        @NotNull Policy matchTransferPolicy,
         @NotNull Policy transferPolicy,
         @NotNull TreeSet<Integer> ignoredSlots
 ) {
@@ -53,6 +54,10 @@ public record ClassPolicy(
         return !stackFillPolicy.equals(Policy.NONE);
     }
 
+    public boolean canMatchTransfer() {
+        return !matchTransferPolicy.equals(Policy.NONE);
+    }
+
     public boolean canTransfer() {
         return !transferPolicy.equals(Policy.NONE);
     }
@@ -63,6 +68,10 @@ public record ClassPolicy(
 
     public boolean useStackFillKeybind() {
         return stackFillPolicy.keybind;
+    }
+
+    public boolean useMatchTransferKeybind() {
+        return matchTransferPolicy.keybind;
     }
 
     public boolean useTransferKeybind() {
@@ -77,15 +86,19 @@ public record ClassPolicy(
         return stackFillPolicy.button;
     }
 
+    public boolean showMatchTransferButton() {
+        return matchTransferPolicy.button;
+    }
+
     public boolean showTransferButton() {
         return transferPolicy.button;
     }
 
     // Config data-string serialization
 
-    public static final String DATA_FORMAT = "%s,(%s),%s,%s,%s,(%s)";
+    public static final String DATA_FORMAT = "%s,(%s),%s,%s,%s,%s,(%s)";
     public static final String DATA_PATTERN_STRING =
-            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\),([012]),([012]),([012]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
+            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\),([012]),([012]),([012]),([012]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public String toDataString() {
@@ -95,6 +108,7 @@ public record ClassPolicy(
                 buttonOffset == null ? "" : buttonOffset.x() + "," + buttonOffset.y(),
                 sortPolicy.toSimpleString(),
                 stackFillPolicy.toSimpleString(),
+                matchTransferPolicy.toSimpleString(),
                 transferPolicy.toSimpleString(),
                 Strings.join(ignoredSlots.stream().map(String::valueOf).toList(), ",")
         );
@@ -144,7 +158,8 @@ public record ClassPolicy(
                 Policy.fromSimpleString(matcher.group(4)),
                 Policy.fromSimpleString(matcher.group(5)),
                 Policy.fromSimpleString(matcher.group(6)),
-                new TreeSet<>(Arrays.stream(matcher.group(7).split(",")).filter((s) -> !s.isBlank())
+                Policy.fromSimpleString(matcher.group(7)),
+                new TreeSet<>(Arrays.stream(matcher.group(8).split(",")).filter((s) -> !s.isBlank())
                         .map(Integer::parseInt).sorted().toList())
         );
     }

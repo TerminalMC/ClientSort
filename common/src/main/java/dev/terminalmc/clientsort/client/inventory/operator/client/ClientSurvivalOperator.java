@@ -449,29 +449,64 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
 
     /**
      * Uses mouse click packets to transfer as many items as possible from the origin scope to the
+     * other scope, without adding new item types to the destination.
+     */
+    @Override
+    protected void matchTransfer() {
+        transfer(collectMatchingSlots(
+                originScopeSlots,
+                otherScopeStacks,
+                options().alwaysMatchByType,
+                options().typeMatchItems
+        ));
+    }
+
+    /**
+     * Uses mouse click packets to transfer as many items as possible from the origin scope to the
      * other scope.
      */
     @Override
     protected void transfer() {
+        transfer(originScopeSlots);
+    }
+
+    protected void transfer(Slot[] originSlots) {
         if (originScopeSlots.length == 0) {
             if (debug())
-                ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin scope is empty!");
+                ClientSort.LOG.warn(
+                        "Cannot perform operation (MATCH_)TRANSFER: origin scope is empty!");
+            return;
+        }
+        if (originSlots.length == 0) {
+            if (debug())
+                ClientSort.LOG.warn(
+                        "Cannot perform operation (MATCH_)TRANSFER: origin slots is empty!");
             return;
         }
         if (otherScopeSlots.length == 0) {
             if (debug())
-                ClientSort.LOG.warn("Cannot perform operation TRANSFER: other scope is empty!");
+                ClientSort.LOG.warn(
+                        "Cannot perform operation (MATCH_)TRANSFER: other scope is empty!");
             return;
         }
         if (debug())
-            ClientSort.LOG.info("Starting operation TRANSFER");
+            ClientSort.LOG.info("Starting operation (MATCH_)TRANSFER");
         raiseFlag();
+
+        // Prepare simulation stack array
+        ItemStack[] originStacks = originScopeStacks;
+        if (originSlots != originScopeSlots) {
+            originStacks = new ItemStack[originSlots.length];
+            for (int i = 0; i < originSlots.length; i++) {
+                originStacks[i] = originSlots[i].getItem().copy();
+            }
+        }
 
         // Prepare sounds
         boolean playSound = SoundManager.shouldPlayOtherSounds();
         if (playSound)
             SoundManager.resetForCount(SoundManager.estimateTransferSounds(
-                    originScopeStacks,
+                    originStacks,
                     otherScopeStacks
             ));
 
@@ -480,9 +515,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
 
         // Work backwards from the end of the source slot array, looking for a
         // nonempty stack
-        for (int i = originScopeSlots.length - 1; i >= 0; i--) {
-            Slot srcSlot = originScopeSlots[i];
-            ItemStack srcStack = originScopeStacks[i];
+        for (int i = originSlots.length - 1; i >= 0; i--) {
+            Slot srcSlot = originSlots[i];
+            ItemStack srcStack = originStacks[i];
 
             if (srcStack.isEmpty())
                 continue;
@@ -567,7 +602,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                     ));
                 } else {
                     // Mark the slot as empty
-                    originScopeStacks[i] = ItemStack.EMPTY;
+                    originStacks[i] = ItemStack.EMPTY;
                 }
             }
 
@@ -577,7 +612,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
         lowerFlag();
         if (debug()) {
             InteractionManager.push(() -> {
-                ClientSort.LOG.info("Finished operation TRANSFER");
+                ClientSort.LOG.info("Finished operation (MATCH_)TRANSFER");
                 return InteractionManager.TICK_WAITER;
             });
         }

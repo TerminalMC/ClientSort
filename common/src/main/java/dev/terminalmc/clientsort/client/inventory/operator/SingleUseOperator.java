@@ -36,12 +36,14 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -238,6 +240,7 @@ public abstract class SingleUseOperator<T extends Operation> {
             if (!switch (operation) {
                 case SORT -> policy.canSort();
                 case STACK_FILL -> policy.canStackFill();
+                case MATCH_TRANSFER -> policy.canMatchTransfer();
                 case TRANSFER -> policy.canTransfer();
             }) {
                 if (debug())
@@ -306,6 +309,18 @@ public abstract class SingleUseOperator<T extends Operation> {
 
     /**
      * Transfers as many items as possible from the scope of the origin slot to the other container
+     * or inventory, if it exists, without adding new item types to the destination.
+     */
+    public void tryMatchTransfer() {
+        if (!canPerform(Operation.MATCH_TRANSFER))
+            return;
+        if (hasOperated())
+            return;
+        matchTransfer();
+    }
+
+    /**
+     * Transfers as many items as possible from the scope of the origin slot to the other container
      * or inventory, if it exists.
      */
     public void tryTransfer() {
@@ -329,7 +344,62 @@ public abstract class SingleUseOperator<T extends Operation> {
 
     /**
      * Transfers as many items as possible from the scope of the origin slot to the other container
+     * or inventory, if it exists, without adding new item types to the destination.
+     */
+    protected abstract void matchTransfer();
+
+    /**
+     * Transfers as many items as possible from the scope of the origin slot to the other container
      * or inventory, if it exists.
      */
     protected abstract void transfer();
+
+    // Shared utilities
+
+    protected static Slot[] collectMatchingSlots(
+            Slot[] originSlots,
+            ItemStack[] otherStacks,
+            boolean alwaysMatchByType,
+            Set<Item> typeMatchItems
+    ) {
+        List<Slot> slots = new ArrayList<>();
+        for (Slot slot : originSlots) {
+            if (containsMatchingStack(
+                    otherStacks,
+                    slot.getItem(),
+                    alwaysMatchByType,
+                    typeMatchItems
+            )) {
+                slots.add(slot);
+            }
+        }
+        return slots.toArray(new Slot[]{});
+    }
+
+    protected static boolean containsMatchingStack(
+            ItemStack[] stacks,
+            ItemStack stack,
+            boolean alwaysMatchByType,
+            Set<Item> typeMatchItems
+    ) {
+        for (ItemStack s : stacks) {
+            if (stacksMatch(s, stack, alwaysMatchByType, typeMatchItems)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected static boolean stacksMatch(
+            ItemStack a,
+            ItemStack b,
+            boolean alwaysMatchByType,
+            Set<Item> typeMatchItems
+    ) {
+        return ItemStack.isSameItemSameComponents(a, b) ||
+                (
+                        ItemStack.isSameItem(a, b)
+                                && (alwaysMatchByType || typeMatchItems.contains(a.getItem()))
+                );
+    }
 }

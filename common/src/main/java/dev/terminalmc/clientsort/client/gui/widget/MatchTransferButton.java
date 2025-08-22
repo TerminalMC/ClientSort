@@ -25,9 +25,7 @@ import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.order.SortOrder;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -39,15 +37,32 @@ import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
-public class SortButton extends TriggerButton {
+public class MatchTransferButton extends TriggerButton {
 
-    private static final WidgetSprites SPRITES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_highlighted")
+    private static final WidgetSprites SPRITES_UP = new WidgetSprites(
+            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/match_transfer_up"),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/match_transfer_up_disabled"
+            ),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/match_transfer_up_highlighted"
+            )
+    );
+    private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
+            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/match_transfer_down"),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/match_transfer_down_disabled"
+            ),
+            ResourceLocation.fromNamespaceAndPath(
+                    ClientSort.MOD_ID,
+                    "widget/match_transfer_down_highlighted"
+            )
     );
 
-    public SortButton(
+    public MatchTransferButton(
             AbstractContainerScreen<?> screen,
             Container container,
             Slot referenceSlot,
@@ -61,38 +76,28 @@ public class SortButton extends TriggerButton {
                 container,
                 referenceSlot,
                 isPlayerInv,
-                SPRITES,
+                isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,
-                policy == null || policy.canSort(),
-                policy != null && policy.showSortButton(),
+                policy == null || policy.canMatchTransfer(),
+                policy != null && policy.showMatchTransferButton(),
                 (button) -> {
-                    SortOrder sortOrder;
-                    if (Screen.hasShiftDown()) {
-                        sortOrder = options().shiftSortOrder;
-                    } else if (Screen.hasControlDown()) {
-                        sortOrder = options().ctrlSortOrder;
-                    } else if (Screen.hasAltDown()) {
-                        sortOrder = options().altSortOrder;
-                    } else {
-                        sortOrder = options().sortOrder;
-                    }
-                    @Nullable SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            Operation.SORT
+                            Operation.MATCH_TRANSFER
                     );
                     if (operator != null)
-                        operator.trySort(sortOrder);
+                        operator.tryMatchTransfer();
                 }
         );
     }
 
     @Override
     public boolean getPolicyStatus(ClassPolicy policy) {
-        return policy.showSortButton();
+        return policy.showMatchTransferButton();
     }
 
     @Override
@@ -106,11 +111,11 @@ public class SortButton extends TriggerButton {
                     new ClassPolicy(
                             activePolicyKey,
                             offset,
+                            policy.sortPolicy(),
+                            policy.stackFillPolicy(),
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
-                            policy.stackFillPolicy(),
-                            policy.matchTransferPolicy(),
                             policy.transferPolicy(),
                             new TreeSet<>(slots)
                     )
@@ -121,11 +126,11 @@ public class SortButton extends TriggerButton {
                     new ClassPolicy(
                             lowestPolicyKey,
                             offset,
+                            Policy.KEYBIND,
+                            Policy.KEYBIND,
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
-                            Policy.KEYBIND,
-                            Policy.KEYBIND,
                             Policy.KEYBIND,
                             new TreeSet<>(slots)
                     )

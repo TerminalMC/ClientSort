@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0-beta.13
+
+- Added a new operation 'Transfer Matching', which only transfers item types that already exist in
+  the destination inventory
+- Added options to configure type-matching
+
 ## 2.0.0-beta.12
 
 - Fixed button status not saving when changed via editor screen

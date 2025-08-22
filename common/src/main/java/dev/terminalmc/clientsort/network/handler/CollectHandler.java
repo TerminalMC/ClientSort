@@ -144,8 +144,8 @@ public class CollectHandler extends PayloadHandler {
 
         PolicyManager.setPolicy(new ServerClassPolicy(
                 object.getClass().getName(),
-                true,
                 false,
+                true,
                 true
         ));
     }

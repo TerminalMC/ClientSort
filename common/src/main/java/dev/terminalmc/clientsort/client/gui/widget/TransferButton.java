@@ -110,6 +110,7 @@ public class TransferButton extends TriggerButton {
                             offset,
                             policy.sortPolicy(),
                             policy.stackFillPolicy(),
+                            policy.matchTransferPolicy(),
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
@@ -122,6 +123,7 @@ public class TransferButton extends TriggerButton {
                     new ClassPolicy(
                             lowestPolicyKey,
                             offset,
+                            Policy.KEYBIND,
                             Policy.KEYBIND,
                             Policy.KEYBIND,
                             operationAllowed

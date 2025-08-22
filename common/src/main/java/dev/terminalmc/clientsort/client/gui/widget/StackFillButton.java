@@ -115,6 +115,7 @@ public class StackFillButton extends TriggerButton {
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
+                            policy.matchTransferPolicy(),
                             policy.transferPolicy(),
                             new TreeSet<>(slots)
                     )
@@ -129,6 +130,7 @@ public class StackFillButton extends TriggerButton {
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
+                            Policy.KEYBIND,
                             Policy.KEYBIND,
                             new TreeSet<>(slots)
                     )

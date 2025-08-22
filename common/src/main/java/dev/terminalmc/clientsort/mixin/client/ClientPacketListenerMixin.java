@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static dev.terminalmc.clientsort.client.config.Config.options;
+
 /**
  * Network-related events.
  */
@@ -43,6 +45,15 @@ public abstract class ClientPacketListenerMixin {
         ClientSort.searchOrderUpdated = false;
         // Reset state on relog
         ClientSort.operatingClient = false;
+    }
+
+    @Inject(
+            method = "handleLogin",
+            at = @At("RETURN")
+    )
+    private void afterLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
+        // Update tag cache
+        ClientSort.updateItemTags(options());
     }
 
     @Inject(

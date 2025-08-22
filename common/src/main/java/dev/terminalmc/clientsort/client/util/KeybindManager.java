@@ -45,6 +45,12 @@ public class KeybindManager {
             InputConstants.UNKNOWN.getValue(),
             translationKey("name")
     );
+    public static final KeyMapping MATCH_TRANSFER_KEY = new KeyMapping(
+            translationKey("key", "op.matchTransfer"),
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            translationKey("name")
+    );
     public static final KeyMapping TRANSFER_KEY = new KeyMapping(
             translationKey("key", "op.transfer"),
             InputConstants.Type.KEYSYM,
@@ -55,6 +61,7 @@ public class KeybindManager {
             EDIT_KEY,
             SORT_KEY,
             STACK_FILL_KEY,
+            MATCH_TRANSFER_KEY,
             TRANSFER_KEY
     );
 

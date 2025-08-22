@@ -31,6 +31,7 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.EnumListEntry;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -47,6 +48,7 @@ public class ClothScreenProvider {
     private static EnumListEntry<?> firstSelector = null;
     private static EnumListEntry<?> secondSelector = null;
     private static EnumListEntry<?> thirdSelector = null;
+    private static EnumListEntry<?> fourthSelector = null;
 
     /**
      * Builds and returns a Cloth Config options screen.
@@ -196,6 +198,37 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.altSortOrderStr = (String) val)
                 .build());
 
+        ConfigCategory matching = builder.getOrCreateCategory(localized("option", "matching"));
+
+        matching.addEntry(eb.startBooleanToggle(
+                        localized("option", "alwaysMatchByType"),
+                        options.alwaysMatchByType
+                )
+                .setTooltip(localized("option", "alwaysMatchByType.tooltip"))
+                .setDefaultValue(Config.Options.alwaysMatchByTypeDefault)
+                .setSaveConsumer(val -> options.alwaysMatchByType = val)
+                .build());
+
+        matching.addEntry(eb.startStrList(
+                        localized("option", "typeMatchTags"),
+                        options.typeMatchTags
+                )
+                .setTooltip(localized("option", "typeMatchTags.tooltip.1")
+                        .append("\n")
+                        .append(localized("option", "typeMatchTags.tooltip.2"))
+                        .append("\n")
+                        .append(localized(
+                                "option",
+                                "typeMatchTags.tooltip.3",
+                                Component.literal("https://minecraft.wiki/w/Item_tag")
+                                        .withStyle(ChatFormatting.GOLD)
+                        )))
+                .setDefaultValue(Config.Options.typeMatchTagsDefault.get())
+                .setSaveConsumer(val -> options.typeMatchTags = val)
+                .setInsertInFront(true)
+                .setExpanded(!options.alwaysMatchByType)
+                .build());
+
         ConfigCategory sounds = builder.getOrCreateCategory(localized("option", "sounds"));
 
         sounds.addEntry(eb.startBooleanToggle(
@@ -342,6 +375,15 @@ public class ClothScreenProvider {
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "op.matchTransfer"),
+                        ((KeyMappingAccessor) KeybindManager.MATCH_TRANSFER_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(KeybindManager.MATCH_TRANSFER_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.MATCH_TRANSFER_KEY, key))
+                .build()));
+
+        keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.transfer"),
                         ((KeyMappingAccessor) KeybindManager.TRANSFER_KEY).clientsort$getKey()
                 )
@@ -367,7 +409,9 @@ public class ClothScreenProvider {
                         options.firstButtonOp
                 )
                 .setErrorSupplier((val) ->
-                        val.equals(getSecondSelector()) || val.equals(getThirdSelector())
+                        val.equals(getSecondSelector())
+                                || val.equals(getThirdSelector())
+                                || val.equals(getFourthSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
@@ -383,7 +427,9 @@ public class ClothScreenProvider {
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
                 .setErrorSupplier((val) ->
-                        val.equals(getFirstSelector()) || val.equals(getThirdSelector())
+                        val.equals(getFirstSelector())
+                                || val.equals(getThirdSelector())
+                                || val.equals(getFourthSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
                 .setDefaultValue(Config.Options.secondButtonOpDefault)
@@ -398,13 +444,32 @@ public class ClothScreenProvider {
                 )
                 .setEnumNameProvider(val -> localized("controlButton", val.name()))
                 .setErrorSupplier((val) ->
-                        val.equals(getFirstSelector()) || val.equals(getSecondSelector())
+                        val.equals(getFirstSelector())
+                                || val.equals(getSecondSelector())
+                                || val.equals(getFourthSelector())
                                 ? Optional.of(localized("error", "controlButton.duplicate"))
                                 : Optional.empty())
                 .setDefaultValue(Config.Options.thirdButtonOpDefault)
                 .setSaveConsumer(val -> options.thirdButtonOp = val)
                 .build();
         buttons.addEntry(thirdSelector);
+
+        fourthSelector = eb.startEnumSelector(
+                        localized("option", "fourthButtonOp"),
+                        Operation.class,
+                        options.fourthButtonOp
+                )
+                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setErrorSupplier((val) ->
+                        val.equals(getFirstSelector())
+                                || val.equals(getSecondSelector())
+                                || val.equals(getThirdSelector())
+                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                : Optional.empty())
+                .setDefaultValue(Config.Options.fourthButtonOpDefault)
+                .setSaveConsumer(val -> options.fourthButtonOp = val)
+                .build();
+        buttons.addEntry(fourthSelector);
 
         SubCategoryBuilder layoutDefaults = eb.startSubCategory(
                         localized("option", "layoutDefaults"))
@@ -528,5 +593,11 @@ public class ClothScreenProvider {
         return thirdSelector == null
                 ? null
                 : (Operation) thirdSelector.getValue();
+    }
+
+    private static Operation getFourthSelector() {
+        return fourthSelector == null
+                ? null
+                : (Operation) fourthSelector.getValue();
     }
 }

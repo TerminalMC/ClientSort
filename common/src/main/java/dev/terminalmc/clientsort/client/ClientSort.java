@@ -25,6 +25,7 @@ import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -70,9 +71,24 @@ public class ClientSort {
         InteractionManager.setTickRate(options.interactionInterval);
         // Update class cache
         PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
+        // Update item tags
+        if (Minecraft.getInstance().getConnection() != null
+                && Minecraft.getInstance().getConnection().isAcceptingMessages()) {
+            updateItemTags(options);
+        }
         // Isolate keybinds
         if (options().isolateKeybinds)
             KeybindManager.isolateKeybinds();
+    }
+
+    public static void updateItemTags(Config.Options options) {
+        options.typeMatchItems.clear();
+        BuiltInRegistries.ITEM.getTags().forEach((pair) -> {
+            if (options.typeMatchTags.contains(pair.getFirst().location().getPath())) {
+                pair.getSecond().forEach((itemHolder) ->
+                        options.typeMatchItems.add(itemHolder.value()));
+            }
+        });
     }
 
     public static void afterGameStart() {

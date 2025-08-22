@@ -4,6 +4,7 @@
   "key.clientsort.edit": "Открыть редактор интерфейса",
   "key.clientsort.op.sort": "Сортировать",
   "key.clientsort.op.stackFill": "Заполнить стаки",
+  "key.clientsort.op.matchTransfer": "Transfer Matching",
   "key.clientsort.op.transfer": "Переместить",
 
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
@@ -70,6 +71,14 @@
   "option.clientsort.ctrlSortOrder": "Режим сортировки по Ctrl",
   "option.clientsort.altSortOrder": "Режим сортировки по Alt",
 
+  "option.clientsort.matching": "Matching",
+  "option.clientsort.alwaysMatchByType": "Always Match by Type",
+  "option.clientsort.alwaysMatchByType.tooltip": "Item-matching operations will always match items with the same type.",
+  "option.clientsort.typeMatchTags": "Type Match Tags",
+  "option.clientsort.typeMatchTags.tooltip.1": "Items with any of the tags in this list will be matched by type only.",
+  "option.clientsort.typeMatchTags.tooltip.2": "Only used if 'Always Match by Type' is disabled.",
+  "option.clientsort.typeMatchTags.tooltip.3": "See %s for a list of tags.",
+
   "option.clientsort.sounds": "Звук",
   "option.clientsort.playSoundSort": "Воспроизводить звуки сортировки",
   "option.clientsort.playSoundSort.tooltip": "Воспроизводить ли звуки при сортировке без ускорения сервера.",
@@ -96,6 +105,7 @@
   "option.clientsort.firstButtonOp": "Первая кнопка",
   "option.clientsort.secondButtonOp": "Вторая кнопка",
   "option.clientsort.thirdButtonOp": "Третья кнопка",
+  "option.clientsort.fourthButtonOp": "Fourth Button Operation",
   "option.clientsort.layoutDefaults": "Макет по умолчанию",
   "option.clientsort.layoutDefaults.tooltip": "These values are used by policies that have the respective value set to '-'.",
   "option.clientsort.layoutOffset.x": "Смещение кнопки по оси X по умолчанию",
@@ -105,7 +115,7 @@
   "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and button operations for each inventory type.",
   "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using the keybind when viewing an inventory.",
   "option.clientsort.policies.description.3": "Data Format",
-  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort status>,<stack-fill status>,<transfer status>,(<ignored slots>)",
+  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<stack-fill>,<match-transfer>,<transfer>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "class: the full name of the inventory class or superclass.",
   "option.clientsort.policies.description.6": "offset: 'x,y', or '-' to use the default.",
   "option.clientsort.policies.description.7": "status: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
@@ -137,6 +147,7 @@
 
   "controlButton.clientsort.SORT": "Сортировать",
   "controlButton.clientsort.STACK_FILL": "Заполнить стаки",
+  "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
   "controlButton.clientsort.TRANSFER": "Переместить",
   "controlButton.clientsort.NONE": "Нет",
 

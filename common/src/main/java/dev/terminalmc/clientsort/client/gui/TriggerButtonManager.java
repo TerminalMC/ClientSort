@@ -22,10 +22,7 @@ import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
-import dev.terminalmc.clientsort.client.gui.widget.SortButton;
-import dev.terminalmc.clientsort.client.gui.widget.StackFillButton;
-import dev.terminalmc.clientsort.client.gui.widget.TransferButton;
-import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
+import dev.terminalmc.clientsort.client.gui.widget.*;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.util.Scope;
@@ -106,6 +103,7 @@ public class TriggerButtonManager {
             generate(acs, containerRefSlot, false, forceShowContainer, options().firstButtonOp);
             generate(acs, containerRefSlot, false, forceShowContainer, options().secondButtonOp);
             generate(acs, containerRefSlot, false, forceShowContainer, options().thirdButtonOp);
+            generate(acs, containerRefSlot, false, forceShowContainer, options().fourthButtonOp);
         }
 
         // Generate player-side buttons
@@ -114,6 +112,7 @@ public class TriggerButtonManager {
             generate(acs, playerRefSlot, true, forceShowPlayer, options().firstButtonOp);
             generate(acs, playerRefSlot, true, forceShowPlayer, options().secondButtonOp);
             generate(acs, playerRefSlot, true, forceShowPlayer, options().thirdButtonOp);
+            generate(acs, playerRefSlot, true, forceShowPlayer, options().fourthButtonOp);
         }
     }
 
@@ -131,6 +130,8 @@ public class TriggerButtonManager {
         switch (op) {
             case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
             case STACK_FILL -> generateStackFillButton(screen, refSlot, isPlayerInv, forceShow);
+            case MATCH_TRANSFER ->
+                    generateMatchTransferButton(screen, refSlot, isPlayerInv, forceShow);
             case TRANSFER -> generateTransferButton(screen, refSlot, isPlayerInv, forceShow);
         }
     }
@@ -250,6 +251,77 @@ public class TriggerButtonManager {
 
         // Create and add
         StackFillButton button = new StackFillButton(
+                screen,
+                container,
+                referenceSlot,
+                isPlayerInv,
+                policy,
+                object.getClass().getName(),
+                getShiftedOffset(offset, isPlayerInv)
+        );
+        addButton(screen, button, isPlayerInv);
+    }
+
+    private static void generateMatchTransferButton(
+            AbstractContainerScreen<?> screen,
+            Slot referenceSlot,
+            boolean isPlayerInv,
+            boolean forceShow
+    ) {
+        // Sanity check; we need a player to work with
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
+
+        // Sanity check; never display container buttons on player screen
+        if (screen instanceof InventoryScreen && !isPlayerInv)
+            return;
+
+        // Preliminary check; never display buttons on basic workstations or other minor inventories
+        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
+            return;
+
+        // Get the relevant container, if any
+        @Nullable Container container = isPlayerInv
+                ? player.getInventory()
+                : getContainer(player);
+        // Sanity check; we need a container to work with
+        if (container == null)
+            return;
+
+        // Select the relevant container or GUI class
+        Object object = container instanceof SimpleContainer
+                ? screen.getMenu()
+                : container;
+
+        // Check the relevant policy, if any
+        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+        if ((policy == null || !policy.showMatchTransferButton()) && !forceShow)
+            return;
+
+        // Get the configured or default offset
+        Vec2i offset = policy != null
+                ? policy.getButtonOffset()
+                : options().layoutOffset;
+
+        // Get the destination container, if any
+        @Nullable Container dstContainer = isPlayerInv
+                ? getContainer(player)
+                : player.getInventory();
+        if (dstContainer != null) {
+            // Select the relevant container or GUI class
+            Object dstObject = dstContainer instanceof SimpleContainer
+                    ? screen.getMenu()
+                    : dstContainer;
+
+            // Check the relevant policy, if any
+            @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
+            if ((dstPolicy == null || !dstPolicy.showMatchTransferButton()) && !forceShow)
+                return;
+        }
+
+        // Create and add
+        MatchTransferButton button = new MatchTransferButton(
                 screen,
                 container,
                 referenceSlot,
