@@ -255,7 +255,7 @@ public abstract class SingleUseOperator<T extends Operation> {
 
         // Preference server-accelerated ops
         if (options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(operation.type)) {
+                && ClientServices.PLATFORM.canSendToServer(operation.id)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
             return new ServerOperator<>(screen, screenHelper, originSlot, operation);
@@ -396,7 +396,7 @@ public abstract class SingleUseOperator<T extends Operation> {
             boolean alwaysMatchByType,
             Set<Item> typeMatchItems
     ) {
-        return ItemStack.isSameItemSameComponents(a, b) ||
+        return ItemStack.isSameItemSameTags(a, b) ||
                 (
                         ItemStack.isSameItem(a, b)
                                 && (alwaysMatchByType || typeMatchItems.contains(a.getItem()))
