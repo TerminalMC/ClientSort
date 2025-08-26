@@ -28,6 +28,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class ClientSort {
@@ -59,6 +61,7 @@ public class ClientSort {
     }
 
     public static void afterConfigSaved(Config config) {
+        @Nullable Minecraft mc = Minecraft.getInstance();
         Config.Options options = config.options;
         // Convert config sort order strings into enum values
         options.sortOrder = SortOrder.SORT_ORDERS.get(options.sortOrderStr);
@@ -72,8 +75,8 @@ public class ClientSort {
         // Update class cache
         PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
         // Update item tags
-        if (Minecraft.getInstance().getConnection() != null
-                && Minecraft.getInstance().getConnection().isAcceptingMessages()) {
+        //noinspection ConstantValue
+        if (mc != null && mc.getConnection() != null && mc.getConnection().isAcceptingMessages()) {
             updateItemTags(options);
         }
         // Isolate keybinds
