@@ -73,14 +73,11 @@ public class ClientSort {
         InteractionManager.setTickRate(options.interactionInterval);
         // Update class cache
         PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
-        // Update item tags
         //noinspection ConstantValue
         if (mc != null && mc.getConnection() != null && mc.getConnection().isAcceptingMessages()) {
+            // Update item tags
             updateItemTags(options);
-        }
-        // Update sorting item sets
-        //noinspection ConstantValue
-        if (mc != null && mc.getConnection() != null && mc.getConnection().isAcceptingMessages()) {
+            // Update sorting item sets
             updateItemSets(options);
         }
         // Isolate keybinds
