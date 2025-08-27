@@ -77,6 +77,9 @@ which can be used to trigger operations.
 If you want operations to ignore specific slots, you can click on the slots while viewing the editor
 screen to add them to the ignore-list for that type of inventory.
 
+This may be particularly useful for modded inventories with special attachment slots, if ClientSort
+does not recognize that they are not part of the main inventory.
+
 #### Clientside Policies (v2)
 
 ClientSort uses a policy system to determine when to allow operations, when to show the trigger
