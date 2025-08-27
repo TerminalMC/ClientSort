@@ -198,6 +198,62 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.altSortOrderStr = (String) val)
                 .build());
 
+        sort.addEntry(eb.startTextDescription(localized("option", "orderOverrides")).build());
+
+        sort.addEntry(eb.startBooleanToggle(
+                        localized("option", "useStartOverrides"),
+                        options.useStartOverrides
+                )
+                .setTooltip(localized("option", "useStartOverrides.tooltip"))
+                .setDefaultValue(Options.useStartOverridesDefault)
+                .setSaveConsumer(val -> options.useStartOverrides = val)
+                .build());
+
+        sort.addEntry(eb.startStrList(
+                        localized("option", "startOverrideItems"),
+                        options.startOverrideItems
+                )
+                .setTooltip(localized("option", "startOverrideItems.tooltip").append("\n")
+                        .append(localized(
+                                "option",
+                                "overrideItems.tooltip.2",
+                                localized("option", "overrideItems.tooltip.2.item").withStyle(
+                                        ChatFormatting.GOLD)
+                        )))
+                .setDefaultValue(Options.startOverrideItemsDefault.get())
+                .setSaveConsumer(val -> options.startOverrideItems =
+                        val.stream().filter((s) -> !s.isBlank()).toList())
+                .setInsertInFront(true)
+                .setExpanded(options.useStartOverrides)
+                .build());
+
+        sort.addEntry(eb.startBooleanToggle(
+                        localized("option", "useEndOverrides"),
+                        options.useEndOverrides
+                )
+                .setTooltip(localized("option", "useEndOverrides.tooltip"))
+                .setDefaultValue(Options.useEndOverridesDefault)
+                .setSaveConsumer(val -> options.useEndOverrides = val)
+                .build());
+
+        sort.addEntry(eb.startStrList(
+                        localized("option", "endOverrideItems"),
+                        options.endOverrideItems
+                )
+                .setTooltip(localized("option", "endOverrideItems.tooltip").append("\n")
+                        .append(localized(
+                                "option",
+                                "overrideItems.tooltip.2",
+                                localized("option", "overrideItems.tooltip.2.item").withStyle(
+                                        ChatFormatting.GOLD)
+                        )))
+                .setDefaultValue(Options.endOverrideItemsDefault.get())
+                .setSaveConsumer(val -> options.endOverrideItems =
+                        val.stream().filter((s) -> !s.isBlank()).toList())
+                .setInsertInFront(true)
+                .setExpanded(options.useEndOverrides)
+                .build());
+
         ConfigCategory matching = builder.getOrCreateCategory(localized("option", "matching"));
 
         matching.addEntry(eb.startBooleanToggle(
@@ -224,7 +280,8 @@ public class ClothScreenProvider {
                                         .withStyle(ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Config.Options.typeMatchTagsDefault.get())
-                .setSaveConsumer(val -> options.typeMatchTags = val)
+                .setSaveConsumer(val -> options.typeMatchTags =
+                        val.stream().filter((s) -> !s.isBlank()).toList())
                 .setInsertInFront(true)
                 .setExpanded(!options.alwaysMatchByType)
                 .build());

@@ -27,8 +27,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -79,19 +78,41 @@ public class ClientSort {
         if (mc != null && mc.getConnection() != null && mc.getConnection().isAcceptingMessages()) {
             updateItemTags(options);
         }
+        // Update sorting item sets
+        //noinspection ConstantValue
+        if (mc != null && mc.getConnection() != null && mc.getConnection().isAcceptingMessages()) {
+            updateItemSets(options);
+        }
         // Isolate keybinds
         if (options().isolateKeybinds)
             KeybindManager.isolateKeybinds();
     }
 
     public static void updateItemTags(Config.Options options) {
-        options.typeMatchItems.clear();
+        options.typeMatchItemCache.clear();
         BuiltInRegistries.ITEM.getTags().forEach((pair) -> {
             if (options.typeMatchTags.contains(pair.getFirst().location().getPath())) {
                 pair.getSecond().forEach((itemHolder) ->
-                        options.typeMatchItems.add(itemHolder.value()));
+                        options.typeMatchItemCache.add(itemHolder.value()));
             }
         });
+    }
+
+    public static void updateItemSets(Config.Options options) {
+        options.startOverrideMap.clear();
+        int i = 0;
+        for (String s : options.startOverrideItems) {
+            int idx = i++;
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(s))
+                    .ifPresent((item) -> options.startOverrideMap.put(item, idx));
+        }
+        options.endOverrideMap.clear();
+        i = 0;
+        for (String s : options.endOverrideItems) {
+            int idx = i++;
+            BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(s))
+                    .ifPresent((item) -> options.endOverrideMap.put(item, idx));
+        }
     }
 
     public static void afterGameStart() {

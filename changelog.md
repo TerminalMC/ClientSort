@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.14
+
+- Added support for configuring specific items to always be sorted to the start or end
+
 ## 2.0.0-beta.13
 
 - Added a new operation 'Transfer Matching', which only transfers item types that already exist in

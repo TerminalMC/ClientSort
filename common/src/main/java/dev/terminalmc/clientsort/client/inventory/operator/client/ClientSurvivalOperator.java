@@ -457,7 +457,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 originScopeSlots,
                 otherScopeStacks,
                 options().alwaysMatchByType,
-                options().typeMatchItems
+                options().typeMatchItemCache
         ));
     }
 

@@ -111,7 +111,7 @@ public class Config {
         public List<String> typeMatchTags = typeMatchTagsDefault.get();
         public static Validator<List<String>> typeMatchTagsValidator = (val) -> val != null
                 ? val : typeMatchTagsDefault.get();
-        public transient final HashSet<Item> typeMatchItems = new HashSet<>();
+        public transient final HashSet<Item> typeMatchItemCache = new HashSet<>();
 
         // Sort order options
 
@@ -138,6 +138,20 @@ public class Config {
         public static Validator<String> altSortOrderStrValidator = (val) -> val != null
                 && SortOrder.SORT_ORDERS.containsKey(val) ? val : altSortOrderStrDefault;
         public transient SortOrder altSortOrder;
+
+        public static final boolean useStartOverridesDefault = true;
+        public boolean useStartOverrides = useStartOverridesDefault;
+
+        public static final Supplier<List<String>> startOverrideItemsDefault = List::of;
+        public List<String> startOverrideItems = startOverrideItemsDefault.get();
+        public transient final Map<Item, Integer> startOverrideMap = new HashMap<>();
+
+        public static final boolean useEndOverridesDefault = true;
+        public boolean useEndOverrides = useEndOverridesDefault;
+
+        public static final Supplier<List<String>> endOverrideItemsDefault = List::of;
+        public List<String> endOverrideItems = endOverrideItemsDefault.get();
+        public transient final Map<Item, Integer> endOverrideMap = new HashMap<>();
 
         // Interaction sound options
 

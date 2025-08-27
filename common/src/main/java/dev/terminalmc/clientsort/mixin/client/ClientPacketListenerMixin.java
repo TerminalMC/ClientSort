@@ -54,6 +54,8 @@ public abstract class ClientPacketListenerMixin {
     private void afterLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         // Update tag cache
         ClientSort.updateItemTags(options());
+        // Update item caches
+        ClientSort.updateItemSets(options());
     }
 
     @Inject(

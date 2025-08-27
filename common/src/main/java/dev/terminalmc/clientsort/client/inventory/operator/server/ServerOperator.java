@@ -119,7 +119,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                 originScopeSlots,
                 otherScopeStacks,
                 options().alwaysMatchByType,
-                options().typeMatchItems
+                options().typeMatchItemCache
         ));
     }
 
