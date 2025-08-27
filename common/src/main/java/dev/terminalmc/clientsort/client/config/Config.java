@@ -144,6 +144,8 @@ public class Config {
 
         public static final Supplier<List<String>> startOverrideItemsDefault = List::of;
         public List<String> startOverrideItems = startOverrideItemsDefault.get();
+        public static Validator<List<String>> startOverrideItemsValidator = (val) -> val != null
+                ? val : startOverrideItemsDefault.get();
         public transient final Map<Item, Integer> startOverrideMap = new HashMap<>();
 
         public static final boolean useEndOverridesDefault = true;
@@ -151,6 +153,8 @@ public class Config {
 
         public static final Supplier<List<String>> endOverrideItemsDefault = List::of;
         public List<String> endOverrideItems = endOverrideItemsDefault.get();
+        public static Validator<List<String>> endOverrideItemsValidator = (val) -> val != null
+                ? val : endOverrideItemsDefault.get();
         public transient final Map<Item, Integer> endOverrideMap = new HashMap<>();
 
         // Interaction sound options
@@ -462,6 +466,10 @@ public class Config {
                 Options.ctrlSortOrderStrValidator.validate(options.ctrlSortOrderStr);
         options.altSortOrderStr =
                 Options.altSortOrderStrValidator.validate(options.altSortOrderStr);
+        options.startOverrideItems =
+                Options.startOverrideItemsValidator.validate(options.startOverrideItems);
+        options.endOverrideItems =
+                Options.endOverrideItemsValidator.validate(options.endOverrideItems);
         options.interactionSound =
                 Options.interactionSoundValidator.validate(options.interactionSound);
         options.soundInterval =
