@@ -67,8 +67,8 @@ which can be used to trigger operations.
 
 <table style="width:100%;">
   <tr>
-    <td style="width:50%;"><img alt="GUI demo" src="assets/images/editor_01.png" style="width:100%;"></td>
-    <td style="width:50%;"><img alt="Editor demo" src="assets/images/gui_01.png" style="width:100%;"></td>
+    <td style="width:50%;"><img alt="GUI demo" src="./assets/images/gui_01.png" style="width:100%;"></td>
+    <td style="width:50%;"><img alt="Editor demo" src="./assets/images/editor_01.png" style="width:100%;"></td>
   </tr>
 </table>
 
