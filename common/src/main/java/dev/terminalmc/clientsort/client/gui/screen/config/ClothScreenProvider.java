@@ -222,7 +222,7 @@ public class ClothScreenProvider {
                         )))
                 .setDefaultValue(Options.startOverrideItemsDefault.get())
                 .setSaveConsumer(val -> options.startOverrideItems =
-                        val.stream().filter((s) -> !s.isBlank()).toList())
+                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
                 .setInsertInFront(true)
                 .setExpanded(options.useStartOverrides)
                 .build());
@@ -249,7 +249,7 @@ public class ClothScreenProvider {
                         )))
                 .setDefaultValue(Options.endOverrideItemsDefault.get())
                 .setSaveConsumer(val -> options.endOverrideItems =
-                        val.stream().filter((s) -> !s.isBlank()).toList())
+                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
                 .setInsertInFront(true)
                 .setExpanded(options.useEndOverrides)
                 .build());
@@ -281,7 +281,7 @@ public class ClothScreenProvider {
                         )))
                 .setDefaultValue(Config.Options.typeMatchTagsDefault.get())
                 .setSaveConsumer(val -> options.typeMatchTags =
-                        val.stream().filter((s) -> !s.isBlank()).toList())
+                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
                 .setInsertInFront(true)
                 .setExpanded(!options.alwaysMatchByType)
                 .build());
