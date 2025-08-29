@@ -37,9 +37,8 @@ public class InteractionManager {
 
     public static final Waiter TICK_WAITER = (TriggerType type) -> type == TriggerType.TICK;
 
-    private static final ArrayDeque<InteractionEvent> interactionEventQueue = new ArrayDeque<>();
-    private static final ScheduledThreadPoolExecutor scheduledExecutor =
-            new ScheduledThreadPoolExecutor(1);
+    private static final ArrayDeque<InteractionEvent> eventQueue = new ArrayDeque<>();
+    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
     private static ScheduledFuture<?> tickFuture;
     private static Waiter waiter = null;
@@ -47,11 +46,9 @@ public class InteractionManager {
     /**
      * Queues the event.
      */
-    public static void push(InteractionEvent interactionEvent) {
-        if (interactionEvent == null)
-            return;
-        synchronized (interactionEventQueue) {
-            interactionEventQueue.add(interactionEvent);
+    public static void push(InteractionEvent event) {
+        synchronized (eventQueue) {
+            eventQueue.add(event);
             if (waiter == null)
                 triggerSend(TriggerType.INITIAL);
         }
@@ -60,24 +57,20 @@ public class InteractionManager {
     /**
      * Adds the event to the front of the queue.
      */
-    public static void now(InteractionEvent interactionEvent) {
-        if (interactionEvent == null)
-            return;
-        synchronized (interactionEventQueue) {
-            interactionEventQueue.addFirst(interactionEvent);
+    public static void now(InteractionEvent event) {
+        synchronized (eventQueue) {
+            eventQueue.addFirst(event);
             if (waiter == null)
                 triggerSend(TriggerType.INITIAL);
         }
     }
 
     /**
-     * Queues the specified events.
+     * Queues the events.
      */
-    public static void pushAll(Collection<InteractionEvent> interactionEvents) {
-        if (interactionEvents == null)
-            return;
-        synchronized (interactionEventQueue) {
-            interactionEventQueue.addAll(interactionEvents);
+    public static void pushAll(Collection<InteractionEvent> events) {
+        synchronized (eventQueue) {
+            eventQueue.addAll(events);
             if (waiter == null)
                 triggerSend(TriggerType.INITIAL);
         }
@@ -87,8 +80,8 @@ public class InteractionManager {
      * Clears the event queue.
      */
     public static void clear() {
-        synchronized (interactionEventQueue) {
-            interactionEventQueue.clear();
+        synchronized (eventQueue) {
+            eventQueue.clear();
             waiter = null;
         }
     }
@@ -96,11 +89,11 @@ public class InteractionManager {
     /**
      * Initiates sending of all queued events.
      */
-    public static void triggerSend(TriggerType triggerType) {
-        synchronized (interactionEventQueue) {
-            if (waiter == null || waiter.trigger(triggerType)) {
+    public static void triggerSend(TriggerType type) {
+        synchronized (eventQueue) {
+            if (waiter == null || waiter.trigger(type)) {
                 do {
-                    InteractionEvent event = interactionEventQueue.poll();
+                    InteractionEvent event = eventQueue.poll();
                     if (event == null) {
                         waiter = null;
                         break;
@@ -119,7 +112,7 @@ public class InteractionManager {
         Waiter blockingWaiter = tt -> false;
         waiter = blockingWaiter;
         Minecraft.getInstance().execute(() -> {
-            synchronized (interactionEventQueue) {
+            synchronized (eventQueue) {
                 if (waiter == blockingWaiter) {
                     waiter = event.send();
                 }
@@ -130,16 +123,16 @@ public class InteractionManager {
     /**
      * Sets the tick rate of the interaction manager.
      *
-     * @param milliSeconds the time, in milliseconds, between ticks.
+     * @param intervalMs the time, in milliseconds, between ticks.
      */
-    public static void setTickRate(long milliSeconds) {
+    public static void setTickRate(long intervalMs) {
         if (tickFuture != null) {
             tickFuture.cancel(false);
         }
-        tickFuture = scheduledExecutor.scheduleAtFixedRate(
+        tickFuture = executor.scheduleAtFixedRate(
                 InteractionManager::tick,
-                milliSeconds,
-                milliSeconds,
+                intervalMs,
+                intervalMs,
                 TimeUnit.MILLISECONDS
         );
     }
@@ -155,11 +148,11 @@ public class InteractionManager {
     @FunctionalInterface
     public interface Waiter {
 
-        boolean trigger(TriggerType triggerType);
+        boolean trigger(TriggerType type);
 
         @SuppressWarnings("unused")
-        static Waiter equal(TriggerType triggerType) {
-            return triggerType::equals;
+        static Waiter equal(TriggerType type) {
+            return type::equals;
         }
     }
 
@@ -173,8 +166,8 @@ public class InteractionManager {
         }
 
         @Override
-        public boolean trigger(TriggerType triggerType) {
-            return triggerType == TriggerType.GUI_CONFIRM && --triggers == 0;
+        public boolean trigger(TriggerType type) {
+            return type == TriggerType.GUI_CONFIRM && --triggers == 0;
         }
     }
 

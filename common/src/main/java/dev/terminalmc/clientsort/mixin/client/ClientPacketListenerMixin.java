@@ -70,7 +70,7 @@ public abstract class ClientPacketListenerMixin {
             method = "handleContainerSetSlot",
             at = @At("RETURN")
     )
-    public void beforeSlotItemChange(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
+    public void afterSlotItemChange(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
         InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
     }
 }

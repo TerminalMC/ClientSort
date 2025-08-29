@@ -100,6 +100,8 @@ public class Config {
         public static final boolean bundlesUseLeftClickDefault = false;
         public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
 
+        // Matching options
+
         public static final boolean alwaysMatchByTypeDefault = false;
         public boolean alwaysMatchByType = alwaysMatchByTypeDefault;
 
@@ -419,34 +421,6 @@ public class Config {
     }
 
     /**
-     * Updates legacy config fields.
-     */
-    private void upgradeLegacy() {
-        // Legacy from pre v2.0.0-beta.11
-        if (options.buttonLayouts != null && !options.buttonLayouts.isEmpty()) {
-            // Upgrade old ButtonLayouts to new ClassPolicies
-            options.buttonLayouts.values().forEach((bl) -> options.classPolicies.put(
-                    bl.className(),
-                    new ClassPolicy(
-                            bl.className(),
-                            bl.offset(),
-                            Boolean.TRUE.equals(bl.sortEnabled())
-                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
-                            Boolean.TRUE.equals(bl.stackFillEnabled())
-                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
-                            Policy.KEYBIND,
-                            Boolean.TRUE.equals(bl.transferEnabled())
-                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
-                            new TreeSet<>()
-                    )
-            ));
-            // Validate everything, including upgrading old ClassPolicies
-            options.classPolicies = Options.classPoliciesValidator.validate(options.classPolicies);
-        }
-        options.buttonLayouts = null;
-    }
-
-    /**
      * Ensures that all config values are valid.
      */
     private void validate() {
@@ -492,6 +466,34 @@ public class Config {
                 Options.layoutOffsetValidator.validate(options.layoutOffset);
         options.classPolicies =
                 Options.classPoliciesValidator.validate(options.classPolicies);
+    }
+
+    /**
+     * Updates legacy config fields.
+     */
+    private void upgradeLegacy() {
+        // Legacy from pre v2.0.0-beta.11
+        if (options.buttonLayouts != null && !options.buttonLayouts.isEmpty()) {
+            // Upgrade old ButtonLayouts to new ClassPolicies
+            options.buttonLayouts.values().forEach((bl) -> options.classPolicies.put(
+                    bl.className(),
+                    new ClassPolicy(
+                            bl.className(),
+                            bl.offset(),
+                            Boolean.TRUE.equals(bl.sortEnabled())
+                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
+                            Boolean.TRUE.equals(bl.stackFillEnabled())
+                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
+                            Policy.KEYBIND,
+                            Boolean.TRUE.equals(bl.transferEnabled())
+                                    ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
+                            new TreeSet<>()
+                    )
+            ));
+            // Validate everything, including upgrading old ClassPolicies
+            options.classPolicies = Options.classPoliciesValidator.validate(options.classPolicies);
+        }
+        options.buttonLayouts = null;
     }
 
     // Instance management
