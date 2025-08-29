@@ -36,7 +36,7 @@ public class ConfigScreenProvider {
         try {
             return ClothScreenProvider.getConfigScreen(parent);
         } catch (NoClassDefFoundError ignored) {
-            return new BackupScreen(parent, "installCloth", "https://modrinth.com/mod/9s6osm5g");
+            return new BackupScreen(parent, "installCloth", "https://modrinth.com/project/9s6osm5g");
         }
     }
 
