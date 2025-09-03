@@ -39,11 +39,11 @@ sort orders can be used by holding down a modifier key while pressing the sort k
 
 In addition to sorting, ClientSort `v2.0.0` and later versions include the following operations:
 
-- **Stack Fill**
+- **Fill Stacks**
   - Complete all partial stacks in the other inventory using items in the target inventory.
-- **Transfer Matching**
+- **Transfer Matching** (restock)
   - Move all items from the target inventory to the other inventory, without adding any new item
-    types to the target inventory.
+    types to the other inventory.
 - **Transfer**
   - Move all items from the target inventory to the other inventory.
 
