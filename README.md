@@ -41,9 +41,9 @@ In addition to sorting, ClientSort `v2.0.0` and later versions include the follo
 
 - **Fill Stacks**
   - Complete all partial stacks in the other inventory using items in the target inventory.
-- **Transfer Matching** (restock)
+- **Transfer Matching**
   - Move all items from the target inventory to the other inventory, without adding any new item
-    types to the other inventory.
+    types to the other inventory (restock).
 - **Transfer**
   - Move all items from the target inventory to the other inventory.
 
@@ -75,13 +75,13 @@ which can be used to trigger operations.
 
 #### Slot Ignoring (v2)
 
-If you want operations to ignore specific slots, you can click on the slots while viewing the editor
-screen to add them to the ignore-list for that type of inventory.
+If you want operations to ignore specific slots, you can click on a slot while viewing the editor
+screen to add it to the ignore-list for that type of inventory.
 
 This may be particularly useful for modded inventories with special attachment slots, if ClientSort
 does not recognize that they are not part of the main inventory.
 
-#### Clientside Policies (v2)
+#### Client-side Policies (v2)
 
 ClientSort uses a policy system to determine when to allow operations, when to show the trigger
 buttons, and when to ignore slots. The policy can be configured either via the editor screen or via
@@ -89,7 +89,7 @@ the `Policies` tab of the mod options.
 
 Read the in-game instructions for more information on editing policies.
 
-#### Serverside Policies (v2)
+#### Server-side Policies (v2)
 
 If installed on a server or in singleplayer, ClientSort uses policies to automatically disable
 server-accelerated operations when it detects an incorrect state (such as item duplication).
@@ -97,9 +97,10 @@ server-accelerated operations when it detects an incorrect state (such as item d
 The policy list is stored in the `clientsort-server.json` config file, which can be manually edited
 and reloaded using the `/clientsort reload` command.
 
-Serverside policies are *not* synced to clients, so connected clients may still attempt to sort a
-disabled inventory (unless they have a client-side policy disabling it), but the server will not
-perform the operation.
+Serverside policies are *not* synced to clients, so if a client attempts to perform a
+server-accelerated operation that the server does not allow, a warning message will be shown to the
+client. The player can then opt to add a client-side policy to disable the operation entirely,
+disable server acceleration, or enable automatically falling back to client operations.
 
 ### Installation
 
