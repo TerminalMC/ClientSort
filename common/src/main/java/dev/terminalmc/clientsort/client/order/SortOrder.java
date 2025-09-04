@@ -308,7 +308,7 @@ public abstract class SortOrder {
                             }
 
                             // Same total amounts; compare stacks
-                            if (ItemStack.isSameItemSameComponents(stackA, stackB)) {
+                            if (ItemStack.isSameItemSameTags(stackA, stackB)) {
                                 // Same item; use default comparison
                                 return StackComparison.compareEqualItems(stackA, stackB, context);
                             } else {

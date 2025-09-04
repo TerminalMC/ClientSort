@@ -58,8 +58,8 @@ public class TransferHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
                 (menu) -> transfer(menu, payload.srcSlotIds(), payload.dstSlotIds()),
-                TransferPayload.TYPE,
-                TransferResultPayload.TYPE,
+                TransferPayload.ID,
+                TransferResultPayload.ID,
                 (result, message) -> new TransferResultPayload(result.code, message)
         ));
     }
@@ -88,7 +88,7 @@ public class TransferHandler extends PayloadHandler {
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found

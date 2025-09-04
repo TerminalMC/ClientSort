@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.gui.widget;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
@@ -26,11 +25,9 @@ import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +38,6 @@ import java.util.TreeSet;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class SortButton extends TriggerButton {
-
-    private static final WidgetSprites SPRITES = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_disabled"),
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/sort_highlighted")
-    );
 
     public SortButton(
             AbstractContainerScreen<?> screen,
@@ -63,7 +54,7 @@ public class SortButton extends TriggerButton {
                 container,
                 referenceSlot,
                 isPlayerInv,
-                SPRITES,
+                new Vec2i(0, 0),
                 name,
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,

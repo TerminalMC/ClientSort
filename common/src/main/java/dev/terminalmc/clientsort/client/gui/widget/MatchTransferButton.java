@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.gui.widget;
 
-import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
@@ -25,10 +24,8 @@ import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -39,29 +36,6 @@ import java.util.TreeSet;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class MatchTransferButton extends TriggerButton {
-
-    private static final WidgetSprites SPRITES_UP = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/match_transfer_up"),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/match_transfer_up_disabled"
-            ),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/match_transfer_up_highlighted"
-            )
-    );
-    private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/match_transfer_down"),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/match_transfer_down_disabled"
-            ),
-            ResourceLocation.fromNamespaceAndPath(
-                    ClientSort.MOD_ID,
-                    "widget/match_transfer_down_highlighted"
-            )
-    );
 
     public MatchTransferButton(
             AbstractContainerScreen<?> screen,
@@ -78,7 +52,7 @@ public class MatchTransferButton extends TriggerButton {
                 container,
                 referenceSlot,
                 isPlayerInv,
-                isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
+                new Vec2i(isPlayerInv ? 4 : 3, 0),
                 name,
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
