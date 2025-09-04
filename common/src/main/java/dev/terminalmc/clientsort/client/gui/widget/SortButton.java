@@ -29,6 +29,7 @@ import dev.terminalmc.clientsort.client.order.SortOrder;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -54,7 +55,8 @@ public class SortButton extends TriggerButton {
             boolean isPlayerInv,
             @Nullable ClassPolicy policy,
             String lowestPolicyKey,
-            Vec2i offset
+            Vec2i offset,
+            Component name
     ) {
         super(
                 screen,
@@ -62,6 +64,7 @@ public class SortButton extends TriggerButton {
                 referenceSlot,
                 isPlayerInv,
                 SPRITES,
+                name,
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,

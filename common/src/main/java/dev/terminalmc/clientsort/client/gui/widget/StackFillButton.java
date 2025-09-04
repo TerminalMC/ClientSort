@@ -27,6 +27,7 @@ import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -69,7 +70,8 @@ public class StackFillButton extends TriggerButton {
             boolean isPlayerInv,
             @Nullable ClassPolicy policy,
             String lowestPolicyKey,
-            Vec2i offset
+            Vec2i offset,
+            Component name
     ) {
         super(
                 screen,
@@ -77,6 +79,7 @@ public class StackFillButton extends TriggerButton {
                 referenceSlot,
                 isPlayerInv,
                 isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
+                name,
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,

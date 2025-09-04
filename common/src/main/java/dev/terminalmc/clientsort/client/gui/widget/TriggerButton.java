@@ -59,6 +59,7 @@ public abstract class TriggerButton extends Button {
     public final boolean isPlayerInv;
 
     private final WidgetSprites sprites;
+    private final Component name;
 
     public final @Nullable String activePolicyKey;
     public final String lowestPolicyKey;
@@ -72,6 +73,7 @@ public abstract class TriggerButton extends Button {
             Slot referenceSlot,
             boolean isPlayerInv,
             WidgetSprites sprites,
+            Component name,
             @Nullable String activePolicyKey,
             String lowestPolicyKey,
             Vec2i offset,
@@ -102,6 +104,7 @@ public abstract class TriggerButton extends Button {
         this.lowestPolicyKey = lowestPolicyKey;
         this.operationAllowed = operationAllowed;
         this.active = active;
+        this.name = name;
     }
 
     @Override
@@ -178,7 +181,7 @@ public abstract class TriggerButton extends Button {
 
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
-            if (Minecraft.getInstance().screen instanceof EditorScreen) {
+            if (Minecraft.getInstance().screen instanceof EditorScreen && getTooltip() == null) {
                 Component visibilityStatus = localized(
                         "editor", active ? "enabled" : "disabled")
                         .withStyle(active
@@ -189,7 +192,9 @@ public abstract class TriggerButton extends Button {
                         .withStyle(operationAllowed
                                 ? ChatFormatting.GREEN
                                 : ChatFormatting.RED);
-                setTooltip(Tooltip.create(localized("editor", "visibility", visibilityStatus)
+                setTooltip(Tooltip.create(Component.empty().append(name)
+                        .append("\n")
+                        .append(localized("editor", "visibility", visibilityStatus))
                         .append("\n")
                         .append(localized("editor", "operation", operationStatus))));
             } else {

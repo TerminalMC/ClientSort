@@ -47,6 +47,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class TriggerButtonManager {
 
@@ -186,7 +187,8 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
-                getShiftedOffset(offset, isPlayerInv)
+                getShiftedOffset(offset, isPlayerInv),
+                localized("key", "op.sort")
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -257,7 +259,8 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
-                getShiftedOffset(offset, isPlayerInv)
+                getShiftedOffset(offset, isPlayerInv),
+                localized("key", "op.stackFill")
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -328,7 +331,8 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
-                getShiftedOffset(offset, isPlayerInv)
+                getShiftedOffset(offset, isPlayerInv),
+                localized("key", "op.matchTransfer")
         );
         addButton(screen, button, isPlayerInv);
     }
@@ -399,7 +403,8 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
-                getShiftedOffset(offset, isPlayerInv)
+                getShiftedOffset(offset, isPlayerInv),
+                localized("key", "op.transfer")
         );
         addButton(screen, button, isPlayerInv);
     }
