@@ -81,7 +81,7 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found; place as much as possible
