@@ -16,12 +16,17 @@
 
 package dev.terminalmc.clientsort.client.network.handler;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.network.handler.util.ResultHandlerUtil;
+import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
+import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.Nullable;
 
-import static dev.terminalmc.clientsort.client.ClientSort.debug;
+import java.util.function.Consumer;
 
 public class TransferResultHandler {
 
@@ -29,22 +34,36 @@ public class TransferResultHandler {
     }
 
     /**
+     * An operation to be run on receipt of a {@link TransferResultPayload}.
+     */
+    public static @Nullable Consumer<PayloadResult> onCompletion;
+
+    /**
      * Handles a {@link TransferResultPayload} sent by a server.
      */
-    @SuppressWarnings("unused")
     public static void handle(
             TransferResultPayload payload,
             Minecraft mc,
             LocalPlayer player
     ) {
-        if (!payload.success()) {
-            ClientSort.LOG.error(
-                    "Received failure warning '{}': {}",
-                    TransferResultPayload.ID,
-                    payload.message()
-            );
-        } else if (debug()) {
-            ClientSort.LOG.info("Received success result for operation TRANSFER");
+        PayloadResult result = ResultHandlerUtil.interpretResult(
+                payload.result(),
+                payload.message(),
+                CollectPayload.ID
+        );
+
+        if (onCompletion != null) {
+            try {
+                onCompletion.accept(result);
+            } catch (Exception e) {
+                ClientSort.LOG.error(
+                        "Failed to run completion callback for payload '{}' with result '{}': {}",
+                        TransferPayload.ID,
+                        result.name(),
+                        e
+                );
+            }
+            onCompletion = null;
         }
 
         player.inventoryMenu.broadcastChanges();

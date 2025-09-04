@@ -96,6 +96,15 @@ public class ClothScreenProvider {
                 .build());
 
         general.addEntry(eb.startBooleanToggle(
+                        localized("option", "useClientFallback"),
+                        options.useClientFallback
+                )
+                .setTooltip(localized("option", "useClientFallback.tooltip"))
+                .setDefaultValue(Options.useClientFallbackDefault)
+                .setSaveConsumer(val -> options.useClientFallback = val)
+                .build());
+
+        general.addEntry(eb.startBooleanToggle(
                         localized("option", "optimizeCreativeSorting"),
                         options.optimizeCreativeSorting
                 )

@@ -16,13 +16,17 @@
 
 package dev.terminalmc.clientsort.client.network.handler;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.network.handler.util.ResultHandlerUtil;
+import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
+import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.Nullable;
 
-import static dev.terminalmc.clientsort.client.ClientSort.debug;
+import java.util.function.Consumer;
 
 public class StackFillResultHandler {
 
@@ -30,22 +34,36 @@ public class StackFillResultHandler {
     }
 
     /**
+     * An operation to be run on receipt of a {@link StackFillResultPayload}.
+     */
+    public static @Nullable Consumer<PayloadResult> onCompletion;
+
+    /**
      * Handles a {@link StackFillResultPayload} sent by a server.
      */
-    @SuppressWarnings("unused")
     public static void handle(
             StackFillResultPayload payload,
             Minecraft mc,
             LocalPlayer player
     ) {
-        if (!payload.success()) {
-            ClientSort.LOG.error(
-                    "Received failure warning '{}': {}",
-                    StackFillPayload.ID,
-                    payload.message()
-            );
-        } else if (debug()) {
-            ClientSort.LOG.info("Received success result for operation STACK_FILL");
+        PayloadResult result = ResultHandlerUtil.interpretResult(
+                payload.result(),
+                payload.message(),
+                CollectPayload.ID
+        );
+
+        if (onCompletion != null) {
+            try {
+                onCompletion.accept(result);
+            } catch (Exception e) {
+                ClientSort.LOG.error(
+                        "Failed to run completion callback for payload '{}' with result '{}': {}",
+                        StackFillPayload.ID,
+                        result.name(),
+                        e
+                );
+            }
+            onCompletion = null;
         }
 
         player.inventoryMenu.broadcastChanges();

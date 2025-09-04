@@ -68,6 +68,9 @@ public class Config {
         public static final boolean useServerAccelerationDefault = true;
         public boolean useServerAcceleration = useServerAccelerationDefault;
 
+        public static final boolean useClientFallbackDefault = false;
+        public boolean useClientFallback = useClientFallbackDefault;
+
         public static final boolean optimizeCreativeSortingDefault = true;
         public boolean optimizeCreativeSorting = optimizeCreativeSortingDefault;
 

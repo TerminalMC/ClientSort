@@ -229,7 +229,8 @@ public abstract class SingleUseOperator<T extends Operation> {
             AbstractContainerScreen<?> screen,
             ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Operation operation
+            Operation operation,
+            boolean onlyClient
     ) {
         // Check policy
         Object object = originSlot.container instanceof SimpleContainer
@@ -254,7 +255,7 @@ public abstract class SingleUseOperator<T extends Operation> {
         }
 
         // Preference server-accelerated ops
-        if (options().useServerAcceleration
+        if (!onlyClient && options().useServerAcceleration
                 && ClientServices.PLATFORM.canSendToServer(operation.type)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());

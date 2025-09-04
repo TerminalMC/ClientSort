@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0-beta.15
+
+Note: this beta version includes networking changes, servers and clients must be upgraded together.
+
+- Improved communication of server-accelerated operation failure
+- Added an option to fall back to client operations when a server-accelerated operation fails
+
 ## 2.0.0-beta.14
 
 - Added support for configuring specific items to always be sorted to the start or end

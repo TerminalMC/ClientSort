@@ -18,6 +18,8 @@ package dev.terminalmc.clientsort.network.handler;
 
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
@@ -52,8 +54,9 @@ public class CollectHandler extends PayloadHandler {
                 (menu) -> checkPolicy(player, menu, payload.slotIds()),
                 (menu) -> validateSlotArray(player, menu, payload.slotIds()),
                 (menu) -> collect(menu, payload.slotIds()),
+                CollectPayload.TYPE,
                 CollectResultPayload.TYPE,
-                (error) -> new CollectResultPayload(error == null, error == null ? "" : error)
+                (result, message) -> new CollectResultPayload(result.code, message)
         ));
     }
 
@@ -96,8 +99,7 @@ public class CollectHandler extends PayloadHandler {
                         dstSlot.getMaxStackSize(srcStackCopy)
                 ));
                 if (notEqual(dstSlot.getItem(), expected)) {
-                    setPolicy(menu, slotIds);
-                    throw new PayloadHandlerException(String.format(
+                    String message = String.format(
                             "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
                             srcStackCopy,
@@ -105,7 +107,9 @@ public class CollectHandler extends PayloadHandler {
                             dstStackCopy,
                             expected,
                             dstSlot.getItem()
-                    ));
+                    );
+                    setPolicy(menu, slotIds, message);
+                    throw new InconsistentStateException(message);
                 }
 
                 // If no items remain in the source stack, stop looking
@@ -117,11 +121,11 @@ public class CollectHandler extends PayloadHandler {
     }
 
     /**
-     * @throws PayloadHandlerException if there is a policy for this context disallowing this
-     *                                 operation.
+     * @throws UnsupportedOpException if there is a policy for this context disallowing this
+     *                                operation.
      */
     private static void checkPolicy(ServerPlayer player, AbstractContainerMenu menu, int[] slotIds)
-            throws PayloadHandlerException {
+            throws UnsupportedOpException {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
@@ -136,17 +140,21 @@ public class CollectHandler extends PayloadHandler {
     /**
      * Creates or updates a policy for this context to disallow this operation.
      */
-    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds) {
+    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds, String message) {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
         Object object = container instanceof SimpleContainer ? menu : container;
 
-        PolicyManager.setPolicy(new ServerClassPolicy(
-                object.getClass().getName(),
-                false,
-                true,
-                true
-        ));
+        PolicyManager.setPolicy(
+                new ServerClassPolicy(
+                        object.getClass().getName(),
+                        false,
+                        true,
+                        true
+                ),
+                CollectPayload.ID.toString(),
+                message
+        );
     }
 }

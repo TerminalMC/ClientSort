@@ -87,7 +87,8 @@ public class MatchTransferButton extends TriggerButton {
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            Operation.MATCH_TRANSFER
+                            Operation.MATCH_TRANSFER,
+                            false
                     );
                     if (operator != null)
                         operator.tryMatchTransfer();

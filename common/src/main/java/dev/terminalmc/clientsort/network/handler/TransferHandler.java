@@ -18,6 +18,8 @@ package dev.terminalmc.clientsort.network.handler;
 
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.network.payload.TransferResultPayload;
@@ -55,8 +57,9 @@ public class TransferHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
                 (menu) -> transfer(menu, payload.srcSlotIds(), payload.dstSlotIds()),
+                TransferPayload.TYPE,
                 TransferResultPayload.TYPE,
-                (error) -> new TransferResultPayload(error == null, error == null ? "" : error)
+                (result, message) -> new TransferResultPayload(result.code, message)
         ));
     }
 
@@ -100,8 +103,7 @@ public class TransferHandler extends PayloadHandler {
 
                 // Check that the operation succeeded
                 if (notEqual(dstSlot.getItem(), expected)) {
-                    setPolicy(menu, dstSlotIds);
-                    throw new PayloadHandlerException(String.format(
+                    String message = String.format(
                             "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
                             srcStackCopy,
@@ -109,7 +111,9 @@ public class TransferHandler extends PayloadHandler {
                             dstStackCopy,
                             expected,
                             dstSlot.getItem()
-                    ));
+                    );
+                    setPolicy(menu, dstSlotIds, message);
+                    throw new InconsistentStateException(message);
                 }
 
                 // If no items remain in the source stack, stop looking
@@ -144,8 +148,7 @@ public class TransferHandler extends PayloadHandler {
 
                 // Check that the operation succeeded
                 if (notEqual(dstSlot.getItem(), expected)) {
-                    setPolicy(menu, dstSlotIds);
-                    throw new PayloadHandlerException(String.format(
+                    String message = String.format(
                             "Transfer operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
                             srcStackCopy,
@@ -153,7 +156,9 @@ public class TransferHandler extends PayloadHandler {
                             dstStackCopy,
                             expected,
                             dstSlot.getItem()
-                    ));
+                    );
+                    setPolicy(menu, dstSlotIds, message);
+                    throw new InconsistentStateException(message);
                 }
 
                 break;
@@ -162,14 +167,14 @@ public class TransferHandler extends PayloadHandler {
     }
 
     /**
-     * @throws PayloadHandlerException if there is a policy for this context disallowing this
-     *                                 operation.
+     * @throws UnsupportedOpException if there is a policy for this context disallowing this
+     *                                operation.
      */
     private static void checkPolicy(
             AbstractContainerMenu menu,
             int[] srcSlotIds,
             int[] dstSlotIds
-    ) throws PayloadHandlerException {
+    ) throws UnsupportedOpException {
         Container srcContainer = srcSlotIds.length > 0
                 ? menu.slots.get(srcSlotIds[0]).container
                 : null;
@@ -188,17 +193,21 @@ public class TransferHandler extends PayloadHandler {
     /**
      * Creates or updates a policy for this context to disallow this operation.
      */
-    private static void setPolicy(AbstractContainerMenu menu, int[] dstSlotIds) {
+    private static void setPolicy(AbstractContainerMenu menu, int[] dstSlotIds, String message) {
         Container dstContainer = dstSlotIds.length > 0
                 ? menu.slots.get(dstSlotIds[0]).container
                 : null;
         Object object = dstContainer instanceof SimpleContainer ? menu : dstContainer;
 
-        PolicyManager.setPolicy(new ServerClassPolicy(
-                object.getClass().getName(),
-                true,
-                true,
-                false
-        ));
+        PolicyManager.setPolicy(
+                new ServerClassPolicy(
+                        object.getClass().getName(),
+                        true,
+                        true,
+                        false
+                ),
+                TransferPayload.ID.toString(),
+                message
+        );
     }
 }

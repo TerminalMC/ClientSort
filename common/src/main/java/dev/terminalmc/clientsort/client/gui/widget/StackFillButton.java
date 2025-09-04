@@ -87,7 +87,8 @@ public class StackFillButton extends TriggerButton {
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            Operation.STACK_FILL
+                            Operation.STACK_FILL,
+                            false
                     );
                     if (operator != null)
                         operator.tryFillStacks();

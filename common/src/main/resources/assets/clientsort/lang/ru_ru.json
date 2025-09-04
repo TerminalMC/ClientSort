@@ -10,6 +10,7 @@
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
   "message.clientsort.viewModrinth": "Посмотреть на Modrinth",
   "message.clientsort.configReloaded": "Конфигурация сервера перезагружена из '%s'!",
+  "message.clientsort.checkLogs": "Check game logs for more info.",
 
   "title.clientsort.groupSelector": "Редактор интерфейса ClientSort - Выберите виджет для редактирования",
 
@@ -56,6 +57,8 @@
   "option.clientsort.interactionInterval.tooltip": "Минимальное время между событиями взаимодействия без ускорения сервера, в миллисекундах.",
   "option.clientsort.useServerAcceleration": "Использовать ускорение сервера",
   "option.clientsort.useServerAcceleration.tooltip": "Выполнять операции мгновенно в одиночной игре или если мод установлен на сервере.",
+  "option.clientsort.useClientFallback": "Use Client Fallback",
+  "option.clientsort.useClientFallback.tooltip": "Whether to retry without server acceleration when a server-accelerated operation fails.",
   "option.clientsort.optimizeCreativeSorting": "Оптимизировать творческую сортировку",
   "option.clientsort.optimizeCreativeSorting.tooltip": "Повышать производительность сортировки в творческом режиме за счёт сохранения порядка в памяти",
   "option.clientsort.hotbarScope": "Область панели быстрого доступа",
@@ -161,6 +164,13 @@
   "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
   "controlButton.clientsort.TRANSFER": "Переместить",
   "controlButton.clientsort.NONE": "Нет",
+
+  "payloadResult.clientsort.success": "Operation succeeded.",
+  "payloadResult.clientsort.unknown": "Server returned an unrecognized failure code.",
+  "payloadResult.clientsort.failure": "Server encountered an unexpected error.",
+  "payloadResult.clientsort.failure.unsupportedOp": "Server does not support this operation in this inventory.",
+  "payloadResult.clientsort.failure.invalidData": "Server rejected this operation due to invalid payload data.",
+  "payloadResult.clientsort.failure.inconsistentState": "Server aborted and disabled this operation due to inconsistent inventory state.",
 
   "error.clientsort.low": "Слишком низкое значение",
   "error.clientsort.high": "Слишком высокое значение",

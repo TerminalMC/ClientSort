@@ -16,12 +16,15 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
+import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
+import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
+import dev.terminalmc.clientsort.client.network.handler.TransferResultHandler;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
@@ -30,12 +33,16 @@ import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import dev.terminalmc.clientsort.util.inject.ISlot;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 /**
  * Provides methods for manipulating the player's inventory or open container via custom payload
@@ -62,23 +69,57 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
             return;
         }
 
-        CollectResultHandler.onSuccess = () -> {
-            ServerOperator<?> sorter = new ServerOperator<>(
-                    screen,
-                    screenHelper,
-                    originSlot,
-                    Operation.SORT
-            );
-            int[] slotMapping = sorter.createSlotMapping(sortOrder);
-            InteractionManager.now(() -> {
-                if (debug())
-                    ClientSort.LOG.info("Sending payload for operation SORT");
-                ClientServices.PLATFORM.sendToServer(new SortPayload(
-                        screen.getMenu().containerId,
-                        slotMapping
-                ));
-                return InteractionManager.TICK_WAITER;
-            });
+        CollectResultHandler.onCompletion = (collectResult) -> {
+            if (collectResult.isSuccess()) {
+                SortResultHandler.onCompletion = (sortResult) -> {
+                    if (!sortResult.isSuccess()) {
+                        if (sortResult.isUnknown() || !options().useClientFallback) {
+                            setOverlayMessage(Component.translatable(sortResult.translationKey));
+                        } else {
+                            SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                                    screen,
+                                    screenHelper,
+                                    originSlot,
+                                    Operation.SORT,
+                                    true
+                            );
+                            if (operator != null) {
+                                operator.trySort(sortOrder);
+                            }
+                        }
+                    }
+                };
+
+                ServerOperator<?> sorter = new ServerOperator<>(
+                        screen,
+                        screenHelper,
+                        originSlot,
+                        Operation.SORT
+                );
+                int[] slotMapping = sorter.createSlotMapping(sortOrder);
+                InteractionManager.now(() -> {
+                    if (debug())
+                        ClientSort.LOG.info("Sending payload for operation SORT");
+                    ClientServices.PLATFORM.sendToServer(new SortPayload(
+                            screen.getMenu().containerId,
+                            slotMapping
+                    ));
+                    return InteractionManager.TICK_WAITER;
+                });
+            } else if (collectResult.isUnknown() || !options().useClientFallback) {
+                setOverlayMessage(Component.translatable(collectResult.translationKey));
+            } else {
+                SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                        screen,
+                        screenHelper,
+                        originSlot,
+                        Operation.SORT,
+                        true
+                );
+                if (operator != null) {
+                    operator.trySort(sortOrder);
+                }
+            }
         };
 
         int[] scopeArray = createSlotIdArray(originScopeSlots);
@@ -97,6 +138,25 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                 ClientSort.LOG.warn("Cannot perform operation STACK_FILL: other scope is empty!");
             return;
         }
+
+        StackFillResultHandler.onCompletion = (result) -> {
+            if (!result.isSuccess()) {
+                if (result.isUnknown() || !options().useClientFallback) {
+                    setOverlayMessage(Component.translatable(result.translationKey));
+                } else {
+                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                            screen,
+                            screenHelper,
+                            originSlot,
+                            Operation.STACK_FILL,
+                            true
+                    );
+                    if (operator != null) {
+                        operator.tryFillStacks();
+                    }
+                }
+            }
+        };
 
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
@@ -125,10 +185,11 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
 
     @Override
     protected void transfer() {
-        transfer(originScopeSlots);
+        transfer(null);
     }
 
-    private void transfer(Slot[] originSlots) {
+    private void transfer(@Nullable Slot[] overrideSlots) {
+        Slot[] originSlots = overrideSlots != null ? overrideSlots : originScopeSlots;
         if (originScopeSlots.length == 0) {
             if (debug())
                 ClientSort.LOG.warn("Cannot perform operation TRANSFER: origin scope is empty!");
@@ -144,6 +205,29 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                 ClientSort.LOG.warn("Cannot perform operation TRANSFER: other scope is empty!");
             return;
         }
+
+        TransferResultHandler.onCompletion = (result) -> {
+            if (!result.isSuccess()) {
+                if (result.isUnknown() || !options().useClientFallback) {
+                    setOverlayMessage(Component.translatable(result.translationKey));
+                } else {
+                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+                            screen,
+                            screenHelper,
+                            originSlot,
+                            overrideSlots != null ? Operation.MATCH_TRANSFER : Operation.TRANSFER,
+                            true
+                    );
+                    if (operator != null) {
+                        if (overrideSlots != null) {
+                            tryMatchTransfer();
+                        } else {
+                            tryTransfer();
+                        }
+                    }
+                }
+            }
+        };
 
         int[] srcSlotIds = createSlotIdArray(originSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
@@ -206,5 +290,17 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         }
         screenHelper.translateSlotIds(slotMapping);
         return slotMapping;
+    }
+
+    private void setOverlayMessage(Component message) {
+        ClientSort.setOverlayMessage(
+                screen,
+                localized("name").withStyle(ChatFormatting.RED)
+                        .append("\n")
+                        .append(message)
+                        .append("\n")
+                        .append(localized("message", "checkLogs")),
+                40
+        );
     }
 }

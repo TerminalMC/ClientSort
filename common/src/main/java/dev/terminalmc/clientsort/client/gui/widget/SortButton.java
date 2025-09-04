@@ -82,7 +82,8 @@ public class SortButton extends TriggerButton {
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            Operation.SORT
+                            Operation.SORT,
+                            false
                     );
                     if (operator != null)
                         operator.trySort(sortOrder);

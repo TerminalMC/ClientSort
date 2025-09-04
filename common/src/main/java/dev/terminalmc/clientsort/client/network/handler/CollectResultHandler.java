@@ -16,14 +16,16 @@
 
 package dev.terminalmc.clientsort.client.network.handler;
 
-import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.network.handler.util.ResultHandlerUtil;
+import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 
-import static dev.terminalmc.clientsort.client.ClientSort.debug;
+import java.util.function.Consumer;
 
 public class CollectResultHandler {
 
@@ -31,42 +33,36 @@ public class CollectResultHandler {
     }
 
     /**
-     * An operation to be run on receipt of a {@link CollectResultPayload} indicating success.
+     * An operation to be run on receipt of a {@link CollectResultPayload}.
      */
-    public static @Nullable Runnable onSuccess;
+    public static @Nullable Consumer<PayloadResult> onCompletion;
 
     /**
      * Handles a {@link CollectResultPayload} sent by a server.
      */
-    @SuppressWarnings("unused")
     public static void handle(
             CollectResultPayload payload,
             Minecraft mc,
             LocalPlayer player
     ) {
-        if (!payload.success()) {
-            ClientSort.LOG.error(
-                    "Received failure warning '{}': {}",
-                    CollectResultPayload.ID,
-                    payload.message()
-            );
-        } else if (debug()) {
-            ClientSort.LOG.info("Received success result for operation COLLECT");
-        }
+        PayloadResult result = ResultHandlerUtil.interpretResult(
+                payload.result(),
+                payload.message(),
+                CollectPayload.ID
+        );
 
-        if (payload.success() && onSuccess != null) {
+        if (onCompletion != null) {
             try {
-                onSuccess.run();
+                onCompletion.accept(result);
             } catch (Exception e) {
-                // Whatever goes wrong should not crash the game
                 ClientSort.LOG.error(
-                        "Failed to run onSuccess runnable for payload {}: {}",
+                        "Failed to run completion callback for payload '{}' with result '{}': {}",
                         CollectPayload.ID,
+                        result.name(),
                         e
                 );
             }
+            onCompletion = null;
         }
-
-        onSuccess = null;
     }
 }

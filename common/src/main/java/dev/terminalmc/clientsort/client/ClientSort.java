@@ -22,10 +22,15 @@ import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
+import dev.terminalmc.clientsort.client.util.TaskManager;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +41,11 @@ public class ClientSort {
     public static final String MOD_ID = dev.terminalmc.clientsort.ClientSort.MOD_ID;
     public static final String MOD_NAME = dev.terminalmc.clientsort.ClientSort.MOD_NAME;
     public static final ModLogger LOG = dev.terminalmc.clientsort.ClientSort.LOG;
+
+    public static final TaskManager taskManager = new TaskManager();
+
+    public static @Nullable MultiLineTextWidget overlayMessage = null;
+    private static Runnable clearOverlayMessage = null;
 
     public static boolean searchOrderUpdated = false;
 
@@ -53,6 +63,7 @@ public class ClientSort {
     }
 
     public static void afterClientTick(Minecraft mc) {
+        taskManager.tick();
     }
 
     public static void afterScreenInit(Screen screen) {
@@ -115,5 +126,31 @@ public class ClientSort {
     public static void afterGameStart() {
         if (options().isolateKeybinds)
             KeybindManager.isolateKeybinds();
+    }
+
+    public static void setOverlayMessage(
+            AbstractContainerScreen<?> screen,
+            Component message,
+            int clearAfterTicks
+    ) {
+        if (overlayMessage != null) {
+            clearOverlayMessage.run();
+        }
+
+        Minecraft mc = Minecraft.getInstance();
+        MultiLineTextWidget newMessage = new MultiLineTextWidget(message, mc.font);
+        newMessage.setMaxWidth(((AbstractContainerScreenAccessor) screen).clientsort$getImageWidth());
+        newMessage.setCentered(true);
+        newMessage.setX(screen.width / 2 - newMessage.getWidth() / 2);
+        newMessage.setY(screen.height / 2 - newMessage.getHeight() / 2);
+
+        overlayMessage = newMessage;
+        clearOverlayMessage = () -> {
+            if (overlayMessage == newMessage) {
+                overlayMessage = null;
+                clearOverlayMessage = null;
+            }
+        };
+        taskManager.schedule(clearAfterTicks, clearOverlayMessage);
     }
 }

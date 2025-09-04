@@ -254,7 +254,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (AbstractContainerScreen<?>) (Object) this,
                     clientsort$screenHelper.get(),
                     hoveredSlot,
-                    Operation.SORT
+                    Operation.SORT,
+                    false
             );
             if (operator != null)
                 operator.trySort(sortOrder);
@@ -269,7 +270,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.STACK_FILL
+                Operation.STACK_FILL,
+                false
         );
         if (operator != null)
             operator.tryFillStacks();
@@ -282,7 +284,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.MATCH_TRANSFER
+                Operation.MATCH_TRANSFER,
+                false
         );
         if (operator != null)
             operator.tryMatchTransfer();
@@ -295,7 +298,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 (AbstractContainerScreen<?>) (Object) this,
                 clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.TRANSFER
+                Operation.TRANSFER,
+                false
         );
         if (operator != null)
             operator.tryTransfer();
@@ -316,7 +320,17 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             float partialTick,
             CallbackInfo ci
     ) {
-        if (!debug() || !this.equals(Minecraft.getInstance().screen))
+        if (!this.equals(Minecraft.getInstance().screen))
+            return;
+
+        if (ClientSort.overlayMessage != null) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(0.0F, 0.0F, 1000F);
+            ClientSort.overlayMessage.renderWidget(graphics, mouseX, mouseY, partialTick);
+            graphics.pose().popPose();
+        }
+
+        if (!debug())
             return;
 
         ContainerScreenHelper<?> helper = ContainerScreenHelper.of(
@@ -326,6 +340,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
         float scale = 0.7F;
         graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 1000F);
         graphics.pose().scale(scale, scale, 0.0F);
 
         for (Slot slot : menu.slots) {

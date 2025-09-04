@@ -10,6 +10,7 @@
   "message.clientsort.installCloth": "Install Cloth Config API to access mod options.",
   "message.clientsort.viewModrinth": "View on Modrinth",
   "message.clientsort.configReloaded": "Server configuration reloaded from '%s'!",
+  "message.clientsort.checkLogs": "Check game logs for more info.",
 
   "title.clientsort.groupSelector": "ClientSort Editor - Select a Widget to Edit",
 
@@ -56,6 +57,8 @@
   "option.clientsort.interactionInterval.tooltip": "The minimum time, in milliseconds, between interaction events when server acceleration is not in use.",
   "option.clientsort.useServerAcceleration": "Use Server Acceleration",
   "option.clientsort.useServerAcceleration.tooltip": "Whether to perform operations instantly in singleplayer and when the mod is installed on the server.",
+  "option.clientsort.useClientFallback": "Use Client Fallback",
+  "option.clientsort.useClientFallback.tooltip": "Whether to retry without server acceleration when a server-accelerated operation fails.",
   "option.clientsort.optimizeCreativeSorting": "Optimize Creative Sorting",
   "option.clientsort.optimizeCreativeSorting.tooltip": "Whether to improve performance of creative-order sorting by storing the order in memory.",
   "option.clientsort.hotbarScope": "Hotbar Scope",
@@ -161,6 +164,13 @@
   "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
   "controlButton.clientsort.TRANSFER": "Transfer",
   "controlButton.clientsort.NONE": "None",
+
+  "payloadResult.clientsort.success": "Operation succeeded.",
+  "payloadResult.clientsort.unknown": "Server returned an unrecognized failure code.",
+  "payloadResult.clientsort.failure": "Server encountered an unexpected error.",
+  "payloadResult.clientsort.failure.unsupportedOp": "Server does not support this operation in this inventory.",
+  "payloadResult.clientsort.failure.invalidData": "Server rejected this operation due to invalid payload data.",
+  "payloadResult.clientsort.failure.inconsistentState": "Server aborted and disabled this operation due to inconsistent inventory state.",
 
   "error.clientsort.low": "Too low",
   "error.clientsort.high": "Too high",

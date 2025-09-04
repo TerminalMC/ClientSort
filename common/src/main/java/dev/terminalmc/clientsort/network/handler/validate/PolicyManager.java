@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.network.handler.validate;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.config.ServerConfig;
-import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -55,32 +55,32 @@ public class PolicyManager {
         }
     }
 
-    public static void setPolicy(ServerClassPolicy classPolicy) {
+    public static void setPolicy(ServerClassPolicy classPolicy, String opName, String message) {
         ServerClassPolicy existingPolicy = serverOptions().classPolicies.get(classPolicy.className);
         if (existingPolicy != null) {
             existingPolicy.setFrom(classPolicy);
-            ClientSort.LOG.info(
-                    "Updated the class policy for '{}' due to operation failure",
-                    classPolicy.className
-            );
         } else {
             serverOptions().classPolicies.put(classPolicy.className, classPolicy);
-            ClientSort.LOG.info(
-                    "Added a new class policy for '{}' due to operation failure",
-                    classPolicy.className
-            );
         }
         ServerConfig.save();
+
+        ClientSort.LOG.error(message);
+        ClientSort.LOG.warn(
+                "Server-side policy for class '{}' has been updated to ignore payload '{}'. You can change the policy by editing the '{}' config file.",
+                classPolicy.className,
+                opName,
+                ServerConfig.FILE_NAME
+        );
     }
 
     /**
-     * @throws PayloadHandlerException if the server policy disallows the operation.
+     * @throws UnsupportedOpException if the server policy disallows the operation.
      */
     public static void checkPolicy(Class<?> cls, Function<ServerClassPolicy, Boolean> op)
-            throws PayloadHandlerException {
+            throws UnsupportedOpException {
         ServerClassPolicy configClassPolicy = getClassPolicy(cls);
         if (configClassPolicy != null && !op.apply(configClassPolicy)) {
-            throw new PayloadHandlerException(String.format(
+            throw new UnsupportedOpException(String.format(
                     "Server policy does not allow this operation for class '%s'!",
                     cls.getName()
             ));

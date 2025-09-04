@@ -128,6 +128,7 @@ public class ServerConfig {
     @SuppressWarnings("UnusedReturnValue")
     public static ServerConfig reloadAndSave() {
         instance = load();
+        save();
         return instance;
     }
 

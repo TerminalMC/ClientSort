@@ -18,6 +18,8 @@ package dev.terminalmc.clientsort.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.InvalidDataException;
+import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
@@ -27,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * Provides common methods to custom payload handlers.
@@ -52,11 +54,13 @@ public abstract class PayloadHandler {
             ThrowingConsumer<AbstractContainerMenu> contextValidator,
             ThrowingConsumer<AbstractContainerMenu> schemaValidator,
             ThrowingConsumer<AbstractContainerMenu> operator,
+            CustomPacketPayload.Type<?> payloadType,
             CustomPacketPayload.Type<?> responseType,
-            Function<String, CustomPacketPayload> responseGenerator
+            BiFunction<PayloadResult, String, CustomPacketPayload> responseProvider
     ) {
         @Nullable AbstractContainerMenu menu = null;
-        @Nullable String error = null;
+        PayloadResult result = PayloadResult.SUCCESS;
+        String message = "";
 
         try {
             menu = getMenu(player, containerId);
@@ -72,13 +76,15 @@ public abstract class PayloadHandler {
             operator.accept(menu);
 
         } catch (Exception e) {
-            if (e instanceof PayloadHandlerException se) {
-                error = se.getMessage();
+            if (e instanceof PayloadHandlerException ex) {
+                result = ex.result;
+                message = ex.getMessage();
             } else {
-                error = PayloadHandlerException.GENERIC_MESSAGE;
+                result = PayloadResult.FAILURE;
+                message = PayloadHandlerException.GENERIC_MESSAGE;
                 ClientSort.LOG.error(
-                        "Encountered an exception while handling '{}' payload from player '{}'",
-                        responseType.id(),
+                        "Encountered an unexpected exception while handling payload '{}' from player '{}': {}",
+                        payloadType.id(),
                         player,
                         e
                 );
@@ -89,18 +95,18 @@ public abstract class PayloadHandler {
                 menu.broadcastChanges();
             }
             if (Services.PLATFORM.canSendToPlayer(player, responseType)) {
-                Services.PLATFORM.sendToPlayer(player, responseGenerator.apply(error));
+                Services.PLATFORM.sendToPlayer(player, responseProvider.apply(result, message));
             }
         }
     }
 
     /**
      * @return the menu belonging to the player and matching the container ID.
-     * @throws PayloadHandlerException if no matching menu was found, or one was found but is not
-     *                                 valid for the player.
+     * @throws InvalidDataException if no matching menu was found, or one was found but is not valid
+     *                              for the player.
      */
     private static @NotNull AbstractContainerMenu getMenu(ServerPlayer player, int containerId)
-            throws PayloadHandlerException {
+            throws InvalidDataException {
         AbstractContainerMenu menu;
 
         // Retrieve the matching container menu
@@ -109,7 +115,7 @@ public abstract class PayloadHandler {
         } else if (containerId == player.containerMenu.containerId) {
             menu = player.containerMenu;
         } else {
-            throw new PayloadHandlerException(String.format(
+            throw new InvalidDataException(String.format(
                     "Container ID '%d' does not match player inventory or container!",
                     containerId
             ));
@@ -117,7 +123,7 @@ public abstract class PayloadHandler {
 
         // Check that the menu is valid
         if (!menu.stillValid(player)) {
-            throw new PayloadHandlerException(String.format(
+            throw new InvalidDataException(String.format(
                     "Container ID '%d' is not valid for the player!",
                     containerId
             ));

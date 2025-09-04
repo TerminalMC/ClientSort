@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,15 +29,15 @@ import org.jetbrains.annotations.NotNull;
  * A custom S2C payload used to send feedback for an operation requested by a {@link CollectPayload}
  * to a client.
  *
- * @param success whether the operation was successful.
+ * @param result a {@link PayloadResult} code.
  * @param message an optional message describing an error.
  */
-public record CollectResultPayload(boolean success, String message) implements CustomPacketPayload {
+public record CollectResultPayload(int result, String message) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CollectResultPayload> STREAM_CODEC =
             StreamCodec.composite(
-                    ByteBufCodecs.BOOL,
-                    CollectResultPayload::success,
+                    ByteBufCodecs.INT,
+                    CollectResultPayload::result,
                     ByteBufCodecs.STRING_UTF8,
                     CollectResultPayload::message,
                     CollectResultPayload::new

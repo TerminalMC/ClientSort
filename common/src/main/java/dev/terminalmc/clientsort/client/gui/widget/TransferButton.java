@@ -84,7 +84,8 @@ public class TransferButton extends TriggerButton {
                             screen,
                             ContainerScreenHelper.of(screen),
                             referenceSlot,
-                            Operation.TRANSFER
+                            Operation.TRANSFER,
+                            false
                     );
                     if (operator != null)
                         operator.tryTransfer();

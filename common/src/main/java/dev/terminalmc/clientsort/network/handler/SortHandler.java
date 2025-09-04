@@ -19,6 +19,8 @@ package dev.terminalmc.clientsort.network.handler;
 
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.SortResultPayload;
@@ -57,8 +59,9 @@ public class SortHandler extends PayloadHandler {
                 (menu) -> checkPolicy(player, menu, payload.slotMapping()),
                 (menu) -> validateSlotMapping(player, menu, payload.slotMapping()),
                 (menu) -> sort(menu, payload.slotMapping()),
+                SortPayload.TYPE,
                 SortResultPayload.TYPE,
-                (error) -> new SortResultPayload(error == null, error == null ? "" : error)
+                (result, message) -> new SortResultPayload(result.code, message)
         ));
     }
 
@@ -86,25 +89,26 @@ public class SortHandler extends PayloadHandler {
                         dstSlotId = slotMapping[j + 1];
                         menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
                     }
-                    setPolicy(menu, slotMapping);
-                    throw new PayloadHandlerException(String.format(
+                    String message = String.format(
                             "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
                             srcSlotId,
                             dstSlotId,
                             stacks.get(srcSlotId),
                             dstSlot.getItem()
-                    ));
+                    );
+                    setPolicy(menu, slotMapping, message);
+                    throw new InconsistentStateException(message);
                 }
             }
         }
     }
 
     /**
-     * @throws PayloadHandlerException if there is a policy for this context disallowing this
-     *                                 operation.
+     * @throws UnsupportedOpException if there is a policy for this context disallowing this
+     *                                operation.
      */
     private static void checkPolicy(ServerPlayer player, AbstractContainerMenu menu, int[] slotIds)
-            throws PayloadHandlerException {
+            throws UnsupportedOpException {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
@@ -119,17 +123,21 @@ public class SortHandler extends PayloadHandler {
     /**
      * Creates or updates a policy for this context to disallow this operation.
      */
-    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds) {
+    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds, String message) {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
         Object object = container instanceof SimpleContainer ? menu : container;
 
-        PolicyManager.setPolicy(new ServerClassPolicy(
-                object.getClass().getName(),
-                false,
-                true,
-                true
-        ));
+        PolicyManager.setPolicy(
+                new ServerClassPolicy(
+                        object.getClass().getName(),
+                        false,
+                        true,
+                        true
+                ),
+                SortPayload.ID.toString(),
+                message
+        );
     }
 }
