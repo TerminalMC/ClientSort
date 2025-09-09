@@ -131,7 +131,7 @@
   "option.clientsort.policies.description.3": "Data Format",
   "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<stack-fill>,<match-transfer>,<transfer>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "class: the full name of the inventory class or superclass.",
-  "option.clientsort.policies.description.6": "offset: 'x,y', or '-' to use the default.",
+  "option.clientsort.policies.description.6": "offset: 'x,y', or empty to use the default.",
   "option.clientsort.policies.description.7": "status: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
   "option.clientsort.policies.description.8": "ignored slots: a list of slots that should not be affected by operations.",
   "option.clientsort.classPolicies": "Class Policies",
