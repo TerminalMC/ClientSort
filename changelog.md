@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.16
+
+- Fixed an issue causing locked slots to apply at the wrong position when switching inventory types
+
 ## 2.0.0-beta.15
 
 Note: this beta version includes networking changes, servers and clients must be upgraded together.

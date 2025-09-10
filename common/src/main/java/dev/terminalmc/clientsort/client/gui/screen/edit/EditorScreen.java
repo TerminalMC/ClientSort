@@ -377,17 +377,25 @@ public abstract class EditorScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
 
         // Render disabled-slot indicators
-        for (int slotId : ignoredSlots) {
-            Slot slot = underlay.getMenu().slots.get(slotId);
-            // Draw lock icon, top left
-            //noinspection UnnecessaryUnicodeEscape
-            graphics.drawString(
-                    Minecraft.getInstance().font,
-                    "\u274C",
-                    ((AbstractContainerScreenAccessor) (underlay)).clientsort$getLeftPos() + slot.x,
-                    ((AbstractContainerScreenAccessor) (underlay)).clientsort$getTopPos() + slot.y,
-                    0xFF0000
-            );
+        for (Slot slot : underlay.getMenu().slots) {
+            Object object = slot.container instanceof SimpleContainer
+                    ? underlay.getMenu()
+                    : slot.container;
+            if (object.getClass().getName().equals(lowestPolicyKey)) {
+                if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInInv())) {
+                    // Draw lock icon, top left
+                    //noinspection UnnecessaryUnicodeEscape
+                    graphics.drawString(
+                            Minecraft.getInstance().font,
+                            "\u274C",
+                            ((AbstractContainerScreenAccessor) (underlay)).clientsort$getLeftPos()
+                                    + slot.x,
+                            ((AbstractContainerScreenAccessor) (underlay)).clientsort$getTopPos()
+                                    + slot.y,
+                            0xFF0000
+                    );
+                }
+            }
         }
 
         // Safety net
@@ -532,7 +540,7 @@ public abstract class EditorScreen extends Screen {
                             ? underlay.getMenu()
                             : slot.container;
                     if (object.getClass().getName().equals(lowestPolicyKey)) {
-                        int slotId = ((ISlot) slot).clientsort$getIdInContainer();
+                        int slotId = ((ISlot) slot).clientsort$getIndexInInv();
                         if (ignoredSlots.contains(slotId))
                             ignoredSlots.remove(slotId);
                         else

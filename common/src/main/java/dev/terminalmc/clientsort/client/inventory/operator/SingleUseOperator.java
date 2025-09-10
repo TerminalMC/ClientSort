@@ -159,6 +159,7 @@ public abstract class SingleUseOperator<T extends Operation> {
         ArrayList<Slot> collectedSlots = new ArrayList<>();
         for (Slot slot : screen.getMenu().slots) {
             int slotId = ((ISlot) slot).clientsort$getIdInContainer();
+            int slotIdx = ((ISlot) slot).clientsort$getIndexInInv();
             // Ignore slots in different scope
             if (screenHelper.getScope(slot) != scope)
                 continue;
@@ -180,7 +181,7 @@ public abstract class SingleUseOperator<T extends Operation> {
                     ? screen.getMenu()
                     : slot.container;
             @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-            if (policy != null && policy.ignoredSlots().contains(slotId))
+            if (policy != null && policy.ignoredSlots().contains(slotIdx))
                 continue;
             // Slot is valid
             collectedSlots.add(slot);
