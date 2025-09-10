@@ -70,7 +70,7 @@ public class SortHandler extends PayloadHandler {
         // Build reference map
         Map<Integer, ItemStack> stacks = new TreeMap<>();
         for (Slot slot : menu.slots)
-            stacks.put(((ISlot) slot).clientsort$getIdInContainer(), slot.getItem().copy());
+            stacks.put(((ISlot) slot).clientsort$getIndexInMenu(), slot.getItem().copy());
         // Apply slot mapping
         for (int i = 0; i < slotMapping.length - 1; i += 2) {
             int srcSlotId = slotMapping[i];

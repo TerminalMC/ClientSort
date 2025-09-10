@@ -120,7 +120,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
                 slotClicked(
                         slot,
-                        ((ISlot) slot).clientsort$getIdInContainer(),
+                        ((ISlot) slot).clientsort$getIndexInMenu(),
                         mouseButton,
                         clickType
                 );
@@ -344,7 +344,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         graphics.pose().scale(scale, scale, 0.0F);
 
         for (Slot slot : menu.slots) {
-            int slotId = ((ISlot) slot).clientsort$getIdInContainer();
+            int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
 
             // Draw disabled indicator, top left
             if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
@@ -369,7 +369,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             }
 
             if (hasShiftDown()) {
-                slotId = ((ISlot) slot).clientsort$getIndexInInv();
+                slotId = ((ISlot) slot).clientsort$getIndexInContainer();
             } else if (hasControlDown()) {
                 slotId = slot.getContainerSlot();
             }

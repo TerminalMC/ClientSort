@@ -382,7 +382,7 @@ public abstract class EditorScreen extends Screen {
                     ? underlay.getMenu()
                     : slot.container;
             if (object.getClass().getName().equals(lowestPolicyKey)) {
-                if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInInv())) {
+                if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInContainer())) {
                     // Draw lock icon, top left
                     //noinspection UnnecessaryUnicodeEscape
                     graphics.drawString(
@@ -540,7 +540,7 @@ public abstract class EditorScreen extends Screen {
                             ? underlay.getMenu()
                             : slot.container;
                     if (object.getClass().getName().equals(lowestPolicyKey)) {
-                        int slotId = ((ISlot) slot).clientsort$getIndexInInv();
+                        int slotId = ((ISlot) slot).clientsort$getIndexInContainer();
                         if (ignoredSlots.contains(slotId))
                             ignoredSlots.remove(slotId);
                         else

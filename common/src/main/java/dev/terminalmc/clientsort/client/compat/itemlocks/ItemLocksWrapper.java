@@ -44,7 +44,7 @@ public class ItemLocksWrapper {
             hasFailed = true;
             ClientSort.LOG.error(
                     "ItemLocks threw an unexpected error when checking slot {}: compat is now disabled",
-                    ((ISlot) slot).clientsort$getIdInContainer()
+                    ((ISlot) slot).clientsort$getIndexInMenu()
             );
             ClientSort.LOG.error(e.getLocalizedMessage());
             return false;

@@ -34,12 +34,12 @@ public class SlotMixin implements ISlot {
     public int index;
 
     @Override
-    public int clientsort$getIndexInInv() {
+    public int clientsort$getIndexInContainer() {
         return slot;
     }
 
     @Override
-    public int clientsort$getIdInContainer() {
+    public int clientsort$getIndexInMenu() {
         return index;
     }
 }

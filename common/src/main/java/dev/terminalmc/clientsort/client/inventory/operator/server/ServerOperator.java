@@ -248,7 +248,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         // Translate slots for server
         int[] slotIds = new int[slots.length];
         for (int i = 0; i < slots.length; i++) {
-            slotIds[i] = ((ISlot) slots[i]).clientsort$getIdInContainer();
+            slotIds[i] = ((ISlot) slots[i]).clientsort$getIndexInMenu();
         }
         screenHelper.translateSlotIds(slotIds);
         return slotIds;
@@ -285,8 +285,8 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         for (int i = 0; i < sortedIds.length; i++) {
             Slot from = originScopeSlots[sortedIds[i]];
             Slot to = originScopeSlots[i];
-            slotMapping[i * 2] = ((ISlot) from).clientsort$getIdInContainer();
-            slotMapping[i * 2 + 1] = ((ISlot) to).clientsort$getIdInContainer();
+            slotMapping[i * 2] = ((ISlot) from).clientsort$getIndexInMenu();
+            slotMapping[i * 2 + 1] = ((ISlot) to).clientsort$getIndexInMenu();
         }
         screenHelper.translateSlotIds(slotMapping);
         return slotMapping;

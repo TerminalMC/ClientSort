@@ -463,7 +463,7 @@ public class TriggerButtonManager {
         return screen.getMenu().slots.stream()
                 .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
                 .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu)
-                        || ((ISlot) slot).clientsort$getIndexInInv() >= 2)
+                        || ((ISlot) slot).clientsort$getIndexInContainer() >= 2)
                 .mapToInt(slot -> 1)
                 .sum();
     }

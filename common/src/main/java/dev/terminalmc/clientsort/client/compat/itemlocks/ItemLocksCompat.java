@@ -33,7 +33,7 @@ public class ItemLocksCompat {
     static boolean isLocked(Slot slot) {
         if (!(slot.container instanceof Inventory))
             return false;
-        int index = adjustForInventory(((ISlot) slot).clientsort$getIndexInInv());
+        int index = adjustForInventory(((ISlot) slot).clientsort$getIndexInContainer());
         return getComponent(LockManager.class).isLockedSlotRaw(index) && !isBypass();
     }
 

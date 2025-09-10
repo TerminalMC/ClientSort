@@ -158,8 +158,8 @@ public abstract class SingleUseOperator<T extends Operation> {
         ItemStack testItem = Items.LIGHT.getDefaultInstance();
         ArrayList<Slot> collectedSlots = new ArrayList<>();
         for (Slot slot : screen.getMenu().slots) {
-            int slotId = ((ISlot) slot).clientsort$getIdInContainer();
-            int slotIdx = ((ISlot) slot).clientsort$getIndexInInv();
+            int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
+            int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
             // Ignore slots in different scope
             if (screenHelper.getScope(slot) != scope)
                 continue;

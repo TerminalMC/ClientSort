@@ -19,30 +19,33 @@ package dev.terminalmc.clientsort.util.inject;
 public interface ISlot {
 
     /**
-     * The index of the slot in its inventory.
+     * The index of the slot in its container.
      * <p>
-     * As a container may have several inventories, this value may be the same for multiple slots.
+     * As a menu may have more than one container (for example, opening a chest displays a menu with
+     * both the chest container and the player inventory container), this value may be the same for
+     * multiple slots in the menu.
      * <p>
-     * This value does not necessarily follow the left-right, top-down order; for example, the
-     * hotbar may be indexed 0-8 while the top-left inventory slot is 9.
+     * This value does not necessarily follow the normal left-right, top-down order; for example,
+     * the hotbar may be indexed 0-8 while the top-left slot of the main inventory is 9, despite the
+     * slots all belonging to the same container and being stored in the same collection.
      *
-     * @return the index within the inventory.
+     * @return the index within the container.
      * @see net.minecraft.world.inventory.Slot#slot
      */
     @SuppressWarnings("JavadocReference")
-    int clientsort$getIndexInInv();
+    int clientsort$getIndexInContainer();
 
     /**
-     * The unique ID of the slot within its container.
+     * The unique index of the slot within the menu.
      * <p>
-     * This is unique within a container, and therefore may differ from the value of
-     * {@link ISlot#clientsort$getIndexInInv}.
+     * This is unique within a {@link net.minecraft.world.inventory.AbstractContainerMenu}, and
+     * therefore may differ from the value of {@link ISlot#clientsort$getIndexInContainer}.
      * <p>
      * This value can be safely assumed to be the same as the index of the slot in
      * {@link net.minecraft.world.inventory.AbstractContainerMenu#slots}.
      *
-     * @return the unique ID within the container.
+     * @return the unique index within the container.
      * @see net.minecraft.world.inventory.Slot#index
      */
-    int clientsort$getIdInContainer();
+    int clientsort$getIndexInMenu();
 }

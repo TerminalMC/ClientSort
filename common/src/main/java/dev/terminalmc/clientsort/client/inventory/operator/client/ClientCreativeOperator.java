@@ -93,8 +93,8 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
                 dstStack.grow(delta);
 
                 // Send inventory update
-                int srcSlotId = ((ISlot) srcSlot).clientsort$getIdInContainer();
-                int dstSlotId = ((ISlot) dstSlot).clientsort$getIdInContainer();
+                int srcSlotId = ((ISlot) srcSlot).clientsort$getIndexInMenu();
+                int dstSlotId = ((ISlot) dstSlot).clientsort$getIndexInMenu();
                 InteractionManager.push(() -> {
                     //noinspection DataFlowIssue
                     Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(
@@ -140,7 +140,7 @@ public class ClientCreativeOperator<T extends Operation> extends ClientOperator<
             ItemStack srcItem = originScopeStacks[key[i]];
             ItemStack dstItem = originScopeStacks[i];
             if (!srcItem.isEmpty() || !dstItem.isEmpty()) {
-                int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIdInContainer();
+                int dstSlotId = ((ISlot) originScopeSlots[i]).clientsort$getIndexInMenu();
                 InteractionManager.push(() -> {
                     //noinspection DataFlowIssue
                     Minecraft.getInstance().player.inventoryMenu.getSlot(dstSlotId).set(srcItem);

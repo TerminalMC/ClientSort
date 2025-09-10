@@ -26,7 +26,7 @@ public class SlotLogUtil {
     public static String listSlotIndexes(Iterable<Slot> slots) {
         StringBuilder sb = new StringBuilder("[");
         for (Slot slot : slots) {
-            sb.append(((ISlot) slot).clientsort$getIndexInInv());
+            sb.append(((ISlot) slot).clientsort$getIndexInContainer());
             sb.append(":[");
             sb.append(slot.getItem().getCount());
             sb.append(" ");
@@ -39,7 +39,7 @@ public class SlotLogUtil {
     public static String listSlotIds(Iterable<Slot> slots) {
         StringBuilder sb = new StringBuilder("[");
         for (Slot slot : slots) {
-            sb.append(((ISlot) slot).clientsort$getIdInContainer());
+            sb.append(((ISlot) slot).clientsort$getIndexInMenu());
             sb.append(":[");
             sb.append(slot.getItem().getCount());
             sb.append(" ");

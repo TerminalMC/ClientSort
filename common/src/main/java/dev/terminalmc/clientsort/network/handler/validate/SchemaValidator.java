@@ -51,7 +51,7 @@ public class SchemaValidator {
         }
 
         // Do a reverse lookup for the slot ID to check that it matches
-        int realId = ((ISlot) menu.slots.get(slotId)).clientsort$getIdInContainer();
+        int realId = ((ISlot) menu.slots.get(slotId)).clientsort$getIndexInMenu();
         if (slotId != realId) {
             throw new InvalidDataException(String.format(
                     "Payload contains invalid slot ID %d which does not match the known ID of that slot (%d)!",
