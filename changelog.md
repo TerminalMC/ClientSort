@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.17
+
+- Fixed an issue with sorting using an outdated reference snapshot on certain versions
+
 ## 2.0.0-beta.16
 
 - Fixed an issue causing locked slots to apply at the wrong position when switching inventory types

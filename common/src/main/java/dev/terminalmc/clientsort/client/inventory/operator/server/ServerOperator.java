@@ -21,6 +21,7 @@ import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.network.InteractionManager.TriggerType;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
@@ -90,21 +91,21 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                     }
                 };
 
-                ServerOperator<?> sorter = new ServerOperator<>(
-                        screen,
-                        screenHelper,
-                        originSlot,
-                        Operation.SORT
-                );
-                int[] slotMapping = sorter.createSlotMapping(sortOrder);
-                InteractionManager.now(() -> {
+                InteractionManager.push(() -> {
+                    ServerOperator<?> sorter = new ServerOperator<>(
+                            screen,
+                            screenHelper,
+                            originSlot,
+                            Operation.SORT
+                    );
+                    int[] slotMapping = sorter.createSlotMapping(sortOrder);
                     if (debug())
                         ClientSort.LOG.info("Sending payload for operation SORT");
                     ClientServices.PLATFORM.sendToServer(new SortPayload(
                             screen.getMenu().containerId,
                             slotMapping
                     ));
-                    return InteractionManager.TICK_WAITER;
+                    return InteractionManager.Waiter.equal(TriggerType.CONTAINER_SLOT_UPDATE);
                 });
             } else if (collectResult.isUnknown() || !options().useClientFallback) {
                 setOverlayMessage(Component.translatable(collectResult.translationKey));
