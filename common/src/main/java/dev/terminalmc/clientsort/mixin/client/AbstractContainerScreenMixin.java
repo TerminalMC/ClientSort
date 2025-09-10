@@ -39,7 +39,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -348,9 +347,9 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
             // Draw disabled indicator, top left
             if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
-                Object object = slot.container instanceof SimpleContainer
-                        ? getMenu()
-                        : slot.container;
+                Object object = ClientSort.getObj(slot, getMenu());
+                if (object == null)
+                    continue;
                 @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
                 if (policy != null && policy.ignoredSlots().contains(slotId)) {
                     //noinspection UnnecessaryUnicodeEscape

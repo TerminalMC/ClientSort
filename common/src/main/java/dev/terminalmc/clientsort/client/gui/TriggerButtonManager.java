@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.client.gui;
 
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
@@ -35,7 +36,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.HorseInventoryMenu;
@@ -160,14 +160,11 @@ public class TriggerButtonManager {
         @Nullable Container container = isPlayerInv
                 ? player.getInventory()
                 : getContainer(player);
-        // Sanity check; we need a container to work with
-        if (container == null)
-            return;
 
         // Select the relevant container or GUI class
-        Object object = container instanceof SimpleContainer
-                ? screen.getMenu()
-                : container;
+        Object object = ClientSort.getObj(container, screen.getMenu());
+        if (object == null)
+            return;
 
         // Retrieve the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
@@ -216,14 +213,11 @@ public class TriggerButtonManager {
         @Nullable Container container = isPlayerInv
                 ? player.getInventory()
                 : getContainer(player);
-        // Sanity check; we need a container to work with
-        if (container == null)
-            return;
 
         // Select the relevant container or GUI class
-        Object object = container instanceof SimpleContainer
-                ? screen.getMenu()
-                : container;
+        Object object = ClientSort.getObj(container, screen.getMenu());
+        if (object == null)
+            return;
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
@@ -241,9 +235,9 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = dstContainer instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : dstContainer;
+            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            if (dstObject == null)
+                return;
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
@@ -288,14 +282,11 @@ public class TriggerButtonManager {
         @Nullable Container container = isPlayerInv
                 ? player.getInventory()
                 : getContainer(player);
-        // Sanity check; we need a container to work with
-        if (container == null)
-            return;
 
         // Select the relevant container or GUI class
-        Object object = container instanceof SimpleContainer
-                ? screen.getMenu()
-                : container;
+        Object object = ClientSort.getObj(container, screen.getMenu());
+        if (object == null)
+            return;
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
@@ -313,9 +304,9 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = dstContainer instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : dstContainer;
+            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            if (dstObject == null)
+                return;
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
@@ -360,14 +351,11 @@ public class TriggerButtonManager {
         @Nullable Container container = isPlayerInv
                 ? player.getInventory()
                 : getContainer(player);
-        // Sanity check; we need a container to work with
-        if (container == null)
-            return;
 
         // Select the relevant container or GUI class
-        Object object = container instanceof SimpleContainer
-                ? screen.getMenu()
-                : container;
+        Object object = ClientSort.getObj(container, screen.getMenu());
+        if (object == null)
+            return;
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
@@ -385,9 +373,9 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = dstContainer instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : dstContainer;
+            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            if (dstObject == null)
+                return;
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());

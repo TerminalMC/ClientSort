@@ -32,6 +32,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -152,5 +156,23 @@ public class ClientSort {
             }
         };
         taskManager.schedule(clearAfterTicks, clearOverlayMessage);
+    }
+
+    /**
+     * @return the reference object for the slot.
+     */
+    public static @Nullable Object getObj(Slot slot, AbstractContainerMenu menu) {
+        return getObj(slot.container, menu);
+    }
+
+    /**
+     * @return the reference object for the slot.
+     */
+    public static @Nullable Object getObj(Container container, AbstractContainerMenu menu) {
+        if (container == null)
+            return null;
+        return container instanceof SimpleContainer
+                ? menu
+                : container;
     }
 }

@@ -378,10 +378,8 @@ public abstract class EditorScreen extends Screen {
 
         // Render disabled-slot indicators
         for (Slot slot : underlay.getMenu().slots) {
-            Object object = slot.container instanceof SimpleContainer
-                    ? underlay.getMenu()
-                    : slot.container;
-            if (object.getClass().getName().equals(lowestPolicyKey)) {
+            Object object = ClientSort.getObj(slot, underlay.getMenu());
+            if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
                 if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInContainer())) {
                     // Draw lock icon, top left
                     //noinspection UnnecessaryUnicodeEscape
@@ -536,10 +534,8 @@ public abstract class EditorScreen extends Screen {
             for (Slot slot : underlay.getMenu().slots) {
                 if (((AbstractContainerScreenAccessor) underlay)
                         .clientsort$isHovering(slot, mouseX, mouseY)) {
-                    Object object = slot.container instanceof SimpleContainer
-                            ? underlay.getMenu()
-                            : slot.container;
-                    if (object.getClass().getName().equals(lowestPolicyKey)) {
+                    Object object = ClientSort.getObj(slot, underlay.getMenu());
+                    if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
                         int slotId = ((ISlot) slot).clientsort$getIndexInContainer();
                         if (ignoredSlots.contains(slotId))
                             ignoredSlots.remove(slotId);

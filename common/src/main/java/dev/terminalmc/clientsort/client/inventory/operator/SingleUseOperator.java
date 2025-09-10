@@ -34,7 +34,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -177,9 +176,9 @@ public abstract class SingleUseOperator<T extends Operation> {
             if (ItemLocksWrapper.isLocked(slot))
                 continue;
             // Ignore ignored slots
-            Object object = slot.container instanceof SimpleContainer
-                    ? screen.getMenu()
-                    : slot.container;
+            Object object = ClientSort.getObj(slot, screen.getMenu());
+            if (object == null)
+                continue;
             @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
             if (policy != null && policy.ignoredSlots().contains(slotIdx))
                 continue;
@@ -234,9 +233,9 @@ public abstract class SingleUseOperator<T extends Operation> {
             boolean onlyClient
     ) {
         // Check policy
-        Object object = originSlot.container instanceof SimpleContainer
-                ? screen.getMenu()
-                : originSlot.container;
+        Object object = ClientSort.getObj(originSlot, screen.getMenu());
+        if (object == null)
+            return null;
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
         if (policy != null) {
             if (!switch (operation) {

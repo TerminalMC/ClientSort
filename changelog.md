@@ -3,6 +3,7 @@
 ## 2.0.0-beta.16
 
 - Fixed an issue causing locked slots to apply at the wrong position when switching inventory types
+- Added a workaround for a crash when attempting to operate on containerless modded slots
 
 ## 2.0.0-beta.15
 
