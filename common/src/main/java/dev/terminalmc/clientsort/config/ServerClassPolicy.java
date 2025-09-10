@@ -16,6 +16,8 @@
 
 package dev.terminalmc.clientsort.config;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.text.ParseException;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -36,16 +38,32 @@ public class ServerClassPolicy {
     public boolean stackFillEnabled;
     public boolean transferEnabled;
 
+    public @Nullable String lastAutoEditTime;
+    public @Nullable String lastAutoEditReason;
+
     public ServerClassPolicy(
             String className,
             boolean sortEnabled,
             boolean stackFillEnabled,
             boolean transferEnabled
     ) {
+        this(className, sortEnabled, stackFillEnabled, transferEnabled, null, null);
+    }
+
+    public ServerClassPolicy(
+            String className,
+            boolean sortEnabled,
+            boolean stackFillEnabled,
+            boolean transferEnabled,
+            @Nullable String lastAutoEditTime,
+            @Nullable String lastEditReason
+    ) {
         this.className = className;
         this.sortEnabled = sortEnabled;
         this.stackFillEnabled = stackFillEnabled;
         this.transferEnabled = transferEnabled;
+        this.lastAutoEditTime = lastAutoEditTime;
+        this.lastAutoEditReason = lastEditReason;
     }
 
     public void setFrom(ServerClassPolicy classPolicy) {

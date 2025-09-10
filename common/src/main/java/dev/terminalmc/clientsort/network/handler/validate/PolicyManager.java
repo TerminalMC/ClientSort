@@ -21,6 +21,8 @@ import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -55,19 +57,23 @@ public class PolicyManager {
         }
     }
 
-    public static void setPolicy(ServerClassPolicy classPolicy, String opName, String message) {
-        ServerClassPolicy existingPolicy = serverOptions().classPolicies.get(classPolicy.className);
-        if (existingPolicy != null) {
-            existingPolicy.setFrom(classPolicy);
+    public static void setPolicy(ServerClassPolicy newPolicy, String opName, String message) {
+        ServerClassPolicy policy = serverOptions().classPolicies.get(newPolicy.className);
+        if (policy != null) {
+            policy.setFrom(newPolicy);
         } else {
-            serverOptions().classPolicies.put(classPolicy.className, classPolicy);
+            policy = newPolicy;
+            serverOptions().classPolicies.put(newPolicy.className, newPolicy);
         }
+        policy.lastAutoEditTime =
+                OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        policy.lastAutoEditReason = message;
         ServerConfig.save();
 
         ClientSort.LOG.error(message);
         ClientSort.LOG.warn(
                 "Server-side policy for class '{}' has been updated to ignore payload '{}'. You can change the policy by editing the '{}' config file.",
-                classPolicy.className,
+                newPolicy.className,
                 opName,
                 ServerConfig.FILE_NAME
         );

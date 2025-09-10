@@ -38,7 +38,10 @@ public class ServerConfig {
     private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
     public static final String FILE_NAME = ClientSort.MOD_ID + "-server.json";
     private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + "-server.unreadable.json";
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
 
     // Options
 
@@ -77,7 +80,9 @@ public class ServerConfig {
                                     cp.className,
                                     cp.sortEnabled,
                                     cp.stackFillEnabled,
-                                    cp.transferEnabled
+                                    cp.transferEnabled,
+                                    cp.lastAutoEditTime,
+                                    cp.lastAutoEditReason
                             )
                     );
                 }
