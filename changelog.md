@@ -4,6 +4,7 @@
 
 - Fixed an issue causing locked slots to apply at the wrong position when switching inventory types
 - Added a workaround for a crash when attempting to operate on containerless modded slots
+- Increased warning display time to 5 seconds
 
 ## 2.0.0-beta.15
 

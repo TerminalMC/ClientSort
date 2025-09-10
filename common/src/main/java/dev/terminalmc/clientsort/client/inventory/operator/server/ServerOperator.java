@@ -300,7 +300,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                         .append(message)
                         .append("\n")
                         .append(localized("message", "checkLogs")),
-                40
+                100
         );
     }
 }
