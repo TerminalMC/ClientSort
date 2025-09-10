@@ -65,6 +65,8 @@ which can be used to trigger operations.
 - The editor screen can be opened via a keybind (unbound by default) when viewing an inventory.
 - When a button is visible, you can right-click on it to open the editor screen.
 - You can hover over `Instructions` for more info about configuring the trigger buttons.
+- Item-transfer buttons are only shown when they are enabled on *both* inventories, so you can
+  easily disable one everywhere by disabling it on the player inventory.
 
 <table style="width:100%;">
   <tr>
