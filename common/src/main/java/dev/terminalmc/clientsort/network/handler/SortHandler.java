@@ -36,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotMapping;
 
 /**
@@ -80,24 +81,26 @@ public class SortHandler extends PayloadHandler {
                 // Perform the mapping set
                 dstSlot.setByPlayer(stacks.get(srcSlotId));
 
-                // Check that the operation succeeded
-                if (notEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
-                    // Operation failed; attempt to revert all changes
-                    for (int j = 0; j <= i; j += 2) {
-                        srcSlotId = slotMapping[j];
-                        menu.slots.get(srcSlotId).set(stacks.get(srcSlotId));
-                        dstSlotId = slotMapping[j + 1];
-                        menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
+                if (serverOptions().validateOperationResults) {
+                    // Check that the operation succeeded
+                    if (notEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
+                        // Operation failed; attempt to revert all changes
+                        for (int j = 0; j <= i; j += 2) {
+                            srcSlotId = slotMapping[j];
+                            menu.slots.get(srcSlotId).set(stacks.get(srcSlotId));
+                            dstSlotId = slotMapping[j + 1];
+                            menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
+                        }
+                        String message = String.format(
+                                "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
+                                srcSlotId,
+                                dstSlotId,
+                                stacks.get(srcSlotId),
+                                dstSlot.getItem()
+                        );
+                        setPolicy(menu, slotMapping, message);
+                        throw new InconsistentStateException(message);
                     }
-                    String message = String.format(
-                            "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
-                            srcSlotId,
-                            dstSlotId,
-                            stacks.get(srcSlotId),
-                            dstSlot.getItem()
-                    );
-                    setPolicy(menu, slotMapping, message);
-                    throw new InconsistentStateException(message);
                 }
             }
         }

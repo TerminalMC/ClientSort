@@ -31,6 +31,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
@@ -93,23 +94,25 @@ public class CollectHandler extends PayloadHandler {
                 // stack as possible
                 dstSlot.safeInsert(srcStack);
 
-                // Check that the operation succeeded
-                ItemStack expected = srcStackCopy.copyWithCount(Math.min(
-                        srcStackCopy.getCount() + dstStackCopy.getCount(),
-                        dstSlot.getMaxStackSize(srcStackCopy)
-                ));
-                if (notEqual(dstSlot.getItem(), expected)) {
-                    String message = String.format(
-                            "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
-                            srcSlotId,
-                            srcStackCopy,
-                            dstSlotId,
-                            dstStackCopy,
-                            expected,
-                            dstSlot.getItem()
-                    );
-                    setPolicy(menu, slotIds, message);
-                    throw new InconsistentStateException(message);
+                if (serverOptions().validateOperationResults) {
+                    // Check that the operation succeeded
+                    ItemStack expected = srcStackCopy.copyWithCount(Math.min(
+                            srcStackCopy.getCount() + dstStackCopy.getCount(),
+                            dstSlot.getMaxStackSize(srcStackCopy)
+                    ));
+                    if (notEqual(dstSlot.getItem(), expected)) {
+                        String message = String.format(
+                                "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                                srcSlotId,
+                                srcStackCopy,
+                                dstSlotId,
+                                dstStackCopy,
+                                expected,
+                                dstSlot.getItem()
+                        );
+                        setPolicy(menu, slotIds, message);
+                        throw new InconsistentStateException(message);
+                    }
                 }
 
                 // If no items remain in the source stack, stop looking

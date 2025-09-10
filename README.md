@@ -96,6 +96,9 @@ Read the in-game instructions for more information on editing policies.
 If installed on a server or in singleplayer, ClientSort uses policies to automatically disable
 server-accelerated operations when it detects an incorrect state (such as item duplication).
 
+Automatic validation can be disabled by setting the `validateOperationResults` config value to
+`false` in the `clientsort-server.json` config file.
+
 The policy list is stored in the `clientsort-server.json` config file, which can be manually edited
 and reloaded using the `/clientsort reload` command.
 

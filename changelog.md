@@ -3,6 +3,7 @@
 ## 2.0.0-beta.17
 
 - Fixed an issue with sorting using an outdated reference snapshot on certain versions
+- Added an option to disable validation of server-accelerated operation results
 
 ## 2.0.0-beta.16
 

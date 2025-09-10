@@ -31,6 +31,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
@@ -101,19 +102,21 @@ public class StackFillHandler extends PayloadHandler {
                 // Place as much of the source stack as possible
                 dstSlot.safeInsert(srcStack);
 
-                // Check that the operation succeeded
-                if (notEqual(dstSlot.getItem(), expected)) {
-                    String message = String.format(
-                            "Stack Fill operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
-                            srcSlotId,
-                            srcStackCopy,
-                            dstSlotId,
-                            dstStackCopy,
-                            expected,
-                            dstSlot.getItem()
-                    );
-                    setPolicy(menu, dstSlotIds, message);
-                    throw new InconsistentStateException(message);
+                if (serverOptions().validateOperationResults) {
+                    // Check that the operation succeeded
+                    if (notEqual(dstSlot.getItem(), expected)) {
+                        String message = String.format(
+                                "Stack Fill operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                                srcSlotId,
+                                srcStackCopy,
+                                dstSlotId,
+                                dstStackCopy,
+                                expected,
+                                dstSlot.getItem()
+                        );
+                        setPolicy(menu, dstSlotIds, message);
+                        throw new InconsistentStateException(message);
+                    }
                 }
 
                 // If no items remain in the source stack, stop looking

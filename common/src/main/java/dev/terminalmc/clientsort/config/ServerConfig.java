@@ -53,6 +53,9 @@ public class ServerConfig {
 
     public static class Options {
 
+        public static final boolean validateOperationResultsDefault = true;
+        public boolean validateOperationResults = validateOperationResultsDefault;
+
         public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
                 () -> List.of(
                         new ServerClassPolicy(
