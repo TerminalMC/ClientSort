@@ -1,6 +1,8 @@
 {
   "clientsort.name": "ClientSort",
 
+  "resourcepack.clientsort.dark-mode": "ClientSort Dark Mode",
+
   "key.clientsort.edit": "Open Editor",
   "key.clientsort.op.sort": "Sort",
   "key.clientsort.op.stackFill": "Fill Stacks",

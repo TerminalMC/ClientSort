@@ -23,7 +23,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
+import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClientSortFabric implements ClientModInitializer {
 
@@ -41,6 +47,18 @@ public class ClientSortFabric implements ClientModInitializer {
 
         // Register all custom S2C payload handlers
         ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerHandlerS2C);
+
+        // Register built-in resource packs
+        FabricLoader.getInstance().getModContainer(ClientSort.MOD_ID)
+                .ifPresent((container) -> ResourceManagerHelper.registerBuiltinResourcePack(
+                        ResourceLocation.fromNamespaceAndPath(
+                                ClientSort.MOD_ID,
+                                "clientsort-dark-mode"
+                        ),
+                        container,
+                        localized("resourcepack", "dark-mode"),
+                        ResourcePackActivationType.NORMAL
+                ));
 
         // Initialize client
         ClientSort.init();
