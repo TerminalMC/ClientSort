@@ -101,10 +101,13 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                     int[] slotMapping = sorter.createSlotMapping(sortOrder);
                     if (debug())
                         ClientSort.LOG.info("Sending payload for operation SORT");
-                    ClientServices.PLATFORM.sendToServer(new SortPayload(
-                            screen.getMenu().containerId,
-                            slotMapping
-                    ));
+                    ClientServices.PLATFORM.sendToServer(
+                            SortPayload.ID,
+                            new SortPayload(
+                                    screen.getMenu().containerId,
+                                    slotMapping
+                            )
+                    );
                     return InteractionManager.Waiter.equal(TriggerType.CONTAINER_SLOT_UPDATE);
                 });
             } else if (collectResult.isUnknown() || !options().useClientFallback) {
@@ -165,11 +168,14 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         InteractionManager.now(() -> {
             if (debug())
                 ClientSort.LOG.info("Sending payload for operation STACK_FILL");
-            ClientServices.PLATFORM.sendToServer(new StackFillPayload(
-                    screen.getMenu().containerId,
-                    srcSlotIds,
-                    dstSlotIds
-            ));
+            ClientServices.PLATFORM.sendToServer(
+                    StackFillPayload.ID,
+                    new StackFillPayload(
+                            screen.getMenu().containerId,
+                            srcSlotIds,
+                            dstSlotIds
+                    )
+            );
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -236,11 +242,14 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         InteractionManager.now(() -> {
             if (debug())
                 ClientSort.LOG.info("Sending payload for operation TRANSFER");
-            ClientServices.PLATFORM.sendToServer(new TransferPayload(
-                    screen.getMenu().containerId,
-                    srcSlotIds,
-                    dstSlotIds
-            ));
+            ClientServices.PLATFORM.sendToServer(
+                    TransferPayload.ID,
+                    new TransferPayload(
+                            screen.getMenu().containerId,
+                            srcSlotIds,
+                            dstSlotIds
+                    )
+            );
             return InteractionManager.TICK_WAITER;
         });
     }
@@ -259,10 +268,13 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         InteractionManager.now(() -> {
             if (debug())
                 ClientSort.LOG.info("Sending payload for operation COLLECT");
-            ClientServices.PLATFORM.sendToServer(new CollectPayload(
-                    screen.getMenu().containerId,
-                    scopeArray
-            ));
+            ClientServices.PLATFORM.sendToServer(
+                    CollectPayload.ID,
+                    new CollectPayload(
+                            screen.getMenu().containerId,
+                            scopeArray
+                    )
+            );
             return InteractionManager.TICK_WAITER;
         });
     }
