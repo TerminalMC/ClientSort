@@ -102,7 +102,7 @@ public class ClientSortNeoForge {
                             info,
                             supplier,
                             PackType.CLIENT_RESOURCES,
-                            new PackSelectionConfig(false, Position.BOTTOM, false)
+                            new PackSelectionConfig(false, Position.TOP, false)
                     );
                     if (pack != null) {
                         packConsumer.accept(pack);
