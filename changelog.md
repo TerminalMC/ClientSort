@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.18
+
+- Added a built-in dark-mode resource pack
+
 ## 2.0.0-beta.17
 
 - Fixed an issue with sorting using an outdated reference snapshot on certain versions
