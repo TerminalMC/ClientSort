@@ -26,7 +26,8 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
@@ -46,12 +47,12 @@ public class ClientSortFabric implements ClientModInitializer {
                 (mc, screen, scaledWidth, scaledHeight) -> ClientSort.afterScreenInit(screen));
 
         // Register all custom S2C payload handlers
-        ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerHandlerS2C);
+        ClientRegistration.PAYLOADS_S2C.forEach(ClientSortFabric::registerS2C);
 
         // Register built-in resource packs
         FabricLoader.getInstance().getModContainer(ClientSort.MOD_ID)
                 .ifPresent((container) -> ResourceManagerHelper.registerBuiltinResourcePack(
-                        ResourceLocation.fromNamespaceAndPath(
+                        new ResourceLocation(
                                 ClientSort.MOD_ID,
                                 "clientsort-dark-mode"
                         ),
@@ -65,20 +66,17 @@ public class ClientSortFabric implements ClientModInitializer {
     }
 
     /**
-     * Registers an S2C payload handler, but not the payload.
-     * <p>
-     * <b>Note:</b> S2C payloads must be registered alongside C2S payloads in
-     * {@link dev.terminalmc.clientsort.ClientSortFabric}.
+     * Registers a S2C payload and its handler.
      */
-    private static <T extends CustomPacketPayload> void registerHandlerS2C(
+    private static <T extends Packet<ClientGamePacketListener>> void registerS2C(
             ClientRegistration.RegisterablePayloadS2C<T> rp
     ) {
         ClientPlayNetworking.registerGlobalReceiver(
-                rp.type,
-                (payload, context) -> rp.handler.accept(
-                        payload,
-                        context.client(),
-                        context.player()
+                rp.channel,
+                (mc, listener, byteBuf, sender) -> rp.handler.accept(
+                        rp.decoder.apply(byteBuf),
+                        mc,
+                        mc.player
                 )
         );
     }

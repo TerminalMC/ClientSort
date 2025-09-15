@@ -59,8 +59,8 @@ public class StackFillHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
                 (menu) -> fillStacks(menu, payload.srcSlotIds(), payload.dstSlotIds()),
-                StackFillPayload.TYPE,
-                StackFillResultPayload.TYPE,
+                StackFillPayload.ID,
+                StackFillResultPayload.ID,
                 (result, message) -> new StackFillResultPayload(result.code, message)
         ));
     }
@@ -89,7 +89,7 @@ public class StackFillHandler extends PayloadHandler {
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found
