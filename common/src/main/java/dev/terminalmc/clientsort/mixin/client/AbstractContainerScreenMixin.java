@@ -324,10 +324,9 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             return;
 
         if (ClientSort.overlayMessage != null) {
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0F, 0.0F, 1000F);
+            graphics.pose().pushMatrix();
             ClientSort.overlayMessage.renderWidget(graphics, mouseX, mouseY, partialTick);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
 
         if (!debug())
@@ -339,9 +338,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         );
 
         float scale = 0.7F;
-        graphics.pose().pushPose();
-        graphics.pose().translate(0.0F, 0.0F, 1000F);
-        graphics.pose().scale(scale, scale, 0.0F);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
 
         for (Slot slot : menu.slots) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
@@ -363,7 +361,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                             (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                                     + slot.y)
                                     / scale),
-                            0xFF0000
+                            0xFFFF0000
                     );
                 }
             }
@@ -383,7 +381,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
             // Draw slot scope, bottom right
             graphics.drawString(
@@ -395,10 +393,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }
