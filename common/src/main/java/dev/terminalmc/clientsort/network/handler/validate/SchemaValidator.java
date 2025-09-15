@@ -76,10 +76,11 @@ public class SchemaValidator {
         // Check that the slot's container is the same as the provided one
         Slot slot = menu.slots.get(slotId);
         if (container != slot.container) {
+            //noinspection ConstantValue
             throw new InvalidDataException(String.format(
                     "Payload contains slots from different containers, first: '%s', now: '%s'!",
-                    container,
-                    slot.container
+                    container == null ? "null" : container.getClass().getName(),
+                    slot.container == null ? "null" : slot.container.getClass().getName()
             ));
         }
     }

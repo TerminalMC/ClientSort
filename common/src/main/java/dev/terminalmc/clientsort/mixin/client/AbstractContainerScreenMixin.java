@@ -57,6 +57,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
@@ -347,7 +348,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
             // Draw disabled indicator, top left
             if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
-                Object object = ClientSort.getObj(slot, getMenu());
+                Object object = getObj(slot, getMenu());
                 if (object == null)
                     continue;
                 @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());

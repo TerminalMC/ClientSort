@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
@@ -26,11 +27,11 @@ import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
@@ -132,7 +133,12 @@ public class CollectHandler extends PayloadHandler {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
-        Object object = container instanceof SimpleContainer ? menu : container;
+        Object object = getObj(container, menu);
+        if (object == null)
+            throw new UnsupportedOpException("Reference object is null for inputs '%s', '%s'!".formatted(
+                    container == null ? "null" : container.getClass().getName(),
+                    menu == null ? "null" : menu.getClass().getName()
+            ));
 
         // Assume the player's own inventory is always safe to operate on
         if (container != player.getInventory()) {
@@ -147,7 +153,15 @@ public class CollectHandler extends PayloadHandler {
         Container container = slotIds.length > 0
                 ? menu.slots.get(slotIds[0]).container
                 : null;
-        Object object = container instanceof SimpleContainer ? menu : container;
+        Object object = getObj(container, menu);
+        if (object == null) {
+            ClientSort.LOG.warn(
+                    "Could not set policy: reference object is null for inputs '{}', '{}'!",
+                    container == null ? "null" : container.getClass().getName(),
+                    menu == null ? "null" : menu.getClass().getName()
+            );
+            return;
+        }
 
         PolicyManager.setPolicy(
                 new ServerClassPolicy(

@@ -17,7 +17,6 @@
 
 package dev.terminalmc.clientsort.client.gui;
 
-import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
@@ -46,6 +45,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -162,7 +162,7 @@ public class TriggerButtonManager {
                 : getContainer(player);
 
         // Select the relevant container or GUI class
-        Object object = ClientSort.getObj(container, screen.getMenu());
+        Object object = getObj(container, screen.getMenu());
         if (object == null)
             return;
 
@@ -215,7 +215,7 @@ public class TriggerButtonManager {
                 : getContainer(player);
 
         // Select the relevant container or GUI class
-        Object object = ClientSort.getObj(container, screen.getMenu());
+        Object object = getObj(container, screen.getMenu());
         if (object == null)
             return;
 
@@ -235,7 +235,7 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            Object dstObject = getObj(dstContainer, screen.getMenu());
             if (dstObject == null)
                 return;
 
@@ -284,7 +284,7 @@ public class TriggerButtonManager {
                 : getContainer(player);
 
         // Select the relevant container or GUI class
-        Object object = ClientSort.getObj(container, screen.getMenu());
+        Object object = getObj(container, screen.getMenu());
         if (object == null)
             return;
 
@@ -304,7 +304,7 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            Object dstObject = getObj(dstContainer, screen.getMenu());
             if (dstObject == null)
                 return;
 
@@ -353,7 +353,7 @@ public class TriggerButtonManager {
                 : getContainer(player);
 
         // Select the relevant container or GUI class
-        Object object = ClientSort.getObj(container, screen.getMenu());
+        Object object = getObj(container, screen.getMenu());
         if (object == null)
             return;
 
@@ -373,7 +373,7 @@ public class TriggerButtonManager {
                 : player.getInventory();
         if (dstContainer != null) {
             // Select the relevant container or GUI class
-            Object dstObject = ClientSort.getObj(dstContainer, screen.getMenu());
+            Object dstObject = getObj(dstContainer, screen.getMenu());
             if (dstObject == null)
                 return;
 

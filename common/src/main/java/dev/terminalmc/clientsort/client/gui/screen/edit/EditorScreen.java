@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -378,7 +379,7 @@ public abstract class EditorScreen extends Screen {
 
         // Render disabled-slot indicators
         for (Slot slot : underlay.getMenu().slots) {
-            Object object = ClientSort.getObj(slot, underlay.getMenu());
+            Object object = getObj(slot, underlay.getMenu());
             if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
                 if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInContainer())) {
                     // Draw lock icon, top left
@@ -534,7 +535,7 @@ public abstract class EditorScreen extends Screen {
             for (Slot slot : underlay.getMenu().slots) {
                 if (((AbstractContainerScreenAccessor) underlay)
                         .clientsort$isHovering(slot, mouseX, mouseY)) {
-                    Object object = ClientSort.getObj(slot, underlay.getMenu());
+                    Object object = getObj(slot, underlay.getMenu());
                     if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
                         int slotId = ((ISlot) slot).clientsort$getIndexInContainer();
                         if (ignoredSlots.contains(slotId))

@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
+import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
@@ -26,11 +27,11 @@ import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
@@ -139,12 +140,22 @@ public class StackFillHandler extends PayloadHandler {
         Container srcContainer = srcSlotIds.length > 0
                 ? menu.slots.get(srcSlotIds[0]).container
                 : null;
-        Object srcObject = srcContainer instanceof SimpleContainer ? menu : srcContainer;
+        Object srcObject = getObj(srcContainer, menu);
+        if (srcObject == null)
+            throw new UnsupportedOpException("Reference src object is null for inputs '%s', '%s'!".formatted(
+                    srcContainer == null ? "null" : srcContainer.getClass().getName(),
+                    menu == null ? "null" : menu.getClass().getName()
+            ));
 
         Container dstContainer = dstSlotIds.length > 0
                 ? menu.slots.get(dstSlotIds[0]).container
                 : null;
-        Object dstObject = dstContainer instanceof SimpleContainer ? menu : dstContainer;
+        Object dstObject = getObj(dstContainer, menu);
+        if (dstObject == null)
+            throw new UnsupportedOpException("Reference dst object is null for inputs '%s', '%s'!".formatted(
+                    dstContainer == null ? "null" : dstContainer.getClass().getName(),
+                    menu == null ? "null" : menu.getClass().getName()
+            ));
 
         // Fail if there is a disallow policy for either reference object
         PolicyManager.checkPolicy(srcObject.getClass(), (bl) -> bl.stackFillEnabled);
@@ -158,7 +169,15 @@ public class StackFillHandler extends PayloadHandler {
         Container dstContainer = dstSlotIds.length > 0
                 ? menu.slots.get(dstSlotIds[0]).container
                 : null;
-        Object object = dstContainer instanceof SimpleContainer ? menu : dstContainer;
+        Object object = getObj(dstContainer, menu);
+        if (object == null) {
+            ClientSort.LOG.warn(
+                    "Could not set policy: reference object is null for inputs '{}', '{}'!",
+                    dstContainer == null ? "null" : dstContainer.getClass().getName(),
+                    menu == null ? "null" : menu.getClass().getName()
+            );
+            return;
+        }
 
         PolicyManager.setPolicy(
                 new ServerClassPolicy(

@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
+import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
@@ -176,7 +177,7 @@ public abstract class SingleUseOperator<T extends Operation> {
             if (ItemLocksWrapper.isLocked(slot))
                 continue;
             // Ignore ignored slots
-            Object object = ClientSort.getObj(slot, screen.getMenu());
+            Object object = getObj(slot, screen.getMenu());
             if (object == null)
                 continue;
             @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
@@ -233,7 +234,7 @@ public abstract class SingleUseOperator<T extends Operation> {
             boolean onlyClient
     ) {
         // Check policy
-        Object object = ClientSort.getObj(originSlot, screen.getMenu());
+        Object object = getObj(originSlot, screen.getMenu());
         if (object == null)
             return null;
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());

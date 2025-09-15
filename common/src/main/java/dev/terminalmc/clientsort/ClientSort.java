@@ -19,6 +19,12 @@ package dev.terminalmc.clientsort;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.util.ModLogger;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.ticks.ContainerSingleItem;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientSort {
 
@@ -45,5 +51,27 @@ public class ClientSort {
         ServerConfig.Options options = config.options;
         // Update class cache
         PolicyManager.reloadPolicyClasses(options.classPolicies.keySet());
+    }
+
+    /**
+     * @return the reference object for the slot.
+     */
+    public static @Nullable Object getObj(Slot slot, AbstractContainerMenu menu) {
+        return getObj(slot.container, menu);
+    }
+
+    /**
+     * @return the reference object for the slot.
+     */
+    public static @Nullable Object getObj(
+            @Nullable Container container,
+            AbstractContainerMenu menu
+    ) {
+        return switch (container) {
+            case null -> null;
+            case ContainerSingleItem ignored -> null;
+            case SimpleContainer ignored -> menu;
+            default -> container;
+        };
     }
 }
