@@ -69,7 +69,7 @@ public class ClientSort {
     ) {
         return switch (container) {
             case null -> null;
-            case ContainerSingleItem ignored -> null;
+            case ContainerSingleItem ignored -> menu;
             case SimpleContainer ignored -> menu;
             default -> container;
         };
