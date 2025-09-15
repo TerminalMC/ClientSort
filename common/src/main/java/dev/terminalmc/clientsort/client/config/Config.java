@@ -315,11 +315,11 @@ public class Config {
                 new ClassPolicy(
                         HorseInventoryMenu.class.getName(),
                         null,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        new TreeSet<>()
+                        Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND,
+                        Policy.KEYBIND,
+                        Policy.KEYBIND_BUTTON,
+                        new TreeSet<>(List.of(0))
                 ),
                 new ClassPolicy(
                         PlayerEnderChestContainer.class.getName(),

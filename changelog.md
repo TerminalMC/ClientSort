@@ -3,6 +3,7 @@
 ## 2.0.0-beta.19
 
 - Fixed a threading issue with server-acceleration payload handling
+- Enabled ops in donkey and mule inventories by default
 
 ## 2.0.0-beta.18
 
