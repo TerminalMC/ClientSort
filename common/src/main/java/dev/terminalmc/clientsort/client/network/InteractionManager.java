@@ -55,17 +55,6 @@ public class InteractionManager {
     }
 
     /**
-     * Adds the event to the front of the queue.
-     */
-    public static void now(InteractionEvent event) {
-        synchronized (eventQueue) {
-            eventQueue.addFirst(event);
-            if (waiter == null)
-                triggerSend(TriggerType.INITIAL);
-        }
-    }
-
-    /**
      * Queues the events.
      */
     public static void pushAll(Collection<InteractionEvent> events) {
@@ -173,9 +162,7 @@ public class InteractionManager {
 
     public enum TriggerType {
         INITIAL,
-        CONTAINER_SLOT_UPDATE,
         GUI_CONFIRM,
-        HELD_ITEM_CHANGE,
         TICK
     }
 

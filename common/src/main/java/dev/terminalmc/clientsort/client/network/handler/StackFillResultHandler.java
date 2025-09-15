@@ -46,26 +46,26 @@ public class StackFillResultHandler {
             Minecraft mc,
             LocalPlayer player
     ) {
-        PayloadResult result = ResultHandlerUtil.interpretResult(
-                payload.result(),
-                payload.message(),
-                CollectPayload.ID
-        );
+        mc.execute(() -> {
+            PayloadResult result = ResultHandlerUtil.interpretResult(
+                    payload.result(),
+                    payload.message(),
+                    CollectPayload.ID
+            );
 
-        if (onCompletion != null) {
-            try {
-                onCompletion.accept(result);
-            } catch (Exception e) {
-                ClientSort.LOG.error(
-                        "Failed to run completion callback for payload '{}' with result '{}': {}",
-                        StackFillPayload.ID,
-                        result.name(),
-                        e
-                );
+            if (onCompletion != null) {
+                try {
+                    onCompletion.accept(result);
+                } catch (Exception e) {
+                    ClientSort.LOG.error(
+                            "Failed to run completion callback for payload '{}' with result '{}': {}",
+                            StackFillPayload.ID,
+                            result.name(),
+                            e
+                    );
+                }
+                onCompletion = null;
             }
-            onCompletion = null;
-        }
-
-        player.inventoryMenu.broadcastChanges();
+        });
     }
 }

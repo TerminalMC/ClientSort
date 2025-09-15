@@ -20,8 +20,6 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
-import dev.terminalmc.clientsort.client.network.InteractionManager.TriggerType;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
@@ -91,22 +89,19 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                     }
                 };
 
-                InteractionManager.push(() -> {
-                    ServerOperator<?> sorter = new ServerOperator<>(
-                            screen,
-                            screenHelper,
-                            originSlot,
-                            Operation.SORT
-                    );
-                    int[] slotMapping = sorter.createSlotMapping(sortOrder);
-                    if (debug())
-                        ClientSort.LOG.info("Sending payload for operation SORT");
-                    ClientServices.PLATFORM.sendToServer(new SortPayload(
-                            screen.getMenu().containerId,
-                            slotMapping
-                    ));
-                    return InteractionManager.Waiter.equal(TriggerType.CONTAINER_SLOT_UPDATE);
-                });
+                ServerOperator<?> sorter = new ServerOperator<>(
+                        screen,
+                        screenHelper,
+                        originSlot,
+                        Operation.SORT
+                );
+                int[] slotMapping = sorter.createSlotMapping(sortOrder);
+                if (debug())
+                    ClientSort.LOG.info("Sending payload for operation SORT");
+                ClientServices.PLATFORM.sendToServer(new SortPayload(
+                        screen.getMenu().containerId,
+                        slotMapping
+                ));
             } else if (collectResult.isUnknown() || !options().useClientFallback) {
                 setOverlayMessage(Component.translatable(collectResult.translationKey));
             } else {
@@ -162,16 +157,13 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         int[] srcSlotIds = createSlotIdArray(originScopeSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
-        InteractionManager.now(() -> {
-            if (debug())
-                ClientSort.LOG.info("Sending payload for operation STACK_FILL");
-            ClientServices.PLATFORM.sendToServer(new StackFillPayload(
-                    screen.getMenu().containerId,
-                    srcSlotIds,
-                    dstSlotIds
-            ));
-            return InteractionManager.TICK_WAITER;
-        });
+        if (debug())
+            ClientSort.LOG.info("Sending payload for operation STACK_FILL");
+        ClientServices.PLATFORM.sendToServer(new StackFillPayload(
+                screen.getMenu().containerId,
+                srcSlotIds,
+                dstSlotIds
+        ));
     }
 
     @Override
@@ -233,16 +225,13 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
         int[] srcSlotIds = createSlotIdArray(originSlots);
         int[] dstSlotIds = createSlotIdArray(otherScopeSlots);
 
-        InteractionManager.now(() -> {
-            if (debug())
-                ClientSort.LOG.info("Sending payload for operation TRANSFER");
-            ClientServices.PLATFORM.sendToServer(new TransferPayload(
-                    screen.getMenu().containerId,
-                    srcSlotIds,
-                    dstSlotIds
-            ));
-            return InteractionManager.TICK_WAITER;
-        });
+        if (debug())
+            ClientSort.LOG.info("Sending payload for operation TRANSFER");
+        ClientServices.PLATFORM.sendToServer(new TransferPayload(
+                screen.getMenu().containerId,
+                srcSlotIds,
+                dstSlotIds
+        ));
     }
 
     private int[] createSlotIdArray(Slot[] slots) {
@@ -256,15 +245,12 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
     }
 
     private void sendCollectPayload(int[] scopeArray) {
-        InteractionManager.now(() -> {
-            if (debug())
-                ClientSort.LOG.info("Sending payload for operation COLLECT");
-            ClientServices.PLATFORM.sendToServer(new CollectPayload(
-                    screen.getMenu().containerId,
-                    scopeArray
-            ));
-            return InteractionManager.TICK_WAITER;
-        });
+        if (debug())
+            ClientSort.LOG.info("Sending payload for operation COLLECT");
+        ClientServices.PLATFORM.sendToServer(new CollectPayload(
+                screen.getMenu().containerId,
+                scopeArray
+        ));
     }
 
     private int[] createSlotMapping(SortOrder sortOrder) {

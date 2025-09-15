@@ -18,11 +18,8 @@
 package dev.terminalmc.clientsort.mixin.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -56,21 +53,5 @@ public abstract class ClientPacketListenerMixin {
         ClientSort.updateItemTags(options());
         // Update item caches
         ClientSort.updateItemSets(options());
-    }
-
-    @Inject(
-            method = "handleSetCarriedItem",
-            at = @At("HEAD")
-    )
-    public void beforeHeldItemChange(ClientboundSetCarriedItemPacket packet, CallbackInfo ci) {
-        InteractionManager.triggerSend(InteractionManager.TriggerType.HELD_ITEM_CHANGE);
-    }
-
-    @Inject(
-            method = "handleContainerSetSlot",
-            at = @At("RETURN")
-    )
-    public void afterSlotItemChange(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
-        InteractionManager.triggerSend(InteractionManager.TriggerType.CONTAINER_SLOT_UPDATE);
     }
 }

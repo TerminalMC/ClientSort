@@ -45,26 +45,26 @@ public class SortResultHandler {
             Minecraft mc,
             LocalPlayer player
     ) {
-        PayloadResult result = ResultHandlerUtil.interpretResult(
-                payload.result(),
-                payload.message(),
-                SortPayload.ID
-        );
+        mc.execute(() -> {
+            PayloadResult result = ResultHandlerUtil.interpretResult(
+                    payload.result(),
+                    payload.message(),
+                    SortPayload.ID
+            );
 
-        if (onCompletion != null) {
-            try {
-                onCompletion.accept(result);
-            } catch (Exception e) {
-                ClientSort.LOG.error(
-                        "Failed to run completion callback for payload '{}' with result '{}': {}",
-                        SortPayload.ID,
-                        result.name(),
-                        e
-                );
+            if (onCompletion != null) {
+                try {
+                    onCompletion.accept(result);
+                } catch (Exception e) {
+                    ClientSort.LOG.error(
+                            "Failed to run completion callback for payload '{}' with result '{}': {}",
+                            SortPayload.ID,
+                            result.name(),
+                            e
+                    );
+                }
+                onCompletion = null;
             }
-            onCompletion = null;
-        }
-
-        player.inventoryMenu.broadcastChanges();
+        });
     }
 }
