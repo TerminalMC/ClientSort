@@ -318,7 +318,7 @@ public class Config {
                         Policy.KEYBIND,
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
-                        new TreeSet<>(List.of(0))
+                        new TreeSet<>()
                 ),
                 new ClassPolicy(
                         PlayerEnderChestContainer.class.getName(),
