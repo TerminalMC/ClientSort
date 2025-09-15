@@ -99,9 +99,8 @@ public class Config {
                 val != null && Arrays.stream(ExtraSlotScope.values()).toList().contains(val)
                         ? val : extraSlotScopeDefault;
 
-
-        public static final boolean bundlesUseLeftClickDefault = false;
-        public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
+        public static final boolean bundlesUseRightClickDefault = false;
+        public boolean bundlesUseRightClick = bundlesUseRightClickDefault;
 
         // Matching options
 

@@ -34,6 +34,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -172,7 +173,7 @@ public abstract class TriggerButton extends Button {
 
         // Draw texture
         ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
-        graphics.blitSprite(texture, getX(), getY(), 0, width, height);
+        graphics.blitSprite(RenderType::guiTextured, texture, getX(), getY(), width, height);
 
         // Draw policy state indicator
         if (!operationAllowed) {
