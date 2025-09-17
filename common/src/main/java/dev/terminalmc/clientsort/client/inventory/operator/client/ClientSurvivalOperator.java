@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.client.inventory.operator.client;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager.InteractionEvent;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
@@ -44,8 +45,12 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  */
 public class ClientSurvivalOperator extends ClientOperator {
 
-    public ClientSurvivalOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
-        super(screen, originSlot);
+    public ClientSurvivalOperator(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            Operation op
+    ) {
+        super(screen, originSlot, op);
     }
 
     /**

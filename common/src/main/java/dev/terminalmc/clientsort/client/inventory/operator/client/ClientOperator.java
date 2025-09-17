@@ -18,6 +18,7 @@ package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
@@ -32,8 +33,8 @@ import net.minecraft.world.inventory.Slot;
  */
 public abstract class ClientOperator extends SingleUseOperator {
 
-    public ClientOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
-        super(screen, originSlot);
+    public ClientOperator(AbstractContainerScreen<?> screen, Slot originSlot, Operation op) {
+        super(screen, originSlot, op);
     }
 
     /**

@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
 import dev.terminalmc.clientsort.client.ClientSort;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
@@ -49,8 +50,8 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
  */
 public class ServerOperator extends SingleUseOperator {
 
-    public ServerOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
-        super(screen, originSlot);
+    public ServerOperator(AbstractContainerScreen<?> screen, Slot originSlot, Operation op) {
+        super(screen, originSlot, op);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class ServerOperator extends SingleUseOperator {
                     }
                 };
 
-                ServerOperator sorter = new ServerOperator(screen, originSlot);
+                ServerOperator sorter = new ServerOperator(screen, originSlot, op);
                 int[] slotMapping = sorter.createSlotMapping(sortOrder);
                 if (debug())
                     ClientSort.LOG.info("Sending payload for operation SORT");

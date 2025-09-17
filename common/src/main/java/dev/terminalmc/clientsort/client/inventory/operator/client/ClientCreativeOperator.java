@@ -18,6 +18,7 @@ package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
+import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
@@ -36,8 +37,12 @@ import static dev.terminalmc.clientsort.ClientSort.debug;
  */
 public class ClientCreativeOperator extends ClientOperator {
 
-    public ClientCreativeOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
-        super(screen, originSlot);
+    public ClientCreativeOperator(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            Operation op
+    ) {
+        super(screen, originSlot, op);
     }
 
     /**

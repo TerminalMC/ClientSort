@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.client.inventory.operator;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientCreativeOperator;
@@ -42,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
@@ -62,6 +64,7 @@ public abstract class SingleUseOperator {
     private boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
+    protected final Operation op;
     /**
      * The slot that was hovered when sorting was triggered.
      */
@@ -94,13 +97,15 @@ public abstract class SingleUseOperator {
      */
     protected final ItemStack[] otherScopeStacks;
 
-    protected SingleUseOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
+    protected SingleUseOperator(AbstractContainerScreen<?> screen, Slot originSlot, Operation op) {
         this.screen = screen;
         this.screenHelper = ContainerScreenHelper.of(screen);
         this.originSlot = originSlot;
+        this.op = op;
+
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
-        originScopeSlots = collectSlots(originScope);
+        originScopeSlots = collectSlots(originSlot);
         if (debug()) {
             ClientSort.LOG.info(
                     "Discovered {} slots in origin scope ({} - {}):",
@@ -116,13 +121,20 @@ public abstract class SingleUseOperator {
             originScopeStacks[i] = originScopeSlots[i].getItem().copy();
         }
 
+        // Get the other container, if any
+        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+        @Nullable Slot otherSlot = originSlot.container == player.getInventory()
+                ? TriggerButtonManager.getContainerRefSlot(op)
+                : TriggerButtonManager.getPlayerRefSlot(op);
+        if (otherSlot == null || op.equals(Operation.SORT)) {
+            otherScopeSlots = new Slot[]{};
+            otherScopeStacks = new ItemStack[]{};
+            return;
+        }
+
         // Collect slots in other container scope, if any
-        Scope otherScope = switch (originScope) {
-            case PLAYER_INV -> Scope.CONTAINER_INV;
-            case CONTAINER_INV -> Scope.PLAYER_INV;
-            default -> Scope.INVALID;
-        };
-        otherScopeSlots = collectSlots(otherScope);
+        Scope otherScope = screenHelper.getScope(otherSlot);
+        otherScopeSlots = collectSlots(otherSlot);
         if (debug()) {
             ClientSort.LOG.info(
                     "Discovered {} slots in other scope ({} - {}):",
@@ -142,8 +154,9 @@ public abstract class SingleUseOperator {
     /**
      * Finds all the valid inventory menu slots that are in {@code scope}.
      */
-    private Slot[] collectSlots(Scope scope) {
+    private Slot[] collectSlots(Slot refSlot) {
         LocalPlayer player = Minecraft.getInstance().player;
+        Scope scope = screenHelper.getScope(refSlot);
         if (scope == Scope.INVALID)
             return new Slot[0];
 
@@ -152,6 +165,12 @@ public abstract class SingleUseOperator {
         for (Slot slot : screen.getMenu().slots) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
+
+            //noinspection ConstantValue
+            if (slot.container == null)
+                continue;
+            if (slot.container != refSlot.container)
+                continue;
 
             // Ignore slots in different scope
             if (screenHelper.getScope(slot) != scope)
@@ -295,7 +314,7 @@ public abstract class SingleUseOperator {
                 && ClientServices.PLATFORM.canSendToServer(operation.type)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
-            return new ServerOperator(screen, originSlot);
+            return new ServerOperator(screen, originSlot, operation);
         }
 
         // Check that there is not already an op running
@@ -313,11 +332,11 @@ public abstract class SingleUseOperator {
                 && screen instanceof CreativeModeInventoryScreen) {
             if (debug())
                 ClientSort.LOG.info("Preparing client-creative operator for {}", operation.name());
-            return new ClientCreativeOperator(screen, originSlot);
+            return new ClientCreativeOperator(screen, originSlot, operation);
         } else {
             if (debug())
                 ClientSort.LOG.info("Preparing client-survival operator for {}", operation.name());
-            return new ClientSurvivalOperator(screen, originSlot);
+            return new ClientSurvivalOperator(screen, originSlot, operation);
         }
     }
 

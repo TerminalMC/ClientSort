@@ -55,7 +55,7 @@ public abstract class TriggerButton extends Button {
 
     private final AbstractContainerScreen<?> screen;
     public final Container container;
-    private final Slot referenceSlot;
+    public final Slot referenceSlot;
     public final boolean isPlayerInv;
 
     private final WidgetSprites sprites;

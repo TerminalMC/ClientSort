@@ -28,16 +28,13 @@ import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
-import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,13 +50,17 @@ public class TriggerButtonManager {
     }
 
     private static final int BUTTON_SPACING = 1;
-
-    // Alters whether buttons are arrayed horizontally, vertically or :/
     private static final int BUTTON_SHIFT_X = 0;
     private static final int BUTTON_SHIFT_Y = 1;
 
+    private static @Nullable AbstractContainerScreen<?> screen;
+
     private static final LinkedHashSet<TriggerButton> containerButtons = new LinkedHashSet<>();
     private static final LinkedHashSet<TriggerButton> playerButtons = new LinkedHashSet<>();
+
+    public static @Nullable AbstractContainerScreen<?> getScreen() {
+        return screen;
+    }
 
     public static LinkedList<TriggerButton> getContainerButtons() {
         return new LinkedList<>(containerButtons);
@@ -69,49 +70,78 @@ public class TriggerButtonManager {
         return new LinkedList<>(playerButtons);
     }
 
+    public static @Nullable Slot getContainerRefSlot(Operation op) {
+        return getRefSlot(containerButtons, op);
+    }
+
+    public static @Nullable Slot getPlayerRefSlot(Operation op) {
+        return getRefSlot(playerButtons, op);
+    }
+
+    private static @Nullable Slot getRefSlot(LinkedHashSet<TriggerButton> buttons, Operation op) {
+        Class<? extends TriggerButton> clazz = switch (op) {
+            case SORT -> SortButton.class;
+            case STACK_FILL -> StackFillButton.class;
+            case MATCH_TRANSFER -> MatchTransferButton.class;
+            case TRANSFER -> TransferButton.class;
+        };
+
+        for (TriggerButton button : buttons) {
+            if (button.getClass().equals(clazz)) {
+                return button.referenceSlot;
+            }
+        }
+        return null;
+    }
+
     /**
      * Generates zero or more control buttons in accordance with config and state, and if any were
      * generated, adds them to the screen.
      */
-    public static void afterScreenInit(Screen screen) {
-        if (!(screen instanceof AbstractContainerScreen<?> acs))
+    public static void afterScreenInit(Screen initScreen) {
+        if (!(initScreen instanceof AbstractContainerScreen<?> acs))
             return;
 
+        if (screen != null) {
+            TriggerButtonManager.getContainerButtons()
+                    .forEach((b) -> ((ScreenAccessor) screen).clientsort$removeWidget(b));
+            TriggerButtonManager.getPlayerButtons()
+                    .forEach((b) -> ((ScreenAccessor) screen).clientsort$removeWidget(b));
+        }
         containerButtons.clear();
         playerButtons.clear();
+        screen = acs;
 
-        if (!options().showButtons)
-            return;
+        boolean enabled = options().showButtons;
 
-        // Allow forcing buttons to be shown on editor screens
-        boolean forceShowContainer = false;
-        boolean forceShowPlayer = false;
+        boolean isEditorC = false;
+        boolean isEditorP = false;
         Screen currentScreen = Minecraft.getInstance().screen;
         if (currentScreen instanceof SelectorScreen) {
-            forceShowContainer = true;
-            forceShowPlayer = true;
+            isEditorC = true;
+            isEditorP = true;
         } else if (currentScreen instanceof ContainerEditorScreen) {
-            forceShowContainer = true;
+            isEditorC = true;
         } else if (currentScreen instanceof PlayerEditorScreen) {
-            forceShowPlayer = true;
+            isEditorP = true;
         }
 
         // Generate container-side buttons
-        Slot containerRefSlot = getReferenceSlot(acs, false);
-        if (containerRefSlot != null) {
-            generate(acs, containerRefSlot, false, forceShowContainer, options().firstButtonOp);
-            generate(acs, containerRefSlot, false, forceShowContainer, options().secondButtonOp);
-            generate(acs, containerRefSlot, false, forceShowContainer, options().thirdButtonOp);
-            generate(acs, containerRefSlot, false, forceShowContainer, options().fourthButtonOp);
+        Slot refSlotC = getReferenceSlot(acs, false);
+        if (refSlotC != null) {
+            generate(acs, refSlotC, false, isEditorC, enabled, options().firstButtonOp);
+            generate(acs, refSlotC, false, isEditorC, enabled, options().secondButtonOp);
+            generate(acs, refSlotC, false, isEditorC, enabled, options().thirdButtonOp);
+            generate(acs, refSlotC, false, isEditorC, enabled, options().fourthButtonOp);
         }
 
         // Generate player-side buttons
-        Slot playerRefSlot = getReferenceSlot(acs, true);
-        if (playerRefSlot != null) {
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().firstButtonOp);
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().secondButtonOp);
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().thirdButtonOp);
-            generate(acs, playerRefSlot, true, forceShowPlayer, options().fourthButtonOp);
+        Slot refSlotP = getReferenceSlot(acs, true);
+        if (refSlotP != null) {
+            generate(acs, refSlotP, true, isEditorP, enabled, options().firstButtonOp);
+            generate(acs, refSlotP, true, isEditorP, enabled, options().secondButtonOp);
+            generate(acs, refSlotP, true, isEditorP, enabled, options().thirdButtonOp);
+            generate(acs, refSlotP, true, isEditorP, enabled, options().fourthButtonOp);
         }
     }
 
@@ -123,15 +153,18 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             Slot refSlot,
             boolean isPlayerInv,
-            boolean forceShow,
+            boolean isEditor,
+            boolean enabled,
             Operation op
     ) {
         switch (op) {
-            case SORT -> generateSortButton(screen, refSlot, isPlayerInv, forceShow);
-            case STACK_FILL -> generateStackFillButton(screen, refSlot, isPlayerInv, forceShow);
+            case SORT -> generateSortButton(screen, refSlot, isPlayerInv, isEditor, enabled);
+            case STACK_FILL ->
+                    generateStackFillButton(screen, refSlot, isPlayerInv, isEditor, enabled);
             case MATCH_TRANSFER ->
-                    generateMatchTransferButton(screen, refSlot, isPlayerInv, forceShow);
-            case TRANSFER -> generateTransferButton(screen, refSlot, isPlayerInv, forceShow);
+                    generateMatchTransferButton(screen, refSlot, isPlayerInv, isEditor, enabled);
+            case TRANSFER ->
+                    generateTransferButton(screen, refSlot, isPlayerInv, isEditor, enabled);
         }
     }
 
@@ -139,7 +172,8 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean isPlayerInv,
-            boolean forceShow
+            boolean isEditor,
+            boolean enabled
     ) {
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
@@ -148,10 +182,6 @@ public class TriggerButtonManager {
 
         // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv)
-            return;
-
-        // Preliminary check; never display buttons on basic workstations or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
         // Get the relevant container, if any
@@ -166,7 +196,11 @@ public class TriggerButtonManager {
 
         // Retrieve the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-        if ((policy == null || !policy.showSortButton()) && !forceShow)
+
+        // Evaluate display mode
+        boolean create = isEditor || policy == null || policy.showSortButton();
+        boolean add = isEditor || (policy != null && policy.showSortButton() && enabled);
+        if (!create)
             return;
 
         // Get the configured or default offset
@@ -185,14 +219,17 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv),
                 localized("key", "op.sort")
         );
-        addButton(screen, button, isPlayerInv);
+        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        if (add)
+            ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
     }
 
     private static void generateStackFillButton(
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean isPlayerInv,
-            boolean forceShow
+            boolean isEditor,
+            boolean enabled
     ) {
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
@@ -201,10 +238,6 @@ public class TriggerButtonManager {
 
         // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv)
-            return;
-
-        // Preliminary check; never display buttons on basic workstations or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
         // Get the relevant container, if any
@@ -219,7 +252,11 @@ public class TriggerButtonManager {
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-        if ((policy == null || !policy.showStackFillButton()) && !forceShow)
+
+        // Evaluate display mode
+        boolean create = isEditor || policy == null || policy.showStackFillButton();
+        boolean add = isEditor || (policy != null && policy.showStackFillButton() && enabled);
+        if (!create)
             return;
 
         // Get the configured or default offset
@@ -239,7 +276,12 @@ public class TriggerButtonManager {
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
-            if ((dstPolicy == null || !dstPolicy.showStackFillButton()) && !forceShow)
+
+            // Re-evaluate display mode
+            create = isEditor || dstPolicy == null || dstPolicy.showStackFillButton();
+            add = isEditor || (dstPolicy != null && dstPolicy.showStackFillButton() && enabled);
+
+            if (!create)
                 return;
         }
 
@@ -254,14 +296,17 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv),
                 localized("key", "op.stackFill")
         );
-        addButton(screen, button, isPlayerInv);
+        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        if (add)
+            ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
     }
 
     private static void generateMatchTransferButton(
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean isPlayerInv,
-            boolean forceShow
+            boolean isEditor,
+            boolean enabled
     ) {
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
@@ -270,10 +315,6 @@ public class TriggerButtonManager {
 
         // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv)
-            return;
-
-        // Preliminary check; never display buttons on basic workstations or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
         // Get the relevant container, if any
@@ -288,7 +329,11 @@ public class TriggerButtonManager {
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-        if ((policy == null || !policy.showMatchTransferButton()) && !forceShow)
+
+        // Evaluate display mode
+        boolean create = isEditor || policy == null || policy.showMatchTransferButton();
+        boolean add = isEditor || (policy != null && policy.showMatchTransferButton() && enabled);
+        if (!create)
             return;
 
         // Get the configured or default offset
@@ -308,7 +353,12 @@ public class TriggerButtonManager {
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
-            if ((dstPolicy == null || !dstPolicy.showMatchTransferButton()) && !forceShow)
+
+            // Re-evaluate display mode
+            create = isEditor || dstPolicy == null || dstPolicy.showMatchTransferButton();
+            add = isEditor || (dstPolicy != null && dstPolicy.showMatchTransferButton() && enabled);
+
+            if (!create)
                 return;
         }
 
@@ -323,14 +373,17 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv),
                 localized("key", "op.matchTransfer")
         );
-        addButton(screen, button, isPlayerInv);
+        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        if (add)
+            ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
     }
 
     private static void generateTransferButton(
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean isPlayerInv,
-            boolean forceShow
+            boolean isEditor,
+            boolean enabled
     ) {
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
@@ -339,10 +392,6 @@ public class TriggerButtonManager {
 
         // Sanity check; never display container buttons on player screen
         if (screen instanceof InventoryScreen && !isPlayerInv)
-            return;
-
-        // Preliminary check; never display buttons on basic workstations or other minor inventories
-        if (getNumberOfBulkInventorySlots(screen, isPlayerInv) < 3)
             return;
 
         // Get the relevant container, if any
@@ -357,7 +406,11 @@ public class TriggerButtonManager {
 
         // Check the relevant policy, if any
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-        if ((policy == null || !policy.showTransferButton()) && !forceShow)
+
+        // Evaluate display mode
+        boolean create = isEditor || policy == null || policy.showTransferButton();
+        boolean add = isEditor || (policy != null && policy.showTransferButton() && enabled);
+        if (!create)
             return;
 
         // Get the configured or default offset
@@ -377,7 +430,12 @@ public class TriggerButtonManager {
 
             // Check the relevant policy, if any
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
-            if ((dstPolicy == null || !dstPolicy.showTransferButton()) && !forceShow)
+
+            // Re-evaluate display mode
+            create = isEditor || dstPolicy == null || dstPolicy.showTransferButton();
+            add = isEditor || (dstPolicy != null && dstPolicy.showTransferButton() && enabled);
+
+            if (!create)
                 return;
         }
 
@@ -392,30 +450,45 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv),
                 localized("key", "op.transfer")
         );
-        addButton(screen, button, isPlayerInv);
+        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        if (add)
+            ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
     }
 
     /**
      * @return the container associated with the player's container menu, if it exists.
      */
     public static @Nullable Container getContainer(Player player) {
-        try {
-            return player.containerMenu.getSlot(0).container;
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
-    }
+        // Local class for tracking container scores
+        class ScoredContainer {
 
-    /**
-     * Adds the button to the screen, and to the respective set.
-     */
-    private static void addButton(
-            AbstractContainerScreen<?> screen,
-            TriggerButton button,
-            boolean isPlayerInv
-    ) {
-        ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
-        (isPlayerInv ? playerButtons : containerButtons).add(button);
+            public final Container container;
+            public int score;
+
+            public ScoredContainer(Container container, int score) {
+                this.container = container;
+                this.score = score;
+            }
+        }
+
+        Map<Container, ScoredContainer> map = new HashMap<>();
+        for (Slot slot : player.containerMenu.slots) {
+            // Ignore irrelevant slots
+            //noinspection ConstantValue
+            if (slot.container == null)
+                continue;
+            @Nullable ScoredContainer scoredContainer = map.get(slot.container);
+            if (scoredContainer == null) {
+                // First slot from this container, store it
+                map.put(slot.container, new ScoredContainer(slot.container, 1));
+            } else {
+                scoredContainer.score++;
+            }
+        }
+        if (map.isEmpty())
+            return null;
+
+        return map.values().stream().max(Comparator.comparingInt(s -> s.score)).get().container;
     }
 
     /**
@@ -483,23 +556,7 @@ public class TriggerButtonManager {
 
         // Map now contains the highest-positional-scoring slot from each container, so pick the one
         // that belongs to the largest container
-        return map.values().stream().max(Comparator.comparingInt(a -> a.siblingScore)).get().slot;
-    }
-
-    /**
-     * @return the number of slots in the respective container that are theoretically able to store
-     * any item.
-     */
-    private static int getNumberOfBulkInventorySlots(
-            AbstractContainerScreen<?> screen,
-            boolean isPlayerInv
-    ) {
-        return screen.getMenu().slots.stream()
-                .filter(slot -> isPlayerInv == (slot.container instanceof Inventory))
-                .filter(slot -> !(screen.getMenu() instanceof HorseInventoryMenu)
-                        || ((ISlot) slot).clientsort$getIndexInContainer() >= 2)
-                .mapToInt(slot -> 1)
-                .sum();
+        return map.values().stream().max(Comparator.comparingInt(s -> s.siblingScore)).get().slot;
     }
 
     /**
