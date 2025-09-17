@@ -17,19 +17,15 @@
 
 package dev.terminalmc.clientsort.mixin.client;
 
-import com.google.common.base.Suppliers;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
+import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
-import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.KeyMapping;
@@ -81,14 +77,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     private ItemStack draggingItem;
 
     @Shadow
-    protected abstract void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
-
-    @Shadow
     public abstract T getMenu();
 
     /**
      * When a client-side survival inventory interaction operation is triggered by a button click
-     * outside the inventory, Minecraft may detect the click and erroneously throw the carried item.
+     * outside the inventory, the game may detect the click and erroneously throw the carried item.
      * To prevent this, a flag is used to block all outside clicks while an operation is in
      * progress.
      */
@@ -110,27 +103,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     }
 
     /**
-     * Supplies a {@link ContainerScreenHelper} for this screen.
-     */
-    @SuppressWarnings("unchecked")
-    @Unique
-    private final Supplier<ContainerScreenHelper<AbstractContainerScreen<AbstractContainerMenu>>>
-            clientsort$screenHelper = Suppliers.memoize(() -> ContainerScreenHelper.of(
-            (AbstractContainerScreen<AbstractContainerMenu>) (Object) this,
-            (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
-                slotClicked(
-                        slot,
-                        ((ISlot) slot).clientsort$getIndexInMenu(),
-                        mouseButton,
-                        clickType
-                );
-                if (playSound)
-                    SoundManager.play();
-                return InteractionManager.TICK_WAITER;
-            })
-    ));
-
-    /**
      * Allows triggering operations via mouse click.
      */
     @Inject(
@@ -148,7 +120,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 clientsort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
-            cir.cancel();
         }
     }
 
@@ -170,7 +141,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 clientsort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
-            cir.cancel();
         }
     }
 
@@ -218,7 +188,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         } else if (inputMatcher.apply(KeybindManager.STACK_FILL_KEY)) {
             return this::clientsort$fillStacks;
         } else if (inputMatcher.apply(KeybindManager.MATCH_TRANSFER_KEY)) {
-            return this::clientsort$matchTransfer;
+            return this::clientsort$transferMatching;
         } else if (inputMatcher.apply(KeybindManager.TRANSFER_KEY)) {
             return this::clientsort$transfer;
         } else {
@@ -238,76 +208,58 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         if (hoveredSlot == null)
             return false;
 
-        SortOrder sortOrder;
-        if (hasShiftDown()) {
+        SortOrder sortOrder = options().sortOrder;
+        if (Screen.hasShiftDown()) {
             sortOrder = options().shiftSortOrder;
-        } else if (hasControlDown()) {
+        } else if (Screen.hasControlDown()) {
             sortOrder = options().ctrlSortOrder;
-        } else if (hasAltDown()) {
+        } else if (Screen.hasAltDown()) {
             sortOrder = options().altSortOrder;
-        } else {
-            sortOrder = options().sortOrder;
         }
 
-        if (sortOrder != null && sortOrder != SortOrder.NONE) {
-            SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                    (AbstractContainerScreen<?>) (Object) this,
-                    clientsort$screenHelper.get(),
-                    hoveredSlot,
-                    Operation.SORT,
-                    false
-            );
-            if (operator != null)
-                operator.trySort(sortOrder);
-            return true;
-        }
-        return false;
+        return SingleUseOperator.sort(
+                (AbstractContainerScreen<?>) (Object) this,
+                hoveredSlot,
+                false,
+                sortOrder
+        );
     }
 
     @Unique
     private boolean clientsort$fillStacks() {
-        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+        if (hoveredSlot == null)
+            return false;
+        return SingleUseOperator.fillStacks(
                 (AbstractContainerScreen<?>) (Object) this,
-                clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.STACK_FILL,
                 false
         );
-        if (operator != null)
-            operator.tryFillStacks();
-        return true;
     }
 
     @Unique
-    private boolean clientsort$matchTransfer() {
-        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+    private boolean clientsort$transferMatching() {
+        if (hoveredSlot == null)
+            return false;
+        return SingleUseOperator.transferMatching(
                 (AbstractContainerScreen<?>) (Object) this,
-                clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.MATCH_TRANSFER,
                 false
         );
-        if (operator != null)
-            operator.tryMatchTransfer();
-        return true;
     }
 
     @Unique
     private boolean clientsort$transfer() {
-        SingleUseOperator<?> operator = SingleUseOperator.getOperator(
+        if (hoveredSlot == null)
+            return false;
+        return SingleUseOperator.transfer(
                 (AbstractContainerScreen<?>) (Object) this,
-                clientsort$screenHelper.get(),
                 hoveredSlot,
-                Operation.TRANSFER,
                 false
         );
-        if (operator != null)
-            operator.tryTransfer();
-        return true;
     }
 
     /**
-     * Displays slot numbers if debug mode is enabled.
+     * Renders warning and debug overlays.
      */
     @Inject(
             method = "render",
@@ -333,10 +285,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         if (!debug())
             return;
 
-        ContainerScreenHelper<?> helper = ContainerScreenHelper.of(
-                (AbstractContainerScreen<?>) (Object) this,
-                (a, b, c, d) -> null
-        );
+        ContainerScreenHelper<?> helper =
+                ContainerScreenHelper.of((AbstractContainerScreen<?>) (Object) this);
 
         float scale = 0.7F;
         graphics.pose().pushPose();
@@ -345,6 +295,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
         for (Slot slot : menu.slots) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
+            int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
 
             // Draw disabled indicator, top left
             if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
@@ -352,7 +303,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 if (object == null)
                     continue;
                 @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
-                if (policy != null && policy.ignoredSlots().contains(slotId)) {
+                if (policy != null && policy.ignoredSlots().contains(slotIdx)) {
                     //noinspection UnnecessaryUnicodeEscape
                     graphics.drawString(
                             Minecraft.getInstance().font,
@@ -368,15 +319,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 }
             }
 
-            if (hasShiftDown()) {
-                slotId = ((ISlot) slot).clientsort$getIndexInContainer();
-            } else if (hasControlDown()) {
-                slotId = slot.getContainerSlot();
-            }
             // Draw slot ID, bottom left
             graphics.drawString(
                     Minecraft.getInstance().font,
-                    String.valueOf(slotId),
+                    String.valueOf(hasShiftDown() ? slotIdx : slotId),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
                             + slot.x)
                             / scale),
@@ -385,6 +331,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                             / scale),
                     0xFFFFFF
             );
+
             // Draw slot scope, bottom right
             graphics.drawString(
                     Minecraft.getInstance().font,

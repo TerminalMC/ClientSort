@@ -20,11 +20,11 @@ package dev.terminalmc.clientsort.client.inventory.operator;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.inventory.Scope;
+import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientCreativeOperator;
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientSurvivalOperator;
 import dev.terminalmc.clientsort.client.inventory.operator.server.ServerOperator;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.inventory.util.Scope;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.ClientServices;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
@@ -57,12 +57,11 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Additionally, due to policy constraints, a {@link SingleUseOperator} is only valid for the type
  * of operation specified when it was created.
  */
-public abstract class SingleUseOperator<T extends Operation> {
+public abstract class SingleUseOperator {
 
     private boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
-    protected final T operation;
     /**
      * The slot that was hovered when sorting was triggered.
      */
@@ -95,17 +94,10 @@ public abstract class SingleUseOperator<T extends Operation> {
      */
     protected final ItemStack[] otherScopeStacks;
 
-    public SingleUseOperator(
-            AbstractContainerScreen<?> screen,
-            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot,
-            T operation
-    ) {
+    protected SingleUseOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
         this.screen = screen;
-        this.screenHelper = screenHelper;
+        this.screenHelper = ContainerScreenHelper.of(screen);
         this.originSlot = originSlot;
-        this.operation = operation;
-
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
         originScopeSlots = collectSlots(originScope);
@@ -160,6 +152,7 @@ public abstract class SingleUseOperator<T extends Operation> {
         for (Slot slot : screen.getMenu().slots) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
+
             // Ignore slots in different scope
             if (screenHelper.getScope(slot) != scope)
                 continue;
@@ -191,34 +184,77 @@ public abstract class SingleUseOperator<T extends Operation> {
     }
 
     /**
-     * @return {@code true} if this instance was created for the same type of operation.
+     * @return {@code true} if this instance has not previously performed an operation (and
+     * therefore is able to perform one).
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean canPerform(Operation op) {
-        if (!operation.equals(op)) {
-            ClientSort.LOG.warn(
-                    "Cannot perform op {} using an operator created for op {}!",
-                    op,
-                    operation
-            );
+    private boolean canOperate() {
+        if (hasOperated) {
+            ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
             return false;
         } else {
+            hasOperated = true;
             return true;
         }
     }
 
-    /**
-     * @return {@code true} if this instance has not previously performed an operation (and
-     * therefore is able to perform one).
-     */
-    private boolean hasOperated() {
-        if (hasOperated) {
-            ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
-            return true;
-        } else {
-            hasOperated = true;
+    public static boolean sort(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            boolean onlyClient,
+            SortOrder sortOrder
+    ) {
+        if (sortOrder.equals(SortOrder.NONE))
             return false;
+
+        @Nullable SingleUseOperator op =
+                getOperator(screen, originSlot, onlyClient, Operation.SORT);
+        if (op != null && op.canOperate()) {
+            op.sort(sortOrder);
+            return true;
         }
+        return false;
+    }
+
+    public static boolean fillStacks(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            boolean onlyClient
+    ) {
+        @Nullable SingleUseOperator op =
+                getOperator(screen, originSlot, onlyClient, Operation.STACK_FILL);
+        if (op != null && op.canOperate()) {
+            op.fillStacks();
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean transferMatching(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            boolean onlyClient
+    ) {
+        @Nullable SingleUseOperator op =
+                getOperator(screen, originSlot, onlyClient, Operation.MATCH_TRANSFER);
+        if (op != null && op.canOperate()) {
+            op.matchTransfer();
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean transfer(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            boolean onlyClient
+    ) {
+        @Nullable SingleUseOperator op =
+                getOperator(screen, originSlot, onlyClient, Operation.TRANSFER);
+        if (op != null && op.canOperate()) {
+            op.transfer();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -226,12 +262,11 @@ public abstract class SingleUseOperator<T extends Operation> {
      * valid for a single operation of the specified type, or {@code null} if the operation is
      * disallowed by policy.
      */
-    public static @Nullable SingleUseOperator<Operation> getOperator(
+    private static @Nullable SingleUseOperator getOperator(
             AbstractContainerScreen<?> screen,
-            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
             Slot originSlot,
-            Operation operation,
-            boolean onlyClient
+            boolean onlyClient,
+            Operation operation
     ) {
         // Check policy
         Object object = getObj(originSlot, screen.getMenu());
@@ -260,7 +295,7 @@ public abstract class SingleUseOperator<T extends Operation> {
                 && ClientServices.PLATFORM.canSendToServer(operation.type)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
-            return new ServerOperator<>(screen, screenHelper, originSlot, operation);
+            return new ServerOperator(screen, originSlot);
         }
 
         // Check that there is not already an op running
@@ -278,59 +313,12 @@ public abstract class SingleUseOperator<T extends Operation> {
                 && screen instanceof CreativeModeInventoryScreen) {
             if (debug())
                 ClientSort.LOG.info("Preparing client-creative operator for {}", operation.name());
-            return new ClientCreativeOperator<>(screen, screenHelper, originSlot, operation);
+            return new ClientCreativeOperator(screen, originSlot);
         } else {
             if (debug())
                 ClientSort.LOG.info("Preparing client-survival operator for {}", operation.name());
-            return new ClientSurvivalOperator<>(screen, screenHelper, originSlot, operation);
+            return new ClientSurvivalOperator(screen, originSlot);
         }
-    }
-
-    /**
-     * Sorts the inventory according to {@code sortOrder}.
-     */
-    public void trySort(SortOrder sortOrder) {
-        if (!canPerform(Operation.SORT))
-            return;
-        if (hasOperated())
-            return;
-        sort(sortOrder);
-    }
-
-    /**
-     * Uses items in the scope of the origin slot to complete as many partial stacks as possible in
-     * the other container or inventory, if it exists.
-     */
-    public void tryFillStacks() {
-        if (!canPerform(Operation.STACK_FILL))
-            return;
-        if (hasOperated())
-            return;
-        fillStacks();
-    }
-
-    /**
-     * Transfers as many items as possible from the scope of the origin slot to the other container
-     * or inventory, if it exists, without adding new item types to the destination.
-     */
-    public void tryMatchTransfer() {
-        if (!canPerform(Operation.MATCH_TRANSFER))
-            return;
-        if (hasOperated())
-            return;
-        matchTransfer();
-    }
-
-    /**
-     * Transfers as many items as possible from the scope of the origin slot to the other container
-     * or inventory, if it exists.
-     */
-    public void tryTransfer() {
-        if (!canPerform(Operation.TRANSFER))
-            return;
-        if (hasOperated())
-            return;
-        transfer();
     }
 
     /**

@@ -22,9 +22,7 @@ import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Policy;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -85,17 +83,7 @@ public class StackFillButton extends TriggerButton {
                 offset,
                 policy == null || policy.canStackFill(),
                 policy != null && policy.showStackFillButton(),
-                (button) -> {
-                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                            screen,
-                            ContainerScreenHelper.of(screen),
-                            referenceSlot,
-                            Operation.STACK_FILL,
-                            false
-                    );
-                    if (operator != null)
-                        operator.tryFillStacks();
-                }
+                (button) -> SingleUseOperator.fillStacks(screen, referenceSlot, false)
         );
     }
 

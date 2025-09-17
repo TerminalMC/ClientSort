@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.util;
+package dev.terminalmc.clientsort.client.inventory;
 
 public enum Scope {
     PLAYER_INV,

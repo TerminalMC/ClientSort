@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.screen;
+package dev.terminalmc.clientsort.client.inventory.helper;
 
-import dev.terminalmc.clientsort.client.inventory.util.Scope;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.inventory.Scope;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -26,16 +25,13 @@ import net.minecraft.world.inventory.Slot;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * A {@link ContainerScreenHelper} for an instance of {@link CreativeModeInventoryScreen}.
+ * Helper for an instance of {@link CreativeModeInventoryScreen}.
  */
 public class CreativeContainerScreenHelper<T extends CreativeModeInventoryScreen>
         extends ContainerScreenHelper<T> {
 
-    public CreativeContainerScreenHelper(
-            T screen,
-            InteractionManager.ClickEventFactory clickEventFactory
-    ) {
-        super(screen, clickEventFactory);
+    public CreativeContainerScreenHelper(T screen) {
+        super(screen);
     }
 
     @Override

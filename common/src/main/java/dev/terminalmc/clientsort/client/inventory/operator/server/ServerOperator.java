@@ -17,9 +17,7 @@
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
@@ -49,19 +47,17 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
  * <p>
  * Valid for use ONLY if the mod is also present server-side.
  */
-public class ServerOperator<T extends Operation> extends SingleUseOperator<Operation> {
+public class ServerOperator extends SingleUseOperator {
 
-    public ServerOperator(
-            AbstractContainerScreen<?> screen,
-            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot,
-            T operation
-    ) {
-        super(screen, screenHelper, originSlot, operation);
+    public ServerOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
+        super(screen, originSlot);
     }
 
     @Override
     protected void sort(SortOrder sortOrder) {
+        if (sortOrder.equals(SortOrder.NONE))
+            return;
+
         if (originScopeSlots.length == 0) {
             if (debug())
                 ClientSort.LOG.warn("Cannot perform operation SORT: origin scope is empty!");
@@ -75,26 +71,12 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                         if (sortResult.isUnknown() || !options().useClientFallback) {
                             setOverlayMessage(Component.translatable(sortResult.translationKey));
                         } else {
-                            SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                                    screen,
-                                    screenHelper,
-                                    originSlot,
-                                    Operation.SORT,
-                                    true
-                            );
-                            if (operator != null) {
-                                operator.trySort(sortOrder);
-                            }
+                            SingleUseOperator.sort(screen, originSlot, true, sortOrder);
                         }
                     }
                 };
 
-                ServerOperator<?> sorter = new ServerOperator<>(
-                        screen,
-                        screenHelper,
-                        originSlot,
-                        Operation.SORT
-                );
+                ServerOperator sorter = new ServerOperator(screen, originSlot);
                 int[] slotMapping = sorter.createSlotMapping(sortOrder);
                 if (debug())
                     ClientSort.LOG.info("Sending payload for operation SORT");
@@ -105,16 +87,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
             } else if (collectResult.isUnknown() || !options().useClientFallback) {
                 setOverlayMessage(Component.translatable(collectResult.translationKey));
             } else {
-                SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                        screen,
-                        screenHelper,
-                        originSlot,
-                        Operation.SORT,
-                        true
-                );
-                if (operator != null) {
-                    operator.trySort(sortOrder);
-                }
+                SingleUseOperator.sort(screen, originSlot, true, sortOrder);
             }
         };
 
@@ -140,16 +113,7 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                 if (result.isUnknown() || !options().useClientFallback) {
                     setOverlayMessage(Component.translatable(result.translationKey));
                 } else {
-                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                            screen,
-                            screenHelper,
-                            originSlot,
-                            Operation.STACK_FILL,
-                            true
-                    );
-                    if (operator != null) {
-                        operator.tryFillStacks();
-                    }
+                    SingleUseOperator.fillStacks(screen, originSlot, true);
                 }
             }
         };
@@ -204,19 +168,10 @@ public class ServerOperator<T extends Operation> extends SingleUseOperator<Opera
                 if (result.isUnknown() || !options().useClientFallback) {
                     setOverlayMessage(Component.translatable(result.translationKey));
                 } else {
-                    SingleUseOperator<?> operator = SingleUseOperator.getOperator(
-                            screen,
-                            screenHelper,
-                            originSlot,
-                            overrideSlots != null ? Operation.MATCH_TRANSFER : Operation.TRANSFER,
-                            true
-                    );
-                    if (operator != null) {
-                        if (overrideSlots != null) {
-                            tryMatchTransfer();
-                        } else {
-                            tryTransfer();
-                        }
+                    if (overrideSlots != null) {
+                        SingleUseOperator.transferMatching(screen, originSlot, true);
+                    } else {
+                        SingleUseOperator.transfer(screen, originSlot, true);
                     }
                 }
             }

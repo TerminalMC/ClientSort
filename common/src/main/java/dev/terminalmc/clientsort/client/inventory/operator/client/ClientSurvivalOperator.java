@@ -18,10 +18,11 @@
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.interaction.InteractionManager;
+import dev.terminalmc.clientsort.client.interaction.InteractionManager.InteractionEvent;
 import dev.terminalmc.clientsort.client.util.SoundManager;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -41,15 +42,10 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  * Valid for use in all screens (and all game-modes) EXCEPT
  * {@link net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen}.
  */
-public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<Operation> {
+public class ClientSurvivalOperator extends ClientOperator {
 
-    public ClientSurvivalOperator(
-            AbstractContainerScreen<?> screen,
-            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot,
-            T operation
-    ) {
-        super(screen, screenHelper, originSlot, operation);
+    public ClientSurvivalOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
+        super(screen, originSlot);
     }
 
     /**
@@ -79,7 +75,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 continue;
 
             // Partial stack found; pick it up
-            clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
+            clickEvents.add(createClickEvent(srcSlot, 0, false));
 
             // Work forwards from the start, looking for another partial stack
             // of the same item
@@ -103,7 +99,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 dstStack.grow(delta);
 
                 // Queue mouse click
-                clickEvents.add(screenHelper.createClickEvent(dstSlot, 0, ClickType.PICKUP, false));
+                clickEvents.add(createClickEvent(dstSlot, 0, false));
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.getCount() <= 0)
@@ -121,10 +117,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 // Check whether any items are still being carried
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
-                    InteractionManager.push(screenHelper.createClickEvent(
+                    InteractionManager.push(createClickEvent(
                             srcSlot,
                             0,
-                            ClickType.PICKUP,
                             false
                     ));
                 } else {
@@ -198,10 +193,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
             }
 
             // Pick up the stack at the source slot,
-            InteractionManager.push(screenHelper.createClickEvent(
+            InteractionManager.push(createClickEvent(
                     originScopeSlots[sortedIds[i]],
                     0,
-                    ClickType.PICKUP,
                     playSound
             ));
             // and update the simulation to match
@@ -237,39 +231,34 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                         Slot dstSlot = originScopeSlots[dstId];
 
                         // Place down carried stack in working slot
-                        InteractionManager.push(screenHelper.createClickEvent(
+                        InteractionManager.push(createClickEvent(
                                 workingSlot,
                                 0,
-                                ClickType.PICKUP,
                                 playSound
                         ));
                         // Pick up destination stack from destination slot
-                        InteractionManager.push(screenHelper.createClickEvent(
+                        InteractionManager.push(createClickEvent(
                                 dstSlot,
                                 0,
-                                ClickType.PICKUP,
                                 playSound
                         ));
                         // Place down destination stack on top of working slot,
                         // automatically picking up previously carried stack
-                        InteractionManager.push(screenHelper.createClickEvent(
+                        InteractionManager.push(createClickEvent(
                                 workingSlot,
                                 0,
-                                ClickType.PICKUP,
                                 playSound
                         ));
                         // Place down carried stack in destination slot
-                        InteractionManager.push(screenHelper.createClickEvent(
+                        InteractionManager.push(createClickEvent(
                                 dstSlot,
                                 0,
-                                ClickType.PICKUP,
                                 playSound
                         ));
                         // Pick up destination stack from working slot
-                        InteractionManager.push(screenHelper.createClickEvent(
+                        InteractionManager.push(createClickEvent(
                                 workingSlot,
                                 0,
-                                ClickType.PICKUP,
                                 playSound
                         ));
 
@@ -300,10 +289,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 }
 
                 // Swap carried and destination stacks,
-                InteractionManager.push(screenHelper.createClickEvent(
+                InteractionManager.push(createClickEvent(
                         originScopeSlots[dstId],
                         mouseButton,
-                        ClickType.PICKUP,
                         playSound
                 ));
                 // and update the simulation to match
@@ -376,7 +364,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 continue;
 
             // Partial stack found; pick it up
-            clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
+            clickEvents.add(createClickEvent(srcSlot, 0, false));
 
             // Work forwards from the start of the destination slot array,
             // looking for a matching partial stack
@@ -400,10 +388,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 dstStack.setCount(dstStack.getCount() + delta);
 
                 // Send interaction event
-                clickEvents.add(screenHelper.createClickEvent(
+                clickEvents.add(createClickEvent(
                         dstSlot,
                         0,
-                        ClickType.PICKUP,
                         playSound
                 ));
 
@@ -423,10 +410,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 // Check whether any items are still being carried
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
-                    InteractionManager.push(screenHelper.createClickEvent(
+                    InteractionManager.push(createClickEvent(
                             srcSlot,
                             0,
-                            ClickType.PICKUP,
                             false
                     ));
                 } else {
@@ -523,7 +509,7 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 continue;
 
             // Partial stack found; pick it up
-            clickEvents.add(screenHelper.createClickEvent(srcSlot, 0, ClickType.PICKUP, false));
+            clickEvents.add(createClickEvent(srcSlot, 0, false));
 
             int emptySlotId = -1;
 
@@ -553,10 +539,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 dstStack.setCount(dstStack.getCount() + delta);
 
                 // Send interaction event
-                clickEvents.add(screenHelper.createClickEvent(
+                clickEvents.add(createClickEvent(
                         dstSlot,
                         0,
-                        ClickType.PICKUP,
                         playSound
                 ));
 
@@ -576,10 +561,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 srcStack.setCount(0);
 
                 // Send interaction event
-                clickEvents.add(screenHelper.createClickEvent(
+                clickEvents.add(createClickEvent(
                         dstSlot,
                         0,
-                        ClickType.PICKUP,
                         playSound
                 ));
             }
@@ -594,10 +578,9 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 // Check whether any items are still being carried
                 if (srcStack.getCount() > 0) {
                     // Place the carried items back down in their original slot
-                    InteractionManager.push(screenHelper.createClickEvent(
+                    InteractionManager.push(createClickEvent(
                             srcSlot,
                             0,
-                            ClickType.PICKUP,
                             false
                     ));
                 } else {
@@ -616,5 +599,26 @@ public class ClientSurvivalOperator<T extends Operation> extends ClientOperator<
                 return InteractionManager.TICK_WAITER;
             });
         }
+    }
+
+    /**
+     * Creates an interaction event based on a click.
+     */
+    private InteractionEvent createClickEvent(
+            Slot slot,
+            int button,
+            boolean playSound
+    ) {
+        return new InteractionManager.CallbackEvent(() -> {
+            ((AbstractContainerScreenAccessor) screen).clientsort$slotClicked(
+                    slot,
+                    ((ISlot) slot).clientsort$getIndexInMenu(),
+                    button,
+                    ClickType.PICKUP
+            );
+            if (playSound)
+                SoundManager.play();
+            return InteractionManager.TICK_WAITER;
+        });
     }
 }

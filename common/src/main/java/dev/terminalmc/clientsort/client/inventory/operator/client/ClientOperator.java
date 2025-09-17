@@ -17,10 +17,8 @@
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
+import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
-import dev.terminalmc.clientsort.client.inventory.screen.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.SoundManager;
@@ -32,15 +30,10 @@ import net.minecraft.world.inventory.Slot;
  * Provides methods for manipulating the player's inventory or open container via vanilla C2S
  * inventory interaction packets.
  */
-public abstract class ClientOperator<T extends Operation> extends SingleUseOperator<Operation> {
+public abstract class ClientOperator extends SingleUseOperator {
 
-    public ClientOperator(
-            AbstractContainerScreen<?> screen,
-            ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper,
-            Slot originSlot,
-            T operation
-    ) {
-        super(screen, screenHelper, originSlot, operation);
+    public ClientOperator(AbstractContainerScreen<?> screen, Slot originSlot) {
+        super(screen, originSlot);
     }
 
     /**
@@ -65,6 +58,9 @@ public abstract class ClientOperator<T extends Operation> extends SingleUseOpera
      */
     @Override
     protected void sort(SortOrder sortOrder) {
+        if (sortOrder.equals(SortOrder.NONE))
+            return;
+
         raiseFlag();
 
         // Collect partial stacks

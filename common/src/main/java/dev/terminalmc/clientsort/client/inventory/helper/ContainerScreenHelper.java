@@ -15,88 +15,39 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.screen;
+package dev.terminalmc.clientsort.client.inventory.helper;
 
-import dev.terminalmc.clientsort.client.inventory.util.Scope;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
-import dev.terminalmc.clientsort.client.util.SoundManager;
-import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.ticks.ContainerSingleItem;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 /**
- * Provides slot scope information and interaction methods for an instance of
- * {@link AbstractContainerScreen}.
+ * Helper for an instance of {@link AbstractContainerScreen}.
  */
 public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
 
     protected final T screen;
-    protected final InteractionManager.ClickEventFactory clickEventFactory;
 
-    protected ContainerScreenHelper(
-            T screen,
-            InteractionManager.ClickEventFactory clickEventFactory
-    ) {
+    protected ContainerScreenHelper(T screen) {
         this.screen = screen;
-        this.clickEventFactory = clickEventFactory;
-    }
-
-    /**
-     * Creates a {@link ContainerScreenHelper} for {@code screen}.
-     */
-    public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(
-            T screen,
-            InteractionManager.ClickEventFactory clickEventFactory
-    ) {
-        // Creative inventory screen helper
-        if (screen instanceof CreativeModeInventoryScreen) {
-            //noinspection unchecked
-            return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>(
-                    (CreativeModeInventoryScreen) screen,
-                    clickEventFactory
-            );
-        }
-        // Normal helper
-        return new ContainerScreenHelper<>(screen, clickEventFactory);
     }
 
     /**
      * Creates a {@link ContainerScreenHelper} for {@code screen}.
      */
     public static <T extends AbstractContainerScreen<?>> ContainerScreenHelper<T> of(T screen) {
-        InteractionManager.ClickEventFactory clickEventFactory =
-                (slot, mouseButton, clickType, playSound) -> new InteractionManager.CallbackEvent(() -> {
-                    ((AbstractContainerScreenAccessor) screen).clientsort$slotClicked(
-                            slot,
-                            ((ISlot) slot).clientsort$getIndexInMenu(),
-                            mouseButton,
-                            clickType
-                    );
-                    if (playSound)
-                        SoundManager.play();
-                    return InteractionManager.TICK_WAITER;
-                });
-        return of(screen, clickEventFactory);
-    }
-
-    /**
-     * Creates a click event in the {@link AbstractContainerScreen}.
-     */
-    public InteractionManager.InteractionEvent createClickEvent(
-            Slot slot,
-            int button,
-            ClickType clickType,
-            boolean playSound
-    ) {
-        return clickEventFactory.create(slot, button, clickType, playSound);
+        if (screen instanceof CreativeModeInventoryScreen creativeScreen) {
+            //noinspection unchecked
+            return (ContainerScreenHelper<T>) new CreativeContainerScreenHelper<>(creativeScreen);
+        }
+        return new ContainerScreenHelper<>(screen);
     }
 
     /**

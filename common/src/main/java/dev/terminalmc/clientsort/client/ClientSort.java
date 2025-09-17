@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
-import dev.terminalmc.clientsort.client.network.InteractionManager;
+import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;

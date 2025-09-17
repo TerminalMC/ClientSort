@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.network;
+package dev.terminalmc.clientsort.client.interaction;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.Slot;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -34,6 +32,12 @@ import java.util.function.Supplier;
  * operations.
  */
 public class InteractionManager {
+
+    public enum TriggerType {
+        INITIAL,
+        GUI_CONFIRM,
+        TICK
+    }
 
     public static final Waiter TICK_WAITER = (TriggerType type) -> type == TriggerType.TICK;
 
@@ -145,27 +149,6 @@ public class InteractionManager {
         }
     }
 
-    @Deprecated
-    public static class GuiConfirmWaiter implements Waiter {
-
-        int triggers;
-
-        public GuiConfirmWaiter(int triggers) {
-            this.triggers = triggers;
-        }
-
-        @Override
-        public boolean trigger(TriggerType type) {
-            return type == TriggerType.GUI_CONFIRM && --triggers == 0;
-        }
-    }
-
-    public enum TriggerType {
-        INITIAL,
-        GUI_CONFIRM,
-        TICK
-    }
-
     @FunctionalInterface
     public interface InteractionEvent {
 
@@ -175,15 +158,6 @@ public class InteractionManager {
          * @return the number of inventory packets to wait for
          */
         Waiter send();
-    }
-
-    @FunctionalInterface
-    public interface ClickEventFactory {
-
-        /**
-         * Creates an interaction event based on a click.
-         */
-        InteractionEvent create(Slot slot, int button, ClickType clickType, boolean playSound);
     }
 
     public static class CallbackEvent implements InteractionEvent {
