@@ -3,6 +3,10 @@
 ## 2.0.0-beta.20
 
 - Improved button reference slot selection algorithm
+- Disabled operations in some inventories from the following mods by default:
+  - Traveler's Backpack
+  - Tom's Simple Storage Mod
+  - Nether Chested
 
 ## 2.0.0-beta.19
 

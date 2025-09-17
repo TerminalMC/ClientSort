@@ -356,6 +356,69 @@ public class Config {
                         Policy.NONE,
                         Policy.NONE,
                         new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackBaseMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackItemMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackBlockEntityMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tom.storagemod.menu.CraftingTerminalMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "com.tom.storagemod.menu.StorageTerminalMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
+                ),
+                new ClassPolicy(
+                        "fuzs.netherchested.world.inventory.NetherChestMenu",
+                        null,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        Policy.NONE,
+                        new TreeSet<>()
                 )
         );
         public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {

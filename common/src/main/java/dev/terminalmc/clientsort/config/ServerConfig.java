@@ -63,6 +63,48 @@ public class ServerConfig {
                                 false,
                                 false,
                                 false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackBaseMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackItemMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackBlockEntityMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tom.storagemod.menu.CraftingTerminalMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tom.storagemod.menu.StorageTerminalMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "fuzs.netherchested.world.inventory.NetherChestMenu",
+                                false,
+                                false,
+                                false
                         )
                 );
         public static final Supplier<Map<String, ServerClassPolicy>> classPoliciesDefault = () -> {
