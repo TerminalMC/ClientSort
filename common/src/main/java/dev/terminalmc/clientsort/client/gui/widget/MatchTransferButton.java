@@ -94,14 +94,33 @@ public class MatchTransferButton extends TriggerButton {
 
     @Override
     public void savePolicy(@Nullable Vec2i offset, Collection<Integer> slots) {
-        @Nullable ClassPolicy policy = null;
-        if (activePolicyKey != null)
-            policy = options().classPolicies.get(activePolicyKey);
-        if (policy != null) {
+        String key = activePolicyKey != null ? activePolicyKey : lowestPolicyKey;
+        @Nullable ClassPolicy policy = options().classPolicies.get(key);
+        if (policy == null) {
+            key = lowestPolicyKey;
+            policy = options().classPolicies.get(key);
+        }
+
+        if (policy == null) {
             options().classPolicies.put(
-                    activePolicyKey,
+                    key,
                     new ClassPolicy(
-                            activePolicyKey,
+                            key,
+                            offset,
+                            Policy.KEYBIND,
+                            Policy.KEYBIND,
+                            operationAllowed
+                                    ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
+                                    : Policy.NONE,
+                            Policy.KEYBIND,
+                            new TreeSet<>(slots)
+                    )
+            );
+        } else {
+            options().classPolicies.put(
+                    key,
+                    new ClassPolicy(
+                            key,
                             offset,
                             policy.sortPolicy(),
                             policy.stackFillPolicy(),
@@ -112,22 +131,8 @@ public class MatchTransferButton extends TriggerButton {
                             new TreeSet<>(slots)
                     )
             );
-        } else {
-            options().classPolicies.put(
-                    lowestPolicyKey,
-                    new ClassPolicy(
-                            lowestPolicyKey,
-                            offset,
-                            Policy.KEYBIND,
-                            Policy.KEYBIND,
-                            operationAllowed
-                                    ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
-                                    : Policy.NONE,
-                            Policy.KEYBIND,
-                            new TreeSet<>(slots)
-                    )
-            );
         }
+
         Config.save();
     }
 }
