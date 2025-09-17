@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.20
+
+- Improved button reference slot selection algorithm
+
 ## 2.0.0-beta.19
 
 - Fixed a threading issue with server-acceleration payload handling

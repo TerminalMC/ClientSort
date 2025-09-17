@@ -41,9 +41,7 @@ import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -428,16 +426,62 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             boolean isPlayerInv
     ) {
-        // Get the top-most of the right-most slots in scope
+        // Local class for tracking slot scores
+        class ScoredSlot {
+
+            public final Slot slot;
+            public final double positionScore;
+            public int siblingScore;
+
+            public ScoredSlot(Slot slot, double positionScore, int siblingScore) {
+                this.slot = slot;
+                this.positionScore = positionScore;
+                this.siblingScore = siblingScore;
+            }
+        }
+
         ContainerScreenHelper<?> helper = ContainerScreenHelper.of(screen);
-        return screen.getMenu().slots.stream()
-                .filter(slot -> isPlayerInv
-                        ? (slot.container instanceof Inventory)
-                        && helper.getScope(slot).equals(Scope.PLAYER_INV)
-                        : !(slot.container instanceof Inventory)
-                                && helper.getScope(slot).equals(Scope.CONTAINER_INV))
-                .max(Comparator.comparingInt(slot -> slot.x * 9999 - slot.y))
-                .orElse(null);
+        Map<Container, ScoredSlot> map = new HashMap<>();
+
+        for (Slot slot : screen.getMenu().slots) {
+            // Ignore irrelevant slots
+            //noinspection ConstantValue
+            if (slot.container == null)
+                continue;
+            if (isPlayerInv && !helper.getScope(slot).equals(Scope.PLAYER_INV))
+                continue;
+            if (!isPlayerInv && !helper.getScope(slot).equals(Scope.CONTAINER_INV))
+                continue;
+
+            // Calculate the weighted positional score
+            double x = slot.x / (double) screen.width;
+            double y = (screen.height - slot.y) / (double) screen.height;
+            double positionScore = x * 0.7D + y * 0.3D;
+
+            @Nullable ScoredSlot scoredSlot = map.get(slot.container);
+            if (scoredSlot == null) {
+                // First slot from this container, store it
+                map.put(slot.container, new ScoredSlot(slot, positionScore, 1));
+            } else {
+                // Subsequent slot from this container, keep the one with higher positional score
+                // and increment the sibling score
+                if (positionScore > scoredSlot.positionScore) {
+                    map.put(
+                            slot.container,
+                            new ScoredSlot(slot, positionScore, scoredSlot.siblingScore + 1)
+                    );
+                } else {
+                    scoredSlot.siblingScore++;
+                }
+            }
+        }
+
+        if (map.isEmpty())
+            return null;
+
+        // Map now contains the highest-positional-scoring slot from each container, so pick the one
+        // that belongs to the largest container
+        return map.values().stream().max(Comparator.comparingInt(a -> a.siblingScore)).get().slot;
     }
 
     /**
