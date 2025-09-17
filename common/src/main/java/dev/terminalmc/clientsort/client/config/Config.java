@@ -93,7 +93,7 @@ public class Config {
             NONE
         }
 
-        public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.EXTRA;
+        public static final ExtraSlotScope extraSlotScopeDefault = ExtraSlotScope.NONE;
         public ExtraSlotScope extraSlotScope = extraSlotScopeDefault;
         public static Validator<ExtraSlotScope> extraSlotScopeValidator = (val) ->
                 val != null && Arrays.stream(ExtraSlotScope.values()).toList().contains(val)

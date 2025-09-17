@@ -6,6 +6,7 @@
 - Fixed a minor issue with policy saving when first enabling buttons on a new inventory type
 - Fixed buttons disappearing on screen resize on Fabric
 - Fixed buttons disappearing on creative inventory tab switch
+- Disabled operations in extra inventory slots by default
 - Disabled operations in some inventories from the following mods by default:
   - Traveler's Backpack
   - Tom's Simple Storage Mod
