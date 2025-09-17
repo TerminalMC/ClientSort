@@ -37,7 +37,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -126,14 +125,6 @@ public class ClientSortNeoForge {
         @SubscribeEvent
         public static void afterClientTick(ClientTickEvent.Post event) {
             ClientSort.afterClientTick(Minecraft.getInstance());
-        }
-
-        /**
-         * Registers screen after-init event.
-         */
-        @SubscribeEvent
-        public static void afterScreenInit(ScreenEvent.Init.Post event) {
-            ClientSort.afterScreenInit(event.getScreen());
         }
     }
 

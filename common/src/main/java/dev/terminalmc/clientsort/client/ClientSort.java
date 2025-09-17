@@ -17,7 +17,6 @@
 package dev.terminalmc.clientsort.client;
 
 import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
@@ -27,7 +26,6 @@ import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAc
 import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -64,10 +62,6 @@ public class ClientSort {
 
     public static void afterClientTick(Minecraft mc) {
         taskManager.tick();
-    }
-
-    public static void afterScreenInit(Screen screen) {
-        TriggerButtonManager.afterScreenInit(screen);
     }
 
     public static void afterConfigSaved(Config config) {

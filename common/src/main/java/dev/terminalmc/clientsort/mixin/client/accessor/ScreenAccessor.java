@@ -29,4 +29,7 @@ public interface ScreenAccessor {
     @SuppressWarnings("UnusedReturnValue")
     @Invoker("addRenderableWidget")
     <T extends GuiEventListener & Renderable & NarratableEntry> T clientsort$addRenderableWidget(T widget);
+
+    @Invoker("removeWidget")
+    void clientsort$removeWidget(GuiEventListener listener);
 }

@@ -11,8 +11,10 @@
   "client": [
     "client.AbstractContainerScreenMixin",
     "client.ClientPacketListenerMixin",
+    "client.CreativeModeInventoryScreenMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
+    "client.ScreenMixin",
     "client.accessor.AbstractContainerScreenAccessor",
     "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
