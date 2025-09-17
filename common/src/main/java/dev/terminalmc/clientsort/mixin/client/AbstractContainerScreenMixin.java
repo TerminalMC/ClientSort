@@ -314,7 +314,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                             (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                                     + slot.y)
                                     / scale),
-                            0xFF0000
+                            0xFFFF0000
                     );
                 }
             }
@@ -329,7 +329,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
 
             // Draw slot scope, bottom right
@@ -342,7 +342,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getTopPos()
                             + slot.y + 12)
                             / scale),
-                    0xFFFFFF
+                    0xFFFFFFFF
             );
         }
 

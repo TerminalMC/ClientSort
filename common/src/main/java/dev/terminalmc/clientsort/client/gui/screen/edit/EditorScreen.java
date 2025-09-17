@@ -391,7 +391,7 @@ public abstract class EditorScreen extends Screen {
                                     + slot.x,
                             ((AbstractContainerScreenAccessor) (underlay)).clientsort$getTopPos()
                                     + slot.y,
-                            0xFF0000
+                            0xFFFF0000
                     );
                 }
             }
