@@ -454,9 +454,11 @@ public class TriggerButtonManager {
                 continue;
 
             // Calculate the weighted positional score
-            double x = slot.x / (double) screen.width;
-            double y = (screen.height - slot.y) / (double) screen.height;
-            double positionScore = x * 0.7D + y * 0.3D;
+            double x = Math.clamp(slot.x, 0, screen.width)
+                    / (double) screen.width;
+            double y = (screen.height - Math.clamp(slot.y, 0, screen.height))
+                    / (double) screen.height;
+            double positionScore = x * 0.8D + y * 0.2D;
 
             @Nullable ScoredSlot scoredSlot = map.get(slot.container);
             if (scoredSlot == null) {

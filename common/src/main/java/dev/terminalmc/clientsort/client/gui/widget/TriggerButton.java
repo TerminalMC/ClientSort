@@ -212,7 +212,8 @@ public abstract class TriggerButton extends Button {
 
             offset = new Vec2i(
                     newX - (acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth()),
-                    newY - (acs.clientsort$getTopPos() + referenceSlot.y)
+                    newY - (acs.clientsort$getTopPos()
+                            + Math.clamp(referenceSlot.y, 0, screen.height))
             );
         } else {
             super.onDrag(mouseX, mouseY, dragX, dragY);
