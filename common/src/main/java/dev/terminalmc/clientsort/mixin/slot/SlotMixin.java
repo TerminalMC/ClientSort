@@ -19,23 +19,21 @@ package dev.terminalmc.clientsort.mixin.slot;
 
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.inventory.Slot;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Slot.class)
-public class SlotMixin implements ISlot {
-
-    @Shadow
-    @Final
-    private int slot;
+public abstract class SlotMixin implements ISlot {
 
     @Shadow
     public int index;
 
+    @Shadow
+    public abstract int getContainerSlot();
+
     @Override
     public int clientsort$getIndexInContainer() {
-        return slot;
+        return getContainerSlot();
     }
 
     @Override
