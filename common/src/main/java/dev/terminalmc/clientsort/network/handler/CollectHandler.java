@@ -19,7 +19,6 @@ package dev.terminalmc.clientsort.network.handler;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
-import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
@@ -32,7 +31,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import static dev.terminalmc.clientsort.ClientSort.getObj;
-import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
@@ -55,14 +53,14 @@ public class CollectHandler extends PayloadHandler {
                 payload.containerId(),
                 (menu) -> checkPolicy(player, menu, payload.slotIds()),
                 (menu) -> validateSlotArray(player, menu, payload.slotIds()),
-                (menu) -> collect(menu, payload.slotIds()),
+                (menu) -> collect(server, menu, payload.slotIds()),
                 CollectPayload.TYPE,
                 CollectResultPayload.TYPE,
                 (result, message) -> new CollectResultPayload(result.code, message)
         ));
     }
 
-    private static void collect(AbstractContainerMenu menu, int[] slotIds)
+    private static void collect(MinecraftServer server, AbstractContainerMenu menu, int[] slotIds)
             throws PayloadHandlerException {
         // Work backwards from the end, looking for a partial stack
         for (int i = slotIds.length - 1; i >= 0; i--) {
@@ -95,26 +93,24 @@ public class CollectHandler extends PayloadHandler {
                 // stack as possible
                 dstSlot.safeInsert(srcStack);
 
-                if (serverOptions().validateOperationResults) {
-                    // Check that the operation succeeded
-                    ItemStack expected = srcStackCopy.copyWithCount(Math.min(
-                            srcStackCopy.getCount() + dstStackCopy.getCount(),
-                            dstSlot.getMaxStackSize(srcStackCopy)
-                    ));
-                    if (notEqual(dstSlot.getItem(), expected)) {
-                        String message = String.format(
-                                "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                // Check that the operation succeeded
+                ItemStack expected = srcStackCopy.copyWithCount(Math.min(
+                        srcStackCopy.getCount() + dstStackCopy.getCount(),
+                        dstSlot.getMaxStackSize(srcStackCopy)
+                ));
+                validate(
+                        server,
+                        expected,
+                        dstSlot.getItem(),
+                        () -> String.format(
+                                "Collect operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s'",
                                 srcSlotId,
                                 srcStackCopy,
                                 dstSlotId,
-                                dstStackCopy,
-                                expected,
-                                dstSlot.getItem()
-                        );
-                        setPolicy(menu, slotIds, message);
-                        throw new InconsistentStateException(message);
-                    }
-                }
+                                dstStackCopy
+                        ),
+                        (msg) -> setPolicy(menu, slotIds, msg)
+                );
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.isEmpty())

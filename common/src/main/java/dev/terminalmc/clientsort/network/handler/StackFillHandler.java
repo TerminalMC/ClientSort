@@ -19,7 +19,6 @@ package dev.terminalmc.clientsort.network.handler;
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
-import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -32,7 +31,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import static dev.terminalmc.clientsort.ClientSort.getObj;
-import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
 /**
@@ -58,15 +56,19 @@ public class StackFillHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.srcSlotIds());
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
-                (menu) -> fillStacks(menu, payload.srcSlotIds(), payload.dstSlotIds()),
+                (menu) -> fillStacks(server, menu, payload.srcSlotIds(), payload.dstSlotIds()),
                 StackFillPayload.TYPE,
                 StackFillResultPayload.TYPE,
                 (result, message) -> new StackFillResultPayload(result.code, message)
         ));
     }
 
-    private static void fillStacks(AbstractContainerMenu menu, int[] srcSlotIds, int[] dstSlotIds)
-            throws PayloadHandlerException {
+    private static void fillStacks(
+            MinecraftServer server,
+            AbstractContainerMenu menu,
+            int[] srcSlotIds,
+            int[] dstSlotIds
+    ) throws PayloadHandlerException {
         // Work backwards from the end of the source array, looking for a
         // nonempty stack
         for (int i = srcSlotIds.length - 1; i >= 0; i--) {
@@ -103,22 +105,20 @@ public class StackFillHandler extends PayloadHandler {
                 // Place as much of the source stack as possible
                 dstSlot.safeInsert(srcStack);
 
-                if (serverOptions().validateOperationResults) {
-                    // Check that the operation succeeded
-                    if (notEqual(dstSlot.getItem(), expected)) {
-                        String message = String.format(
-                                "Stack Fill operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s': Expected '%s' in destination after set, got '%s'!",
+                // Check that the operation succeeded
+                validate(
+                        server,
+                        expected,
+                        dstSlot.getItem(),
+                        () -> String.format(
+                                "Stack Fill operation failed to safe-insert from slot %d with item '%s' to slot %d with item '%s'",
                                 srcSlotId,
                                 srcStackCopy,
                                 dstSlotId,
-                                dstStackCopy,
-                                expected,
-                                dstSlot.getItem()
-                        );
-                        setPolicy(menu, dstSlotIds, message);
-                        throw new InconsistentStateException(message);
-                    }
-                }
+                                dstStackCopy
+                        ),
+                        (msg) -> setPolicy(menu, dstSlotIds, msg)
+                );
 
                 // If no items remain in the source stack, stop looking
                 if (srcStack.isEmpty())

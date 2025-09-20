@@ -70,7 +70,6 @@ public class PolicyManager {
         policy.lastAutoEditReason = message;
         ServerConfig.save();
 
-        ClientSort.LOG.error(message);
         ClientSort.LOG.warn(
                 "Server-side policy for class '{}' has been updated to ignore payload '{}'. You can change the policy by editing the '{}' config file.",
                 newPolicy.className,

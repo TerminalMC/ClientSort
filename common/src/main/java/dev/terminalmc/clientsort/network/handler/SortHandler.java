@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static dev.terminalmc.clientsort.ClientSort.getObj;
-import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotMapping;
 
 /**
@@ -60,14 +59,14 @@ public class SortHandler extends PayloadHandler {
                 payload.containerId(),
                 (menu) -> checkPolicy(player, menu, payload.slotMapping()),
                 (menu) -> validateSlotMapping(player, menu, payload.slotMapping()),
-                (menu) -> sort(menu, payload.slotMapping()),
+                (menu) -> sort(server, menu, payload.slotMapping()),
                 SortPayload.TYPE,
                 SortResultPayload.TYPE,
                 (result, message) -> new SortResultPayload(result.code, message)
         ));
     }
 
-    private static void sort(AbstractContainerMenu menu, int[] slotMapping)
+    private static void sort(MinecraftServer server, AbstractContainerMenu menu, int[] slotMapping)
             throws PayloadHandlerException {
         // Build reference map
         Map<Integer, ItemStack> stacks = new TreeMap<>();
@@ -82,26 +81,30 @@ public class SortHandler extends PayloadHandler {
                 // Perform the mapping set
                 dstSlot.setByPlayer(stacks.get(srcSlotId));
 
-                if (serverOptions().validateOperationResults) {
-                    // Check that the operation succeeded
-                    if (notEqual(dstSlot.getItem(), stacks.get(srcSlotId))) {
-                        // Operation failed; attempt to revert all changes
-                        for (int j = 0; j <= i; j += 2) {
-                            srcSlotId = slotMapping[j];
-                            menu.slots.get(srcSlotId).set(stacks.get(srcSlotId));
-                            dstSlotId = slotMapping[j + 1];
-                            menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
-                        }
-                        String message = String.format(
-                                "Sort operation failed at slot mapping %d->%d: Expected '%s' in destination after set, got '%s'!",
-                                srcSlotId,
-                                dstSlotId,
-                                stacks.get(srcSlotId),
-                                dstSlot.getItem()
-                        );
-                        setPolicy(menu, slotMapping, message);
-                        throw new InconsistentStateException(message);
+                // Check that the operation succeeded
+                try {
+                    int finalSrcSlotId = srcSlotId;
+                    int finalDstSlotId = dstSlotId;
+                    validate(
+                            server,
+                            stacks.get(srcSlotId),
+                            dstSlot.getItem(),
+                            () -> String.format(
+                                    "Sort operation failed at slot mapping %d->%d",
+                                    finalSrcSlotId,
+                                    finalDstSlotId
+                            ),
+                            (msg) -> setPolicy(menu, slotMapping, msg)
+                    );
+                } catch (InconsistentStateException e) {
+                    // Attempt to revert changes
+                    for (int j = 0; j <= i; j += 2) {
+                        srcSlotId = slotMapping[j];
+                        menu.slots.get(srcSlotId).set(stacks.get(srcSlotId));
+                        dstSlotId = slotMapping[j + 1];
+                        menu.slots.get(dstSlotId).set(stacks.get(dstSlotId));
                     }
+                    throw e;
                 }
             }
         }

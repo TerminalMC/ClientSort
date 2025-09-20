@@ -18,6 +18,7 @@ package dev.terminalmc.clientsort.network.handler;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
+import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InvalidDataException;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import dev.terminalmc.clientsort.platform.Services;
@@ -30,6 +31,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static dev.terminalmc.clientsort.config.ServerConfig.serverOptions;
 
 /**
  * Provides common methods to custom payload handlers.
@@ -96,6 +101,63 @@ public abstract class PayloadHandler {
             }
             if (Services.PLATFORM.canSendToPlayer(player, responseType)) {
                 Services.PLATFORM.sendToPlayer(player, responseProvider.apply(result, message));
+            }
+        }
+    }
+
+    public static void validate(
+            MinecraftServer server,
+            ItemStack expected,
+            ItemStack actual,
+            Supplier<String> message,
+            Consumer<String> policySetter
+    ) throws InconsistentStateException {
+        boolean invalid = false;
+        boolean log = false;
+        boolean error = false;
+
+        if (serverOptions().alwaysLogUnexpectedResults) {
+            log = true;
+        }
+        if (server.isDedicatedServer()) {
+            if (serverOptions().validationActiveServer) {
+                log = true;
+                error = true;
+            }
+        } else {
+            if (serverOptions().validationActiveSingleplayer) {
+                log = true;
+                error = true;
+            }
+        }
+
+        if (log || serverOptions().validateItemType) {
+            boolean mismatchedTypes = notEqual(expected, actual);
+            if (mismatchedTypes)
+                invalid = true;
+        }
+
+        if (log || serverOptions().validateStackSize) {
+            int sizeDifference = expected.getCount() > actual.getCount()
+                    ? expected.getCount() - actual.getCount()
+                    : actual.getCount() - expected.getCount();
+            if (sizeDifference > 0 && sizeDifference >= serverOptions().validateStackSizeThreshold)
+                invalid = true;
+        }
+
+        if (invalid && log) {
+            String msg = String.format(
+                    "%s: Expected '%s' in destination after set, got '%s'!",
+                    message.get(),
+                    expected,
+                    actual
+            );
+            if (!error) {
+                ClientSort.LOG.warn(msg);
+            } else {
+                ClientSort.LOG.error(msg);
+                policySetter.accept(msg);
+                throw new InconsistentStateException(msg);
             }
         }
     }

@@ -53,8 +53,26 @@ public class ServerConfig {
 
     public static class Options {
 
-        public static final boolean validateOperationResultsDefault = true;
-        public boolean validateOperationResults = validateOperationResultsDefault;
+        // Removed in v2.0.0-beta.20, retained as a reference for legacy upgrade
+        public @Nullable Boolean validateOperationResults;
+
+        public static final boolean validationActiveSingleplayerDefault = false;
+        public boolean validationActiveSingleplayer = validationActiveSingleplayerDefault;
+
+        public static final boolean validationActiveServerDefault = true;
+        public boolean validationActiveServer = validationActiveServerDefault;
+
+        public static final boolean validateItemTypeDefault = true;
+        public boolean validateItemType = validateItemTypeDefault;
+
+        public static final boolean validateStackSizeDefault = true;
+        public boolean validateStackSize = validateStackSizeDefault;
+
+        public static final int validateStackSizeThresholdDefault = 32;
+        public int validateStackSizeThreshold = validateStackSizeThresholdDefault;
+
+        public static final boolean alwaysLogUnexpectedResultsDefault = true;
+        public boolean alwaysLogUnexpectedResults = alwaysLogUnexpectedResultsDefault;
 
         public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
                 () -> List.of(
@@ -118,8 +136,6 @@ public class ServerConfig {
 
     // Validation
 
-    // Validation
-
     @FunctionalInterface
     public interface Validator<T> {
 
@@ -131,6 +147,16 @@ public class ServerConfig {
      */
     private void validate() {
         options.classPolicies = Options.classPoliciesValidator.validate(options.classPolicies);
+    }
+
+    /**
+     * Updates legacy config fields.
+     */
+    private void upgradeLegacy() {
+        if (options.validateOperationResults != null) {
+            options.validateOperationResults = null;
+            options.classPolicies = Options.classPoliciesDefault.get();
+        }
     }
 
     // Instance management
@@ -175,6 +201,8 @@ public class ServerConfig {
             if (serverConfig == null) {
                 backup();
                 ClientSort.LOG.warn("Resetting config");
+            } else {
+                serverConfig.upgradeLegacy();
             }
         }
         return serverConfig != null ? serverConfig : new ServerConfig();

@@ -13,6 +13,9 @@
 - Disabled operations in certain inventories from the following mods by default:
   - Traveler's Backpack
   - Tom's Simple Storage Mod
+- Added several serverside config options for op validation
+  - Validation is now disabled in singleplayer by default
+  - Item count validation now tolerates a difference of 32 by default
 
 ## 2.0.0-beta.19
 
