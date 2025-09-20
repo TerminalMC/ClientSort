@@ -167,6 +167,7 @@ public class TriggerButtonManager {
                     isPlayerInv,
                     isEditor,
                     enabled,
+                    ClassPolicy::canSort,
                     ClassPolicy::showSortButton,
                     SortButton::new,
                     localized("key", "op.sort")
@@ -177,6 +178,7 @@ public class TriggerButtonManager {
                     isPlayerInv,
                     isEditor,
                     enabled,
+                    ClassPolicy::canStackFill,
                     ClassPolicy::showStackFillButton,
                     StackFillButton::new,
                     localized("key", "op.stackFill")
@@ -187,6 +189,7 @@ public class TriggerButtonManager {
                     isPlayerInv,
                     isEditor,
                     enabled,
+                    ClassPolicy::canMatchTransfer,
                     ClassPolicy::showMatchTransferButton,
                     MatchTransferButton::new,
                     localized("key", "op.matchTransfer")
@@ -197,6 +200,7 @@ public class TriggerButtonManager {
                     isPlayerInv,
                     isEditor,
                     enabled,
+                    ClassPolicy::canTransfer,
                     ClassPolicy::showTransferButton,
                     TransferButton::new,
                     localized("key", "op.transfer")
@@ -210,7 +214,8 @@ public class TriggerButtonManager {
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
-            Function<ClassPolicy, Boolean> policyCheck,
+            Function<ClassPolicy, Boolean> opCheck,
+            Function<ClassPolicy, Boolean> buttonCheck,
             TriggerButtonCreator creator,
             Component name
     ) {
@@ -237,8 +242,8 @@ public class TriggerButtonManager {
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
 
         // Evaluate display mode
-        boolean create = isEditor || policy == null || policyCheck.apply(policy);
-        boolean add = isEditor || (policy != null && policyCheck.apply(policy) && enabled);
+        boolean create = isEditor || policy == null || opCheck.apply(policy);
+        boolean add = enabled && (isEditor || (policy != null && buttonCheck.apply(policy)));
         if (!create)
             return;
 
@@ -269,7 +274,8 @@ public class TriggerButtonManager {
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
-            Function<ClassPolicy, Boolean> policyCheck,
+            Function<ClassPolicy, Boolean> opCheck,
+            Function<ClassPolicy, Boolean> buttonCheck,
             TriggerButtonCreator creator,
             Component name
     ) {
@@ -296,8 +302,8 @@ public class TriggerButtonManager {
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
 
         // Evaluate display mode
-        boolean create = isEditor || policy == null || policyCheck.apply(policy);
-        boolean add = isEditor || (policy != null && policyCheck.apply(policy) && enabled);
+        boolean create = isEditor || policy == null || opCheck.apply(policy);
+        boolean add = enabled && (isEditor || (policy != null && buttonCheck.apply(policy)));
         if (!create)
             return;
 
@@ -320,9 +326,8 @@ public class TriggerButtonManager {
             @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
 
             // Re-evaluate display mode
-            create = isEditor || dstPolicy == null || policyCheck.apply(dstPolicy);
-            add = isEditor || (dstPolicy != null && policyCheck.apply(dstPolicy) && enabled);
-
+            create = isEditor || dstPolicy == null || opCheck.apply(dstPolicy);
+            add = add && (isEditor || (dstPolicy != null && buttonCheck.apply(dstPolicy)));
             if (!create)
                 return;
         }
