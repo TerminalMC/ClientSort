@@ -96,9 +96,6 @@ Read the in-game instructions for more information on editing policies.
 If installed on a server or in singleplayer, ClientSort uses policies to automatically disable
 server-accelerated operations when it detects an incorrect state (such as item duplication).
 
-Automatic validation can be disabled by setting the `validateOperationResults` config value to
-`false` in the `clientsort-server.json` config file.
-
 The policy list is stored in the `clientsort-server.json` config file, which can be manually edited
 and reloaded using the `/clientsort reload` command.
 
@@ -106,6 +103,50 @@ Serverside policies are *not* synced to clients, so if a client attempts to perf
 server-accelerated operation that the server does not allow, a warning message will be shown to the
 client. The player can then opt to add a client-side policy to disable the operation entirely,
 disable server acceleration, or enable automatically falling back to client operations.
+
+<details>
+<summary><b>Serverside Config File</b></summary>
+
+```json5
+{
+  "options": {
+    // Whether validation and automatic blacklisting should be enabled in singleplayer.
+    "validationActiveSingleplayer": false,
+
+    // Whether validation and automatic blacklisting should be enabled when the mod is used on a
+    // dedicated server.
+    "validationActiveServer": true,
+
+    // Whether inventories should be blacklisted when the wrong type of item is found in a slot.
+    "validateItemType": true,
+
+    // Whether inventories should be blacklisted when the wrong number of items is found in a slot.
+    "validateStackSize": true,
+    // The minimum difference between expected and actual which should be considered invalid.
+    "validateStackSizeThreshold": 32,
+
+    // Whether to always log a message when the result is not exactly as expected (even if
+    // validation is disabled, the difference is less than the threshold, etc.)
+    "alwaysLogUnexpectedResults": true,
+
+    // The list of policies for different inventory and container types.
+    "classPolicies": {
+      // An example entry.
+      "com.simibubi.create.content.equipment.toolbox.ToolboxMenu": {
+        "className": "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+        "sortEnabled": false,
+        "stackFillEnabled": true,
+        "transferEnabled": true,
+        // Updated automatically when an inventory is blacklisted.
+        "lastAutoEditTime": "2025-09-20T14:58:41.1620876+08:00",
+        "lastAutoEditReason": "Sort operation failed at slot mapping 12->5: Expected '2 minecraft:spruce_slab' in destination after set, got '0 minecraft:air'!"
+      }
+    }
+  }
+}
+```
+
+</details>
 
 ### Installation
 
