@@ -358,33 +358,6 @@ public class Config {
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
-                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackBaseMenu",
-                        null,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackItemMenu",
-                        null,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackBlockEntityMenu",
-                        null,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
                         "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
                         null,
                         Policy.NONE,
@@ -404,15 +377,6 @@ public class Config {
                 ),
                 new ClassPolicy(
                         "com.tom.storagemod.menu.StorageTerminalMenu",
-                        null,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "fuzs.netherchested.world.inventory.NetherChestMenu",
                         null,
                         Policy.NONE,
                         Policy.NONE,

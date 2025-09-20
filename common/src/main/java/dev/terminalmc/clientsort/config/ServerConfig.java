@@ -65,24 +65,6 @@ public class ServerConfig {
                                 false
                         ),
                         new ServerClassPolicy(
-                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackBaseMenu",
-                                false,
-                                false,
-                                false
-                        ),
-                        new ServerClassPolicy(
-                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackItemMenu",
-                                false,
-                                false,
-                                false
-                        ),
-                        new ServerClassPolicy(
-                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackBlockEntityMenu",
-                                false,
-                                false,
-                                false
-                        ),
-                        new ServerClassPolicy(
                                 "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
                                 false,
                                 false,
@@ -96,12 +78,6 @@ public class ServerConfig {
                         ),
                         new ServerClassPolicy(
                                 "com.tom.storagemod.menu.StorageTerminalMenu",
-                                false,
-                                false,
-                                false
-                        ),
-                        new ServerClassPolicy(
-                                "fuzs.netherchested.world.inventory.NetherChestMenu",
                                 false,
                                 false,
                                 false
