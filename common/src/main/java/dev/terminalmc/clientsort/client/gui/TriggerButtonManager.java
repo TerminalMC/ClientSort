@@ -115,7 +115,9 @@ public class TriggerButtonManager {
                     .forEach((b) -> ((ScreenAccessor) screen).clientsort$removeWidget(b));
         }
         containerButtons.clear();
+        visibleContainerButtons.clear();
         playerButtons.clear();
+        visiblePlayerButtons.clear();
         screen = acs;
 
         boolean enabled = options().showButtons;
