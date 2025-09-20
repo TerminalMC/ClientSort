@@ -59,7 +59,10 @@ public class TriggerButtonManager {
     private static @Nullable AbstractContainerScreen<?> screen;
 
     private static final LinkedHashSet<TriggerButton> containerButtons = new LinkedHashSet<>();
+    private static final LinkedHashSet<TriggerButton> visibleContainerButtons =
+            new LinkedHashSet<>();
     private static final LinkedHashSet<TriggerButton> playerButtons = new LinkedHashSet<>();
+    private static final LinkedHashSet<TriggerButton> visiblePlayerButtons = new LinkedHashSet<>();
 
     public static @Nullable AbstractContainerScreen<?> getScreen() {
         return screen;
@@ -264,8 +267,10 @@ public class TriggerButtonManager {
                 name
         );
         (isPlayerInv ? playerButtons : containerButtons).add(button);
-        if (add)
+        if (add) {
+            (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
+        }
     }
 
     private static void generateDirectionalButton(
@@ -344,8 +349,10 @@ public class TriggerButtonManager {
                 name
         );
         (isPlayerInv ? playerButtons : containerButtons).add(button);
-        if (add)
+        if (add) {
+            (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
+        }
     }
 
     /**
@@ -423,7 +430,7 @@ public class TriggerButtonManager {
      */
     @SuppressWarnings("ConstantValue")
     public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {
-        int index = (isPlayerInv ? playerButtons : containerButtons).size();
+        int index = (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).size();
 
         int x = offset.x() + BUTTON_SHIFT_X * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
         int y = offset.y() + BUTTON_SHIFT_Y * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
