@@ -22,9 +22,13 @@ import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.ticks.ContainerSingleItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
@@ -53,14 +57,14 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     /**
      * @return {@code true} if the index of the slot in its inventory is less than 9.
      */
-    public boolean isHotbarSlot(Slot slot) {
+    public static boolean isHotbarSlot(Slot slot) {
         return ((ISlot) slot).clientsort$getIndexInContainer() < 9;
     }
 
     /**
      * @return {@code true} if the index of the slot in its inventory is greater than 35.
      */
-    public boolean isExtraSlot(Slot slot) {
+    public static boolean isExtraSlot(Slot slot) {
         return ((ISlot) slot).clientsort$getIndexInContainer() > 35;
     }
 
@@ -146,6 +150,84 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
                 return Scope.CONTAINER_INV;
             }
         }
+    }
+
+    /**
+     * Uses {@link ContainerScreenHelper#getSlotGroups} to find the largest group of slots.
+     *
+     * @param scope the scope from which to collect slots.
+     * @return the largest group of slots, which may be empty.
+     */
+    public List<Slot> getLargestSlotGroup(Scope scope) {
+        List<Slot> slots = new ArrayList<>();
+        for (List<Slot> group : getSlotGroups(scope)) {
+            if (group.size() > slots.size()) {
+                slots = group;
+            }
+        }
+        return slots;
+    }
+
+    /**
+     * Uses {@link ContainerScreenHelper#getSlotGroups} to find the group of slots containing the
+     * specified slot.
+     *
+     * @param slot  the slot for which to find a group.
+     * @param scope the scope of the slot.
+     * @return the group containing the slot, or an empty list if no group was found.
+     */
+    public List<Slot> getGroupForSlot(Slot slot, Scope scope) {
+        for (List<Slot> group : getSlotGroups(scope)) {
+            if (group.contains(slot)) {
+                return group;
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Scans the screen menu's slots and groups them by container and ascending container index.
+     * <p>
+     * Each group is guaranteed to only contain slots that share a non-null container and have
+     * unique container indexes that ascend (not necessarily uniformly) in menu iteration order.
+     * However, multiple groups may contain slots from the same container, if the container index
+     * descends or stays the same for two consecutive slots that share a non-null container.
+     * <p>
+     * Groups are contiguous in iteration order, with two exceptions: slots with a null container
+     * and slots that are out of scope are skipped but do not force creation of a new group, so they
+     * appear as 'gaps' in a group's sequence.
+     *
+     * @param scope the scope to collect slots from.
+     * @return the list of slot groups.
+     */
+    public List<List<Slot>> getSlotGroups(Scope scope) {
+        List<List<Slot>> slotGroups = new ArrayList<>();
+
+        List<Slot> currentGroup = new ArrayList<>();
+        int lastIdx = Integer.MAX_VALUE;
+        Container lastContainer = null;
+
+        for (Slot slot : screen.getMenu().slots) {
+            // Ignore irrelevant slots
+            //noinspection ConstantValue
+            if (slot.container == null)
+                continue;
+            if (!getScope(slot).equals(scope))
+                continue;
+
+            int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
+            if (slotIdx <= lastIdx || slot.container != lastContainer) {
+                slotGroups.add(currentGroup);
+                currentGroup = new ArrayList<>();
+            }
+            currentGroup.add(slot);
+            lastIdx = slotIdx;
+            lastContainer = slot.container;
+        }
+        if (!currentGroup.isEmpty())
+            slotGroups.add(currentGroup);
+
+        return slotGroups;
     }
 
     /**

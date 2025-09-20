@@ -35,4 +35,8 @@ public enum Operation {
         this.type = type;
         this.id = type.id();
     }
+
+    public boolean isDirectional() {
+        return !this.equals(SORT);
+    }
 }

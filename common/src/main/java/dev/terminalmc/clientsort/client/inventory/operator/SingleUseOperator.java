@@ -105,7 +105,7 @@ public abstract class SingleUseOperator {
 
         // Collect slots in origin scope
         Scope originScope = screenHelper.getScope(originSlot);
-        originScopeSlots = collectSlots(originSlot);
+        originScopeSlots = collectSlots(originSlot, originScope);
         if (debug()) {
             ClientSort.LOG.info(
                     "Discovered {} slots in origin scope ({} - {}):",
@@ -126,7 +126,7 @@ public abstract class SingleUseOperator {
         @Nullable Slot otherSlot = originSlot.container == player.getInventory()
                 ? TriggerButtonManager.getContainerRefSlot(op)
                 : TriggerButtonManager.getPlayerRefSlot(op);
-        if (otherSlot == null || op.equals(Operation.SORT)) {
+        if (otherSlot == null || !op.isDirectional()) {
             otherScopeSlots = new Slot[]{};
             otherScopeStacks = new ItemStack[]{};
             return;
@@ -134,7 +134,7 @@ public abstract class SingleUseOperator {
 
         // Collect slots in other container scope, if any
         Scope otherScope = screenHelper.getScope(otherSlot);
-        otherScopeSlots = collectSlots(otherSlot);
+        otherScopeSlots = collectSlots(otherSlot, otherScope);
         if (debug()) {
             ClientSort.LOG.info(
                     "Discovered {} slots in other scope ({} - {}):",
@@ -153,28 +153,20 @@ public abstract class SingleUseOperator {
 
     /**
      * Finds all the valid inventory menu slots that are in {@code scope}.
+     *
+     * @param refSlot the reference slot.
+     * @param scope the scope of the reference slot.
      */
-    private Slot[] collectSlots(Slot refSlot) {
+    private Slot[] collectSlots(Slot refSlot, Scope scope) {
         LocalPlayer player = Minecraft.getInstance().player;
-        Scope scope = screenHelper.getScope(refSlot);
         if (scope == Scope.INVALID)
             return new Slot[0];
 
         ItemStack testItem = Items.LIGHT.getDefaultInstance();
         ArrayList<Slot> collectedSlots = new ArrayList<>();
-        for (Slot slot : screen.getMenu().slots) {
+        for (Slot slot : screenHelper.getGroupForSlot(refSlot, scope)) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
-
-            //noinspection ConstantValue
-            if (slot.container == null)
-                continue;
-            if (slot.container != refSlot.container)
-                continue;
-
-            // Ignore slots in different scope
-            if (screenHelper.getScope(slot) != scope)
-                continue;
             // Ignore inaccessible slots
             if (slot.hasItem()) {
                 // Nonempty slot; check pickup
