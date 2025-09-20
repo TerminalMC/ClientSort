@@ -5,6 +5,7 @@
 - Improved button reference slot selection algorithm
 - Improved slot collection heuristics
 - Improved compatibility with Traveler's Backpack
+  - Tool and upgrade slots will no longer be affected by operations on the main inventory
 - Fixed a minor issue with policy saving when first enabling buttons on a new inventory type
 - Fixed buttons disappearing on screen resize on Fabric
 - Fixed buttons disappearing on creative inventory tab switch
