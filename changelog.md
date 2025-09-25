@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta.21
+
+- Increased interaction interval limit to 1000ms
+
 ## 2.0.0-beta.20
 
 - Improved button reference slot selection algorithm

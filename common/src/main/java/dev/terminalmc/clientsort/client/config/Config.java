@@ -59,7 +59,7 @@ public class Config {
         // General options
 
         public static final int INTERACTION_INTERVAL_MIN = 1;
-        public static final int INTERACTION_INTERVAL_MAX = 100;
+        public static final int INTERACTION_INTERVAL_MAX = 1000;
         public static final int interactionIntervalDefault = 10;
         public int interactionInterval = interactionIntervalDefault;
         public static Validator<Integer> interactionIntervalValidator = (val) ->
