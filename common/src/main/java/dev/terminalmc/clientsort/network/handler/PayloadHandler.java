@@ -132,9 +132,10 @@ public abstract class PayloadHandler {
         }
 
         if (log || serverOptions().validateItemType) {
-            boolean mismatchedTypes = notEqual(expected, actual);
-            if (mismatchedTypes)
-                invalid = true;
+            if (!expected.isEmpty() && !actual.isEmpty()) {
+                if (!ItemStack.isSameItemSameComponents(expected, actual))
+                    invalid = true;
+            }
         }
 
         if (log || serverOptions().validateStackSize) {
@@ -192,10 +193,5 @@ public abstract class PayloadHandler {
         }
 
         return menu;
-    }
-
-    public static boolean notEqual(ItemStack a, ItemStack b) {
-        return !ItemStack.isSameItemSameComponents(a, b)
-                || a.getCount() != b.getCount();
     }
 }
