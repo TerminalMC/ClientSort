@@ -29,6 +29,7 @@ import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,12 +156,12 @@ public class SelectorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (super.mouseClicked(event, doubleClick)) {
             return true;
         } else {
             for (TriggerButton cb : buttons) {
-                if (cb.isMouseOver(mouseX, mouseY)) {
+                if (cb.isMouseOver(event.x(), event.y())) {
                     cb.playDownSound(Minecraft.getInstance().getSoundManager());
                     onClose();
                     cb.openEditScreen();

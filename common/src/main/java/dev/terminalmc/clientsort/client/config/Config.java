@@ -210,11 +210,6 @@ public class Config {
         public static final boolean allowSoundOverlapDefault = true;
         public boolean allowSoundOverlap = allowSoundOverlapDefault;
 
-        // Keybind options
-
-        public static final boolean isolateKeybindsDefault = true;
-        public boolean isolateKeybinds = isolateKeybindsDefault;
-
         // Button options
 
         public static final boolean showButtonsDefault = false;

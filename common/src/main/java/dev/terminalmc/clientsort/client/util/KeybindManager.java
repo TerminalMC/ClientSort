@@ -17,9 +17,12 @@
 package dev.terminalmc.clientsort.client.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.InputQuirks;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -27,35 +30,39 @@ import static dev.terminalmc.clientsort.util.Localization.translationKey;
 
 public class KeybindManager {
 
+    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "main")
+    );
+
     public static final KeyMapping EDIT_KEY = new KeyMapping(
             translationKey("key", "edit"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("name")
+            CATEGORY
     );
     public static final KeyMapping SORT_KEY = new KeyMapping(
             translationKey("key", "op.sort"),
             InputConstants.Type.MOUSE,
             InputConstants.MOUSE_BUTTON_MIDDLE,
-            translationKey("name")
+            CATEGORY
     );
     public static final KeyMapping STACK_FILL_KEY = new KeyMapping(
             translationKey("key", "op.stackFill"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("name")
+            CATEGORY
     );
     public static final KeyMapping MATCH_TRANSFER_KEY = new KeyMapping(
             translationKey("key", "op.matchTransfer"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("name")
+            CATEGORY
     );
     public static final KeyMapping TRANSFER_KEY = new KeyMapping(
             translationKey("key", "op.transfer"),
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            translationKey("name")
+            CATEGORY
     );
     public static final List<KeyMapping> KEYBINDS = List.of(
             EDIT_KEY,
@@ -66,22 +73,37 @@ public class KeybindManager {
     );
 
     /**
-     * Attempts to remove all mod keybinds from the MC keybind maps.
-     * <p>
-     * Does not affect the MC keybind options list, since that references
-     * {@link net.minecraft.client.Options#keyMappings} which is (mostly) unrelated.
-     */
-    public static void isolateKeybinds() {
-        KEYBINDS.forEach((kb) -> KeyMappingAccessor.clientsort$getAll().remove(kb.getName()));
-        KeyMapping.resetMapping();
-    }
-
-    /**
      * Sets and saves the keybind. Does not affect mod config.
      */
     public static void bindKey(KeyMapping keybind, InputConstants.Key key) {
         keybind.setKey(key);
         KeyMapping.resetMapping();
         Minecraft.getInstance().options.save();
+    }
+
+    public static boolean hasControlDown() {
+        if (InputQuirks.RESTORE_KEY_STATE_AFTER_MOUSE_GRAB) {
+            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 343)
+                    || InputConstants.isKeyDown(
+                    Minecraft.getInstance().getWindow(),
+                    347
+            );
+        } else {
+            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 341)
+                    || InputConstants.isKeyDown(
+                    Minecraft.getInstance().getWindow(),
+                    345
+            );
+        }
+    }
+
+    public static boolean hasShiftDown() {
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340)
+                || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344);
+    }
+
+    public static boolean hasAltDown() {
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342)
+                || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
     }
 }

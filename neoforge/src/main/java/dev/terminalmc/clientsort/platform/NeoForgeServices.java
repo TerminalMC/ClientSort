@@ -30,12 +30,12 @@ public class NeoForgeServices implements IPlatformServices {
 
     @Override
     public boolean isDevEnv() {
-        return !FMLLoader.isProduction();
+        return !FMLLoader.getCurrent().isProduction();
     }
 
     @Override
     public boolean isModLoaded(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
+        return FMLLoader.getCurrent().getLoadingModList().getModFileById(modId) != null;
     }
 
     @Override
