@@ -102,8 +102,10 @@ public class SelectorScreen extends Screen {
         underlay.render(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
-        for (TriggerButton cb : buttons) {
-            cb.renderWidget(graphics, mouseX, mouseY, partialTick);
+        if (options().showButtons) {
+            for (TriggerButton cb : buttons) {
+                cb.renderWidget(graphics, mouseX, mouseY, partialTick);
+            }
         }
     }
 

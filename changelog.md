@@ -4,6 +4,7 @@
 
 - Increased interaction interval limit to 1000ms
 - Fixed item type validator also checking stack size
+- Fixed buttons showing stacked on selector screen when disabled
 
 ## 2.0.0-beta.20
 
