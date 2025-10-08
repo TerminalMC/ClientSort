@@ -21,7 +21,6 @@ import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -78,74 +77,48 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
      * @return the scope of the slot, or {@link Scope#INVALID} if the slot is not accessible.
      */
     public Scope getScope(Slot slot) {
-        //noinspection ConstantValue
-        if (slot.container == null)
-            return Scope.INVALID;
-        if (slot.container instanceof ContainerSingleItem)
-            return Scope.INVALID;
         if (slot.isFake())
             return Scope.INVALID;
+        return switch (slot.container) {
+            //noinspection DataFlowIssue
+            case null -> Scope.INVALID;
+            case ContainerSingleItem ignored -> Scope.INVALID;
 
-        // Screen with only player inventory
-        if (screen instanceof EffectRenderingInventoryScreen) {
             // Player inventory
-            if (slot.container instanceof Inventory) {
-                return getScopeInInventory(slot);
-            }
-            // Out of inventory e.g. 2x2 crafting grid
-            else {
-                return Scope.PLAYER_OTHER;
-            }
-        }
-        // Screen with container, and probably player inventory attached
-        else {
-            // Player inventory
-            if (slot.container instanceof Inventory) {
-                return getScopeInInventory(slot);
-            }
-            // Container
-            else {
-                return Scope.CONTAINER_INV;
-            }
-        }
-    }
+            case Inventory ignored -> {
+                boolean mergeWithHotbar = false;
 
-    /**
-     * Gets the scope of the specified {@link Slot}, assuming the slot's container is already known
-     * to be an instance of {@link Inventory}.
-     *
-     * @param slot the slot for which to get the scope.
-     * @return the scope of the slot, which may be {@link Scope#INVALID}.
-     */
-    private static Scope getScopeInInventory(Slot slot) {
-        boolean mergeWithHotbar = false;
+                // Extra inventory slots e.g. offhand
+                if (isExtraSlot(slot)) {
+                    switch (options().extraSlotScope) {
+                        case HOTBAR -> mergeWithHotbar = true;
+                        case EXTRA -> {
+                            yield Scope.PLAYER_INV_EXTRA;
+                        }
+                        case NONE -> {
+                            yield Scope.INVALID;
+                        }
+                    }
+                }
 
-        // Extra inventory slots e.g. offhand
-        if (isExtraSlot(slot)) {
-            switch (options().extraSlotScope) {
-                case HOTBAR -> mergeWithHotbar = true;
-                case EXTRA -> {
-                    return Scope.PLAYER_INV_EXTRA;
+                // Hotbar
+                if (mergeWithHotbar || isHotbarSlot(slot)) {
+                    switch (options().hotbarScope) {
+                        case HOTBAR -> {
+                            yield Scope.PLAYER_INV_HOTBAR;
+                        }
+                        case NONE -> {
+                            yield Scope.INVALID;
+                        }
+                    }
                 }
-                case NONE -> {
-                    return Scope.INVALID;
-                }
+
+                yield Scope.PLAYER_INV;
             }
-        }
 
-        // Hotbar
-        if (mergeWithHotbar || isHotbarSlot(slot)) {
-            switch (options().hotbarScope) {
-                case HOTBAR -> {
-                    return Scope.PLAYER_INV_HOTBAR;
-                }
-                case NONE -> {
-                    return Scope.INVALID;
-                }
-            }
-        }
-
-        return Scope.PLAYER_INV;
+            // Not player inventory
+            default -> Scope.CONTAINER_INV;
+        };
     }
 
     /**
