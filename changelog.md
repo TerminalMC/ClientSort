@@ -7,6 +7,7 @@
 - Fixed buttons showing stacked on selector screen when disabled
 - Enabled buttons by default
 - Disabled stack-fill button on player inventory by default
+- Added Simplified Chinese translation (Xinyang-Gao)
 
 ## 2.0.0-beta.20
 
