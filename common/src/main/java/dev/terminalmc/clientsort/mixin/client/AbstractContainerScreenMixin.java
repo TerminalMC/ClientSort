@@ -276,10 +276,9 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             return;
 
         if (ClientSort.overlayMessage != null) {
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0F, 0.0F, 1000F);
+            graphics.pose().pushMatrix();
             ClientSort.overlayMessage.renderWidget(graphics, mouseX, mouseY, partialTick);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
 
         if (!debug())
@@ -289,9 +288,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 ContainerScreenHelper.of((AbstractContainerScreen<?>) (Object) this);
 
         float scale = 0.7F;
-        graphics.pose().pushPose();
-        graphics.pose().translate(0.0F, 0.0F, 1000F);
-        graphics.pose().scale(scale, scale, 0.0F);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
 
         for (Slot slot : menu.slots) {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
@@ -346,6 +344,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             );
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }
