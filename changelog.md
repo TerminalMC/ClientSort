@@ -63,6 +63,7 @@
 - Added a workaround for a crash when attempting to operate on containerless modded slots
 - Increased warning display time to 5 seconds
 - Added automatic update information to server class policy config
+- Re-enabled support for ItemLocks on 1.21.6+
 
 ## 2.0.0-beta.15
 
@@ -74,6 +75,7 @@ Note: this beta version includes networking changes, servers and clients must be
 ## 2.0.0-beta.14
 
 - Added support for configuring specific items to always be sorted to the start or end
+- Fixed a launch crash on NeoForge on 1.21.7+
 
 ## 2.0.0-beta.13
 
@@ -84,6 +86,7 @@ Note: this beta version includes networking changes, servers and clients must be
 ## 2.0.0-beta.12
 
 - Fixed button status not saving when changed via editor screen
+- Added compatibility with Blur+ mod on 1.21.6+
 
 ## 2.0.0-beta.11
 
