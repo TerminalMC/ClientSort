@@ -138,7 +138,7 @@
   "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and control button operations for each inventory type.",
   "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using a keybind when viewing an inventory, or by right-clicking on a control button.",
   "option.clientsort.policies.description.3": "Data Format",
-  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<stack-fill>,<match-transfer>,<transfer>,(<ignored slots>)",
+  "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<fill stacks>,<transfer matching>,<transfer>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "    class: the full name of the inventory class or superclass.",
   "option.clientsort.policies.description.6": "    offset: 'x,y', or empty to use the default.",
   "option.clientsort.policies.description.7": "    status: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
