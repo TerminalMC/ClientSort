@@ -19,21 +19,18 @@ package dev.terminalmc.clientsort.client.inventory.operator;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public enum Operation {
-    SORT(SortPayload.TYPE),
-    STACK_FILL(StackFillPayload.TYPE),
-    MATCH_TRANSFER(TransferPayload.TYPE),
-    TRANSFER(TransferPayload.TYPE);
+    SORT(SortPayload.ID),
+    STACK_FILL(StackFillPayload.ID),
+    MATCH_TRANSFER(TransferPayload.ID),
+    TRANSFER(TransferPayload.ID);
 
-    public final CustomPacketPayload.Type<?> type;
     public final ResourceLocation id;
 
-    Operation(CustomPacketPayload.Type<?> type) {
-        this.type = type;
-        this.id = type.id();
+    Operation(ResourceLocation id) {
+        this.id = id;
     }
 
     public boolean isDirectional() {
