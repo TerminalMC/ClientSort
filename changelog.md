@@ -8,6 +8,7 @@
 - Enabled buttons by default
 - Disabled stack-fill button on player inventory by default
 - Added Simplified Chinese translation (Xinyang-Gao)
+- Improved in-game configuration instructions
 
 ## 2.0.0-beta.20
 

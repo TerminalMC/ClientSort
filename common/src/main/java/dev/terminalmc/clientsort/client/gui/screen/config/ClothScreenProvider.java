@@ -564,22 +564,29 @@ public class ClothScreenProvider {
 
         ConfigCategory policies = builder.getOrCreateCategory(localized("option", "policies"));
 
-        policies.addEntry(
+        SubCategoryBuilder policiesInstructions =
+                eb.startSubCategory(localized("option", "policies.instructions"));
+
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.1")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.2")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.3")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.4")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.5")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.6")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.7")).build());
-        policies.addEntry(
+        policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.8")).build());
+        policiesInstructions.add(
+                eb.startTextDescription(localized("option", "policies.description.9")).build());
+
+        policies.addEntry(policiesInstructions.build());
 
         policies.addEntry(eb.startStrList(
                         localized("option", "classPolicies"),

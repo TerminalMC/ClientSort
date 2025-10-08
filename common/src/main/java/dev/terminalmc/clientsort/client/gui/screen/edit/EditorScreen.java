@@ -174,7 +174,7 @@ public abstract class EditorScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        int numButtons = 10;
+        int numButtons = 11;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
@@ -199,6 +199,36 @@ public abstract class EditorScreen extends Screen {
                 .build();
         instructionsButton.active = false;
         addRenderableWidget(instructionsButton);
+        movingY += 21;
+
+        // Disable buttons and exit
+        Button disableButtonsButton = Button.builder(
+                        localized("editor", "disableButtons").withStyle(ChatFormatting.RED),
+                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
+                                (confirm) -> {
+                                    if (confirm) {
+                                        options().showButtons = false;
+                                        Config.save();
+                                        onClose();
+                                    } else {
+                                        Minecraft.getInstance().setScreen(this);
+                                    }
+                                },
+                                localized("title", "confirm.disableButtons"),
+                                localized(
+                                        "message", "confirm.disableButtons.1",
+                                        localized("key", "edit").withStyle(ChatFormatting.GOLD),
+                                        localized("option", "buttons").withStyle(ChatFormatting.GOLD)
+                                )
+                                        .append("\n\n")
+                                        .append(localized("message", "confirm.disableButtons.2"))
+                        ))
+                )
+                .tooltip(Tooltip.create(localized("editor", "disableButtons.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(disableButtonsButton);
         movingY += 21;
 
         // Toggle the layout status of all buttons
