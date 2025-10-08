@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0-beta.21
+## 2.0.0
 
 - Increased interaction interval limit to 1000ms
 - Fixed item type validator also checking stack size
