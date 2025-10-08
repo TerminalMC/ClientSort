@@ -5,6 +5,8 @@
 - Increased interaction interval limit to 1000ms
 - Fixed item type validator also checking stack size
 - Fixed buttons showing stacked on selector screen when disabled
+- Enabled buttons by default
+- Disabled stack-fill button on player inventory by default
 
 ## 2.0.0-beta.20
 

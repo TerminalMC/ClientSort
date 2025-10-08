@@ -218,7 +218,7 @@ public class Config {
 
         // Button options
 
-        public static final boolean showButtonsDefault = false;
+        public static final boolean showButtonsDefault = true;
         public boolean showButtons = showButtonsDefault;
 
         private static Operation validateUniqueOp(
@@ -289,7 +289,7 @@ public class Config {
                         Inventory.class.getName(),
                         null,
                         Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
+                        Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         new TreeSet<>()
