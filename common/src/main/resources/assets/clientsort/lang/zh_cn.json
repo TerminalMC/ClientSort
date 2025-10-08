@@ -1,4 +1,4 @@
-{
+﻿{
   "modmenu.descriptionTranslation.clientsort": "功能全面、操作便捷的物品栏整理。",
 
   "clientsort.name": "ClientSort",
@@ -82,8 +82,8 @@
   "option.clientsort.autoOpDelayContainer.tooltip": "打开容器后，执行自动操作前的延迟时间（刻）。",
   "option.clientsort.hotbarScope": "快捷栏范围",
   "option.clientsort.extraSlotScope": "额外槽位范围",
-  "option.clientsort.bundlesUseLeftClick": "收纳袋使用左键单击",
-  "option.clientsort.bundlesUseLeftClick.tooltip": "在 1.21.2+ 版本中，收纳袋使用左键单击来装载物品，这可能会干扰物品栏操作。如果在 1.21.2+ 服务器上游戏，请启用此选项。",
+  "option.clientsort.bundlesUseRightClick": "收纳袋使用右键单击",
+  "option.clientsort.bundlesUseRightClick.tooltip": "在 1.21.1 及更早版本中，收纳袋使用右键单击来装载物品，这可能会干扰物品栏操作。如果在 1.21.1 或更早版本的服务器上游戏，请启用此选项。",
   "option.clientsort.showDebugInfo": "显示调试信息",
   "option.clientsort.showDebugInfo.tooltip": "是否在图形界面上显示调试信息并启用调试日志记录。值将在重启游戏时重置。",
 
