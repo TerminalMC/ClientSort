@@ -5,7 +5,6 @@
 
   "resourcepack.clientsort.dark-mode": "ClientSort 深色模式",
 
-  "key.category.clientsort.main": "ClientSort",
   "key.clientsort.edit": "打开编辑器",
   "key.clientsort.op.sort": "整理",
   "key.clientsort.op.stackFill": "填充堆叠",
@@ -27,6 +26,10 @@
   "title.clientsort.confirm.splitPolicy": "拆分此策略",
   "message.clientsort.confirm.splitPolicy": "此策略当前由类 '%s' 指定。你确定要为此类 '%s' 创建一个单独的策略吗？如果将来想要撤销此更改，必须在主选项菜单中删除新策略。",
 
+  "title.clientsort.confirm.disableButtons": "Disable Inventory Trigger Buttons",
+  "message.clientsort.confirm.disableButtons.1": "If you want to re-enable the buttons later, you must either use the %s keybind while viewing an inventory, or visit the %s tab in mod configuration.",
+  "message.clientsort.confirm.disableButtons.2": "Are you sure you want to disable all buttons?",
+
   "editor.clientsort.buttons": "按钮",
   "editor.clientsort.enabled": "已启用",
   "editor.clientsort.disabled": "已禁用",
@@ -36,6 +39,8 @@
   "editor.clientsort.instructions.tooltip.3": "右键单击按钮以在物品栏菜单中显示或隐藏它。",
   "editor.clientsort.instructions.tooltip.4": "按住 SHIFT 并右键单击按钮以启用或禁用该操作。",
   "editor.clientsort.instructions.tooltip.5": "左键单击槽位以锁定或解锁它。",
+  "editor.clientsort.disableButtons": "Disable Buttons",
+  "editor.clientsort.disableButtons.tooltip": "Disable all buttons and exit (requires confirmation).",
   "editor.clientsort.toggleVisibility": "切换可见性",
   "editor.clientsort.toggleVisibility.tooltip": "切换所有按钮的可见性。",
   "editor.clientsort.unignoreSlots": "取消忽略所有槽位",
@@ -68,8 +73,8 @@
   "option.clientsort.optimizeCreativeSorting.tooltip": "是否通过将顺序存储在内存中来提高创造模式排序的性能。",
   "option.clientsort.hotbarScope": "快捷栏范围",
   "option.clientsort.extraSlotScope": "额外槽位范围",
-  "option.clientsort.bundlesUseRightClick": "收纳袋使用右键单击",
-  "option.clientsort.bundlesUseRightClick.tooltip": "在 1.21.1 及更早版本中，收纳袋使用右键单击来装载物品，这可能会干扰物品栏操作。如果在 1.21.1 或更早版本的服务器上游戏，请启用此选项。",
+  "option.clientsort.bundlesUseLeftClick": "Bundles use Left Click",
+  "option.clientsort.bundlesUseLeftClick.tooltip": "In 1.21.2+, bundles use left-click to load, which can interfere with inventory actions. If playing on a 1.21.2+ server, enable this option.",
   "option.clientsort.showDebugInfo": "显示调试信息",
   "option.clientsort.showDebugInfo.tooltip": "是否在图形界面上显示调试信息并启用调试日志记录。值将在重启游戏时重置。",
 
@@ -115,6 +120,8 @@
   "option.clientsort.allowSoundOverlap.tooltip": "是否在开始新音效时允许先前的音效继续播放。",
 
   "option.clientsort.keybinds": "按键绑定",
+  "option.clientsort.isolateKeybinds": "Isolate Keybinds",
+  "option.clientsort.isolateKeybinds.tooltip": "If this is enabled, ClientSort will attempt to remove its own keybinds from Minecraft's map. This may help prevent conflicts, but may not be compatible with mods that alter the keybind system.",
 
   "option.clientsort.buttons": "按钮",
   "option.clientsort.showButtons": "显示按钮",
@@ -129,6 +136,7 @@
   "option.clientsort.layoutOffset.y": "Y 轴偏移",
 
   "option.clientsort.policies": "策略",
+  "option.clientsort.policies.instructions": "Instructions",
   "option.clientsort.policies.description.1": "下面的策略列表允许您为每种物品栏类型配置按键绑定和按钮操作。",
   "option.clientsort.policies.description.2": "这作为游戏内编辑器的替代方案提供，在查看物品栏时可以使用按键绑定打开编辑器。",
   "option.clientsort.policies.description.3": "数据格式",
@@ -137,6 +145,7 @@
   "option.clientsort.policies.description.6": "偏移量：'x,y'，或留空以使用默认值。",
   "option.clientsort.policies.description.7": "状态：'0' 禁用操作，'1' 仅启用按键绑定，'2' 同时启用按键绑定和图形界面按钮。",
   "option.clientsort.policies.description.8": "忽略的槽位：不应受操作影响的槽位列表。",
+  "option.clientsort.policies.description.9": "Note: fill and transfer buttons are only shown if enabled on both the player inventory and the container.",
   "option.clientsort.classPolicies": "类策略",
   "option.clientsort.classPolicies.tooltip": "下面的每个条目对应一种特定类型的物品栏。",
 
