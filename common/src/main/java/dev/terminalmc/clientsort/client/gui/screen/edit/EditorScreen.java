@@ -32,11 +32,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleContainer;
@@ -171,9 +172,6 @@ public abstract class EditorScreen extends Screen {
      */
     private void rebuildGui() {
         clearWidgets();
-
-        StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
-        addRenderableWidget(titleWidget);
 
         int numButtons = 11;
         int x = 2;
@@ -415,6 +413,7 @@ public abstract class EditorScreen extends Screen {
         renderBlurredBackground(graphics);
 
         super.render(graphics, mouseX, mouseY, partialTick);
+        graphics.drawCenteredString(font, title, width / 2, 2, 0xFFFFFFFF);
 
         // Render disabled-slot indicators
         for (Slot slot : underlay.getMenu().slots) {
@@ -551,9 +550,9 @@ public abstract class EditorScreen extends Screen {
      * Allows pressing the arrow keys to reposition the set of buttons.
      */
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        int distance = Screen.hasShiftDown() ? 6 : 1;
-        @Nullable Vec2i movement = switch (keyCode) {
+    public boolean keyPressed(KeyEvent event) {
+        int distance = event.hasShiftDown() ? 6 : 1;
+        @Nullable Vec2i movement = switch (event.key()) {
             case InputConstants.KEY_LEFT -> new Vec2i(-distance, 0);
             case InputConstants.KEY_RIGHT -> new Vec2i(distance, 0);
             case InputConstants.KEY_UP -> new Vec2i(0, -distance);
@@ -568,21 +567,21 @@ public abstract class EditorScreen extends Screen {
             repositionButtons(rep, before);
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     /**
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (super.mouseClicked(event, doubleClick)) {
             dragging = false;
             return true;
         } else {
             for (TriggerButton cb : buttons) {
-                if (cb.isMouseOver(mouseX, mouseY)) {
-                    cb.mouseClicked(mouseX, mouseY, mouseButton);
+                if (cb.isMouseOver(event.x(), event.y())) {
+                    cb.mouseClicked(event, doubleClick);
                     rep = cb;
                     dragging = true;
                     return true;
@@ -590,7 +589,7 @@ public abstract class EditorScreen extends Screen {
             }
             for (Slot slot : underlay.getMenu().slots) {
                 if (((AbstractContainerScreenAccessor) underlay)
-                        .clientsort$isHovering(slot, mouseX, mouseY)) {
+                        .clientsort$isHovering(slot, event.x(), event.y())) {
                     Object object = getObj(slot, underlay.getMenu());
                     if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
                         int slotId = ((ISlot) slot).clientsort$getIndexInContainer();
@@ -609,31 +608,25 @@ public abstract class EditorScreen extends Screen {
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseDragged(
-            double mouseX,
-            double mouseY,
-            int button,
-            double dragX,
-            double dragY
-    ) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (dragging) {
             Vec2i before = rep.offset;
-            if (rep.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+            if (rep.mouseDragged(event, dragX, dragY)) {
                 // Move the other buttons to match the rep's movement
                 repositionButtons(rep, before);
                 return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     /**
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         dragging = false;
-        return super.mouseReleased(mouseX, mouseY, mouseButton);
+        return super.mouseReleased(event);
     }
 
     /**
