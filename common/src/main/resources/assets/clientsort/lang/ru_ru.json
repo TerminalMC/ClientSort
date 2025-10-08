@@ -3,6 +3,7 @@
 
   "resourcepack.clientsort.dark-mode": "ClientSort: Тёмный режим",
 
+  "key.category.clientsort.main": "ClientSort",
   "key.clientsort.edit": "Открыть редактор интерфейса",
   "key.clientsort.op.sort": "Сортировать",
   "key.clientsort.op.stackFill": "Заполнить стаки",
@@ -118,8 +119,6 @@
   "option.clientsort.allowSoundOverlap.tooltip": "Продолжать воспроизведение предыдущего звука при запуске нового",
 
   "option.clientsort.keybinds": "Назначение клавиш",
-  "option.clientsort.isolateKeybinds": "Изоляция назначенных клавиш",
-  "option.clientsort.isolateKeybinds.tooltip": "Если включено, ClientSort попытается убрать свои назначенные клавиши из карты управления Minecraft. Это может предотвратить конфликты, но может быть несовместимо с модами, которые изменяют систему клавиш.",
 
   "option.clientsort.buttons": "Интерфейс",
   "option.clientsort.showButtons": "Показывать кнопки",
