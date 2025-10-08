@@ -9,6 +9,8 @@
 - Disabled stack-fill button on player inventory by default
 - Added Simplified Chinese translation (Xinyang-Gao)
 - Improved in-game configuration instructions
+- Removed the option to enable serverside validation in singleplayer
+  - Manually-added serverside policies still apply
 
 ## 2.0.0-beta.20
 

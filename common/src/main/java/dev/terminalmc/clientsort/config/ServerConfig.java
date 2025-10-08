@@ -56,8 +56,8 @@ public class ServerConfig {
         // Removed in v2.0.0-beta.20, retained as a reference for legacy upgrade
         public @Nullable Boolean validateOperationResults;
 
-        public static final boolean validationActiveSingleplayerDefault = false;
-        public boolean validationActiveSingleplayer = validationActiveSingleplayerDefault;
+        // Removed in v2.0.0, retained in case of future re-enabling
+        public @Nullable Boolean validationActiveSingleplayer;
 
         public static final boolean validationActiveServerDefault = true;
         public boolean validationActiveServer = validationActiveServerDefault;

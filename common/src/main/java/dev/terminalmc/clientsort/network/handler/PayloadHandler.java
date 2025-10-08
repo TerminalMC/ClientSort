@@ -124,11 +124,6 @@ public abstract class PayloadHandler {
                 log = true;
                 error = true;
             }
-        } else {
-            if (serverOptions().validationActiveSingleplayer) {
-                log = true;
-                error = true;
-            }
         }
 
         if (log || serverOptions().validateItemType) {
