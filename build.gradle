@@ -6,11 +6,12 @@ import util.StaticUtil
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.LocalDate
+import java.util.regex.Pattern
 
 plugins {
     id("fabric-loom") version("${loom_version}") apply(false)
     id("net.neoforged.moddev") version("${moddev_version}") apply(false)
-    id("org.cadixdev.licenser") version("${licenser_version}") apply(false)
+    id("net.neoforged.licenser") version("${licenser_version}") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("${mpp_version}")
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
 }
@@ -34,7 +35,7 @@ subprojects {
     group = mod_group
 
     // Configure license headers
-    apply(plugin: "org.cadixdev.licenser")
+    apply(plugin: "net.neoforged.licenser")
     final licenseDir = "src/main/resources/assets/${mod_id}/license/"
     license {
         include("**/*.java") // Java files only
@@ -49,8 +50,9 @@ subprojects {
         if (att_license_mods != "") {
             att_license_mods.split(",").each { String modId ->
                 //noinspection GroovyAssignabilityCheck
-                matching(includes: List.of(prop.list("att_license_files_${modId}"))) {
+                matching({ include(prop.list("att_license_files_${modId}")) }) {
                     header = rootProject.project("common").file("${licenseDir}${modId}/HEADER.txt")
+                    it
                 }
             }
         }
@@ -348,9 +350,8 @@ tasks.register("rebrandProject") {
                     props.each { key, value ->
                         if (key != value) {
                             // Replace all occurrences in the contents
-                            final matcher = java.util.regex.Pattern.compile(
-                                    java.util.regex.Pattern.quote(key.toString())
-                            ).matcher(contents)
+                            final matcher = Pattern.compile(Pattern.quote(key.toString()))
+                                    .matcher(contents)
                             final count = matcher.count
                             if (count > 0) {
                                 println("Replacing ${count} instance(s) of '${key}' with "

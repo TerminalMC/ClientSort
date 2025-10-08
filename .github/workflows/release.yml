@@ -39,7 +39,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build neoforge:publishModrinth neoforge:publishCurseforge neoforge:publishGithub fabric:publishModrinth fabric:publishCurseforge fabric:publishGithub --stacktrace
+        run: ./gradlew build neoforge:publishGithub neoforge:publishCurseforge neoforge:publishModrinth fabric:publishGithub fabric:publishCurseforge fabric:publishModrinth --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

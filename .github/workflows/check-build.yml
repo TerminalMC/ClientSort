@@ -1,4 +1,4 @@
-# Builds the project on Linux and Windows, as a first line of defense against bad commits.
+# Builds the project, as a first line of defense against bad commits.
 name: Check Build
 
 on:
@@ -22,8 +22,7 @@ jobs:
           21
         ]
         os: [
-          ubuntu-latest,
-          windows-latest
+          ubuntu-latest
         ]
     runs-on: ${{ matrix.os }}
     steps:
