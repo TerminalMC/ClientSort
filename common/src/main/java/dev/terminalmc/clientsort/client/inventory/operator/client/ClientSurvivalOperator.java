@@ -25,11 +25,11 @@ import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 import java.util.ArrayDeque;
 import java.util.BitSet;
@@ -289,7 +289,7 @@ public class ClientSurvivalOperator extends ClientOperator {
                         && !(carriedStack.isEmpty());
                 boolean clickOnItemWithBundle = isBundle(carriedStack)
                         && !(originScopeStacks[dstId].isEmpty());
-                if (options().bundlesUseLeftClick
+                if (!options().bundlesUseRightClick
                         && (clickOnBundleWithItem || clickOnItemWithBundle)) {
                     mouseButton = 1;
                 }
@@ -631,6 +631,6 @@ public class ClientSurvivalOperator extends ClientOperator {
      * @return whether the stack is a bundle.
      */
     private static boolean isBundle(ItemStack stack) {
-        return stack.is(Items.BUNDLE) || stack.getItem() instanceof BundleItem;
+        return stack.is(ItemTags.BUNDLES) || stack.getItem() instanceof BundleItem;
     }
 }
