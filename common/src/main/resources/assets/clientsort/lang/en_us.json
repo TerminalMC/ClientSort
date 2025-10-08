@@ -24,7 +24,7 @@
   "title.clientsort.confirm.splitPolicy": "Split this Policy",
   "message.clientsort.confirm.splitPolicy": "This policy is currently specified by class '%s'. Are you sure you want to create a separate policy for class '%s'? If you want to revert this change in future, you must delete the new policy in the main options menu.",
 
-  "title.clientsort.confirm.disableButtons": "Disable Inventory Control Buttons",
+  "title.clientsort.confirm.disableButtons": "Disable Inventory Trigger Buttons",
   "message.clientsort.confirm.disableButtons.1": "If you want to re-enable the buttons later, you must either use the %s keybind while viewing an inventory, or visit the %s tab in mod configuration.",
   "message.clientsort.confirm.disableButtons.2": "Are you sure you want to disable all buttons?",
 
@@ -135,8 +135,8 @@
 
   "option.clientsort.policies": "Policies",
   "option.clientsort.policies.instructions": "Instructions",
-  "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and control button operations for each inventory type.",
-  "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using a keybind when viewing an inventory, or by right-clicking on a control button.",
+  "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and trigger button operations for each inventory type.",
+  "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using a keybind when viewing an inventory, or by right-clicking on a trigger button.",
   "option.clientsort.policies.description.3": "Data Format",
   "option.clientsort.policies.description.4": "<class>,(<offset>),<sort>,<fill stacks>,<transfer matching>,<transfer>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "    class: the full name of the inventory class or superclass.",
@@ -169,11 +169,11 @@
   "sortOrder.clientsort.quantity": "Quantity",
   "sortOrder.clientsort.rawId": "Raw ID",
 
-  "controlButton.clientsort.SORT": "Sort",
-  "controlButton.clientsort.STACK_FILL": "Fill Stacks",
-  "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
-  "controlButton.clientsort.TRANSFER": "Transfer",
-  "controlButton.clientsort.NONE": "None",
+  "triggerButton.clientsort.SORT": "Sort",
+  "triggerButton.clientsort.STACK_FILL": "Fill Stacks",
+  "triggerButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
+  "triggerButton.clientsort.TRANSFER": "Transfer",
+  "triggerButton.clientsort.NONE": "None",
 
   "payloadResult.clientsort.success": "Operation succeeded.",
   "payloadResult.clientsort.unknown": "Server returned an unrecognized failure code.",
@@ -189,5 +189,5 @@
   "error.clientsort.classPolicy.pattern": "Data does not match required pattern: %s",
   "error.clientsort.classPolicy.classNotFound": "Could not find a class matching name: %s",
   "error.clientsort.classPolicy.parseOffset": "Could not parse an offset from data: (%s,%s)",
-  "error.clientsort.controlButton.duplicate": "Each button can only appear once"
+  "error.clientsort.triggerButton.duplicate": "Each button can only appear once"
 }

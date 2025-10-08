@@ -161,11 +161,11 @@
   "sortOrder.clientsort.quantity": "По количеству",
   "sortOrder.clientsort.rawId": "По необработанному ID",
 
-  "controlButton.clientsort.SORT": "Сортировать",
-  "controlButton.clientsort.STACK_FILL": "Заполнить стаки",
-  "controlButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
-  "controlButton.clientsort.TRANSFER": "Переместить",
-  "controlButton.clientsort.NONE": "Нет",
+  "triggerButton.clientsort.SORT": "Сортировать",
+  "triggerButton.clientsort.STACK_FILL": "Заполнить стаки",
+  "triggerButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
+  "triggerButton.clientsort.TRANSFER": "Переместить",
+  "triggerButton.clientsort.NONE": "Нет",
 
   "payloadResult.clientsort.success": "Operation succeeded.",
   "payloadResult.clientsort.unknown": "Server returned an unrecognized failure code.",
@@ -181,5 +181,5 @@
   "error.clientsort.classPolicy.pattern": "Данные не соответствуют требуемому шаблону: %s",
   "error.clientsort.classPolicy.classNotFound": "Класс с именем %s не найден",
   "error.clientsort.classPolicy.parseOffset": "Не удалось разобрать смещение: (%s,%s)",
-  "error.clientsort.controlButton.duplicate": "Каждая кнопка может появляться только один раз"
+  "error.clientsort.triggerButton.duplicate": "Каждая кнопка может появляться только один раз"
 }

@@ -478,9 +478,9 @@ public class ClothScreenProvider {
                         val.equals(getSecondSelector())
                                 || val.equals(getThirdSelector())
                                 || val.equals(getFourthSelector())
-                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                ? Optional.of(localized("error", "triggerButton.duplicate"))
                                 : Optional.empty())
-                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setEnumNameProvider(val -> localized("triggerButton", val.name()))
                 .setDefaultValue(Config.Options.firstButtonOpDefault)
                 .setSaveConsumer(val -> options.firstButtonOp = val)
                 .build();
@@ -491,12 +491,12 @@ public class ClothScreenProvider {
                         Operation.class,
                         options.secondButtonOp
                 )
-                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setEnumNameProvider(val -> localized("triggerButton", val.name()))
                 .setErrorSupplier((val) ->
                         val.equals(getFirstSelector())
                                 || val.equals(getThirdSelector())
                                 || val.equals(getFourthSelector())
-                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                ? Optional.of(localized("error", "triggerButton.duplicate"))
                                 : Optional.empty())
                 .setDefaultValue(Config.Options.secondButtonOpDefault)
                 .setSaveConsumer(val -> options.secondButtonOp = val)
@@ -508,12 +508,12 @@ public class ClothScreenProvider {
                         Operation.class,
                         options.thirdButtonOp
                 )
-                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setEnumNameProvider(val -> localized("triggerButton", val.name()))
                 .setErrorSupplier((val) ->
                         val.equals(getFirstSelector())
                                 || val.equals(getSecondSelector())
                                 || val.equals(getFourthSelector())
-                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                ? Optional.of(localized("error", "triggerButton.duplicate"))
                                 : Optional.empty())
                 .setDefaultValue(Config.Options.thirdButtonOpDefault)
                 .setSaveConsumer(val -> options.thirdButtonOp = val)
@@ -525,12 +525,12 @@ public class ClothScreenProvider {
                         Operation.class,
                         options.fourthButtonOp
                 )
-                .setEnumNameProvider(val -> localized("controlButton", val.name()))
+                .setEnumNameProvider(val -> localized("triggerButton", val.name()))
                 .setErrorSupplier((val) ->
                         val.equals(getFirstSelector())
                                 || val.equals(getSecondSelector())
                                 || val.equals(getThirdSelector())
-                                ? Optional.of(localized("error", "controlButton.duplicate"))
+                                ? Optional.of(localized("error", "triggerButton.duplicate"))
                                 : Optional.empty())
                 .setDefaultValue(Config.Options.fourthButtonOpDefault)
                 .setSaveConsumer(val -> options.fourthButtonOp = val)

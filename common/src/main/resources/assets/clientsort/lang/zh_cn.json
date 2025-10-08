@@ -162,11 +162,11 @@
   "sortOrder.clientsort.quantity": "数量",
   "sortOrder.clientsort.rawId": "原始 ID",
 
-  "controlButton.clientsort.SORT": "整理",
-  "controlButton.clientsort.STACK_FILL": "填充堆叠",
-  "controlButton.clientsort.MATCH_TRANSFER": "转移匹配物品",
-  "controlButton.clientsort.TRANSFER": "转移",
-  "controlButton.clientsort.NONE": "无",
+  "triggerButton.clientsort.SORT": "整理",
+  "triggerButton.clientsort.STACK_FILL": "填充堆叠",
+  "triggerButton.clientsort.MATCH_TRANSFER": "转移匹配物品",
+  "triggerButton.clientsort.TRANSFER": "转移",
+  "triggerButton.clientsort.NONE": "无",
 
   "payloadResult.clientsort.success": "操作成功。",
   "payloadResult.clientsort.unknown": "服务器返回了无法识别的失败代码。",
@@ -182,5 +182,5 @@
   "error.clientsort.classPolicy.pattern": "数据不符合要求的模式：%s",
   "error.clientsort.classPolicy.classNotFound": "找不到与名称匹配的类：%s",
   "error.clientsort.classPolicy.parseOffset": "无法从数据中解析偏移量：(%s,%s)",
-  "error.clientsort.controlButton.duplicate": "每个按钮只能出现一次"
+  "error.clientsort.triggerButton.duplicate": "每个按钮只能出现一次"
 }

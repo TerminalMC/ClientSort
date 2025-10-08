@@ -101,7 +101,7 @@ public class TriggerButtonManager {
     }
 
     /**
-     * Generates zero or more control buttons in accordance with config and state, and if any were
+     * Generates zero or more trigger buttons in accordance with config and state, and if any were
      * generated, adds them to the screen.
      */
     public static void afterScreenInit(Screen initScreen) {

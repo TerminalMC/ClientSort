@@ -5,6 +5,6 @@
             "min_inclusive": 34,
             "max_inclusive": 999
         },
-        "description": "Dark-mode control buttons"
+        "description": "Dark-mode trigger buttons"
     }
 }
