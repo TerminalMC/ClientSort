@@ -21,7 +21,6 @@ import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -78,18 +77,15 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
      * @return the scope of the slot, or {@link Scope#INVALID} if the slot is not accessible.
      */
     public Scope getScope(Slot slot) {
-        //noinspection ConstantValue
-        if (slot.container == null)
-            return Scope.INVALID;
-        if (slot.container instanceof ContainerSingleItem)
-            return Scope.INVALID;
         if (slot.isFake())
             return Scope.INVALID;
+        return switch (slot.container) {
+            //noinspection DataFlowIssue
+            case null -> Scope.INVALID;
+            case ContainerSingleItem ignored -> Scope.INVALID;
 
-        // Screen with only player inventory
-        if (screen instanceof EffectRenderingInventoryScreen) {
             // Player inventory
-            if (slot.container instanceof Inventory) {
+            case Inventory ignored -> {
                 boolean mergeWithHotbar = false;
 
                 // Extra inventory slots e.g. offhand
@@ -97,10 +93,10 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
                     switch (options().extraSlotScope) {
                         case HOTBAR -> mergeWithHotbar = true;
                         case EXTRA -> {
-                            return Scope.PLAYER_INV_EXTRA;
+                            yield Scope.PLAYER_INV_EXTRA;
                         }
                         case NONE -> {
-                            return Scope.INVALID;
+                            yield Scope.INVALID;
                         }
                     }
                 }
@@ -109,47 +105,20 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
                 if (mergeWithHotbar || isHotbarSlot(slot)) {
                     switch (options().hotbarScope) {
                         case HOTBAR -> {
-                            return Scope.PLAYER_INV_HOTBAR;
+                            yield Scope.PLAYER_INV_HOTBAR;
                         }
                         case NONE -> {
-                            return Scope.INVALID;
+                            yield Scope.INVALID;
                         }
                     }
                 }
 
-                return Scope.PLAYER_INV;
+                yield Scope.PLAYER_INV;
             }
 
-            // Out of inventory e.g. 2x2 crafting grid
-            else {
-                return Scope.PLAYER_OTHER;
-            }
-        }
-
-        // Screen with container, and probably player inventory attached
-        else {
-            // Player inventory
-            if (slot.container instanceof Inventory) {
-                // Hotbar
-                if (isHotbarSlot(slot)) {
-                    switch (options().hotbarScope) {
-                        case HOTBAR -> {
-                            return Scope.PLAYER_INV_HOTBAR;
-                        }
-                        case NONE -> {
-                            return Scope.INVALID;
-                        }
-                    }
-                }
-
-                return Scope.PLAYER_INV;
-            }
-
-            // Container
-            else {
-                return Scope.CONTAINER_INV;
-            }
-        }
+            // Not player inventory
+            default -> Scope.CONTAINER_INV;
+        };
     }
 
     /**
