@@ -121,31 +121,31 @@ if (build_sources_jar == "true") {
 processResources {
     final expandProps = [
             // Mod
-            "mod_version"            : mod_version,
-            "mod_group"              : mod_group,
-            "mod_id"                 : mod_id,
-            "mod_name"               : mod_name,
-            "mod_description_fabric" : mod_description.replace("\n", "\\n"),
-            "mod_description_neoforge": mod_description,
-            "mod_icon"               : "assets/${mod_id}/icon.png",
-            "mod_owner"              : mod_owner,
-            "mod_authors_list"       : asJsonList(mod_authors),
-            "mod_authors_string"     : mod_authors.split(",").join(", "),
-            "mod_contributors_list"  : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_contributors_string": asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_license"            : mod_license,
+            "mod_version"             : mod_version,
+            "mod_group"               : mod_group,
+            "mod_id"                  : mod_id,
+            "mod_name"                : mod_name,
+            "mod_description_fabric"  : mod_description.replace("\n", "\\n"),
+            "mod_description_forge"   : mod_description,
+            "mod_icon"                : "assets/${mod_id}/icon.png",
+            "mod_owner"               : mod_owner,
+            "mod_authors_list"        : asJsonList(mod_authors),
+            "mod_authors_string"      : mod_authors.split(",").join(", "),
+            "mod_contributors_list"   : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_contributors_string" : asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_license"             : mod_license,
             // Links
-            "homepage_url"           : homepage_url,
-            "sources_url"            : sources_url,
-            "issues_url"             : issues_url,
-            "contact_url"            : contact_url,
+            "homepage_url"            : homepage_url,
+            "sources_url"             : sources_url,
+            "issues_url"              : issues_url,
+            "contact_url"             : contact_url,
             // Java
-            "java_version"           : java_version,
+            "java_version"            : java_version,
             "java_versions_fabric_list": asJsonList(java_versions_fabric),
-            "java_versions_neoforge" : java_versions_neoforge,
+            "java_versions_forge"     : java_versions_forge,
             // Minecraft
             "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
-            "minecraft_versions_neoforge": minecraft_versions_neoforge,
+            "minecraft_versions_forge": minecraft_versions_forge,
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
             "fabric_api_versions_list": asJsonList(fabric_api_versions),
@@ -153,15 +153,15 @@ processResources {
             "fabric_entrypoints_client" : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
             "fabric_entrypoints_server" : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
             "fabric_entrypoints_modmenu": asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
-            // NeoForge
-            "neoforge_versions"      : neoforge_versions,
+            // Forge
+            "forge_versions"          : forge_versions,
             // Dependencies:
-            "fabric_depends"         : "",
-            "fabric_recommends"      : "",
-            "fabric_suggests"        : "",
-            "fabric_conflicts"       : "",
-            "fabric_breaks"          : "",
-            "neoforge_all_deps"      : ""
+            "fabric_depends"          : "",
+            "fabric_recommends"       : "",
+            "fabric_suggests"         : "",
+            "fabric_conflicts"        : "",
+            "fabric_breaks"           : "",
+            "forge_all_deps"          : ""
     ]
 
     // Apply property-defined dependencies
@@ -186,25 +186,25 @@ processResources {
     if (!expandProps["fabric_depends"].isBlank()) {
         expandProps["fabric_depends"] = "${expandProps["fabric_depends"]},".toString()
     }
-    safePropList("neoforge_deps").each { dep ->
+    safePropList("forge_deps").each { dep ->
         try {
-            final depData = propList("d_neoforge_${dep}")
+            final depData = propList("d_forge_${dep}")
             if (depData.length > 1 && depData[1] != "-") {
                 final loaderData = depData[1].split(":")
-                expandProps["neoforge_all_deps"] = expandProps["neoforge_all_deps"] +
+                expandProps["forge_all_deps"] = expandProps["forge_all_deps"] +
                         "[[dependencies.${mod_id}]]\n" +
                         "modId=\"${loaderData[1]}\"\n" +
-                        "type=\"${loaderData[0]}\"\n" +
-                        "versionRange=\"${project.property("vr_neoforge_${dep}")}\"\n" +
+                        "mandatory=${loaderData[0] == "required"}\n" +
+                        "versionRange=\"${project.property("vr_forge_${dep}")}\"\n" +
                         "side=\"CLIENT\"\n\n"
             }
         } catch (Exception ex) {
-            logger.error("Error processing NeoForge dependency metadata for '${dep}'. "
+            logger.error("Error processing Forge dependency metadata for '${dep}'. "
                     + "Check dependency property format.")
             throw ex
         }
     }
-//    logger.info("NeoForge metadata 'neoforge_all_deps': ${expandProps["neoforge_all_deps"]}")
+//    logger.info("Forge metadata 'forge_all_deps': ${expandProps["forge_all_deps"]}")
 
     filesMatching(["pack.mcmeta", "*.mod.json", "*.mixins.json", "META-INF/*.toml"]) {
         expand(expandProps)
