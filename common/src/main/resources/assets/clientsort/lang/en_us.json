@@ -32,7 +32,7 @@
   "editor.clientsort.instructions.tooltip.2": "Hold SHIFT while pressing the arrow keys to move faster.",
   "editor.clientsort.instructions.tooltip.3": "Right-click a button to show or hide it in the inventory menu.",
   "editor.clientsort.instructions.tooltip.4": "Hold SHIFT and right-click a button to enable or disable the operation.",
-  "editor.clientsort.instructions.tooltip.5": "Left-click a slot to lock or unlock it.",
+  "editor.clientsort.instructions.tooltip.5": "Left-click a slot to ignore it.",
   "editor.clientsort.toggleVisibility": "Toggle Visibility",
   "editor.clientsort.toggleVisibility.tooltip": "Toggle the visibility of all buttons.",
   "editor.clientsort.unignoreSlots": "Unignore All Slots",

@@ -32,7 +32,7 @@
   "editor.clientsort.instructions.tooltip.2": "Удерживайте SHIFT и нажимайте стрелки для быстрого перемещения.",
   "editor.clientsort.instructions.tooltip.3": "Нажмите правой кнопкой мыши на кнопку, чтобы включить или выключить её в макете.",
   "editor.clientsort.instructions.tooltip.4": "Удерживайте SHIFT и щёлкните ПКМ по кнопке, чтобы включить или отключить политику для этой операции.",
-  "editor.clientsort.instructions.tooltip.5": "Left-click a slot to lock or unlock it.",
+  "editor.clientsort.instructions.tooltip.5": "Left-click a slot to ignore it.",
   "editor.clientsort.toggleVisibility": "Переключить ВСЕ",
   "editor.clientsort.toggleVisibility.tooltip": "Переключить состояние всех кнопок.",
   "editor.clientsort.unignoreSlots": "Unignore All Slots",
