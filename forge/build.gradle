@@ -1,0 +1,119 @@
+import util.PropUtil
+
+plugins {
+    id("multiloader-loader")
+    id("net.minecraftforge.gradle")
+    id("org.spongepowered.mixin")
+}
+
+// Configure Forge dependencies
+dependencies {
+    minecraft("net.minecraftforge:forge:${minecraft_version}-${forge_version}".toString())
+    annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+
+    // MixinExtras
+    if (mixinextras_jij_forge == "true") {
+        implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
+            jarJar.ranged(it, "[${mixinextras_version},)")
+        }
+    }
+
+    // Apply property-defined dependencies
+    final selector = (String type, dep) -> {
+        switch (type) {
+            case "anp": //noinspection DependencyNotationArgument
+                return annotationProcessor(dep)
+                break
+            case "api": //noinspection DependencyNotationArgument
+                return api(dep)
+                break
+            case "con": //noinspection DependencyNotationArgument
+                return compileOnly(dep)
+                break
+            case "imp": //noinspection DependencyNotationArgument
+                return implementation(dep)
+                break
+            case "jar": //noinspection DependencyNotationArgument
+                return jarJar(dep)
+                break
+            case "-":
+                return dep
+                break
+            default:
+                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+        }
+    }
+    new PropUtil(project).applyDependencies(project.name, selector)
+}
+
+// Configure Mixin
+mixin {
+    add(sourceSets.main, "${mod_id}.refmap.json")
+    config("${mod_id}.mixins.json")
+    config("${mod_id}.forge.mixins.json")
+}
+
+// Configure ForgeGradle
+minecraft {
+    mappings channel: "official", version: minecraft_version
+    copyIdeResources = true // Calls processResources when in dev
+
+    // Apply AccessTransformer if it exists
+    def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    if (at.exists()) accessTransformers.from(at.absolutePath)
+
+    // Configure runs
+    runs {
+        client {
+            workingDirectory project.file("run")
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "runClient"
+            property "mixin.env.remapRefMap", "true"
+            property "mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file("run")
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "runServer"
+            property "mixin.env.remapRefMap", "true"
+            property "mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    // Required due to direct reference to fat jar file in root build.gradle publishMods task
+    tasks.named("publishGithub").configure { it.dependsOn(tasks.named("jarJar")) }
+    tasks.named("publishModrinth").configure { it.dependsOn(tasks.named("jarJar")) }
+    tasks.named("publishCurseforge").configure { it.dependsOn(tasks.named("jarJar")) }
+}
+
+sourceSets.main.resources {
+    srcDir("src/generated/resources")
+}
+
+jarJar.enable()
+
+tasks.jar.configure {
+    archiveClassifier.set("pure")
+    finalizedBy("reobfJar")
+}
+
+tasks.jarJar.configure {
+    archiveClassifier.set("")
+    finalizedBy("reobfJarJar")
+}
