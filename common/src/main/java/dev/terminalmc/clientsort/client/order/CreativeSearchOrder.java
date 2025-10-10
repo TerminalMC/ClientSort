@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.order;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.mixin.client.accessor.CreativeModeTabsAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,6 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -94,34 +94,40 @@ public class CreativeSearchOrder {
             return;
         }
         FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
-        boolean opTab = mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get();
 
-        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
+        Collection<ItemStack> displayStacks;
+        try {
+            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, true, mc.level.registryAccess());
 
-        Collection<ItemStack> displayStacks =
-                new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
+            // other mods might modify these items while our thread is evaluating them, so copy each item.
+            displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
+                    .stream().map(ItemStack::copy).toList();
+        } finally {
+            CreativeModeTabsAccessor.setCachedParameters(null);
+        }
+
         new Thread(
                 () -> {
                     Lock lock = stackPositionMapLock.writeLock();
-                    lock.lock();
-                    stackPositionMap.clear();
-                    if (displayStacks.isEmpty()) {
-                        lock.unlock();
-                        return;
-                    }
+                    try {
+                        lock.lock();
 
-                    int i = 0;
-                    for (ItemStack stack : displayStacks) {
-                        StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                        if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
-                            stackPositionMap.put(plainMatcher, i);
+                        stackPositionMap.clear();
+                        int i = 0;
+                        for (ItemStack stack : displayStacks) {
+                            StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                            if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
+                                stackPositionMap.put(plainMatcher, i);
+                                i++;
+                            }
+                            stackPositionMap.put(StackMatcher.of(stack), i);
                             i++;
                         }
-                        stackPositionMap.put(StackMatcher.of(stack), i);
-                        i++;
+
+                    } finally {
+                        lock.unlock();
                     }
-                    lock.unlock();
-                }, ClientSort.MOD_NAME + ": creative search stack position lookup builder"
+                }, ClientSort.MOD_NAME + ": creative sort builder"
         ).start();
     }
 }

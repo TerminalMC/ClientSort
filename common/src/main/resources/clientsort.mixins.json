@@ -19,7 +19,8 @@
     "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
-    "client.slot.CreativeSlotMixin"
+    "client.slot.CreativeSlotMixin",
+    "client.accessor.CreativeModeTabsAccessor"
   ],
   "server": [
   ],
