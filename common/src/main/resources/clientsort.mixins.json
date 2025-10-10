@@ -16,11 +16,11 @@
     "client.MinecraftMixin",
     "client.ScreenMixin",
     "client.accessor.AbstractContainerScreenAccessor",
+    "client.accessor.CreativeModeTabsAccessor",
     "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
-    "client.slot.CreativeSlotMixin",
-    "client.accessor.CreativeModeTabsAccessor"
+    "client.slot.CreativeSlotMixin"
   ],
   "server": [
   ],

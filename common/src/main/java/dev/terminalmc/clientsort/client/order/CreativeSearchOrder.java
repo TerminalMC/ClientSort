@@ -103,7 +103,7 @@ public class CreativeSearchOrder {
             displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
                     .stream().map(ItemStack::copy).toList();
         } finally {
-            CreativeModeTabsAccessor.setCachedParameters(null);
+            CreativeModeTabsAccessor.clientsort$setCachedParameters(null);
         }
 
         new Thread(

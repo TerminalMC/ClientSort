@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+- Updated Russian translation (rfin0)
+- Fixed creative search (TauCu)
+
 ## 2.0.0
 
 - Increased interaction interval limit to 1000ms
