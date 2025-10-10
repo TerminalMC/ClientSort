@@ -45,8 +45,6 @@ public class ClientSort {
     public static @Nullable MultiLineTextWidget overlayMessage = null;
     private static Runnable clearOverlayMessage = null;
 
-    public static boolean searchOrderUpdated = false;
-
     public static volatile boolean emiReloading = false;
     public static volatile boolean updateBlockedByEmi = false;
 

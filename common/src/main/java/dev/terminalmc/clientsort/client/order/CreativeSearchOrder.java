@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.client.order;
 
+import com.google.common.base.Stopwatch;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -26,7 +27,6 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -96,32 +96,51 @@ public class CreativeSearchOrder {
         FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
         boolean opTab = mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get();
 
-        CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
+        Collection<ItemStack> displayStacks;
+        try {
+            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
 
-        Collection<ItemStack> displayStacks =
-                new ArrayList<>(CreativeModeTabs.searchTab().getDisplayItems());
+            // other mods might modify these items while our thread is evaluating them, so copy each item.
+            displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
+                    .stream().map(ItemStack::copy).toList();
+        } finally {
+            // BUG: Fixes #1 Creative search doesn't work
+            // CreativeModeTabs#tryRebuildTabContents only returns true once.
+            // the return of this method is checked by CreativeModeInventoryScreen#tryRebuildTabContents.
+            // if the former call returns false it doesn't update it's searchTrees, breaking creative search.
+            // setting CACHED_PARAMETERS to null makes tryRebuildTabContents think it was never built.
+            // nullifying this does not (currently) affect anything other than tryRebuildTabContents.
+            // set after searchTab() and getDisplayItems() as they might call tryRebuildTabContents in the future.
+            CreativeModeTabs.CACHED_PARAMETERS = null;
+        }
+
         new Thread(
                 () -> {
                     Lock lock = stackPositionMapLock.writeLock();
-                    lock.lock();
-                    stackPositionMap.clear();
-                    if (displayStacks.isEmpty()) {
-                        lock.unlock();
-                        return;
-                    }
+                    try {
+                        lock.lock();
 
-                    int i = 0;
-                    for (ItemStack stack : displayStacks) {
-                        StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                        if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
-                            stackPositionMap.put(plainMatcher, i);
-                            i++;
+                        Stopwatch timer = Stopwatch.createStarted();
+                        stackPositionMap.clear();
+
+                        if (!displayStacks.isEmpty()) {
+                            int i = 0;
+                            for (ItemStack stack : displayStacks) {
+                                StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                                if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
+                                    stackPositionMap.put(plainMatcher, i);
+                                    i++;
+                                }
+                                stackPositionMap.put(StackMatcher.of(stack), i);
+                                i++;
+                            }
                         }
-                        stackPositionMap.put(StackMatcher.of(stack), i);
-                        i++;
+
+                        ClientSort.LOG.info("Finished building creative sort order. Took: %d ms".formatted(timer.stop().elapsed().toMillis()));
+                    } finally {
+                        lock.unlock();
                     }
-                    lock.unlock();
-                }, ClientSort.MOD_NAME + ": creative search stack position lookup builder"
+                }, ClientSort.MOD_NAME + ": creative sort builder"
         ).start();
     }
 }
