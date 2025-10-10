@@ -1,3 +1,2 @@
 accessWidener v2 named
 # https://fabricmc.net/wiki/tutorial:accesswideners
-accessible field net/minecraft/world/item/CreativeModeTabs CACHED_PARAMETERS Lnet/minecraft/world/item/CreativeModeTab$ItemDisplayParameters;

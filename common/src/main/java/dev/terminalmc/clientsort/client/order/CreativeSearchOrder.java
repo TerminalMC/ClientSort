@@ -17,9 +17,9 @@
 
 package dev.terminalmc.clientsort.client.order;
 
-import com.google.common.base.Stopwatch;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Config;
+import dev.terminalmc.clientsort.mixin.client.accessor.CreativeModeTabsAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -94,24 +94,16 @@ public class CreativeSearchOrder {
             return;
         }
         FeatureFlagSet enabledFeatures = mc.level.enabledFeatures();
-        boolean opTab = mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get();
 
         Collection<ItemStack> displayStacks;
         try {
-            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, !opTab, mc.level.registryAccess());
+            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, true, mc.level.registryAccess());
 
             // other mods might modify these items while our thread is evaluating them, so copy each item.
             displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
                     .stream().map(ItemStack::copy).toList();
         } finally {
-            // BUG: Fixes #1 Creative search doesn't work
-            // CreativeModeTabs#tryRebuildTabContents only returns true once.
-            // the return of this method is checked by CreativeModeInventoryScreen#tryRebuildTabContents.
-            // if the former call returns false it doesn't update it's searchTrees, breaking creative search.
-            // setting CACHED_PARAMETERS to null makes tryRebuildTabContents think it was never built.
-            // nullifying this does not (currently) affect anything other than tryRebuildTabContents.
-            // set after searchTab() and getDisplayItems() as they might call tryRebuildTabContents in the future.
-            CreativeModeTabs.CACHED_PARAMETERS = null;
+            CreativeModeTabsAccessor.setCachedParameters(null);
         }
 
         new Thread(
@@ -120,23 +112,18 @@ public class CreativeSearchOrder {
                     try {
                         lock.lock();
 
-                        Stopwatch timer = Stopwatch.createStarted();
                         stackPositionMap.clear();
-
-                        if (!displayStacks.isEmpty()) {
-                            int i = 0;
-                            for (ItemStack stack : displayStacks) {
-                                StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                                if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
-                                    stackPositionMap.put(plainMatcher, i);
-                                    i++;
-                                }
-                                stackPositionMap.put(StackMatcher.of(stack), i);
+                        int i = 0;
+                        for (ItemStack stack : displayStacks) {
+                            StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
+                            if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
+                                stackPositionMap.put(plainMatcher, i);
                                 i++;
                             }
+                            stackPositionMap.put(StackMatcher.of(stack), i);
+                            i++;
                         }
 
-                        ClientSort.LOG.info("Finished building creative sort order. Took: %d ms".formatted(timer.stop().elapsed().toMillis()));
                     } finally {
                         lock.unlock();
                     }
