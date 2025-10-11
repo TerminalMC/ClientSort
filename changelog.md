@@ -3,6 +3,7 @@
 ## 2.0.2
 
 - Fixed hotbar and extra slot scoping being overridden by smart grouping
+- Fixed trigger buttons not appearing on initial inventory open in creative mode
 
 ## 2.0.1
 

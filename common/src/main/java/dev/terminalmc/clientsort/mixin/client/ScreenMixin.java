@@ -18,7 +18,9 @@ package dev.terminalmc.clientsort.mixin.client;
 
 import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +40,8 @@ public class ScreenMixin {
             )
     )
     private void afterInit(CallbackInfo ci) {
+        if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen)
+            return;
         clientsort$afterInit();
     }
 
