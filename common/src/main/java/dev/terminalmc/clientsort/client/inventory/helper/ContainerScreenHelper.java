@@ -169,17 +169,26 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
     }
 
     /**
-     * Uses {@link ContainerScreenHelper#getSlotGroups} to find the group of slots containing the
-     * specified slot.
+     * Uses {@link ContainerScreenHelper#getAllSlots} or {@link ContainerScreenHelper#getSlotGroups}
+     * (depending on context) to find the group of slots containing the specified slot.
      *
      * @param slot  the slot for which to find a group.
      * @param scope the scope of the slot.
      * @return the group containing the slot, or an empty list if no group was found.
      */
     public List<Slot> getGroupForSlot(Slot slot, Scope scope) {
-        for (List<Slot> group : getSlotGroups(scope)) {
-            if (group.contains(slot)) {
-                return group;
+        if (scope == Scope.PLAYER_INV || scope == Scope.PLAYER_INV_HOTBAR) {
+            // Player inventory and hotbar use custom scoping options so may be required to include
+            // slots not normally grouped together
+            List<Slot> slots = getAllSlots(slot.container, scope);
+            if (slots.contains(slot)) {
+                return slots;
+            }
+        } else {
+            for (List<Slot> group : getSlotGroups(scope)) {
+                if (group.contains(slot)) {
+                    return group;
+                }
             }
         }
         return new ArrayList<>();
@@ -228,6 +237,34 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
             slotGroups.add(currentGroup);
 
         return slotGroups;
+    }
+
+    /**
+     * Scans the screen menu's slots and collects all slots with the specified scope and a non-null
+     * container equal to the specified container.
+     *
+     * @param container the context container.
+     * @param scope     the scope to collect slots from.
+     * @return the list of matching slots.
+     */
+    public List<Slot> getAllSlots(Container container, Scope scope) {
+        List<Slot> slots = new ArrayList<>();
+
+        for (Slot slot : screen.getMenu().slots) {
+            // Ignore irrelevant slots
+            //noinspection ConstantValue
+            if (slot.container == null)
+                continue;
+            if (!getScope(slot).equals(scope))
+                continue;
+            // Ignore slots from a different container
+            if (slot.container != container)
+                continue;
+
+            slots.add(slot);
+        }
+
+        return slots;
     }
 
     /**
