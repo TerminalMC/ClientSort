@@ -18,10 +18,7 @@
 package dev.terminalmc.clientsort.client.gui.widget;
 
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.config.Policy;
-import dev.terminalmc.clientsort.client.config.Vec2i;
+import dev.terminalmc.clientsort.client.config.*;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -89,7 +86,12 @@ public class SortButton extends TriggerButton {
     }
 
     @Override
-    public void savePolicy(@Nullable Vec2i offset, Collection<Integer> slots) {
+    public void savePolicy(
+            @Nullable Vec2i offset,
+            @Nullable Operation autoOp,
+            boolean autoOpOther,
+            Collection<Integer> slots
+    ) {
         String key = activePolicyKey != null ? activePolicyKey : lowestPolicyKey;
         @Nullable ClassPolicy policy = options().classPolicies.get(key);
         if (policy == null) {
@@ -109,6 +111,8 @@ public class SortButton extends TriggerButton {
                             Policy.KEYBIND,
                             Policy.KEYBIND,
                             Policy.KEYBIND,
+                            autoOp,
+                            autoOpOther,
                             new TreeSet<>(slots)
                     )
             );
@@ -124,6 +128,8 @@ public class SortButton extends TriggerButton {
                             policy.stackFillPolicy(),
                             policy.matchTransferPolicy(),
                             policy.transferPolicy(),
+                            autoOp,
+                            autoOpOther,
                             new TreeSet<>(slots)
                     )
             );

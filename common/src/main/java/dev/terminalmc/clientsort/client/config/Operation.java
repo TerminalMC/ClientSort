@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.inventory.operator;
+package dev.terminalmc.clientsort.client.config;
 
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -23,17 +23,19 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public enum Operation {
-    SORT(SortPayload.TYPE),
-    STACK_FILL(StackFillPayload.TYPE),
-    MATCH_TRANSFER(TransferPayload.TYPE),
-    TRANSFER(TransferPayload.TYPE);
+    SORT(SortPayload.TYPE, "sort"),
+    STACK_FILL(StackFillPayload.TYPE, "stackFill"),
+    MATCH_TRANSFER(TransferPayload.TYPE, "matchTransfer"),
+    TRANSFER(TransferPayload.TYPE, "transfer");
 
     public final CustomPacketPayload.Type<?> type;
     public final ResourceLocation id;
+    public final String translationKey;
 
-    Operation(CustomPacketPayload.Type<?> type) {
+    Operation(CustomPacketPayload.Type<?> type, String translationKey) {
         this.type = type;
         this.id = type.id();
+        this.translationKey = translationKey;
     }
 
     public boolean isDirectional() {

@@ -19,10 +19,7 @@ package dev.terminalmc.clientsort.client.gui.screen.edit;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.config.Config;
-import dev.terminalmc.clientsort.client.config.Policy;
-import dev.terminalmc.clientsort.client.config.Vec2i;
+import dev.terminalmc.clientsort.client.config.*;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
@@ -30,6 +27,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -43,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -56,6 +55,8 @@ public abstract class EditorScreen extends Screen {
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
     private final LinkedList<TriggerButton> buttons = new LinkedList<>();
+    private @Nullable Operation autoOp = null;
+    private boolean autoOpOther = false;
     public final Set<Integer> ignoredSlots = new TreeSet<>();
 
     /**
@@ -149,6 +150,8 @@ public abstract class EditorScreen extends Screen {
         ClassPolicy policy = options().classPolicies.get(rep.activePolicyKey);
         if (policy != null) {
             buttons.forEach((button) -> button.active = button.getPolicyStatus(policy));
+            autoOp = policy.autoOp();
+            autoOpOther = policy.autoOpOther();
             ignoredSlots.addAll(policy.ignoredSlots());
         }
 
@@ -174,7 +177,7 @@ public abstract class EditorScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        int numButtons = 11;
+        int numButtons = 12;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
@@ -243,6 +246,43 @@ public abstract class EditorScreen extends Screen {
                 .size(width, height)
                 .build();
         addRenderableWidget(toggleVisibilityButton);
+        movingY += 21;
+
+        // Change the auto trigger behavior
+        CycleButton<Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
+                        Component.literal("R").withStyle(ChatFormatting.RED),
+                        Component.literal("N").withStyle(ChatFormatting.GREEN)
+                )
+                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
+                .displayOnlyValue()
+                .withInitialValue(autoOpOther)
+                .create(
+                        x + width - 10,
+                        movingY,
+                        10,
+                        height,
+                        Component.empty(),
+                        (b, v) -> autoOpOther = v
+                );
+        addRenderableWidget(autoOpOtherButton);
+        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder((v) -> v == 0
+                        ? localized("editor", "autoOp.none")
+                        : localized("key", "op." + Operation.values()[v - 1].translationKey))
+                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
+                .withValues(0, 1, 2, 3, 4)
+                .withInitialValue(autoOp == null
+                        ? 0
+                        : List.of(Operation.values()).indexOf(autoOp) + 1
+                )
+                .create(
+                        x,
+                        movingY,
+                        width - 10,
+                        height,
+                        localized("editor", "autoOp"),
+                        (b, v) -> autoOp = (v == 0 ? null : Operation.values()[v - 1])
+                );
+        addRenderableWidget(autoOpButton);
         movingY += 21;
 
         // Clear the ignored slots list
@@ -324,6 +364,8 @@ public abstract class EditorScreen extends Screen {
                                                                 ? Policy.KEYBIND_BUTTON
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
+                                                        autoOp,
+                                                        autoOpOther,
                                                         new TreeSet<>(ignoredSlots)
                                                 )
                                         );
@@ -516,7 +558,7 @@ public abstract class EditorScreen extends Screen {
         @Nullable Vec2i offset = buttons.getFirst().offset.equals(options().layoutOffset)
                 ? null
                 : buttons.getFirst().offset;
-        buttons.forEach((b) -> b.savePolicy(offset, ignoredSlots));
+        buttons.forEach((b) -> b.savePolicy(offset, autoOp, autoOpOther, ignoredSlots));
         Config.save();
         onClose();
     }

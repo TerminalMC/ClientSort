@@ -17,8 +17,8 @@
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
 import dev.terminalmc.clientsort.ClientSort;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.util.SoundManager;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;

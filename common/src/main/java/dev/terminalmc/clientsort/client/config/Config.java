@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.resources.ResourceLocation;
@@ -292,6 +291,8 @@ public class Config {
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -301,6 +302,8 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -310,6 +313,8 @@ public class Config {
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -319,6 +324,8 @@ public class Config {
                         Policy.KEYBIND,
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>(List.of(0))
                 ),
                 new ClassPolicy(
@@ -328,6 +335,8 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -337,6 +346,8 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -346,6 +357,8 @@ public class Config {
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -355,6 +368,8 @@ public class Config {
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -364,6 +379,8 @@ public class Config {
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -373,6 +390,8 @@ public class Config {
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
+                        null,
+                        false,
                         new TreeSet<>()
                 ),
                 new ClassPolicy(
@@ -382,6 +401,8 @@ public class Config {
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
+                        null,
+                        false,
                         new TreeSet<>()
                 )
         );
@@ -407,6 +428,8 @@ public class Config {
                                     Options.policyValidator.validate(cp.stackFillPolicy()),
                                     Options.policyValidator.validate(cp.matchTransferPolicy()),
                                     Options.policyValidator.validate(cp.transferPolicy()),
+                                    cp.autoOp(),
+                                    cp.autoOpOther(),
                                     cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
                             )
                     );
@@ -517,6 +540,8 @@ public class Config {
                             Policy.KEYBIND,
                             Boolean.TRUE.equals(bl.transferEnabled())
                                     ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
+                            null,
+                            false,
                             new TreeSet<>()
                     )
             ));

@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.client.inventory.operator;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;

@@ -33,6 +33,12 @@ public class KeybindManager {
             InputConstants.UNKNOWN.getValue(),
             translationKey("name")
     );
+    public static final KeyMapping CANCEL_AUTO_KEY = new KeyMapping(
+            translationKey("key", "cancelAuto"),
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
+            translationKey("name")
+    );
     public static final KeyMapping SORT_KEY = new KeyMapping(
             translationKey("key", "op.sort"),
             InputConstants.Type.MOUSE,

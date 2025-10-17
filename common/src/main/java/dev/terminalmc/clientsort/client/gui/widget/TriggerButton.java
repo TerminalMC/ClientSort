@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
@@ -239,5 +240,10 @@ public abstract class TriggerButton extends Button {
 
     public abstract boolean getPolicyStatus(ClassPolicy policy);
 
-    public abstract void savePolicy(@Nullable Vec2i offset, Collection<Integer> slots);
+    public abstract void savePolicy(
+            @Nullable Vec2i offset,
+            @Nullable Operation autoOp,
+            boolean autoOpOther,
+            Collection<Integer> slots
+    );
 }

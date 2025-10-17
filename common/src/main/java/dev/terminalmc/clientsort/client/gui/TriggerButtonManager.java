@@ -17,7 +17,9 @@
 
 package dev.terminalmc.clientsort.client.gui;
 
+import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
@@ -25,7 +27,7 @@ import dev.terminalmc.clientsort.client.gui.screen.edit.SelectorScreen;
 import dev.terminalmc.clientsort.client.gui.widget.*;
 import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
@@ -174,6 +176,7 @@ public class TriggerButtonManager {
                     enabled,
                     ClassPolicy::canSort,
                     ClassPolicy::showSortButton,
+                    ClassPolicy::autoSort,
                     SortButton::new,
                     localized("key", "op.sort")
             );
@@ -185,6 +188,7 @@ public class TriggerButtonManager {
                     enabled,
                     ClassPolicy::canStackFill,
                     ClassPolicy::showStackFillButton,
+                    ClassPolicy::autoStackFill,
                     StackFillButton::new,
                     localized("key", "op.stackFill")
             );
@@ -196,6 +200,7 @@ public class TriggerButtonManager {
                     enabled,
                     ClassPolicy::canMatchTransfer,
                     ClassPolicy::showMatchTransferButton,
+                    ClassPolicy::autoMatchTransfer,
                     MatchTransferButton::new,
                     localized("key", "op.matchTransfer")
             );
@@ -207,6 +212,7 @@ public class TriggerButtonManager {
                     enabled,
                     ClassPolicy::canTransfer,
                     ClassPolicy::showTransferButton,
+                    ClassPolicy::autoTransfer,
                     TransferButton::new,
                     localized("key", "op.transfer")
             );
@@ -221,9 +227,12 @@ public class TriggerButtonManager {
             boolean enabled,
             Function<ClassPolicy, Boolean> opCheck,
             Function<ClassPolicy, Boolean> buttonCheck,
+            Function<ClassPolicy, Boolean> autoCheck,
             TriggerButtonCreator creator,
             Component name
     ) {
+        boolean autoPress = false;
+
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
@@ -257,6 +266,10 @@ public class TriggerButtonManager {
                 ? policy.getButtonOffset()
                 : options().layoutOffset;
 
+        // Check the auto trigger
+        if (policy != null && autoCheck.apply(policy))
+            autoPress = true;
+
         // Create and add
         TriggerButton button = creator.create(
                 screen,
@@ -273,6 +286,17 @@ public class TriggerButtonManager {
             (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
         }
+        if (autoPress) {
+            ClientSort.taskManager.schedule(
+                    2,
+                    () -> {
+                        if (Minecraft.getInstance().screen == screen
+                                && !KeybindManager.CANCEL_AUTO_KEY.isDown()) {
+                            button.onPress();
+                        }
+                    }
+            );
+        }
     }
 
     private static void generateDirectionalButton(
@@ -283,9 +307,12 @@ public class TriggerButtonManager {
             boolean enabled,
             Function<ClassPolicy, Boolean> opCheck,
             Function<ClassPolicy, Boolean> buttonCheck,
+            Function<ClassPolicy, Boolean> autoCheck,
             TriggerButtonCreator creator,
             Component name
     ) {
+        boolean autoPress = false;
+
         // Sanity check; we need a player to work with
         @Nullable LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
@@ -319,6 +346,10 @@ public class TriggerButtonManager {
                 ? policy.getButtonOffset()
                 : options().layoutOffset;
 
+        // Check the auto trigger
+        if (policy != null && autoCheck.apply(policy) && !policy.autoOpOther())
+            autoPress = true;
+
         // Get the destination container, if any
         @Nullable Container dstContainer = isPlayerInv
                 ? getContainer(player)
@@ -337,6 +368,10 @@ public class TriggerButtonManager {
             add = add && (isEditor || (dstPolicy != null && buttonCheck.apply(dstPolicy)));
             if (!create)
                 return;
+
+            // Check the auto trigger
+            if (dstPolicy != null && autoCheck.apply(dstPolicy) && dstPolicy.autoOpOther())
+                autoPress = true;
         }
 
         // Create and add
@@ -354,6 +389,17 @@ public class TriggerButtonManager {
         if (add) {
             (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
+        }
+        if (autoPress) {
+            ClientSort.taskManager.schedule(
+                    2,
+                    () -> {
+                        if (Minecraft.getInstance().screen == screen
+                                && !KeybindManager.CANCEL_AUTO_KEY.isDown()) {
+                            button.onPress();
+                        }
+                    }
+            );
         }
     }
 

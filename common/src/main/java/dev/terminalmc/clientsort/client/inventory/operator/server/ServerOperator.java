@@ -17,7 +17,7 @@
 package dev.terminalmc.clientsort.client.inventory.operator.server;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.network.handler.CollectResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.SortResultHandler;

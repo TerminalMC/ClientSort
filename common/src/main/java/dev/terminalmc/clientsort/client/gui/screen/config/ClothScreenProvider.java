@@ -20,8 +20,8 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Config.Options;
+import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
-import dev.terminalmc.clientsort.client.inventory.operator.Operation;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
@@ -423,6 +423,15 @@ public class ClothScreenProvider {
                 .build()));
 
         keybinds.addEntry((eb.startKeyCodeField(
+                        localized("key", "cancelAuto"),
+                        ((KeyMappingAccessor) KeybindManager.CANCEL_AUTO_KEY).clientsort$getKey()
+                )
+                .setDefaultValue(KeybindManager.CANCEL_AUTO_KEY.getDefaultKey())
+                .setKeySaveConsumer((key) ->
+                        KeybindManager.bindKey(KeybindManager.CANCEL_AUTO_KEY, key))
+                .build()));
+
+        keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "op.sort"),
                         ((KeyMappingAccessor) KeybindManager.SORT_KEY).clientsort$getKey()
                 )
@@ -585,6 +594,8 @@ public class ClothScreenProvider {
                 eb.startTextDescription(localized("option", "policies.description.8")).build());
         policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.9")).build());
+        policiesInstructions.add(
+                eb.startTextDescription(localized("option", "policies.description.10")).build());
 
         policies.addEntry(policiesInstructions.build());
 
