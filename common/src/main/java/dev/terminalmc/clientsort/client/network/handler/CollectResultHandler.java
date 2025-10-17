@@ -23,8 +23,9 @@ import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.CollectResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class CollectResultHandler {
@@ -35,7 +36,7 @@ public class CollectResultHandler {
     /**
      * An operation to be run on receipt of a {@link CollectResultPayload}.
      */
-    public static @Nullable Consumer<PayloadResult> onCompletion;
+    public static final Map<String, Consumer<PayloadResult>> onCompletion = new HashMap<>();
 
     /**
      * Handles a {@link CollectResultPayload} sent by a server.
@@ -52,9 +53,11 @@ public class CollectResultHandler {
                     CollectPayload.ID
             );
 
-            if (onCompletion != null) {
+            Consumer<PayloadResult> callback = onCompletion.get(payload.id());
+            onCompletion.remove(payload.id());
+            if (callback != null) {
                 try {
-                    onCompletion.accept(result);
+                    callback.accept(result);
                 } catch (Exception e) {
                     ClientSort.LOG.error(
                             "Failed to run completion callback for payload '{}' with result '{}': {}",
@@ -63,7 +66,6 @@ public class CollectResultHandler {
                             e
                     );
                 }
-                onCompletion = null;
             }
         });
     }

@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
  * @param containerId the ID of the container.
  * @param slotIds     a sub-array of slots to collect items in.
  */
-public record CollectPayload(int containerId, int[] slotIds) implements CustomPacketPayload {
+public record CollectPayload(int containerId, int[] slotIds, String id) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
             new StreamCodec<>() {
@@ -53,6 +53,8 @@ public record CollectPayload(int containerId, int[] slotIds) implements CustomPa
                     CollectPayload::containerId,
                     VAR_INT_ARRAY,
                     CollectPayload::slotIds,
+                    ByteBufCodecs.STRING_UTF8,
+                    CollectPayload::id,
                     CollectPayload::new
             );
 

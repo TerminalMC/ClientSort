@@ -56,7 +56,7 @@ public class CollectHandler extends PayloadHandler {
                 (menu) -> collect(server, menu, payload.slotIds()),
                 CollectPayload.TYPE,
                 CollectResultPayload.TYPE,
-                (result, message) -> new CollectResultPayload(result.code, message)
+                (result, message) -> new CollectResultPayload(result.code, message, payload.id())
         ));
     }
 

@@ -18,17 +18,20 @@ package dev.terminalmc.clientsort.client.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class TaskManager {
 
     private final List<Task> tasks = new ArrayList<>();
+    private final LinkedBlockingQueue<Task> pendingTasks = new LinkedBlockingQueue<>();
 
     public void schedule(int ticks, Runnable task) {
-        this.tasks.add(new Task(ticks, task));
+        pendingTasks.add(new Task(ticks, task));
     }
 
     public void tick() {
         tasks.removeIf(Task::tick);
+        pendingTasks.drainTo(tasks);
     }
 
     private static class Task {

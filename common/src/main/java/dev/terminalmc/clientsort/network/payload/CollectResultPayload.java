@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * @param result a {@link PayloadResult} code.
  * @param message an optional message describing an error.
  */
-public record CollectResultPayload(int result, String message) implements CustomPacketPayload {
+public record CollectResultPayload(int result, String message, String id) implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, CollectResultPayload> STREAM_CODEC =
             StreamCodec.composite(
@@ -40,6 +40,8 @@ public record CollectResultPayload(int result, String message) implements Custom
                     CollectResultPayload::result,
                     ByteBufCodecs.STRING_UTF8,
                     CollectResultPayload::message,
+                    ByteBufCodecs.STRING_UTF8,
+                    CollectResultPayload::id,
                     CollectResultPayload::new
             );
 

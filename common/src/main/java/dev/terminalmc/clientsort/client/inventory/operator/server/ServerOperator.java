@@ -38,6 +38,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
@@ -65,7 +67,9 @@ public class ServerOperator extends SingleUseOperator {
             return;
         }
 
-        CollectResultHandler.onCompletion = (collectResult) -> {
+        String id = UUID.randomUUID().toString();
+        CollectResultHandler.onCompletion.put(
+                id, (collectResult) -> {
             if (collectResult.isSuccess()) {
                 SortResultHandler.onCompletion = (sortResult) -> {
                     if (!sortResult.isSuccess()) {
@@ -90,10 +94,12 @@ public class ServerOperator extends SingleUseOperator {
             } else {
                 SingleUseOperator.sort(screen, originSlot, true, sortOrder);
             }
-        };
+                }
+        );
+        ClientSort.taskManager.schedule(20, () -> CollectResultHandler.onCompletion.remove(id));
 
         int[] scopeArray = createSlotIdArray(originScopeSlots);
-        sendCollectPayload(scopeArray);
+        sendCollectPayload(scopeArray, id);
     }
 
     @Override
@@ -200,12 +206,13 @@ public class ServerOperator extends SingleUseOperator {
         return slotIds;
     }
 
-    private void sendCollectPayload(int[] scopeArray) {
+    private void sendCollectPayload(int[] scopeArray, String id) {
         if (debug())
             ClientSort.LOG.info("Sending payload for operation COLLECT");
         ClientServices.PLATFORM.sendToServer(new CollectPayload(
                 screen.getMenu().containerId,
-                scopeArray
+                scopeArray,
+                id
         ));
     }
 
