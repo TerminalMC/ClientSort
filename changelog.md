@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3
+
+- Fixed a compatibility issue with creative search introduced in v2.0.1
+
 ## 2.0.2
 
 - Fixed hotbar and extra slot scoping being overridden by smart grouping

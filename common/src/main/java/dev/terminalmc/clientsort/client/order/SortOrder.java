@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.client.order;
 
+import dev.terminalmc.clientsort.client.ClientSort;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -223,7 +224,7 @@ public abstract class SortOrder {
                 int[] sortValues = new int[slotIds.length];
 
                 // If using optimized sorting, read the stored search order
-                if (options().optimizeCreativeSorting) {
+                if (options().optimizeCreativeSorting && ClientSort.searchOrderUpdated) {
                     Lock lock = CreativeSearchOrder.getReadLock();
                     lock.lock();
                     for (int i = 0; i < stacks.length; i++) {
@@ -231,6 +232,10 @@ public abstract class SortOrder {
                     }
                     lock.unlock();
                 } else {
+                    if (options().optimizeCreativeSorting) {
+                        // Cache rebuild was missed, start it now
+                        CreativeSearchOrder.tryRefreshStackPositionMap();
+                    }
                     // Compare the items manually
                     Collection<ItemStack> displayStacks =
                             CreativeModeTabs.searchTab().getDisplayItems();

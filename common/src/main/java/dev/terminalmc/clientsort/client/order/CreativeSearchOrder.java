@@ -71,7 +71,7 @@ public class CreativeSearchOrder {
     public static void tryRefreshStackPositionMap() {
         if (Config.options().optimizeCreativeSorting) {
             if (ClientSort.emiReloading) {
-                dev.terminalmc.clientsort.client.ClientSort.updateBlockedByEmi = true;
+                ClientSort.updateBlockedByEmi = true;
                 ClientSort.LOG.info("Search order update blocked by EMI reload, waiting...");
             } else {
                 refreshStackPositionMap();

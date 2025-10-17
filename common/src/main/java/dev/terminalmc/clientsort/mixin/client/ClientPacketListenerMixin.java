@@ -18,7 +18,6 @@
 package dev.terminalmc.clientsort.mixin.client;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,6 +39,7 @@ public abstract class ClientPacketListenerMixin {
     )
     private void beforeLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
         // Reset state on relog
+        ClientSort.searchOrderUpdated = false;
         ClientSort.operatingClient = false;
     }
 
@@ -52,7 +52,5 @@ public abstract class ClientPacketListenerMixin {
         ClientSort.updateItemTags(options());
         // Update item caches
         ClientSort.updateItemSets(options());
-        // Build creative search order cache
-        CreativeSearchOrder.tryRefreshStackPositionMap();
     }
 }
