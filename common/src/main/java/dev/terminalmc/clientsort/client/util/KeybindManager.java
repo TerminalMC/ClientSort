@@ -20,6 +20,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class KeybindManager {
     );
     public static final List<KeyMapping> KEYBINDS = List.of(
             EDIT_KEY,
+            CANCEL_AUTO_KEY,
             SORT_KEY,
             STACK_FILL_KEY,
             MATCH_TRANSFER_KEY,
@@ -89,5 +91,23 @@ public class KeybindManager {
         keybind.setKey(key);
         KeyMapping.resetMapping();
         Minecraft.getInstance().options.save();
+    }
+
+    /**
+     * @return {@code true} if the bound key is down (not only if the keybind is triggered).
+     */
+    public static boolean isDown(KeyMapping keybind) {
+        return isKeyDown(((KeyMappingAccessor) keybind).clientsort$getKey());
+    }
+
+    public static boolean isKeyDown(InputConstants.Key key) {
+        long window = Minecraft.getInstance().getWindow().getWindow();
+        if (key.equals(InputConstants.UNKNOWN))
+            return false;
+        if (key.getType().equals(InputConstants.Type.MOUSE)) {
+            return GLFW.glfwGetMouseButton(window, key.getValue()) == 1;
+        } else {
+            return GLFW.glfwGetKey(window, key.getValue()) == 1;
+        }
     }
 }

@@ -291,7 +291,7 @@ public class TriggerButtonManager {
                     2,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
-                                && !KeybindManager.CANCEL_AUTO_KEY.isDown()) {
+                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {
                             button.onPress();
                         }
                     }
@@ -395,7 +395,7 @@ public class TriggerButtonManager {
                     2,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
-                                && !KeybindManager.CANCEL_AUTO_KEY.isDown()) {
+                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {
                             button.onPress();
                         }
                     }
