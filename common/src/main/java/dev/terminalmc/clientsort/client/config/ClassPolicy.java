@@ -115,9 +115,9 @@ public record ClassPolicy(
 
     // Config data-string serialization
 
-    public static final String DATA_FORMAT = "%s,(%s),%s,%s,%s,%s,%d%s,(%s)";
+    public static final String DATA_FORMAT = "%s,(%s),%s,%s,%s,%s,%d/%d,(%s)";
     public static final String DATA_PATTERN_STRING =
-            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\),([012]),([012]),([012]),([012]),([01234])([NR]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
+            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public String toDataString() {
@@ -130,7 +130,7 @@ public record ClassPolicy(
                 matchTransferPolicy.toSimpleString(),
                 transferPolicy.toSimpleString(),
                 autoOp == null ? 0 : List.of(Operation.values()).indexOf(autoOp) + 1,
-                autoOpOther ? "R" : "N",
+                autoOpOther ? 1 : 0,
                 Strings.join(ignoredSlots.stream().map(String::valueOf).toList(), ",")
         );
     }
@@ -183,7 +183,7 @@ public record ClassPolicy(
                 matcher.group(8).equals("0")
                         ? null
                         : Operation.values()[Integer.parseInt(matcher.group(8)) - 1],
-                matcher.group(9).equals("R"),
+                matcher.group(9).equals("1"),
                 new TreeSet<>(Arrays.stream(matcher.group(10).split(","))
                         .filter((s) -> !s.isBlank())
                         .map(Integer::parseInt).sorted().toList())

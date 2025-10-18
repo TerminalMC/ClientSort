@@ -250,8 +250,8 @@ public abstract class EditorScreen extends Screen {
 
         // Change the auto trigger behavior
         CycleButton<Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
-                        Component.literal("R").withStyle(ChatFormatting.RED),
-                        Component.literal("N").withStyle(ChatFormatting.GREEN)
+                        Component.literal("1").withStyle(ChatFormatting.RED),
+                        Component.literal("0").withStyle(ChatFormatting.GREEN)
                 )
                 .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
                 .displayOnlyValue()
