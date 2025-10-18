@@ -5,6 +5,7 @@
 
   "resourcepack.clientsort.dark-mode": "ClientSort 深色模式",
 
+  "key.category.clientsort.main": "ClientSort",
   "key.clientsort.edit": "打开编辑器",
   "key.clientsort.cancelAuto": "Cancel Auto Operation",
   "key.clientsort.op.sort": "整理",
@@ -129,8 +130,6 @@
   "option.clientsort.allowSoundOverlap.tooltip": "是否在开始新音效时允许先前的音效继续播放。",
 
   "option.clientsort.keybinds": "按键绑定",
-  "option.clientsort.isolateKeybinds": "Isolate Keybinds",
-  "option.clientsort.isolateKeybinds.tooltip": "If this is enabled, ClientSort will attempt to remove its own keybinds from Minecraft's map. This may help prevent conflicts, but may not be compatible with mods that alter the keybind system.",
 
   "option.clientsort.buttons": "按钮",
   "option.clientsort.showButtons": "显示按钮",
