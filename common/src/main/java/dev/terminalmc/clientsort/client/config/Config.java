@@ -73,6 +73,17 @@ public class Config {
         public static final boolean optimizeCreativeSortingDefault = true;
         public boolean optimizeCreativeSorting = optimizeCreativeSortingDefault;
 
+        public static final int AUTO_OP_DELAY_MIN = 0;
+        public static final int AUTO_OP_DELAY_MAX = 40;
+        public static Validator<Integer> autoOpDelayValidator = (val) ->
+                Math.clamp(unbox(val), AUTO_OP_DELAY_MIN, AUTO_OP_DELAY_MAX);
+
+        public static final int autoOpDelayPlayerDefault = 2;
+        public int autoOpDelayPlayer = autoOpDelayPlayerDefault;
+
+        public static final int autoOpDelayContainerDefault = 2;
+        public int autoOpDelayContainer = autoOpDelayContainerDefault;
+
         public enum HotbarScope {
             HOTBAR,
             INVENTORY,
@@ -479,6 +490,10 @@ public class Config {
     private void validate() {
         options.interactionInterval =
                 Options.interactionIntervalValidator.validate(options.interactionInterval);
+        options.autoOpDelayPlayer =
+                Options.autoOpDelayValidator.validate(options.autoOpDelayPlayer);
+        options.autoOpDelayContainer =
+                Options.autoOpDelayValidator.validate(options.autoOpDelayContainer);
         options.hotbarScope =
                 Options.hotbarScopeValidator.validate(options.hotbarScope);
         options.extraSlotScope =

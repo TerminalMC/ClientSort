@@ -288,7 +288,7 @@ public class TriggerButtonManager {
         }
         if (autoPress) {
             ClientSort.taskManager.schedule(
-                    2,
+                    isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {
@@ -392,7 +392,7 @@ public class TriggerButtonManager {
         }
         if (autoPress) {
             ClientSort.taskManager.schedule(
-                    2,
+                    isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {

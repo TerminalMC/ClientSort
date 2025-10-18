@@ -117,6 +117,40 @@ public class ClothScreenProvider {
                 })
                 .build());
 
+        general.addEntry(eb.startIntField(
+                        localized("option", "autoOpDelayPlayer"),
+                        options.autoOpDelayPlayer
+                )
+                .setTooltip(localized("option", "autoOpDelayPlayer.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < Config.Options.AUTO_OP_DELAY_MIN)
+                        return Optional.of(localized("error", "low"));
+                    else if (val > Config.Options.AUTO_OP_DELAY_MAX)
+                        return Optional.of(localized("error", "high"));
+                    else
+                        return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.autoOpDelayPlayerDefault)
+                .setSaveConsumer(val -> options.autoOpDelayPlayer = val)
+                .build());
+
+        general.addEntry(eb.startIntField(
+                        localized("option", "autoOpDelayContainer"),
+                        options.autoOpDelayContainer
+                )
+                .setTooltip(localized("option", "autoOpDelayContainer.tooltip"))
+                .setErrorSupplier(val -> {
+                    if (val < Config.Options.AUTO_OP_DELAY_MIN)
+                        return Optional.of(localized("error", "low"));
+                    else if (val > Config.Options.AUTO_OP_DELAY_MAX)
+                        return Optional.of(localized("error", "high"));
+                    else
+                        return Optional.empty();
+                })
+                .setDefaultValue(Config.Options.autoOpDelayContainerDefault)
+                .setSaveConsumer(val -> options.autoOpDelayContainer = val)
+                .build());
+
         general.addEntry(eb.startEnumSelector(
                         localized("option", "hotbarScope"),
                         Config.Options.HotbarScope.class,
