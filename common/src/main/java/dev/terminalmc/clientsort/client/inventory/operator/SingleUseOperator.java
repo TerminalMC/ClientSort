@@ -22,9 +22,11 @@ import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksWrapper;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
+import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientCreativeOperator;
+import dev.terminalmc.clientsort.client.inventory.operator.client.ClientOperator;
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientSurvivalOperator;
 import dev.terminalmc.clientsort.client.inventory.operator.server.ServerOperator;
 import dev.terminalmc.clientsort.client.order.SortOrder;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.ClientSort.getObj;
@@ -156,7 +159,7 @@ public abstract class SingleUseOperator {
      * Finds all the valid inventory menu slots that are in {@code scope}.
      *
      * @param refSlot the reference slot.
-     * @param scope the scope of the reference slot.
+     * @param scope   the scope of the reference slot.
      */
     private Slot[] collectSlots(Slot refSlot, Scope scope) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -209,6 +212,33 @@ public abstract class SingleUseOperator {
         }
     }
 
+    /**
+     * Sets a flag to indicate that a client interaction operation is in progress.
+     */
+    protected static void startClientOp() {
+        // Raise flag
+        ClientSort.operatingClient = true;
+    }
+
+    /**
+     * Queues an interaction event to clear the flag set by {@link ClientOperator#startClientOp()},
+     * and run the next queued operation, if there is any.
+     */
+    protected static void endClientOp() {
+        InteractionManager.push(() -> {
+            // This op has now sent its last interaction, check for a queued op
+            Runnable nextOp = ClientSort.clientOpQueue.poll();
+            if (nextOp != null) {
+                // Queued op found; execute it
+                Minecraft.getInstance().execute(nextOp);
+            } else {
+                // No queued ops; lower flag
+                ClientSort.operatingClient = false;
+            }
+            return InteractionManager.TICK_WAITER;
+        });
+    }
+
     public static boolean sort(
             AbstractContainerScreen<?> screen,
             Slot originSlot,
@@ -218,13 +248,13 @@ public abstract class SingleUseOperator {
         if (sortOrder.equals(SortOrder.NONE))
             return false;
 
-        @Nullable SingleUseOperator op =
-                getOperator(screen, originSlot, onlyClient, Operation.SORT);
-        if (op != null && op.canOperate()) {
-            op.sort(sortOrder);
-            return true;
-        }
-        return false;
+        return operate(
+                screen,
+                originSlot,
+                onlyClient,
+                Operation.SORT,
+                (op) -> op.sort(sortOrder)
+        );
     }
 
     public static boolean fillStacks(
@@ -232,13 +262,13 @@ public abstract class SingleUseOperator {
             Slot originSlot,
             boolean onlyClient
     ) {
-        @Nullable SingleUseOperator op =
-                getOperator(screen, originSlot, onlyClient, Operation.STACK_FILL);
-        if (op != null && op.canOperate()) {
-            op.fillStacks();
-            return true;
-        }
-        return false;
+        return operate(
+                screen,
+                originSlot,
+                onlyClient,
+                Operation.STACK_FILL,
+                SingleUseOperator::fillStacks
+        );
     }
 
     public static boolean transferMatching(
@@ -246,13 +276,13 @@ public abstract class SingleUseOperator {
             Slot originSlot,
             boolean onlyClient
     ) {
-        @Nullable SingleUseOperator op =
-                getOperator(screen, originSlot, onlyClient, Operation.MATCH_TRANSFER);
-        if (op != null && op.canOperate()) {
-            op.matchTransfer();
-            return true;
-        }
-        return false;
+        return operate(
+                screen,
+                originSlot,
+                onlyClient,
+                Operation.MATCH_TRANSFER,
+                SingleUseOperator::matchTransfer
+        );
     }
 
     public static boolean transfer(
@@ -260,30 +290,33 @@ public abstract class SingleUseOperator {
             Slot originSlot,
             boolean onlyClient
     ) {
-        @Nullable SingleUseOperator op =
-                getOperator(screen, originSlot, onlyClient, Operation.TRANSFER);
-        if (op != null && op.canOperate()) {
-            op.transfer();
-            return true;
-        }
-        return false;
+        return operate(
+                screen,
+                originSlot,
+                onlyClient,
+                Operation.TRANSFER,
+                SingleUseOperator::transfer
+        );
     }
 
     /**
-     * @return an instance of {@link SingleUseOperator} optimized for the current game state and
-     * valid for a single operation of the specified type, or {@code null} if the operation is
-     * disallowed by policy.
+     * Creates an instance of {@link SingleUseOperator} optimized for the current game state and
+     * valid for a single operation of the specified type, and uses it to perform the operation,
+     * unless the operation is disallowed by policy.
+     *
+     * @return {@code true} if the operation was performed or enqueued.
      */
-    private static @Nullable SingleUseOperator getOperator(
+    private static boolean operate(
             AbstractContainerScreen<?> screen,
             Slot originSlot,
             boolean onlyClient,
-            Operation operation
+            Operation operation,
+            Consumer<SingleUseOperator> wrapper
     ) {
         // Check policy
         Object object = getObj(originSlot, screen.getMenu());
         if (object == null)
-            return null;
+            return false;
         @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
         if (policy != null) {
             if (!switch (operation) {
@@ -298,7 +331,7 @@ public abstract class SingleUseOperator {
                             operation.name(),
                             policy.getClass()
                     );
-                return null;
+                return false;
             }
         }
 
@@ -307,21 +340,45 @@ public abstract class SingleUseOperator {
                 && ClientServices.PLATFORM.canSendToServer(operation.type)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
-            return new ServerOperator(screen, originSlot, operation);
+            wrapper.accept(new ServerOperator(screen, originSlot, operation));
         }
 
-        // Check that there is not already an op running
-        if (ClientSort.operatingClient) {
+        // Fall back to client ops
+        Runnable op = () -> {
             if (debug())
-                ClientSort.LOG.warn(
-                        "Client operation is unavailable: another operation is in progress!"
-                );
-            return null;
+                ClientSort.LOG.info("Preparing server operator for {}", operation.name());
+            wrapper.accept(getClientOperator(screen, originSlot, operation));
+            endClientOp();
+        };
+        if (ClientSort.operatingClient) {
+            // A client-side op is already in progress, add this op to the queue
+            if (ClientSort.clientOpQueue.offer(op)) {
+                if (debug())
+                    ClientSort.LOG.warn(
+                            "Client operation added to queue: another operation is in progress!"
+                    );
+                return true;
+            } else {
+                if (debug())
+                    ClientSort.LOG.warn(
+                            "Client operation rejected: another operation is in progress and the queue is full!"
+                    );
+                return false;
+            }
+        } else {
+            startClientOp();
+            op.run();
         }
 
-        // Select an appropriate client-side operator
-        //noinspection DataFlowIssue
-        if (Minecraft.getInstance().player.isCreative()
+        return true;
+    }
+
+    private static SingleUseOperator getClientOperator(
+            AbstractContainerScreen<?> screen,
+            Slot originSlot,
+            Operation operation
+    ) {
+        if (Objects.requireNonNull(Minecraft.getInstance().player).isCreative()
                 && screen instanceof CreativeModeInventoryScreen) {
             if (debug())
                 ClientSort.LOG.info("Preparing client-creative operator for {}", operation.name());

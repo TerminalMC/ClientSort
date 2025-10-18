@@ -32,6 +32,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class ClientSort {
@@ -51,6 +54,7 @@ public class ClientSort {
     public static volatile boolean updateBlockedByEmi = false;
 
     public static volatile boolean operatingClient = false;
+    public static BlockingQueue<Runnable> clientOpQueue = new ArrayBlockingQueue<>(2);
 
     public static boolean debug() {
         return dev.terminalmc.clientsort.ClientSort.debug();

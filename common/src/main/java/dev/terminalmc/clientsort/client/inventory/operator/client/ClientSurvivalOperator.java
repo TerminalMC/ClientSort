@@ -346,7 +346,6 @@ public class ClientSurvivalOperator extends ClientOperator {
         }
         if (debug())
             ClientSort.LOG.info("Starting operation STACK_FILL");
-        raiseFlag();
 
         // Prepare sounds
         boolean playSound = SoundManager.shouldPlayOtherSounds();
@@ -429,7 +428,6 @@ public class ClientSurvivalOperator extends ClientOperator {
             // Reset the queue
             clickEvents.clear();
         }
-        lowerFlag();
         if (debug()) {
             InteractionManager.push(() -> {
                 ClientSort.LOG.info("Finished operation STACK_FILL");
@@ -482,7 +480,6 @@ public class ClientSurvivalOperator extends ClientOperator {
         }
         if (debug())
             ClientSort.LOG.info("Starting operation (MATCH_)TRANSFER");
-        raiseFlag();
 
         // Prepare simulation stack array
         ItemStack[] originStacks = originScopeStacks;
@@ -597,7 +594,6 @@ public class ClientSurvivalOperator extends ClientOperator {
             // Reset the queue
             clickEvents.clear();
         }
-        lowerFlag();
         if (debug()) {
             InteractionManager.push(() -> {
                 ClientSort.LOG.info("Finished operation (MATCH_)TRANSFER");

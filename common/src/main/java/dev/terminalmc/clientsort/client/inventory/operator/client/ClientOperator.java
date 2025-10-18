@@ -16,9 +16,7 @@
 
 package dev.terminalmc.clientsort.client.inventory.operator.client;
 
-import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.Operation;
-import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
@@ -38,31 +36,12 @@ public abstract class ClientOperator extends SingleUseOperator {
     }
 
     /**
-     * Sets a flag to indicate that a client interaction operation is in progress.
-     */
-    protected void raiseFlag() {
-        ClientSort.operatingClient = true;
-    }
-
-    /**
-     * Queues an interaction event to clear the flag set by {@link ClientOperator#raiseFlag()}.
-     */
-    protected void lowerFlag() {
-        InteractionManager.push(() -> {
-            ClientSort.operatingClient = false;
-            return InteractionManager.TICK_WAITER;
-        });
-    }
-
-    /**
      * Uses vanilla C2S inventory interaction packets to sort the inventory.
      */
     @Override
     protected void sort(SortOrder sortOrder) {
         if (sortOrder.equals(SortOrder.NONE))
             return;
-
-        raiseFlag();
 
         // Collect partial stacks
         collect();
@@ -89,8 +68,6 @@ public abstract class ClientOperator extends SingleUseOperator {
 
         // Sort
         sort(key, playSound);
-
-        lowerFlag();
     }
 
     /**
