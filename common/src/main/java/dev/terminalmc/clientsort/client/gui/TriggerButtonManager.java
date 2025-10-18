@@ -37,6 +37,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -476,12 +477,12 @@ public class TriggerButtonManager {
             // Calculate the weighted positional score
             double x;
             if (anchorButtonsLeft) {
-                x = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+                x = Mth.clamp(slot.x, 0, screen.width) / (double) screen.width;
             } else {
                 x = ((AbstractContainerScreenAccessor) screen).clientsort$getImageWidth()
-                        - Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+                        - Mth.clamp(slot.x, 0, screen.width) / (double) screen.width;
             }
-            double y = (screen.height - Math.clamp(slot.y, 0, screen.height))
+            double y = (screen.height - Mth.clamp(slot.y, 0, screen.height))
                     / (double) screen.height;
             double score = x * 0.8D + y * 0.2D;
 

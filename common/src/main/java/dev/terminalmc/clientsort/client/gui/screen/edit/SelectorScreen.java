@@ -110,15 +110,6 @@ public class SelectorScreen extends Screen {
     }
 
     @Override
-    protected void renderBlurredBackground(float partialTick) {
-        // Heavy blur, we want the widgets to really stand out
-        int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(6);
-        super.renderBlurredBackground(partialTick);
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
-    }
-
-    @Override
     public void onClose() {
         super.onClose();
         if (lastScreen instanceof EditorScreen pes && !options().showButtons) {

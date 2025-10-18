@@ -67,11 +67,12 @@ public class ClientSort {
             @Nullable Container container,
             AbstractContainerMenu menu
     ) {
-        return switch (container) {
-            case null -> null;
-            case ContainerSingleItem ignored -> menu;
-            case SimpleContainer ignored -> menu;
-            default -> container;
-        };
+        if (container == null)
+            return null;
+        if (container instanceof ContainerSingleItem)
+            return menu;
+        if (container instanceof SimpleContainer)
+            return menu;
+        return container;
     }
 }
