@@ -187,15 +187,16 @@ disable server acceleration, or enable automatically falling back to client oper
 
 #### Client Required, Server Optional
 
-As the name suggests, ClientSort is fully functional when it is only installed on the client.
+- As the name suggests, ClientSort is fully functional when it is only installed on the client.
 However, if it is also installed on a server, connected clients with the mod will be able to use
 server-accelerated (near-instant) operations instead of the normal rate-limited operations.
 
 #### Dependencies
 
-Fabric: [Fabric API](https://modrinth.com/project/P7dR8mSH), [ModMenu](https://modrinth.com/project/mOgUt4GM), [Cloth Config API](https://modrinth.com/project/9s6osm5g)
-
-Neo/Forge: [Cloth Config API](https://modrinth.com/project/9s6osm5g)
+- Fabric: [Fabric API](https://modrinth.com/project/P7dR8mSH),
+  [ModMenu](https://modrinth.com/project/mOgUt4GM),
+  [Cloth Config API](https://modrinth.com/project/9s6osm5g)
+- Neo/Forge: [Cloth Config API](https://modrinth.com/project/9s6osm5g)
 
 ### Credits
 
