@@ -21,7 +21,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
@@ -30,12 +29,12 @@ public class NeoForgeServices implements PlatformServices {
 
     @Override
     public boolean isDevEnv() {
-        return !FMLLoader.isProduction();
+        return !FMLLoader.getCurrent().isProduction();
     }
 
     @Override
     public boolean isModLoaded(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
+        return FMLLoader.getCurrent().getLoadingModList().getModFileById(modId) != null;
     }
 
     @Override
