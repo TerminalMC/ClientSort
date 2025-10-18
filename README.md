@@ -91,14 +91,14 @@ Versatile and easy inventory sorting.
   - Include or exclude the hotbar and extra slots from being processed with the inventory.
   - Configurable via mod config, `General` tab.
 - Sorting overrides:
-  - Always sort particular items to the start or end.
+  - Always sort specific items to the start or end.
   - Configurable via mod config, `Sorting` tab.
 - Matching overrides:
   - Ignore NBT data (e.g. enchantments) when comparing items in sort or transfer matching
     operations.
   - Configurable via mod config, `Matching` tab.
 - Interaction sounds:
-  - Play a configurable sound when clicking in client-side operations.
+  - Play a sound when clicking in client-side operations.
   - Configurable via mod config, `Sounds` tab.
 
 </details>
