@@ -3,6 +3,7 @@
 
   "resourcepack.clientsort.dark-mode": "ClientSort Dark Mode",
 
+  "key.category.clientsort.main": "ClientSort",
   "key.clientsort.edit": "Open Editor",
   "key.clientsort.cancelAuto": "Cancel Auto Operation",
   "key.clientsort.op.sort": "Sort",
@@ -127,8 +128,6 @@
   "option.clientsort.allowSoundOverlap.tooltip": "Whether to allow the previous sound to continue when starting a new sound.",
 
   "option.clientsort.keybinds": "Keybinds",
-  "option.clientsort.isolateKeybinds": "Isolate Keybinds",
-  "option.clientsort.isolateKeybinds.tooltip": "If this is enabled, ClientSort will attempt to remove its own keybinds from Minecraft's map. This may help prevent conflicts, but may not be compatible with mods that alter the keybind system.",
 
   "option.clientsort.buttons": "Buttons",
   "option.clientsort.showButtons": "Show Buttons",
