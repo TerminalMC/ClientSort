@@ -291,7 +291,9 @@ public class TriggerButtonManager {
                     isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
-                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {
+                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
+                                && (isPlayerInv ? playerButtons : containerButtons)
+                                .contains(button)) {
                             button.onPress();
                         }
                     }
@@ -395,7 +397,9 @@ public class TriggerButtonManager {
                     isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
                         if (Minecraft.getInstance().screen == screen
-                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)) {
+                                && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
+                                && (isPlayerInv ? playerButtons : containerButtons)
+                                .contains(button)) {
                             button.onPress();
                         }
                     }
