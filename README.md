@@ -79,7 +79,32 @@ Versatile and easy inventory sorting.
 </table>
 
 <details open>
-<summary><b>Editor</b></summary>
+<summary><b>Other Options</b></summary>
+
+- Slot ignoring:
+  - Exclude slots from being processed by operations.
+  - Configurable via the editor screen.
+- Auto operations:
+  - Automatically perform an operation (e.g. sorting) when opening an inventory.
+  - Configurable via the editor screen.
+- Scoping:
+  - Include or exclude the hotbar and extra slots from being processed with the inventory.
+  - Configurable via mod config, `General` tab.
+- Sorting overrides:
+  - Always sort particular items to the start or end.
+  - Configurable via mod config, `Sorting` tab.
+- Matching overrides:
+  - Ignore NBT data (e.g. enchantments) when comparing items in sort or transfer matching
+    operations.
+  - Configurable via mod config, `Matching` tab.
+- Interaction sounds:
+  - Play a configurable sound when clicking in client-side operations.
+  - Configurable via mod config, `Sounds` tab.
+
+</details>
+
+<details open>
+<summary><b>Editor Screen</b></summary>
 
 - The editor can be opened in two ways:
   - If a trigger button is visible, right-click on it.
