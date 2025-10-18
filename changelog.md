@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+Note: this version includes networking changes, servers and clients must be upgraded together.
+
+- Added a per-policy option to automatically trigger a single operation when opening an inventory
+
 ## 2.0.3
 
 - Fixed a compatibility issue with creative search introduced in v2.0.1
