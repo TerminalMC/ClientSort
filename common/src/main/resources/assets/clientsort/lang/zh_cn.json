@@ -5,6 +5,7 @@
 
   "resourcepack.clientsort.dark-mode": "ClientSort 深色模式",
 
+  "key.category.clientsort.main": "ClientSort",
   "key.clientsort.edit": "打开编辑器",
   "key.clientsort.cancelAuto": "取消自动操作",
   "key.clientsort.op.sort": "整理",
@@ -129,8 +130,6 @@
   "option.clientsort.allowSoundOverlap.tooltip": "是否在开始新音效时允许先前的音效继续播放。",
 
   "option.clientsort.keybinds": "按键绑定",
-  "option.clientsort.isolateKeybinds": "隔离按键绑定",
-  "option.clientsort.isolateKeybinds.tooltip": "如果启用此选项，ClientSort 将尝试从 Minecraft 的映射中移除自身的按键绑定。这可能有助于防止冲突，但可能与修改按键绑定系统的模组不兼容。",
 
   "option.clientsort.buttons": "按钮",
   "option.clientsort.showButtons": "显示按钮",

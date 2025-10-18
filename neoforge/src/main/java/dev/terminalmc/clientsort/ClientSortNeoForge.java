@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort;
 
 import dev.terminalmc.clientsort.command.Commands;
+import dev.terminalmc.clientsort.mixin.accessor.ServerCommonPacketListenerImplAccessor;
 import dev.terminalmc.clientsort.network.Registration;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -28,6 +29,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.Objects;
 
 @Mod(ClientSort.MOD_ID)
 @EventBusSubscriber(modid = ClientSort.MOD_ID)
@@ -90,7 +93,9 @@ public class ClientSortNeoForge {
                 rp.streamCodec,
                 (payload, context) -> rp.handler.accept(
                         payload,
-                        context.player().getServer(),
+                        ((ServerCommonPacketListenerImplAccessor) Objects.requireNonNull(
+                                context.connection().getPacketListener())
+                        ).clientsort$getServer(),
                         (ServerPlayer) context.player()
                 )
         );
