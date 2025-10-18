@@ -65,7 +65,6 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
  */
 public abstract class SingleUseOperator {
 
-    private boolean hasOperated = false;
     protected final AbstractContainerScreen<?> screen;
     protected final ContainerScreenHelper<? extends AbstractContainerScreen<?>> screenHelper;
     protected final Operation op;
@@ -199,20 +198,6 @@ public abstract class SingleUseOperator {
     }
 
     /**
-     * @return {@code true} if this instance has not previously performed an operation (and
-     * therefore is able to perform one).
-     */
-    private boolean canOperate() {
-        if (hasOperated) {
-            ClientSort.LOG.warn("{} can only be used once!", this.getClass().getSimpleName());
-            return false;
-        } else {
-            hasOperated = true;
-            return true;
-        }
-    }
-
-    /**
      * Sets a flag to indicate that a client interaction operation is in progress.
      */
     protected static void startClientOp() {
@@ -341,6 +326,7 @@ public abstract class SingleUseOperator {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
             wrapper.accept(new ServerOperator(screen, originSlot, operation));
+            return true;
         }
 
         // Fall back to client ops
@@ -368,9 +354,8 @@ public abstract class SingleUseOperator {
         } else {
             startClientOp();
             op.run();
+            return true;
         }
-
-        return true;
     }
 
     private static SingleUseOperator getClientOperator(
