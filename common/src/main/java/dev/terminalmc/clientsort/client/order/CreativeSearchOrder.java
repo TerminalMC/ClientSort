@@ -97,9 +97,13 @@ public class CreativeSearchOrder {
 
         Collection<ItemStack> displayStacks;
         try {
-            CreativeModeTabs.tryRebuildTabContents(enabledFeatures, true, mc.level.registryAccess());
+            CreativeModeTabs.tryRebuildTabContents(
+                    enabledFeatures,
+                    true,
+                    mc.level.registryAccess()
+            );
 
-            // other mods might modify these items while our thread is evaluating them, so copy each item.
+            // Other mods might modify these items while our thread is evaluating them, so copy
             displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
                     .stream().map(ItemStack::copy).toList();
         } finally {

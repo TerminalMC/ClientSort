@@ -41,6 +41,7 @@ public abstract class ClientPacketListenerMixin {
         // Reset state on relog
         ClientSort.searchOrderUpdated = false;
         ClientSort.operatingClient = false;
+        ClientSort.clientOpQueue.clear();
     }
 
     @Inject(

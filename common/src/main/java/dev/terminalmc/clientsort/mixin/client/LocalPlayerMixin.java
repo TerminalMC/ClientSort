@@ -39,6 +39,7 @@ public abstract class LocalPlayerMixin {
     public void beforeContainerClose(CallbackInfo callbackInfo) {
         InteractionManager.clear();
         ClientSort.operatingClient = false;
+        ClientSort.clientOpQueue.clear();
     }
 
     @Inject(
