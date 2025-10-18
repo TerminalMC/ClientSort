@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
   "mixins": [
+    "accessor.ServerCommonPacketListenerImplAccessor",
     "slot.SlotMixin"
   ],
   "client": [
@@ -13,7 +14,6 @@
     "client.ClientPacketListenerMixin",
     "client.CreativeModeInventoryScreenMixin",
     "client.LocalPlayerMixin",
-    "client.MinecraftMixin",
     "client.ScreenMixin",
     "client.accessor.AbstractContainerScreenAccessor",
     "client.accessor.AbstractWidgetAccessor",
