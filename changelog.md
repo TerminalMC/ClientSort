@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1
+
+- Updated Simplified Chinese translation (Xinyang-Gao)
+
 ## 2.1.0
 
 Note: this version includes networking changes, servers and clients must be upgraded together.
