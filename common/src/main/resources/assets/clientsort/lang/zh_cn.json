@@ -109,7 +109,7 @@
   "option.clientsort.alwaysMatchByType.tooltip": "物品匹配操作将始终匹配相同类型的物品。",
   "option.clientsort.typeMatchTags": "类型匹配标签",
   "option.clientsort.typeMatchTags.tooltip.1": "具有此列表中任何标签的物品将仅按类型匹配。",
-  "option.clientsort.typeMatchTags.tooltip.2": "仅在"始终按类型匹配"禁用时使用。",
+  "option.clientsort.typeMatchTags.tooltip.2": "仅在「始终按类型匹配」禁用时使用。",
   "option.clientsort.typeMatchTags.tooltip.3": "有关标签列表，请参见 %s。",
 
   "option.clientsort.sounds": "音效",
