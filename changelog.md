@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2
+
+- Fixed Simplified Chinese translation (Xinyang-Gao)
+
 ## 2.1.1
 
 - Updated Simplified Chinese translation (Xinyang-Gao)
