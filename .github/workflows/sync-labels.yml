@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
       - run: curl https://raw.githubusercontent.com/TerminalMC/.github/HEAD/.github/labels.yml -o ./labels.yml

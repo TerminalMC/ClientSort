@@ -25,12 +25,12 @@ public class Services {
 
     public static final IPlatformServices PLATFORM = load(IPlatformServices.class);
 
-    public static <T> T load(Class<T> clazz) {
-        final T loadedService = ServiceLoader.load(clazz)
+    public static <T> T load(Class<T> service) {
+        final T loadedService = ServiceLoader.load(service, service.getClassLoader())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException(
-                        "Failed to load service for " + clazz.getName()));
-        ClientSort.LOG.debug("Loaded {} for service {}", loadedService, clazz);
+                        "Failed to load service for " + service.getName()));
+        ClientSort.LOG.debug("Loaded {} for service {}", loadedService, service);
         return loadedService;
     }
 }
