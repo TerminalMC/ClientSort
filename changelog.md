@@ -3,6 +3,7 @@
 ## 2.1.3
 
 - Improved compatibility with Accessories mod
+- Added an option to anchor buttons to the left side of the inventory
 
 ## 2.1.2
 

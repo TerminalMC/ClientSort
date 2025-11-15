@@ -135,6 +135,8 @@
   "option.clientsort.buttons": "按钮",
   "option.clientsort.showButtons": "显示按钮",
   "option.clientsort.showButtons.tooltip": "是否在图形界面上显示用于物品栏操作的额外按钮。",
+  "option.clientsort.anchorButtonsLeft": "固定在左侧",
+  "option.clientsort.anchorButtonsLeft.tooltip": "是否将按钮固定在物品栏左侧",
   "option.clientsort.firstButtonOp": "第一个按钮操作",
   "option.clientsort.secondButtonOp": "第二个按钮操作",
   "option.clientsort.thirdButtonOp": "第三个按钮操作",

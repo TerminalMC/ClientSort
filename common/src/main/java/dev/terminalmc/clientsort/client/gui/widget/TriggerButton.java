@@ -57,6 +57,7 @@ public abstract class TriggerButton extends Button {
     private final AbstractContainerScreen<?> screen;
     public final Container container;
     public final Slot referenceSlot;
+    public final boolean referenceLeft;
     public final boolean isPlayerInv;
 
     private final WidgetSprites sprites;
@@ -72,6 +73,7 @@ public abstract class TriggerButton extends Button {
             AbstractContainerScreen<?> screen,
             Container container,
             Slot referenceSlot,
+            boolean referenceLeft,
             boolean isPlayerInv,
             WidgetSprites sprites,
             Component name,
@@ -98,6 +100,7 @@ public abstract class TriggerButton extends Button {
         this.screen = screen;
         this.container = container;
         this.referenceSlot = referenceSlot;
+        this.referenceLeft = referenceLeft;
         this.isPlayerInv = isPlayerInv;
         this.sprites = sprites;
         this.offset = offset;
@@ -158,11 +161,7 @@ public abstract class TriggerButton extends Button {
         AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
 
         // Keep visible
-        int newX = Math.clamp(
-                acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth() + offset.x(),
-                0,
-                screen.width - WIDTH
-        );
+        int newX = Math.clamp(getAnchorSideX(acs) + offset.x(), 0, screen.width - WIDTH);
         int newY = Math.clamp(
                 acs.clientsort$getTopPos() + Math.max(0, referenceSlot.y) + offset.y(),
                 0,
@@ -212,7 +211,7 @@ public abstract class TriggerButton extends Button {
             int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
 
             offset = new Vec2i(
-                    newX - (acs.clientsort$getLeftPos() + acs.clientsort$getImageWidth()),
+                    newX - getAnchorSideX(acs),
                     newY - (acs.clientsort$getTopPos()
                             + Math.clamp(referenceSlot.y, 0, screen.height))
             );
@@ -246,4 +245,11 @@ public abstract class TriggerButton extends Button {
             boolean autoOpOther,
             Collection<Integer> slots
     );
+
+    private int getAnchorSideX(AbstractContainerScreenAccessor acs) {
+        int anchorSideX = acs.clientsort$getLeftPos();
+        if (!referenceLeft)
+            anchorSideX += acs.clientsort$getImageWidth();
+        return anchorSideX;
+    }
 }

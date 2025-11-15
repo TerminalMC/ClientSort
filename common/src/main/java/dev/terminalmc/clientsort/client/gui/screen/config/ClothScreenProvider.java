@@ -512,6 +512,15 @@ public class ClothScreenProvider {
                 .setSaveConsumer(val -> options.showButtons = val)
                 .build());
 
+        buttons.addEntry(eb.startBooleanToggle(
+                        localized("option", "anchorButtonsLeft"),
+                        options.anchorButtonsLeft
+                )
+                .setTooltip(localized("option", "anchorButtonsLeft.tooltip"))
+                .setDefaultValue(Config.Options.anchorButtonsLeftDefault)
+                .setSaveConsumer(val -> options.anchorButtonsLeft = val)
+                .build());
+
         firstSelector = eb.startEnumSelector(
                         localized("option", "firstButtonOp"),
                         Operation.class,

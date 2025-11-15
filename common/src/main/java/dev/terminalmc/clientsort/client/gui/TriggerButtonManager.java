@@ -29,6 +29,7 @@ import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -136,22 +137,24 @@ public class TriggerButtonManager {
             isEditorP = true;
         }
 
+        boolean left = options().anchorButtonsLeft;
+
         // Generate container-side buttons
-        Slot refSlotC = getReferenceSlot(acs, false);
+        Slot refSlotC = getReferenceSlot(acs, false, left);
         if (refSlotC != null) {
-            generate(acs, refSlotC, false, isEditorC, enabled, options().firstButtonOp);
-            generate(acs, refSlotC, false, isEditorC, enabled, options().secondButtonOp);
-            generate(acs, refSlotC, false, isEditorC, enabled, options().thirdButtonOp);
-            generate(acs, refSlotC, false, isEditorC, enabled, options().fourthButtonOp);
+            generate(acs, refSlotC, left, false, isEditorC, enabled, options().firstButtonOp);
+            generate(acs, refSlotC, left, false, isEditorC, enabled, options().secondButtonOp);
+            generate(acs, refSlotC, left, false, isEditorC, enabled, options().thirdButtonOp);
+            generate(acs, refSlotC, left, false, isEditorC, enabled, options().fourthButtonOp);
         }
 
         // Generate player-side buttons
-        Slot refSlotP = getReferenceSlot(acs, true);
+        Slot refSlotP = getReferenceSlot(acs, true, left);
         if (refSlotP != null) {
-            generate(acs, refSlotP, true, isEditorP, enabled, options().firstButtonOp);
-            generate(acs, refSlotP, true, isEditorP, enabled, options().secondButtonOp);
-            generate(acs, refSlotP, true, isEditorP, enabled, options().thirdButtonOp);
-            generate(acs, refSlotP, true, isEditorP, enabled, options().fourthButtonOp);
+            generate(acs, refSlotP, left, true, isEditorP, enabled, options().firstButtonOp);
+            generate(acs, refSlotP, left, true, isEditorP, enabled, options().secondButtonOp);
+            generate(acs, refSlotP, left, true, isEditorP, enabled, options().thirdButtonOp);
+            generate(acs, refSlotP, left, true, isEditorP, enabled, options().fourthButtonOp);
         }
     }
 
@@ -161,7 +164,8 @@ public class TriggerButtonManager {
      */
     private static void generate(
             AbstractContainerScreen<?> screen,
-            Slot refSlot,
+            Slot referenceSlot,
+            boolean referenceLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -170,7 +174,8 @@ public class TriggerButtonManager {
         switch (op) {
             case SORT -> generateSimpleButton(
                     screen,
-                    refSlot,
+                    referenceSlot,
+                    referenceLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -182,7 +187,8 @@ public class TriggerButtonManager {
             );
             case STACK_FILL -> generateDirectionalButton(
                     screen,
-                    refSlot,
+                    referenceSlot,
+                    referenceLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -194,7 +200,8 @@ public class TriggerButtonManager {
             );
             case MATCH_TRANSFER -> generateDirectionalButton(
                     screen,
-                    refSlot,
+                    referenceSlot,
+                    referenceLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -206,7 +213,8 @@ public class TriggerButtonManager {
             );
             case TRANSFER -> generateDirectionalButton(
                     screen,
-                    refSlot,
+                    referenceSlot,
+                    referenceLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -222,6 +230,7 @@ public class TriggerButtonManager {
     private static void generateSimpleButton(
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
+            boolean referenceLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -275,6 +284,7 @@ public class TriggerButtonManager {
                 screen,
                 container,
                 referenceSlot,
+                referenceLeft,
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
@@ -304,6 +314,7 @@ public class TriggerButtonManager {
     private static void generateDirectionalButton(
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
+            boolean referenceLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -381,6 +392,7 @@ public class TriggerButtonManager {
                 screen,
                 container,
                 referenceSlot,
+                referenceLeft,
                 isPlayerInv,
                 policy,
                 object.getClass().getName(),
@@ -452,7 +464,8 @@ public class TriggerButtonManager {
      */
     private static @Nullable Slot getReferenceSlot(
             AbstractContainerScreen<?> screen,
-            boolean isPlayerInv
+            boolean isPlayerInv,
+            boolean anchorButtonsLeft
     ) {
         ContainerScreenHelper<?> helper = ContainerScreenHelper.of(screen);
         Slot bestSlot = null;
@@ -461,8 +474,13 @@ public class TriggerButtonManager {
         Scope scope = isPlayerInv ? Scope.PLAYER_INV : Scope.CONTAINER_INV;
         for (Slot slot : helper.getLargestSlotGroup(scope)) {
             // Calculate the weighted positional score
-            double x = Math.clamp(slot.x, 0, screen.width)
-                    / (double) screen.width;
+            double x;
+            if (anchorButtonsLeft) {
+                x = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+            } else {
+                x = ((AbstractContainerScreenAccessor) screen).clientsort$getImageWidth()
+                        - Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+            }
             double y = (screen.height - Math.clamp(slot.y, 0, screen.height))
                     / (double) screen.height;
             double score = x * 0.8D + y * 0.2D;
@@ -497,6 +515,7 @@ public class TriggerButtonManager {
                 AbstractContainerScreen<?> screen,
                 Container container,
                 Slot referenceSlot,
+                boolean referenceLeft,
                 boolean isPlayerInv,
                 @Nullable ClassPolicy policy,
                 String lowestPolicyKey,

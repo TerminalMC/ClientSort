@@ -231,6 +231,9 @@ public class Config {
         public static final boolean showButtonsDefault = true;
         public boolean showButtons = showButtonsDefault;
 
+        public static final boolean anchorButtonsLeftDefault = false;
+        public boolean anchorButtonsLeft = anchorButtonsLeftDefault;
+
         private static Operation validateUniqueOp(
                 @Nullable Operation val,
                 @Nullable Operation... others
