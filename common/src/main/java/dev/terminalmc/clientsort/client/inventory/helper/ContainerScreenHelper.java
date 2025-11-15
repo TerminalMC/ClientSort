@@ -90,66 +90,62 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
         if (screen instanceof EffectRenderingInventoryScreen) {
             // Player inventory
             if (slot.container instanceof Inventory) {
-                boolean mergeWithHotbar = false;
-
-                // Extra inventory slots e.g. offhand
-                if (isExtraSlot(slot)) {
-                    switch (options().extraSlotScope) {
-                        case HOTBAR -> mergeWithHotbar = true;
-                        case EXTRA -> {
-                            return Scope.PLAYER_INV_EXTRA;
-                        }
-                        case NONE -> {
-                            return Scope.INVALID;
-                        }
-                    }
-                }
-
-                // Hotbar
-                if (mergeWithHotbar || isHotbarSlot(slot)) {
-                    switch (options().hotbarScope) {
-                        case HOTBAR -> {
-                            return Scope.PLAYER_INV_HOTBAR;
-                        }
-                        case NONE -> {
-                            return Scope.INVALID;
-                        }
-                    }
-                }
-
-                return Scope.PLAYER_INV;
+                return getScopeInInventory(slot);
             }
-
             // Out of inventory e.g. 2x2 crafting grid
             else {
                 return Scope.PLAYER_OTHER;
             }
         }
-
         // Screen with container, and probably player inventory attached
         else {
             // Player inventory
             if (slot.container instanceof Inventory) {
-                // Hotbar
-                if (isHotbarSlot(slot)) {
-                    switch (options().hotbarScope) {
-                        case HOTBAR -> {
-                            return Scope.PLAYER_INV_HOTBAR;
-                        }
-                        case NONE -> {
-                            return Scope.INVALID;
-                        }
-                    }
-                }
-
-                return Scope.PLAYER_INV;
+                return getScopeInInventory(slot);
             }
-
             // Container
             else {
                 return Scope.CONTAINER_INV;
             }
         }
+    }
+
+    /**
+     * Gets the scope of the specified {@link Slot}, assuming the slot's container is already known
+     * to be an instance of {@link Inventory}.
+     *
+     * @param slot the slot for which to get the scope.
+     * @return the scope of the slot, which may be {@link Scope#INVALID}.
+     */
+    private static Scope getScopeInInventory(Slot slot) {
+        boolean mergeWithHotbar = false;
+
+        // Extra inventory slots e.g. offhand
+        if (isExtraSlot(slot)) {
+            switch (options().extraSlotScope) {
+                case HOTBAR -> mergeWithHotbar = true;
+                case EXTRA -> {
+                    return Scope.PLAYER_INV_EXTRA;
+                }
+                case NONE -> {
+                    return Scope.INVALID;
+                }
+            }
+        }
+
+        // Hotbar
+        if (mergeWithHotbar || isHotbarSlot(slot)) {
+            switch (options().hotbarScope) {
+                case HOTBAR -> {
+                    return Scope.PLAYER_INV_HOTBAR;
+                }
+                case NONE -> {
+                    return Scope.INVALID;
+                }
+            }
+        }
+
+        return Scope.PLAYER_INV;
     }
 
     /**

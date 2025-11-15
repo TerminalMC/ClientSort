@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.3
+
+- Improved compatibility with Accessories mod
+
 ## 2.1.2
 
 - Fixed Simplified Chinese translation (Xinyang-Gao)
