@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.4
+
+- Improved compatibility with modded bundles
+
 ## 2.1.3
 
 - Improved compatibility with Accessories mod

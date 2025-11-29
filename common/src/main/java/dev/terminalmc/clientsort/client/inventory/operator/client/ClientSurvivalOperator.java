@@ -27,6 +27,7 @@ import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -284,9 +285,9 @@ public class ClientSurvivalOperator extends ClientOperator {
 
                 // Modify standard click if required for bundles
                 int mouseButton = 0;
-                boolean clickOnBundleWithItem = originScopeStacks[dstId].is(Items.BUNDLE)
+                boolean clickOnBundleWithItem = isBundle(originScopeStacks[dstId])
                         && !(carriedStack.isEmpty());
-                boolean clickOnItemWithBundle = carriedStack.is(Items.BUNDLE)
+                boolean clickOnItemWithBundle = isBundle(carriedStack)
                         && !(originScopeStacks[dstId].isEmpty());
                 if (options().bundlesUseLeftClick
                         && (clickOnBundleWithItem || clickOnItemWithBundle)) {
@@ -621,5 +622,15 @@ public class ClientSurvivalOperator extends ClientOperator {
                 SoundManager.play();
             return InteractionManager.TICK_WAITER;
         });
+    }
+
+    /**
+     * Compatibility helper for non-vanilla bundle implementations.
+     *
+     * @param stack the stack to check.
+     * @return whether the stack is a bundle.
+     */
+    private static boolean isBundle(ItemStack stack) {
+        return stack.is(Items.BUNDLE) || stack.getItem() instanceof BundleItem;
     }
 }
