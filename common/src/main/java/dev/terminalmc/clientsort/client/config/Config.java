@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.platform.Services;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.Item;
@@ -182,8 +182,8 @@ public class Config {
         public static final String interactionSoundDefault = "minecraft:block.note_block.xylophone";
         public String interactionSound = interactionSoundDefault;
         public static Validator<String> interactionSoundValidator = (val) -> val != null
-                && ResourceLocation.tryParse(val) != null ? val : interactionSoundDefault;
-        public transient @Nullable ResourceLocation sortSoundLoc = null;
+                && Identifier.tryParse(val) != null ? val : interactionSoundDefault;
+        public transient @Nullable Identifier sortSoundLoc = null;
 
         public static final int SOUND_INTERVAL_MIN = 1;
         public static final int SOUND_INTERVAL_MAX = 100;

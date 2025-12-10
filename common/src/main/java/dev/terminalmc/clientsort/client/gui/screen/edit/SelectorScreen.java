@@ -49,7 +49,6 @@ public class SelectorScreen extends Screen {
 
     public SelectorScreen(AbstractContainerScreen<?> underlay, Screen lastScreen) {
         super(localized("title", "groupSelector"));
-        this.font = Minecraft.getInstance().font;
         this.underlay = underlay;
         this.lastScreen = lastScreen;
     }
@@ -57,7 +56,7 @@ public class SelectorScreen extends Screen {
     @Override
     public void init() {
         super.init();
-        underlay.init(Minecraft.getInstance(), width, height);
+        underlay.init(width, height);
         reloadButtons();
         rebuildGui();
     }
@@ -71,11 +70,12 @@ public class SelectorScreen extends Screen {
     private void rebuildGui() {
         clearWidgets();
 
-        CycleButton<Boolean> toggleButton =
+        CycleButton<@NotNull Boolean> toggleButton =
                 CycleButton.booleanBuilder(
                         localized("editor", "enabled").withStyle(ChatFormatting.GREEN),
-                        localized("editor", "disabled").withStyle(ChatFormatting.RED)
-                ).withInitialValue(options().showButtons).create(
+                        localized("editor", "disabled").withStyle(ChatFormatting.RED),
+                        options().showButtons
+                ).create(
                         width / 2 - 125,
                         height - 22,
                         120,
@@ -112,7 +112,7 @@ public class SelectorScreen extends Screen {
 
         if (options().showButtons) {
             for (TriggerButton cb : buttons) {
-                cb.renderWidget(graphics, mouseX, mouseY, partialTick);
+                cb.renderContents(graphics, mouseX, mouseY, partialTick);
             }
         }
     }
@@ -149,13 +149,13 @@ public class SelectorScreen extends Screen {
         if (lastScreen instanceof EditorScreen pes && !options().showButtons) {
             pes.onClose();
         } else {
-            lastScreen.init(Minecraft.getInstance(), width, height);
+            lastScreen.init(width, height);
             Minecraft.getInstance().setScreen(lastScreen);
         }
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
         if (super.mouseClicked(event, doubleClick)) {
             return true;
         } else {

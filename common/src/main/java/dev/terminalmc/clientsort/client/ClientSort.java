@@ -28,7 +28,7 @@ import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -74,7 +74,7 @@ public class ClientSort {
         options.ctrlSortOrder = SortOrder.SORT_ORDERS.get(options.ctrlSortOrderStr);
         options.altSortOrder = SortOrder.SORT_ORDERS.get(options.altSortOrderStr);
         // Parse sound location string
-        options.sortSoundLoc = ResourceLocation.tryParse(options.interactionSound);
+        options.sortSoundLoc = Identifier.tryParse(options.interactionSound);
         // Update interaction manager tick rate
         InteractionManager.setTickRate(options.interactionInterval);
         // Update class cache
@@ -102,14 +102,14 @@ public class ClientSort {
         int i = 0;
         for (String s : options.startOverrideItems) {
             int idx = i++;
-            BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(s))
+            BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(s))
                     .ifPresent((item) -> options.startOverrideMap.put(item, idx));
         }
         options.endOverrideMap.clear();
         i = 0;
         for (String s : options.endOverrideItems) {
             int idx = i++;
-            BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(s))
+            BuiltInRegistries.ITEM.getOptional(Identifier.tryParse(s))
                     .ifPresent((item) -> options.endOverrideMap.put(item, idx));
         }
     }

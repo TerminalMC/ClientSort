@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort;
 
-import dev.terminalmc.clientsort.command.Commands;
+import dev.terminalmc.clientsort.command.ModCommands;
 import dev.terminalmc.clientsort.mixin.accessor.ServerCommonPacketListenerImplAccessor;
 import dev.terminalmc.clientsort.network.Registration;
 import net.minecraft.commands.CommandSourceStack;
@@ -58,7 +58,7 @@ public class ClientSortNeoForge {
          */
         @SubscribeEvent
         static void registerCommands(RegisterCommandsEvent event) {
-            new Commands<CommandSourceStack>().register(
+            new ModCommands<CommandSourceStack>().register(
                     event.getDispatcher(),
                     event.getBuildContext()
             );
