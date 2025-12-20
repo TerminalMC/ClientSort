@@ -30,7 +30,7 @@ import dev.terminalmc.clientsort.client.inventory.operator.client.ClientOperator
 import dev.terminalmc.clientsort.client.inventory.operator.client.ClientSurvivalOperator;
 import dev.terminalmc.clientsort.client.inventory.operator.server.ServerOperator;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.platform.ClientServices;
+import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.util.SlotLogUtil;
 import dev.terminalmc.clientsort.util.inject.ISlot;
@@ -322,7 +322,7 @@ public abstract class SingleUseOperator {
 
         // Preference server-accelerated ops
         if (!onlyClient && options().useServerAcceleration
-                && ClientServices.PLATFORM.canSendToServer(operation.type)) {
+                && ClientPlatformServices.getInstance().canSendToServer(operation.type)) {
             if (debug())
                 ClientSort.LOG.info("Preparing server operator for {}", operation.name());
             wrapper.accept(new ServerOperator(screen, originSlot, operation));

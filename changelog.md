@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.5
+
+- Improved platform service loader
+
 ## 2.1.4
 
 - Improved compatibility with modded bundles

@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.platform;
 
-import dev.terminalmc.clientsort.platform.services.IPlatformServices;
+import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -24,7 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public class FabricServices implements IPlatformServices {
+public class FabricServices implements PlatformServices {
 
     @Override
     public boolean isDevEnv() {

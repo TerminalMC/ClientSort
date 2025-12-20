@@ -16,9 +16,17 @@
 
 package dev.terminalmc.clientsort.client.platform.services;
 
+import dev.terminalmc.clientsort.client.platform.ClientServices;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public interface IPlatformClientServices {
+@SuppressWarnings("unused")
+public interface ClientPlatformServices {
+
+    ClientPlatformServices INSTANCE = ClientServices.load(ClientPlatformServices.class);
+
+    static ClientPlatformServices getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * @return {@code true} if the payload type can be sent from the client to the server.

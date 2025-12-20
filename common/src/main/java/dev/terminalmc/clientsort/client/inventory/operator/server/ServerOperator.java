@@ -25,7 +25,7 @@ import dev.terminalmc.clientsort.client.network.handler.StackFillResultHandler;
 import dev.terminalmc.clientsort.client.network.handler.TransferResultHandler;
 import dev.terminalmc.clientsort.client.order.SortContext;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.platform.ClientServices;
+import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices;
 import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
@@ -85,7 +85,7 @@ public class ServerOperator extends SingleUseOperator {
                 int[] slotMapping = sorter.createSlotMapping(sortOrder);
                 if (debug())
                     ClientSort.LOG.info("Sending payload for operation SORT");
-                ClientServices.PLATFORM.sendToServer(new SortPayload(
+                ClientPlatformServices.getInstance().sendToServer(new SortPayload(
                         screen.getMenu().containerId,
                         slotMapping
                 ));
@@ -130,7 +130,7 @@ public class ServerOperator extends SingleUseOperator {
 
         if (debug())
             ClientSort.LOG.info("Sending payload for operation STACK_FILL");
-        ClientServices.PLATFORM.sendToServer(new StackFillPayload(
+        ClientPlatformServices.getInstance().sendToServer(new StackFillPayload(
                 screen.getMenu().containerId,
                 srcSlotIds,
                 dstSlotIds
@@ -189,7 +189,7 @@ public class ServerOperator extends SingleUseOperator {
 
         if (debug())
             ClientSort.LOG.info("Sending payload for operation TRANSFER");
-        ClientServices.PLATFORM.sendToServer(new TransferPayload(
+        ClientPlatformServices.getInstance().sendToServer(new TransferPayload(
                 screen.getMenu().containerId,
                 srcSlotIds,
                 dstSlotIds
@@ -209,7 +209,7 @@ public class ServerOperator extends SingleUseOperator {
     private void sendCollectPayload(int[] scopeArray, String id) {
         if (debug())
             ClientSort.LOG.info("Sending payload for operation COLLECT");
-        ClientServices.PLATFORM.sendToServer(new CollectPayload(
+        ClientPlatformServices.getInstance().sendToServer(new CollectPayload(
                 screen.getMenu().containerId,
                 scopeArray,
                 id

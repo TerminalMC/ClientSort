@@ -16,11 +16,11 @@
 
 package dev.terminalmc.clientsort.client.platform;
 
-import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
+import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public class FabricClientServices implements IPlatformClientServices {
+public class FabricClientPlatformServices implements ClientPlatformServices {
 
     @Override
     public boolean canSendToServer(CustomPacketPayload.Type<?> type) {

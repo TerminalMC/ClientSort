@@ -16,21 +16,31 @@
 
 package dev.terminalmc.clientsort.client.platform;
 
-import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class ClientServices {
 
-    public static final IPlatformClientServices PLATFORM = load(IPlatformClientServices.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("ClientSort (Client Service)");
 
     public static <T> T load(Class<T> clazz) {
-        final T loadedService = ServiceLoader.load(clazz)
+        final T loadedService = ServiceLoader.load(clazz, clazz.getClassLoader())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException(
                         "Failed to load service for " + clazz.getName()));
-        ClientSort.LOG.debug("Loaded {} for service {}", loadedService, clazz);
+        LOGGER.debug("Loaded {} for service {}", loadedService, clazz);
+        return loadedService;
+    }
+
+    public static <T> T loadOr(Class<T> clazz, Supplier<T> supplier) {
+        final T loadedService = ServiceLoader.load(clazz)
+                .findFirst()
+                .orElse(supplier.get());
+        LOGGER.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
 }

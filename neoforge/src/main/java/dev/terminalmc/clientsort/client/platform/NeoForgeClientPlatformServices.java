@@ -16,13 +16,13 @@
 
 package dev.terminalmc.clientsort.client.platform;
 
-import dev.terminalmc.clientsort.client.platform.services.IPlatformClientServices;
+import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-public class NeoForgeClientServices implements IPlatformClientServices {
+public class NeoForgeClientPlatformServices implements ClientPlatformServices {
 
     @Override
     public boolean canSendToServer(CustomPacketPayload.Type<?> type) {

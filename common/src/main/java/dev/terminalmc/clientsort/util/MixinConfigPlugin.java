@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.util;
 
-import dev.terminalmc.clientsort.platform.Services;
+import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -41,9 +41,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("compat.emi")) {
-            return Services.PLATFORM.isModLoaded("emi");
+            return PlatformServices.getInstance().isModLoaded("emi");
         } else if (mixinClassName.contains("compat.supermartijn642corelib")) {
-            return Services.PLATFORM.isModLoaded("supermartijn642corelib");
+            return PlatformServices.getInstance().isModLoaded("supermartijn642corelib");
         }
         return true;
     }

@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.platform.Services;
+import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 public class ServerConfig {
 
-    private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
+    private static final Path CONFIG_DIR = PlatformServices.getInstance().getConfigDir();
     public static final String FILE_NAME = ClientSort.MOD_ID + "-server.json";
     private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + "-server.unreadable.json";
     private static final Gson GSON = new GsonBuilder()

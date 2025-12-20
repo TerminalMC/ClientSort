@@ -16,7 +16,7 @@
 
 package dev.terminalmc.clientsort.platform;
 
-import dev.terminalmc.clientsort.platform.services.IPlatformServices;
+import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.loading.FMLLoader;
@@ -26,7 +26,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
 
-public class NeoForgeServices implements IPlatformServices {
+public class NeoForgeServices implements PlatformServices {
 
     @Override
     public boolean isDevEnv() {

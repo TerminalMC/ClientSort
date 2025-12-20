@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.platform.Services;
+import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 
 public class Config {
 
-    private static final Path CONFIG_DIR = Services.PLATFORM.getConfigDir();
+    private static final Path CONFIG_DIR = PlatformServices.getInstance().getConfigDir();
     private static final String FILE_NAME = ClientSort.MOD_ID + ".json";
     private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
