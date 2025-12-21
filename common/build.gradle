@@ -2,7 +2,7 @@ import util.PropUtil
 
 plugins {
     id("multiloader-common")
-    id("net.neoforged.moddev")
+    id("fabric-loom")
 }
 
 // Configure new ASM version
@@ -24,6 +24,15 @@ dependencies {
     compileOnly("org.ow2.asm:asm-tree:${asm_version}")
     compileOnly("org.ow2.asm:asm-util:${asm_version}")
 
+    // Minecraft
+    minecraft("com.mojang:minecraft:${minecraft_version}")
+
+    // Mappings
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
+    })
+
     // Mixin
     compileOnly("org.spongepowered:mixin:${mixin_version}")
 
@@ -37,13 +46,13 @@ dependencies {
                 return annotationProcessor(dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return api(dep)
+                return modApi(dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return compileOnly(dep)
+                return modCompileOnly(dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return implementation(dep)
+                return modImplementation(dep)
                 break
             case "-":
                 return dep
@@ -55,17 +64,16 @@ dependencies {
     new PropUtil(project).applyDependencies(project.name, selector)
 }
 
-// Configure ModDevGradle
-neoForge {
-    neoFormVersion = neoform_version
-    // Apply common AccessTransformer if it exists
-    def at = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
-    validateAccessTransformers = true
-    // Apply Parchment mappings
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_version
+// Configure Loom
+loom {
+    // Apply common AccessWidener if it exists
+    def aw = file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) accessWidenerPath.set(aw)
+    if (aw.exists()) {
+        validateAccessWidener { accessWidener = aw }
+        afterEvaluate {
+            validateAccessWidener.run()
+        }
     }
 }
 

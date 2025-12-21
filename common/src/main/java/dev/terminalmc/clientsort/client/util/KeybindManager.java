@@ -22,7 +22,7 @@ import dev.terminalmc.clientsort.mixin.client.accessor.KeyMappingAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import static dev.terminalmc.clientsort.util.Localization.translationKey;
 public class KeybindManager {
 
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "main")
+            Identifier.fromNamespaceAndPath(ClientSort.MOD_ID, "main")
     );
 
     public static final KeyMapping EDIT_KEY = new KeyMapping(

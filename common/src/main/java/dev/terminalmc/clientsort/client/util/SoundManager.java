@@ -16,12 +16,12 @@
 
 package dev.terminalmc.clientsort.client.util;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +60,7 @@ public class SoundManager {
         float soundPitch = getPitch(); // Increment even if sound is skipped
         if (now >= nextSoundTime) {
             nextSoundTime = now + options().soundInterval;
-            ResourceLocation location = options().sortSoundLoc;
+            Identifier location = options().sortSoundLoc;
             if (location != null) {
                 if (sound != null && !options().allowSoundOverlap) {
                     Minecraft.getInstance().getSoundManager().stop(sound);

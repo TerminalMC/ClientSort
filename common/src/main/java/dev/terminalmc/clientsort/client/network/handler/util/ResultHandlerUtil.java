@@ -20,7 +20,7 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static dev.terminalmc.clientsort.client.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -33,7 +33,7 @@ public class ResultHandlerUtil {
     public static PayloadResult interpretResult(
             int code,
             String message,
-            ResourceLocation payloadId
+            Identifier payloadId
     ) {
         PayloadResult result = PayloadResult.get(code);
         if (result.isSuccess()) {
