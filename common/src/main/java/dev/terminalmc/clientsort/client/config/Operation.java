@@ -20,7 +20,7 @@ import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public enum Operation {
     SORT(SortPayload.TYPE, "sort"),
@@ -29,7 +29,7 @@ public enum Operation {
     TRANSFER(TransferPayload.TYPE, "transfer");
 
     public final CustomPacketPayload.Type<?> type;
-    public final ResourceLocation id;
+    public final Identifier id;
     public final String translationKey;
 
     Operation(CustomPacketPayload.Type<?> type, String translationKey) {

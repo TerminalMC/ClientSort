@@ -22,11 +22,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -45,14 +45,14 @@ public class ClientSortFabric implements ClientModInitializer {
 
         // Register built-in resource packs
         FabricLoader.getInstance().getModContainer(ClientSort.MOD_ID)
-                .ifPresent((container) -> ResourceManagerHelper.registerBuiltinResourcePack(
-                        ResourceLocation.fromNamespaceAndPath(
+                .ifPresent((container) -> ResourceLoader.registerBuiltinPack(
+                        Identifier.fromNamespaceAndPath(
                                 ClientSort.MOD_ID,
                                 "clientsort-dark-mode"
                         ),
                         container,
                         localized("resourcepack", "dark-mode"),
-                        ResourcePackActivationType.NORMAL
+                        PackActivationType.NORMAL
                 ));
 
         // Initialize client
