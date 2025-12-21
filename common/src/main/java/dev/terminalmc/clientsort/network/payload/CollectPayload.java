@@ -17,54 +17,56 @@
 package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom C2S payload used to instruct a server to collect items in a container into the smallest
  * possible number of slots.
- *
- * @param containerId the ID of the container.
- * @param slotIds     a sub-array of slots to collect items in.
  */
-public record CollectPayload(int containerId, int[] slotIds, String id) implements CustomPacketPayload {
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
-            new StreamCodec<>() {
-                public int @NotNull [] decode(@NotNull RegistryFriendlyByteBuf byteBuf) {
-                    return byteBuf.readVarIntArray();
-                }
-
-                public void encode(
-                        @NotNull RegistryFriendlyByteBuf byteBuf,
-                        int @NotNull [] array
-                ) {
-                    byteBuf.writeVarIntArray(array);
-                }
-            };
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, CollectPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT,
-                    CollectPayload::containerId,
-                    VAR_INT_ARRAY,
-                    CollectPayload::slotIds,
-                    ByteBufCodecs.STRING_UTF8,
-                    CollectPayload::id,
-                    CollectPayload::new
-            );
+public class CollectPayload implements Packet<ServerGamePacketListener> {
 
     public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "collect_c2s");
+            new ResourceLocation(ClientSort.MOD_ID, "collect_c2s");
 
-    public static final Type<CollectPayload> TYPE = new Type<>(ID);
+    int containerId;
+    int[] slotIds;
+    String id;
+
+    public CollectPayload(int containerId, int[] slotIds, String id) {
+        this.containerId = containerId;
+        this.slotIds = slotIds;
+        this.id = id;
+    }
+
+    public int containerId() {
+        return containerId;
+    }
+
+    public int[] slotIds() {
+        return slotIds;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public static CollectPayload read(FriendlyByteBuf buf) {
+        return new CollectPayload(buf.readVarInt(), buf.readVarIntArray(), buf.readUtf());
+    }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(@NotNull FriendlyByteBuf buf) {
+        buf.writeVarInt(containerId);
+        buf.writeVarIntArray(slotIds);
+        buf.writeUtf(id);
+    }
+
+    @Override
+    public void handle(@NotNull ServerGamePacketListener listener) {
+
     }
 }
