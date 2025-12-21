@@ -59,7 +59,7 @@ public class ServerConfig {
         // Removed in v2.0.0, retained in case of future re-enabling
         public @Nullable Boolean validationActiveSingleplayer;
 
-        public static final boolean validationActiveServerDefault = true;
+        public static final boolean validationActiveServerDefault = false;
         public boolean validationActiveServer = validationActiveServerDefault;
 
         public static final boolean validateItemTypeDefault = true;

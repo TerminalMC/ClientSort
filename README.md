@@ -131,7 +131,7 @@ the `Policies` tab of the mod options.
 <details>
 <summary><b>Server-Side Policies</b></summary>
 
-- If installed on a dedicated server, ClientSort uses policies to automatically disable
+- If installed on a dedicated server, ClientSort can use policies to automatically disable
   server-accelerated operations when it detects an incorrect state (such as item duplication).
 - The policy list is stored in the `clientsort-server.json` config file, which can be manually
   edited and reloaded using the `/clientsort reload` command.
@@ -149,7 +149,7 @@ disable server acceleration, or enable automatically falling back to client oper
   "options": {
     // Whether validation and automatic blacklisting should be enabled when the mod is used on a
     // dedicated server.
-    "validationActiveServer": true,
+    "validationActiveServer": false,
 
     // Whether inventories should be blacklisted when the wrong type of item is found in a slot.
     "validateItemType": true,

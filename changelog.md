@@ -5,6 +5,7 @@
 - Improved platform service loader
 - Added locked-slot compatibility with Stack to Nearby Chests
 - Removed compile-time dependency on ItemLocks
+- Disabled validation on dedicated server installation by default
 
 ## 2.1.4
 
