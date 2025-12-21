@@ -67,29 +67,34 @@ public class StackTncCompat {
             else
                 throw new ClassCastException();
 
-        } catch (IllegalAccessException ignored) {
+        } catch (IllegalAccessException e) {
             ClientSort.LOG.info(
-                    "{} could not be accessed: compat is now disabled",
-                    MOD_NAME
+                    "{} could not be accessed - compat is now disabled: {}",
+                    MOD_NAME,
+                    e.getMessage()
             );
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException e) {
             ClientSort.LOG.info(
-                    "{} did not provide expected class: compat is now disabled",
-                    MOD_NAME
+                    "{} did not provide expected class - compat is now disabled: {}",
+                    MOD_NAME,
+                    e.getMessage()
             );
-        } catch (NoSuchMethodException ignored) {
+        } catch (NoSuchMethodException e) {
             ClientSort.LOG.info(
-                    "{} did not provide expected method: compat is now disabled",
-                    MOD_NAME
+                    "{} did not provide expected method - compat is now disabled: {}",
+                    MOD_NAME,
+                    e.getMessage()
             );
-        } catch (ClassCastException ignored) {
+        } catch (ClassCastException e) {
             ClientSort.LOG.info(
-                    "{} did not provide expected return type: compat is now disabled",
-                    MOD_NAME
+                    "{} did not provide expected return type - compat is now disabled: {}",
+                    MOD_NAME,
+                    e.getMessage()
             );
         } catch (InvocationTargetException e) {
             ClientSort.LOG.info(
-                    "{} threw an exception: compat is now disabled: {}",
+                    "{} threw an exception - compat is now disabled: {}",
+                    MOD_NAME,
                     e.getMessage()
             );
         }
