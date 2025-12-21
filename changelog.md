@@ -3,6 +3,8 @@
 ## 2.1.5
 
 - Improved platform service loader
+- Added locked-slot compatibility with Stack to Nearby Chests
+- Removed compile-time dependency on ItemLocks
 
 ## 2.1.4
 
