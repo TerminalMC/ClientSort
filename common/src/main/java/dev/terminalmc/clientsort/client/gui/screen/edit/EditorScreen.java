@@ -95,7 +95,6 @@ public abstract class EditorScreen extends Screen {
             Screen lastScreen
     ) {
         super(localized("title", "positionEditor"));
-        this.font = Minecraft.getInstance().font;
         this.lastScreen = lastScreen;
         this.underlay = underlay;
         this.rep = button;
@@ -110,7 +109,7 @@ public abstract class EditorScreen extends Screen {
         super.init();
 
         // Resize the underlay
-        underlay.init(Minecraft.getInstance(), width, height);
+        underlay.init(width, height);
 
         // Reload buttons from the manager
         if (!reloadButtonsAndIgnoredSlots()) {
@@ -248,13 +247,13 @@ public abstract class EditorScreen extends Screen {
         movingY += 21;
 
         // Change the auto trigger behavior
-        CycleButton<Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
+        CycleButton<@NotNull Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
                         Component.literal("1").withStyle(ChatFormatting.RED),
-                        Component.literal("0").withStyle(ChatFormatting.GREEN)
+                        Component.literal("0").withStyle(ChatFormatting.GREEN),
+                        autoOpOther
                 )
                 .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
                 .displayOnlyValue()
-                .withInitialValue(autoOpOther)
                 .create(
                         x + width - 10,
                         movingY,
@@ -264,15 +263,16 @@ public abstract class EditorScreen extends Screen {
                         (b, v) -> autoOpOther = v
                 );
         addRenderableWidget(autoOpOtherButton);
-        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder((v) -> v == 0
-                        ? localized("editor", "autoOp.none")
-                        : localized("key", "op." + Operation.values()[v - 1].translationKey))
+        CycleButton<@NotNull Integer> autoOpButton = CycleButton.builder(
+                        (v) -> v == 0
+                                ? localized("editor", "autoOp.none")
+                                : localized("key", "op." + Operation.values()[v - 1].translationKey),
+                        autoOp == null
+                                ? 0
+                                : List.of(Operation.values()).indexOf(autoOp) + 1
+                )
                 .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
                 .withValues(0, 1, 2, 3, 4)
-                .withInitialValue(autoOp == null
-                        ? 0
-                        : List.of(Operation.values()).indexOf(autoOp) + 1
-                )
                 .create(
                         x,
                         movingY,
@@ -517,7 +517,7 @@ public abstract class EditorScreen extends Screen {
 
         // Render editable widgets again, above background blur
         for (TriggerButton cb : buttons) {
-            cb.renderWidget(graphics, mouseX, mouseY, partialTick);
+            cb.renderContents(graphics, mouseX, mouseY, partialTick);
         }
     }
 
@@ -572,7 +572,7 @@ public abstract class EditorScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        lastScreen.init(Minecraft.getInstance(), width, height);
+        lastScreen.init(width, height);
         Minecraft.getInstance().setScreen(lastScreen);
     }
 
@@ -616,7 +616,7 @@ public abstract class EditorScreen extends Screen {
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
         if (super.mouseClicked(event, doubleClick)) {
             dragging = false;
             return true;
@@ -650,7 +650,7 @@ public abstract class EditorScreen extends Screen {
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+    public boolean mouseDragged(@NotNull MouseButtonEvent event, double dragX, double dragY) {
         if (dragging) {
             Vec2i before = rep.offset;
             if (rep.mouseDragged(event, dragX, dragY)) {
@@ -666,7 +666,7 @@ public abstract class EditorScreen extends Screen {
      * Allows dragging the selected widget to reposition it.
      */
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(@NotNull MouseButtonEvent event) {
         dragging = false;
         return super.mouseReleased(event);
     }
