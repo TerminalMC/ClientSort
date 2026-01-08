@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.6
+
+- Added save-state after server-accelerated operations
+
 ## 2.1.5
 
 - Improved platform service loader

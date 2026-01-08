@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
   "mixins": [
+    "accessor.ContainerAccessor",
     "slot.SlotMixin"
   ],
   "client": [
