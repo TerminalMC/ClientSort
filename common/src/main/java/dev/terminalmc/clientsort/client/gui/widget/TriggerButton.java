@@ -45,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+import static dev.terminalmc.clientsort.client.config.Config.options;
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public abstract class TriggerButton extends Button {
@@ -181,25 +182,29 @@ public abstract class TriggerButton extends Button {
 
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
-            if (Minecraft.getInstance().screen instanceof EditorScreen && getTooltip() == null) {
-                Component visibilityStatus = localized(
-                        "editor", active ? "enabled" : "disabled")
-                        .withStyle(active
-                                ? ChatFormatting.GREEN
-                                : ChatFormatting.RED);
-                Component operationStatus = localized(
-                        "editor", operationAllowed ? "enabled" : "disabled")
-                        .withStyle(operationAllowed
-                                ? ChatFormatting.GREEN
-                                : ChatFormatting.RED);
-                setTooltip(Tooltip.create(Component.empty().append(name)
-                        .append("\n")
-                        .append(localized("editor", "visibility", visibilityStatus))
-                        .append("\n")
-                        .append(localized("editor", "operation", operationStatus))));
-            } else {
-                setTooltip(null);
+            if (getTooltip() == null) {
+                if (Minecraft.getInstance().screen instanceof EditorScreen) {
+                    Component visibilityStatus = localized(
+                            "editor", active ? "enabled" : "disabled")
+                            .withStyle(active
+                                    ? ChatFormatting.GREEN
+                                    : ChatFormatting.RED);
+                    Component operationStatus = localized(
+                            "editor", operationAllowed ? "enabled" : "disabled")
+                            .withStyle(operationAllowed
+                                    ? ChatFormatting.GREEN
+                                    : ChatFormatting.RED);
+                    setTooltip(Tooltip.create(Component.empty().append(name)
+                            .append("\n")
+                            .append(localized("editor", "visibility", visibilityStatus))
+                            .append("\n")
+                            .append(localized("editor", "operation", operationStatus))));
+                } else if (options().showButtonTooltips) {
+                    setTooltip(Tooltip.create(name));
+                }
             }
+        } else {
+            setTooltip(null);
         }
     }
 

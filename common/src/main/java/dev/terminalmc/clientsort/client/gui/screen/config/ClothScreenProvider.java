@@ -513,6 +513,15 @@ public class ClothScreenProvider {
                 .build());
 
         buttons.addEntry(eb.startBooleanToggle(
+                        localized("option", "showButtonTooltips"),
+                        options.showButtonTooltips
+                )
+                .setTooltip(localized("option", "showButtonTooltips.tooltip"))
+                .setDefaultValue(Config.Options.showButtonTooltipsDefault)
+                .setSaveConsumer(val -> options.showButtonTooltips = val)
+                .build());
+
+        buttons.addEntry(eb.startBooleanToggle(
                         localized("option", "anchorButtonsLeft"),
                         options.anchorButtonsLeft
                 )

@@ -133,6 +133,8 @@
   "option.clientsort.buttons": "Интерфейс",
   "option.clientsort.showButtons": "Показывать кнопки",
   "option.clientsort.showButtons.tooltip": "Показывать ли дополнительные кнопки в интерфейсе для операций с инвентарём.",
+  "option.clientsort.showButtonTooltips": "Show Button Tooltips",
+  "option.clientsort.showButtonTooltips.tooltip": "Whether to show tooltips when hovering over buttons.",
   "option.clientsort.anchorButtonsLeft": "Прикрепить слева",
   "option.clientsort.anchorButtonsLeft.tooltip": "Определяет, нужно ли закреплять кнопки слева от инвентаря.",
   "option.clientsort.firstButtonOp": "Операция первой кнопки",

@@ -4,6 +4,7 @@
 
 - Added save-state after server-accelerated operations
 - Disabled operations and buttons in spectator mode
+- Added an option to show button tooltips
 
 ## 2.1.5
 
