@@ -28,6 +28,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,6 +68,17 @@ public abstract class PayloadHandler {
         @Nullable AbstractContainerMenu menu = null;
         PayloadResult result = PayloadResult.SUCCESS;
         String message = "";
+
+        // No-op in spectator mode
+        if (player.gameMode.getGameModeForPlayer().equals(GameType.SPECTATOR)) {
+            result = PayloadResult.UNSUPPORTED_OP;
+            message = "This operation is not available in spectator mode.";
+            if (PlatformServices.getInstance().canSendToPlayer(player, responseType)) {
+                PlatformServices.getInstance()
+                        .sendToPlayer(player, responseProvider.apply(result, message));
+            }
+            return;
+        }
 
         try {
             menu = getMenu(player, containerId);

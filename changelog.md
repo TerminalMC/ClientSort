@@ -3,6 +3,7 @@
 ## 2.1.6
 
 - Added save-state after server-accelerated operations
+- Disabled operations and buttons in spectator mode
 
 ## 2.1.5
 

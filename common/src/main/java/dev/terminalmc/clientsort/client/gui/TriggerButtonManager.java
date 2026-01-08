@@ -110,6 +110,8 @@ public class TriggerButtonManager {
     public static void afterScreenInit(Screen initScreen) {
         if (!(initScreen instanceof AbstractContainerScreen<?> acs))
             return;
+        if (Minecraft.getInstance().player.isSpectator())
+            return;
 
         if (screen != null) {
             TriggerButtonManager.getContainerButtons()

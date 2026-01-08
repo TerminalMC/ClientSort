@@ -301,6 +301,10 @@ public abstract class SingleUseOperator {
             Operation operation,
             Consumer<SingleUseOperator> wrapper
     ) {
+        // No-op in spectator mode
+        if (Minecraft.getInstance().player.isSpectator())
+            return false;
+
         // Check policy
         Object object = getObj(originSlot, screen.getMenu());
         if (object == null)
