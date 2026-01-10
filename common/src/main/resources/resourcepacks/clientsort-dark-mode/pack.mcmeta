@@ -1,10 +1,12 @@
 {
-    "pack": {
-        "pack_format": 34,
-        "supported_formats": {
-            "min_inclusive": 34,
-            "max_inclusive": 999
-        },
-        "description": "Dark-mode trigger buttons"
-    }
+  "pack": {
+    "pack_format": 34,
+    "min_format": 34,
+    "max_format": 999,
+    "supported_formats": {
+      "min_inclusive": 34,
+      "max_inclusive": 999
+    },
+    "description": "Dark-mode trigger buttons"
+  }
 }

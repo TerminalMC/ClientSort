@@ -34,6 +34,8 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -111,13 +113,12 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             cancellable = true
     )
     private void beforeMouseClicked(
-            double mouseX,
-            double mouseY,
-            int button,
+            MouseButtonEvent event,
+            boolean doubleClick,
             CallbackInfoReturnable<Boolean> cir
     ) {
         Supplier<Boolean> op =
-                clientsort$getOperation((keyMapping) -> keyMapping.matchesMouse(button));
+                clientsort$getOperation((keyMapping) -> keyMapping.matchesMouse(event));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
         }
@@ -131,14 +132,9 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void beforeKeyPressed(
-            int keyCode,
-            int scanCode,
-            int modifiers,
-            CallbackInfoReturnable<Boolean> cir
-    ) {
+    private void beforeKeyPressed(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         Supplier<Boolean> op =
-                clientsort$getOperation((keyMapping) -> keyMapping.matches(keyCode, scanCode));
+                clientsort$getOperation((keyMapping) -> keyMapping.matches(event));
         if (op != null && op.get()) {
             cir.setReturnValue(true);
         }
@@ -209,11 +205,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             return false;
 
         SortOrder sortOrder = options().sortOrder;
-        if (Screen.hasShiftDown()) {
+        if (KeybindManager.hasShiftDown()) {
             sortOrder = options().shiftSortOrder;
-        } else if (Screen.hasControlDown()) {
+        } else if (KeybindManager.hasControlDown()) {
             sortOrder = options().ctrlSortOrder;
-        } else if (Screen.hasAltDown()) {
+        } else if (KeybindManager.hasAltDown()) {
             sortOrder = options().altSortOrder;
         }
 
@@ -320,7 +316,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             // Draw slot ID, bottom left
             graphics.drawString(
                     Minecraft.getInstance().font,
-                    String.valueOf(hasShiftDown() ? slotIdx : slotId),
+                    String.valueOf(KeybindManager.hasShiftDown() ? slotIdx : slotId),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
                             + slot.x)
                             / scale),
