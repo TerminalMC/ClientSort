@@ -17,56 +17,56 @@
 package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom C2S payload used to instruct a server to complete as many partial item stacks in a
  * destination container as possible, using items in a source container.
- *
- * @param srcContainerId the ID of the source container.
- * @param srcSlotIds     a sub-array of slots to take items from.
- * @param dstSlotIds     a sub-array of slots to place items in.
  */
-public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds)
-        implements CustomPacketPayload {
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
-            new StreamCodec<>() {
-                public int @NotNull [] decode(@NotNull RegistryFriendlyByteBuf byteBuf) {
-                    return byteBuf.readVarIntArray();
-                }
-
-                public void encode(
-                        @NotNull RegistryFriendlyByteBuf byteBuf,
-                        int @NotNull [] array
-                ) {
-                    byteBuf.writeVarIntArray(array);
-                }
-            };
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, StackFillPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT,
-                    StackFillPayload::srcContainerId,
-                    VAR_INT_ARRAY,
-                    StackFillPayload::srcSlotIds,
-                    VAR_INT_ARRAY,
-                    StackFillPayload::dstSlotIds,
-                    StackFillPayload::new
-            );
+public class StackFillPayload implements Packet<ServerGamePacketListener> {
 
     public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_c2s");
+            new ResourceLocation(ClientSort.MOD_ID, "stack_fill_c2s");
 
-    public static final Type<StackFillPayload> TYPE = new Type<>(ID);
+    int srcContainerId;
+    int[] srcSlotIds;
+    int[] dstSlotIds;
+
+    public StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds) {
+        this.srcContainerId = srcContainerId;
+        this.srcSlotIds = srcSlotIds;
+        this.dstSlotIds = dstSlotIds;
+    }
+
+    public int srcContainerId() {
+        return srcContainerId;
+    }
+
+    public int[] srcSlotIds() {
+        return srcSlotIds;
+    }
+
+    public int[] dstSlotIds() {
+        return dstSlotIds;
+    }
+
+    public static StackFillPayload read(FriendlyByteBuf buf) {
+        return new StackFillPayload(buf.readVarInt(), buf.readVarIntArray(), buf.readVarIntArray());
+    }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(@NotNull FriendlyByteBuf buf) {
+        buf.writeVarInt(srcContainerId);
+        buf.writeVarIntArray(srcSlotIds);
+        buf.writeVarIntArray(dstSlotIds);
+    }
+
+    @Override
+    public void handle(@NotNull ServerGamePacketListener listener) {
+
     }
 }
