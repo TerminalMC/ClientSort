@@ -20,7 +20,7 @@ import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class NeoForgeClientPlatformServices implements ClientPlatformServices {
 
@@ -34,6 +34,6 @@ public class NeoForgeClientPlatformServices implements ClientPlatformServices {
 
     @Override
     public void sendToServer(CustomPacketPayload payload) {
-        PacketDistributor.sendToServer(payload);
+        ClientPacketDistributor.sendToServer(payload);
     }
 }
