@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.7
+
+- Fixed a crash when performing server-accelerated ops on Forge 1.20.1 introduced in v2.1.6
+
 ## 2.1.6
 
 - Added save-state after server-accelerated operations
