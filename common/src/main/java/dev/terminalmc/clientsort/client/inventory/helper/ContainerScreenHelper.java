@@ -83,8 +83,6 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
             return Scope.INVALID;
         if (slot.container instanceof ContainerSingleItem)
             return Scope.INVALID;
-        if (slot.isFake())
-            return Scope.INVALID;
 
         // Screen with only player inventory
         if (screen instanceof EffectRenderingInventoryScreen) {

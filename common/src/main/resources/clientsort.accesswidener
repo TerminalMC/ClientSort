@@ -1,2 +1,3 @@
 accessWidener v2 named
 # https://fabricmc.net/wiki/tutorial:accesswideners
+accessible method net/minecraft/world/Container setChanged ()V

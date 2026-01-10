@@ -17,7 +17,9 @@
 package dev.terminalmc.clientsort.platform.services;
 
 import dev.terminalmc.clientsort.platform.Services;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
@@ -59,10 +61,14 @@ public interface PlatformServices {
     /**
      * @return {@code true} if the payload type can be sent to the player.
      */
-    boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type);
+    boolean canSendToPlayer(ServerPlayer player, ResourceLocation channel);
 
     /**
      * Sends the payload to the player.
      */
-    void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
+    void sendToPlayer(
+            ServerPlayer player,
+            ResourceLocation channel,
+            Packet<ClientGamePacketListener> packet
+    );
 }

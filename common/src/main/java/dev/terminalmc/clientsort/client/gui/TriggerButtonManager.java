@@ -37,6 +37,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -495,10 +496,10 @@ public class TriggerButtonManager {
 
             // x factor is how far from the left side of the menu the slot is, as a fraction
             // of the screen width
-            double xFactor = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+            double xFactor = Mth.clamp(slot.x, 0, screen.width) / (double) screen.width;
             // y factor is how far from the top of the menu the slot is, as a fraction of the
             // screen height
-            double yFactor = Math.clamp(slot.y, 0, screen.height) / (double) screen.height;
+            double yFactor = Mth.clamp(slot.y, 0, screen.height) / (double) screen.height;
 
             double x;
             double y;

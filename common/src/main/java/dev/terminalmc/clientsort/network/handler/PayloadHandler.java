@@ -20,10 +20,11 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InvalidDataException;
-import dev.terminalmc.clientsort.mixin.accessor.ContainerAccessor;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import dev.terminalmc.clientsort.platform.services.PlatformServices;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -61,9 +62,9 @@ public abstract class PayloadHandler {
             ThrowingConsumer<AbstractContainerMenu> contextValidator,
             ThrowingConsumer<AbstractContainerMenu> schemaValidator,
             ThrowingConsumer<AbstractContainerMenu> operator,
-            CustomPacketPayload.Type<?> payloadType,
-            CustomPacketPayload.Type<?> responseType,
-            BiFunction<PayloadResult, String, CustomPacketPayload> responseProvider
+            ResourceLocation payloadChannel,
+            ResourceLocation responseChannel,
+            BiFunction<PayloadResult, String, Packet<ClientGamePacketListener>> responseProvider
     ) {
         @Nullable AbstractContainerMenu menu = null;
         PayloadResult result = PayloadResult.SUCCESS;
@@ -73,9 +74,12 @@ public abstract class PayloadHandler {
         if (player.gameMode.getGameModeForPlayer().equals(GameType.SPECTATOR)) {
             result = PayloadResult.UNSUPPORTED_OP;
             message = "This operation is not available in spectator mode.";
-            if (PlatformServices.getInstance().canSendToPlayer(player, responseType)) {
-                PlatformServices.getInstance()
-                        .sendToPlayer(player, responseProvider.apply(result, message));
+            if (PlatformServices.getInstance().canSendToPlayer(player, responseChannel)) {
+                PlatformServices.getInstance().sendToPlayer(
+                        player,
+                        responseChannel,
+                        responseProvider.apply(result, message)
+                );
             }
             return;
         }
@@ -102,7 +106,7 @@ public abstract class PayloadHandler {
                 message = PayloadHandlerException.GENERIC_MESSAGE;
                 ClientSort.LOG.error(
                         "Encountered an unexpected exception while handling payload '{}' from player '{}': {}",
-                        payloadType.id(),
+                        payloadChannel,
                         player,
                         e
                 );
@@ -111,12 +115,15 @@ public abstract class PayloadHandler {
             if (menu != null) {
                 menu.resumeRemoteUpdates();
                 menu.broadcastChanges();
-                ((ContainerAccessor) menu.slots.getFirst().container).clientsort$setChanged();
-                ((ContainerAccessor) menu.slots.getLast().container).clientsort$setChanged();
+                menu.slots.get(0).container.setChanged();
+                menu.slots.get(menu.slots.size() - 1).container.setChanged();
             }
-            if (PlatformServices.getInstance().canSendToPlayer(player, responseType)) {
-                PlatformServices.getInstance()
-                        .sendToPlayer(player, responseProvider.apply(result, message));
+            if (PlatformServices.getInstance().canSendToPlayer(player, responseChannel)) {
+                PlatformServices.getInstance().sendToPlayer(
+                        player,
+                        responseChannel,
+                        responseProvider.apply(result, message)
+                );
             }
         }
     }
@@ -144,7 +151,7 @@ public abstract class PayloadHandler {
 
         if (log || serverOptions().validateItemType) {
             if (!expected.isEmpty() && !actual.isEmpty()) {
-                if (!ItemStack.isSameItemSameComponents(expected, actual))
+                if (!ItemStack.isSameItemSameTags(expected, actual))
                     invalid = true;
             }
         }

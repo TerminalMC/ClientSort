@@ -636,20 +636,6 @@ public abstract class EditorScreen extends Screen {
     }
 
     /**
-     * Modifies the background blur to be constant irrespective of the configured value.
-     * <p>
-     * Minimal blur is used to prevent the editable widgets disappearing under underlay items on a
-     * higher render layer, while still keeping the underlay detail discernible.
-     */
-    @Override
-    protected void renderBlurredBackground(float partialTick) {
-        int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground(partialTick);
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
-    }
-
-    /**
      * Draws a horizontal and a vertical line to trace this widget back to its positional origin
      * point.
      */
