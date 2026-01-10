@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.7
+
+- Fixed a crash when performing server-accelerated ops introduced in v2.1.6
+
 ## 2.1.6
 
 - Added save-state after server-accelerated operations
