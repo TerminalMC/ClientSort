@@ -40,7 +40,6 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforgespi.locating.IModFile;
 
@@ -54,7 +53,6 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 )
 @EventBusSubscriber(
         modid = ClientSort.MOD_ID,
-        bus = EventBusSubscriber.Bus.MOD,
         value = Dist.CLIENT
 )
 public class ClientSortNeoForge {
@@ -147,17 +145,10 @@ public class ClientSortNeoForge {
         registrar.playToClient(
                 rp.type,
                 rp.streamCodec,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> rp.handler.accept(
-                                payload,
-                                Minecraft.getInstance(),
-                                (LocalPlayer) context.player()
-                        ),
-                        (payload, context) -> rp.handler.accept(
-                                payload,
-                                Minecraft.getInstance(),
-                                (LocalPlayer) context.player()
-                        )
+                (payload, context) -> rp.handler.accept(
+                        payload,
+                        Minecraft.getInstance(),
+                        (LocalPlayer) context.player()
                 )
         );
     }
