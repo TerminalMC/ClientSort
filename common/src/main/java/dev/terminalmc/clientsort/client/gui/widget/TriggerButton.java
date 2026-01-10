@@ -25,6 +25,7 @@ import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.EditorScreen;
 import dev.terminalmc.clientsort.client.gui.screen.edit.PlayerEditorScreen;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractWidgetAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -35,7 +36,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -174,7 +175,7 @@ public abstract class TriggerButton extends Button {
 
         // Draw texture
         ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
-        graphics.blitSprite(RenderType::guiTextured, texture, getX(), getY(), width, height);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), width, height);
 
         // Draw policy state indicator
         if (!operationAllowed) {
@@ -183,7 +184,7 @@ public abstract class TriggerButton extends Button {
 
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
-            if (getTooltip() == null) {
+            if (((AbstractWidgetAccessor) this).clientsort$getTooltip().get() == null) {
                 if (Minecraft.getInstance().screen instanceof EditorScreen) {
                     Component visibilityStatus = localized(
                             "editor", active ? "enabled" : "disabled")
