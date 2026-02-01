@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.8
+
+- Fixed detection of CTRL/CMD keys in 1.21.9-11
+
 ## 2.1.7
 
 - Fixed a crash when performing server-accelerated ops on Forge 1.20.1 introduced in v2.1.6
