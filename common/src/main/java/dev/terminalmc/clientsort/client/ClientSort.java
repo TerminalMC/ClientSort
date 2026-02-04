@@ -19,7 +19,6 @@ package dev.terminalmc.clientsort.client;
 import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.client.util.TaskManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
@@ -34,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import static dev.terminalmc.clientsort.client.config.Config.options;
 
 public class ClientSort {
 
@@ -89,9 +86,6 @@ public class ClientSort {
             // Update sorting item sets
             updateItemSets(options);
         }
-        // Isolate keybinds
-        if (options().isolateKeybinds)
-            KeybindManager.isolateKeybinds();
     }
 
     public static void updateItemTags(Config.Options options) {
@@ -118,11 +112,6 @@ public class ClientSort {
             BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(s))
                     .ifPresent((item) -> options.endOverrideMap.put(item, idx));
         }
-    }
-
-    public static void afterGameStart() {
-        if (options().isolateKeybinds)
-            KeybindManager.isolateKeybinds();
     }
 
     public static void setOverlayMessage(
