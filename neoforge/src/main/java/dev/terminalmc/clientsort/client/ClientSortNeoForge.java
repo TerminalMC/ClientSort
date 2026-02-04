@@ -87,7 +87,7 @@ public class ClientSortNeoForge {
                 IModFile file = ModList.get().getModFileById(ClientSort.MOD_ID).getFile();
                 try {
                     Pack.ResourcesSupplier supplier = new PathPackResources.PathResourcesSupplier(
-                            file.findResource("resourcepacks/" + packId)
+                            file.getFilePath().resolve("resourcepacks/" + packId)
                     );
                     PackLocationInfo info = new PackLocationInfo(
                             ClientSort.MOD_ID + ":" + packId,

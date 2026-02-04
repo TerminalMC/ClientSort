@@ -34,8 +34,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -118,12 +118,12 @@ public abstract class TriggerButton extends Button {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (isMouseOver(mouseX, mouseY)) {
-            boolean rightClick = mouseButton == InputConstants.MOUSE_BUTTON_RIGHT;
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (isMouseOver(event.x(), event.y())) {
+            boolean rightClick = event.button() == InputConstants.MOUSE_BUTTON_RIGHT;
             if (Minecraft.getInstance().screen instanceof EditorScreen) {
                 if (rightClick) {
-                    if (Screen.hasShiftDown()) {
+                    if (event.hasShiftDown()) {
                         operationAllowed = !operationAllowed;
                     } else {
                         active = !active;
@@ -135,7 +135,7 @@ public abstract class TriggerButton extends Button {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     /**
@@ -214,11 +214,11 @@ public abstract class TriggerButton extends Button {
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
         if (Minecraft.getInstance().screen instanceof EditorScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
-            int newX = Math.clamp((int) mouseX - HALF_WIDTH, 0, screen.width - WIDTH);
-            int newY = Math.clamp((int) mouseY - HALF_HEIGHT, 0, screen.height - HEIGHT);
+            int newX = Math.clamp((int) event.x() - HALF_WIDTH, 0, screen.width - WIDTH);
+            int newY = Math.clamp((int) event.y() - HALF_HEIGHT, 0, screen.height - HEIGHT);
 
             offset = new Vec2i(
                     newX - getAnchorSideX(acs),
@@ -226,7 +226,7 @@ public abstract class TriggerButton extends Button {
                             + Math.clamp(referenceSlot.y, 0, screen.height))
             );
         } else {
-            super.onDrag(mouseX, mouseY, dragX, dragY);
+            super.onDrag(event, dragX, dragY);
         }
     }
 
