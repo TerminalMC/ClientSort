@@ -21,8 +21,8 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.client.config.*;
 import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import dev.terminalmc.clientsort.client.order.SortOrder;
+import dev.terminalmc.clientsort.client.util.KeybindManager;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -70,11 +70,11 @@ public class SortButton extends TriggerButton {
                 policy != null && policy.showSortButton(),
                 (button) -> {
                     SortOrder sortOrder = options().sortOrder;
-                    if (Screen.hasShiftDown()) {
+                    if (KeybindManager.hasShiftDown()) {
                         sortOrder = options().shiftSortOrder;
-                    } else if (Screen.hasControlDown()) {
+                    } else if (KeybindManager.hasControlDown()) {
                         sortOrder = options().ctrlSortOrder;
-                    } else if (Screen.hasAltDown()) {
+                    } else if (KeybindManager.hasAltDown()) {
                         sortOrder = options().altSortOrder;
                     }
 

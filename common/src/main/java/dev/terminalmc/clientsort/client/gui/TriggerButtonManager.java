@@ -17,6 +17,7 @@
 
 package dev.terminalmc.clientsort.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Operation;
@@ -35,6 +36,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -338,7 +341,11 @@ public class TriggerButtonManager {
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
                                 && (isPlayerInv ? playerButtons : containerButtons)
                                 .contains(button)) {
-                            button.onPress();
+                            button.onPress(new MouseButtonEvent(
+                                    button.getX(),
+                                    button.getY(),
+                                    new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)
+                            ));
                         }
                     }
             );
@@ -462,7 +469,11 @@ public class TriggerButtonManager {
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
                                 && (isPlayerInv ? playerButtons : containerButtons)
                                 .contains(button)) {
-                            button.onPress();
+                            button.onPress(new MouseButtonEvent(
+                                    button.getX(),
+                                    button.getY(),
+                                    new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0)
+                            ));
                         }
                     }
             );

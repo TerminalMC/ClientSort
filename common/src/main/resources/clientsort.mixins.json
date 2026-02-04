@@ -7,6 +7,7 @@
   "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
   "mixins": [
     "accessor.ContainerAccessor",
+    "accessor.ServerCommonPacketListenerImplAccessor",
     "slot.SlotMixin"
   ],
   "client": [
@@ -14,7 +15,6 @@
     "client.ClientPacketListenerMixin",
     "client.CreativeModeInventoryScreenMixin",
     "client.LocalPlayerMixin",
-    "client.MinecraftMixin",
     "client.ScreenMixin",
     "client.accessor.AbstractContainerScreenAccessor",
     "client.accessor.AbstractWidgetAccessor",
