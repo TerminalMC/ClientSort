@@ -438,15 +438,6 @@ public class ClothScreenProvider {
 
         ConfigCategory keybinds = builder.getOrCreateCategory(localized("option", "keybinds"));
 
-        keybinds.addEntry(eb.startBooleanToggle(
-                        localized("option", "isolateKeybinds"),
-                        options.isolateKeybinds
-                )
-                .setTooltip(localized("option", "isolateKeybinds.tooltip"))
-                .setDefaultValue(Config.Options.isolateKeybindsDefault)
-                .setSaveConsumer(val -> options.isolateKeybinds = val)
-                .build());
-
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "edit"),
                         ((KeyMappingAccessor) KeybindManager.EDIT_KEY).clientsort$getKey()
