@@ -7,7 +7,7 @@
   "key.clientsort.cancelAuto": "Cancel Auto Operation",
   "key.clientsort.op.sort": "Sort",
   "key.clientsort.op.stackFill": "Fill Stacks",
-  "key.clientsort.op.matchTransfer": "Transfer Matching",
+  "key.clientsort.op.matchTransfer": "Restock",
   "key.clientsort.op.transfer": "Transfer",
 
   "message.clientsort.installCloth": "Install Cloth Config API to access mod options.",
@@ -165,12 +165,12 @@
   "option.clientsort.policies.description.1": "The policy list below allows you to configure the keybind and trigger button operations for each inventory type.",
   "option.clientsort.policies.description.2": "This is provided as an alternative to the in-game editor, which can be opened using a keybind when viewing an inventory, or by right-clicking on a trigger button.",
   "option.clientsort.policies.description.3": "Data Format",
-  "option.clientsort.policies.description.4": "<class>/<title>,(<offset>)/<from slot>,<sort>,<fill stacks>,<transfer matching>,<transfer>,<auto op>/<reverse>,(<ignored slots>)",
+  "option.clientsort.policies.description.4": "<class>/<title>,(<offset>)/<from slot>,<sort>,<fill stacks>,<restock>,<transfer>,<auto op>/<reverse>,(<ignored slots>)",
   "option.clientsort.policies.description.5": "    class: the full name of the inventory class or superclass.",
   "option.clientsort.policies.description.6": "    title: the title of the inventory, or empty to ignore.",
   "option.clientsort.policies.description.7": "    offset: 'x,y', or empty to use the default.",
   "option.clientsort.policies.description.8": "    from slot: '0' to anchor buttons to the edge of the inventory, '1' to anchor to an inventory slot.",
-  "option.clientsort.policies.description.9": "    sort/fill/transfer: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
+  "option.clientsort.policies.description.9": "    sort/fill/restock/transfer: '0' to disable the operation, '1' to only enable the keybind, '2' to enable both the keybind and the GUI button.",
   "option.clientsort.policies.description.10": "    auto op: '0' to disable, '1'-'4' to trigger an operation.",
   "option.clientsort.policies.description.11": "    reverse: '0' for the normal direction (out), '1' for reversed (in).",
   "option.clientsort.policies.description.12": "    ignored slots: a list of slots that should not be affected by operations.",
@@ -202,7 +202,7 @@
 
   "triggerButton.clientsort.SORT": "Sort",
   "triggerButton.clientsort.STACK_FILL": "Fill Stacks",
-  "triggerButton.clientsort.MATCH_TRANSFER": "Transfer Matching",
+  "triggerButton.clientsort.MATCH_TRANSFER": "Restock",
   "triggerButton.clientsort.TRANSFER": "Transfer",
   "triggerButton.clientsort.NONE": "None",
 

@@ -4,6 +4,7 @@
 
 Note: this version includes networking changes, servers and clients must be upgraded together.
 
+- Renamed "Transfer Matching" to "Restock" in UIs
 - Added an option to reverse the default transfer iteration order
 - Added an option to arrange buttons horizontally rather than vertically
 - Added support for creating separate class policies for unique inventory titles

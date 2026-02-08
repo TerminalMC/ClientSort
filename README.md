@@ -49,9 +49,9 @@ Versatile and easy inventory sorting.
 </details>
 
 <details open>
-<summary><b><img alt="Transfer Matching" src="./assets/images/match_transfer_down.png"> Transfer Matching</b></summary>
+<summary><b><img alt="Restock" src="./assets/images/match_transfer_down.png"> Restock</b></summary>
 
-- Press the <img alt="Transfer Matching" src="./assets/images/match_transfer_down.png"> button, or
+- Press the <img alt="Restock" src="./assets/images/match_transfer_down.png"> button, or
   hover over the inventory that you want to move items out of and press the keybind (default:
   unbound).
 - When activated, the other inventory is restocked using items in the origin inventory. No new item
@@ -73,7 +73,7 @@ Versatile and easy inventory sorting.
   <tr>
     <td style="width:25%;"><img alt="Sort demo" src="./assets/images/sort_01.gif" style="width:100%;"></td>
     <td style="width:25%;"><img alt="Stack fill demo" src="./assets/images/stack_fill_01.gif" style="width:100%;"></td>
-    <td style="width:25%;"><img alt="Transfer matching demo" src="./assets/images/transfer_matching_01.gif" style="width:100%;"></td>
+    <td style="width:25%;"><img alt="Restock demo" src="./assets/images/transfer_matching_01.gif" style="width:100%;"></td>
     <td style="width:25%;"><img alt="Transfer demo" src="./assets/images/transfer_01.gif" style="width:100%;"></td>
   </tr>
 </table>
@@ -94,8 +94,7 @@ Versatile and easy inventory sorting.
   - Always sort specific items to the start or end.
   - Configurable via mod config, `Sorting` tab.
 - Matching overrides:
-  - Ignore NBT data (e.g. enchantments) when comparing items in sort or transfer matching
-    operations.
+  - Ignore NBT data (e.g. enchantments) when comparing items in sort or restock operations.
   - Configurable via mod config, `Matching` tab.
 - Interaction sounds:
   - Play a sound when clicking in client-side operations.
