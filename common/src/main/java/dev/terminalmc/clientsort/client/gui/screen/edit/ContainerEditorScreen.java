@@ -28,7 +28,7 @@ import java.util.LinkedList;
 public class ContainerEditorScreen extends EditorScreen {
 
     public ContainerEditorScreen(AbstractContainerScreen<?> underlay, TriggerButton button) {
-        super(underlay, button);
+        super(underlay, false, button);
     }
 
     @Override

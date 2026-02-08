@@ -304,6 +304,7 @@ public class Config {
                 new ClassPolicy(
                         Inventory.class.getName(),
                         null,
+                        null,
                         false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND,
@@ -315,6 +316,7 @@ public class Config {
                 ),
                 new ClassPolicy(
                         ChestMenu.class.getName(),
+                        null,
                         null,
                         false,
                         Policy.KEYBIND_BUTTON,
@@ -328,6 +330,7 @@ public class Config {
                 new ClassPolicy(
                         HopperMenu.class.getName(),
                         null,
+                        null,
                         false,
                         Policy.KEYBIND,
                         Policy.KEYBIND,
@@ -339,6 +342,7 @@ public class Config {
                 ),
                 new ClassPolicy(
                         HorseInventoryMenu.class.getName(),
+                        null,
                         null,
                         false,
                         Policy.KEYBIND_BUTTON,
@@ -352,6 +356,7 @@ public class Config {
                 new ClassPolicy(
                         PlayerEnderChestContainer.class.getName(),
                         null,
+                        null,
                         false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -363,6 +368,7 @@ public class Config {
                 ),
                 new ClassPolicy(
                         ShulkerBoxMenu.class.getName(),
+                        null,
                         null,
                         false,
                         Policy.KEYBIND_BUTTON,
@@ -376,6 +382,7 @@ public class Config {
                 new ClassPolicy(
                         RandomizableContainerBlockEntity.class.getName(),
                         null,
+                        null,
                         false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -387,6 +394,7 @@ public class Config {
                 ),
                 new ClassPolicy(
                         "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                        null,
                         null,
                         false,
                         Policy.NONE,
@@ -400,6 +408,7 @@ public class Config {
                 new ClassPolicy(
                         "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
                         null,
+                        null,
                         false,
                         Policy.NONE,
                         Policy.NONE,
@@ -411,6 +420,7 @@ public class Config {
                 ),
                 new ClassPolicy(
                         "com.tom.storagemod.menu.CraftingTerminalMenu",
+                        null,
                         null,
                         false,
                         Policy.NONE,
@@ -424,6 +434,7 @@ public class Config {
                 new ClassPolicy(
                         "com.tom.storagemod.menu.StorageTerminalMenu",
                         null,
+                        null,
                         false,
                         Policy.NONE,
                         Policy.NONE,
@@ -436,7 +447,7 @@ public class Config {
         );
         public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ClassPolicy> map = new LinkedHashMap<>();
-            classPoliciesDefaultList.get().forEach((layout) -> map.put(layout.className(), layout));
+            classPoliciesDefaultList.get().forEach((policy) -> map.put(policy.getKey(), policy));
             return map;
         };
         public Map<String, ClassPolicy> classPolicies = classPoliciesDefault.get();
@@ -448,9 +459,10 @@ public class Config {
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className() != null && !cp.className().isBlank()) {
                     validPolicies.put(
-                            cp.className(),
+                            cp.getKey(),
                             new ClassPolicy(
                                     cp.className(),
+                                    cp.invTitle(),
                                     cp.buttonOffset(),
                                     cp.offsetFromSlot(),
                                     Options.policyValidator.validate(cp.sortPolicy()),
@@ -562,9 +574,10 @@ public class Config {
         if (options.buttonLayouts != null && !options.buttonLayouts.isEmpty()) {
             // Upgrade old ButtonLayouts to new ClassPolicies
             options.buttonLayouts.values().forEach((bl) -> options.classPolicies.put(
-                    bl.className(),
+                    ClassPolicy.getKey(bl.className(), null),
                     new ClassPolicy(
                             bl.className(),
+                            null,
                             bl.offset(),
                             false,
                             Boolean.TRUE.equals(bl.sortEnabled())

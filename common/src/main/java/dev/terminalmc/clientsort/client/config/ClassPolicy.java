@@ -16,6 +16,8 @@
 
 package dev.terminalmc.clientsort.client.config;
 
+import com.mojang.datafixers.util.Pair;
+import dev.terminalmc.clientsort.ClientSort;
 import joptsimple.internal.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +35,7 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public record ClassPolicy(
         @NotNull String className,
+        @Nullable String invTitle,
         @Nullable Vec2i buttonOffset,
         boolean offsetFromSlot,
         @NotNull Policy sortPolicy,
@@ -43,6 +46,9 @@ public record ClassPolicy(
         boolean autoOpOther, // better as reverseAutoOp but that requires a legacy upgrader
         @NotNull TreeSet<Integer> ignoredSlots
 ) {
+    public @NotNull String getKey() {
+        return getKey(this.className, this.invTitle);
+    }
 
     public @NotNull Vec2i getButtonOffset() {
         return buttonOffset == null
@@ -116,15 +122,16 @@ public record ClassPolicy(
 
     // Config data-string serialization
 
-    public static final String DATA_FORMAT = "%s,(%s)/%d,%s,%s,%s,%s,%d/%d,(%s)";
+    public static final String DATA_FORMAT = "%s/%s,(%s)/%d,%s,%s,%s,%s,%d/%d,(%s)";
     public static final String DATA_PATTERN_STRING =
-            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\)/([01]),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
+            "^([^/]+)/(.+?)?,\\((?:(-?\\d+),(-?\\d+))?\\)/([01]),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public String toDataString() {
         return String.format(
                 DATA_FORMAT,
                 className,
+                invTitle == null ? "" : invTitle,
                 buttonOffset == null ? "" : buttonOffset.x() + "," + buttonOffset.y(),
                 offsetFromSlot ? 1 : 0,
                 sortPolicy.toSimpleString(),
@@ -139,7 +146,7 @@ public record ClassPolicy(
 
     public static ClassPolicy fromDataString(
             String dataString,
-            Set<String> oldClassNames
+            Set<String> oldPolicyKeys
     ) throws ParseException {
         dataString = dataString.strip();
 
@@ -157,7 +164,8 @@ public record ClassPolicy(
 
         // Validate class name if modified
         String className = matcher.group(1);
-        if (!oldClassNames.contains(className)) {
+        String invTitle = matcher.group(2);
+        if (!oldPolicyKeys.contains(getKey(className, invTitle))) {
             try {
                 Class.forName(className);
             } catch (ClassNotFoundException e) {
@@ -173,23 +181,75 @@ public record ClassPolicy(
 
         return new ClassPolicy(
                 className,
-                matcher.group(2) == null ? null
+                invTitle,
+                matcher.group(3) == null ? null
                         : new Vec2i(
-                                Integer.parseInt(matcher.group(2)),
-                                Integer.parseInt(matcher.group(3))
+                                Integer.parseInt(matcher.group(3)),
+                                Integer.parseInt(matcher.group(4))
                         ),
-                matcher.group(4).equals("1"),
-                Policy.fromSimpleString(matcher.group(5)),
+                matcher.group(5).equals("1"),
                 Policy.fromSimpleString(matcher.group(6)),
                 Policy.fromSimpleString(matcher.group(7)),
                 Policy.fromSimpleString(matcher.group(8)),
-                matcher.group(9).equals("0")
+                Policy.fromSimpleString(matcher.group(9)),
+                matcher.group(10).equals("0")
                         ? null
-                        : Operation.values()[Integer.parseInt(matcher.group(9)) - 1],
-                matcher.group(10).equals("1"),
-                new TreeSet<>(Arrays.stream(matcher.group(11).split(","))
+                        : Operation.values()[Integer.parseInt(matcher.group(10)) - 1],
+                matcher.group(11).equals("1"),
+                new TreeSet<>(Arrays.stream(matcher.group(12).split(","))
                         .filter((s) -> !s.isBlank())
                         .map(Integer::parseInt).sorted().toList())
         );
+    }
+
+    // Utils
+
+    public static boolean hasInvTitle(@NotNull String key) {
+        return key.contains("/");
+    }
+
+    public static ClassPolicy create(
+            @NotNull String key,
+            @Nullable Vec2i buttonOffset,
+            boolean offsetFromSlot,
+            @NotNull Policy sortPolicy,
+            @NotNull Policy stackFillPolicy,
+            @NotNull Policy matchTransferPolicy,
+            @NotNull Policy transferPolicy,
+            @Nullable Operation autoOp,
+            boolean autoOpOther,
+            @NotNull TreeSet<Integer> ignoredSlots
+    ) {
+        Pair<String,String> splitKey = parseKey(key);
+        return new ClassPolicy(
+                splitKey.getFirst(),
+                splitKey.getSecond(),
+                buttonOffset,
+                offsetFromSlot,
+                sortPolicy,
+                stackFillPolicy,
+                matchTransferPolicy,
+                transferPolicy,
+                autoOp,
+                autoOpOther,
+                ignoredSlots
+        );
+    }
+
+    public static @NotNull Pair<String,String> parseKey(@NotNull String keyStr) {
+        String[] split = keyStr.split("/", 2);
+        return new Pair<>(split[0], split.length > 1 ? split[1] : null);
+    }
+
+    public static @NotNull String getKey(@NotNull String className, @Nullable String invTitle) {
+        if (className.contains("/")) {
+            ClientSort.LOG.error(
+                    "Cannot get ClassPolicy key for input strings '{}', '{}'",
+                    className,
+                    invTitle
+            );
+            return className;
+        }
+        return className + (invTitle == null ? "" : "/" + invTitle);
     }
 }

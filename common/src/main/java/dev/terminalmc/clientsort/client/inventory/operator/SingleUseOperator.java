@@ -33,12 +33,15 @@ import dev.terminalmc.clientsort.client.inventory.operator.server.ServerOperator
 import dev.terminalmc.clientsort.client.order.SortOrder;
 import dev.terminalmc.clientsort.client.platform.services.ClientPlatformServices;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.SlotLogUtil;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -190,7 +193,12 @@ public abstract class SingleUseOperator {
             Object object = getObj(slot, screen.getMenu());
             if (object == null)
                 continue;
-            @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+            boolean isPlayerInv = slot.container instanceof Inventory;
+            Component invTitle = isPlayerInv
+                    ? ((AbstractContainerScreenAccessor) screen).clientsort$getPlayerInventoryTitle()
+                    : screen.getTitle();
+            @Nullable ClassPolicy policy =
+                    PolicyManager.getPolicy(object.getClass(), invTitle.getString());
             if (policy != null && policy.ignoredSlots().contains(slotIdx))
                 continue;
             // Slot is valid
@@ -306,10 +314,15 @@ public abstract class SingleUseOperator {
             return false;
 
         // Check policy
+        boolean isPlayerInv = originSlot.container instanceof Inventory;
+        Component invTitle = isPlayerInv
+                ? ((AbstractContainerScreenAccessor) screen).clientsort$getPlayerInventoryTitle()
+                : screen.getTitle();
         Object object = getObj(originSlot, screen.getMenu());
         if (object == null)
             return false;
-        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+        @Nullable ClassPolicy policy =
+                PolicyManager.getPolicy(object.getClass(), invTitle.getString());
         if (policy != null) {
             if (!switch (operation) {
                 case SORT -> policy.canSort();

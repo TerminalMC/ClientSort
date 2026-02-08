@@ -698,7 +698,7 @@ public class ClothScreenProvider {
                     }
                     options.classPolicies.clear();
                     classPolicies.forEach((policy) -> options.classPolicies.put(
-                            policy.className(),
+                            policy.getKey(),
                             policy
                     ));
                 })

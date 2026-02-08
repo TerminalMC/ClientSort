@@ -37,9 +37,10 @@ public class PolicyManager {
     /**
      * Reloads the cache of policy configuration classes.
      */
-    public static void reloadPolicyClasses(Set<String> classNames) {
+    public static void reloadPolicyClasses(Set<String> keys) {
         policyClasses.clear();
-        for (String className : classNames) {
+        for (String key : keys) {
+            String className = ClassPolicy.parseKey(key).getFirst();
             try {
                 policyClasses.add(Class.forName(className));
             } catch (ClassNotFoundException e) {
@@ -56,9 +57,9 @@ public class PolicyManager {
     /**
      * @return the lowest-degree matching policy for the specified class, if any exists.
      */
-    public static @Nullable ClassPolicy getPolicy(Class<?> cls) {
-        // Check for a perfect match
-        ClassPolicy policy = options().classPolicies.get(cls.getName());
+    public static @Nullable ClassPolicy getPolicy(Class<?> cls, String invTitle) {
+        // Try for a perfect match on the class, with optional title
+        ClassPolicy policy = getPolicyExact(cls, invTitle);
         if (policy != null)
             return policy;
 
@@ -79,9 +80,35 @@ public class PolicyManager {
             }
             if (!hasSubclass) {
                 // No subclass found; return policy for c1
-                return options().classPolicies.get(c1.getName());
+                return getPolicyExact(c1, invTitle);
             }
         }
         return null;
+    }
+
+    /**
+     * @return the policy with className matching the provided value, and invTitle either null or
+     * (preferably) matching the provided value.
+     */
+    public static @Nullable ClassPolicy getPolicyExact(Class<?> cls, String invTitle) {
+        String clsName = cls.getName();
+        ClassPolicy primary = null;
+        ClassPolicy secondary = null;
+        for (ClassPolicy policy : options().classPolicies.values()) {
+            if (policy.className().equals(clsName)) {
+                if (policy.invTitle() != null) {
+                    if (policy.invTitle().equals(invTitle)) {
+                        primary = policy;
+                    }
+                } else {
+                    secondary = policy;
+                }
+            }
+        }
+        if (primary != null) {
+            return primary;
+        } else {
+            return secondary;
+        }
     }
 }

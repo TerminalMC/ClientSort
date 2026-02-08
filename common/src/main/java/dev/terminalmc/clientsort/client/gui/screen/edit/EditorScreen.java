@@ -54,6 +54,7 @@ public abstract class EditorScreen extends Screen {
 
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
+    private final boolean isPlayerInv;
     private final LinkedList<TriggerButton> buttons = new LinkedList<>();
     private boolean offsetFromSlot = false;
     private @Nullable Operation autoOp = null;
@@ -77,19 +78,24 @@ public abstract class EditorScreen extends Screen {
      * This value represents the lowest-level key on which a {@link ClassPolicy} can be created, and
      * may differ from {@link EditorScreen#rep}'s {@link TriggerButton#activePolicyKey}.
      */
-    private String lowestPolicyKey;
+    private String lowestPolicyClassName;
 
     /**
      * A flag to assist repositioning buttons via click-drag.
      */
     private boolean dragging;
 
-    public EditorScreen(AbstractContainerScreen<?> underlay, TriggerButton button) {
-        this(underlay, button, underlay);
+    public EditorScreen(
+            AbstractContainerScreen<?> underlay,
+            boolean isPlayerInv,
+            TriggerButton button
+    ) {
+        this(underlay, isPlayerInv, button, underlay);
     }
 
     public EditorScreen(
             AbstractContainerScreen<?> underlay,
+            boolean isPlayerInv,
             TriggerButton button,
             Screen lastScreen
     ) {
@@ -97,6 +103,7 @@ public abstract class EditorScreen extends Screen {
         this.font = Minecraft.getInstance().font;
         this.lastScreen = lastScreen;
         this.underlay = underlay;
+        this.isPlayerInv = isPlayerInv;
         this.rep = button;
         this.buttons.add(button);
     }
@@ -158,9 +165,10 @@ public abstract class EditorScreen extends Screen {
         }
 
         // Retrieve the policy key in the same way as the manager
-        Object keyObject =
-                rep.container instanceof SimpleContainer ? underlay.getMenu() : rep.container;
-        lowestPolicyKey = keyObject.getClass().getName();
+        Object keyObject = rep.container instanceof SimpleContainer
+                ? underlay.getMenu()
+                : rep.container;
+        lowestPolicyClassName = keyObject.getClass().getName();
 
         return true;
     }
@@ -180,7 +188,7 @@ public abstract class EditorScreen extends Screen {
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        int numButtons = 13;
+        int numButtons = 14;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
@@ -210,7 +218,9 @@ public abstract class EditorScreen extends Screen {
         Button copyPolicyKeyButton = Button.builder(
                         localized("editor", "copyPolicyKey"),
                         (button) -> mc.keyboardHandler.setClipboard(
-                                rep.activePolicyKey == null ? "null" : rep.activePolicyKey
+                                rep.activePolicyKey == null
+                                        ? "null"
+                                        : rep.activePolicyKey
                         )
                 )
                 .pos(x, movingY)
@@ -221,15 +231,16 @@ public abstract class EditorScreen extends Screen {
         movingY += 21;
 
         // Split the current config off the parent class key
-        Button splitPolicyButton = Button.builder(
-                        localized("editor", "splitPolicy"),
+        Button splitPolicyClassButton = Button.builder(
+                        localized("editor", "splitPolicyClass"),
                         (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
                                         options().classPolicies.put(
-                                                lowestPolicyKey,
+                                                ClassPolicy.getKey(lowestPolicyClassName, null),
                                                 new ClassPolicy(
-                                                        lowestPolicyKey,
+                                                        lowestPolicyClassName,
+                                                        null,
                                                         buttons.getFirst().offset,
                                                         offsetFromSlot,
                                                         buttons.getFirst().operationAllowed
@@ -262,26 +273,109 @@ public abstract class EditorScreen extends Screen {
                                     }
                                     Minecraft.getInstance().setScreen(this);
                                 },
-                                localized("title", "confirm.splitPolicy"),
+                                localized("title", "confirm.splitPolicyClass"),
                                 localized(
                                         "message",
-                                        "confirm.splitPolicy",
+                                        "confirm.splitPolicyClass",
                                         Component.literal(rep.activePolicyKey == null
-                                                ? lowestPolicyKey
+                                                ? lowestPolicyClassName
                                                 : rep.activePolicyKey
                                         ).withStyle(ChatFormatting.GOLD),
-                                        Component.literal(lowestPolicyKey)
+                                        Component.literal(lowestPolicyClassName)
                                                 .withStyle(ChatFormatting.GOLD)
                                 )
                         ))
                 )
-                .tooltip(Tooltip.create(localized("editor", "splitPolicy.tooltip")))
+                .tooltip(Tooltip.create(localized("editor", "splitPolicyClass.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        splitPolicyButton.active =
-                rep.activePolicyKey != null && !rep.activePolicyKey.equals(lowestPolicyKey);
-        addRenderableWidget(splitPolicyButton);
+        splitPolicyClassButton.active = rep.activePolicyKey != null
+                && !ClassPolicy.parseKey(rep.activePolicyKey)
+                .getFirst()
+                .equals(lowestPolicyClassName);
+        addRenderableWidget(splitPolicyClassButton);
+        movingY += 21;
+
+        // Split the current config off the parent class key
+        Button splitPolicyTitleButton = Button.builder(
+                        localized("editor", "splitPolicyTitle"),
+                        (button) -> {
+                            Component invTitle = isPlayerInv
+                                    ? ((AbstractContainerScreenAccessor) underlay).clientsort$getPlayerInventoryTitle()
+                                    : underlay.getTitle();
+                            Minecraft.getInstance().setScreen(new ConfirmScreen(
+                                    (confirm) -> {
+                                        if (confirm) {
+                                            if (ClassPolicy.hasInvTitle(rep.activePolicyKey)) {
+                                                ClientSort.LOG.error(
+                                                        "Cannot split policy with title: activePolicyKey '{}' already has title.",
+                                                        rep.activePolicyKey
+                                                );
+                                                return;
+                                            }
+
+                                            options().classPolicies.put(
+                                                    ClassPolicy.getKey(
+                                                            rep.activePolicyKey,
+                                                            invTitle.getString()
+                                                    ),
+                                                    new ClassPolicy(
+                                                            rep.activePolicyKey,
+                                                            invTitle.getString(),
+                                                            buttons.getFirst().offset,
+                                                            offsetFromSlot,
+                                                            buttons.getFirst().operationAllowed
+                                                                    ? buttons.getFirst().active
+                                                                    ? Policy.KEYBIND_BUTTON
+                                                                    : Policy.KEYBIND
+                                                                    : Policy.NONE,
+                                                            buttons.get(1).operationAllowed
+                                                                    ? buttons.getFirst().active
+                                                                    ? Policy.KEYBIND_BUTTON
+                                                                    : Policy.KEYBIND
+                                                                    : Policy.NONE,
+                                                            buttons.get(2).operationAllowed
+                                                                    ? buttons.getFirst().active
+                                                                    ? Policy.KEYBIND_BUTTON
+                                                                    : Policy.KEYBIND
+                                                                    : Policy.NONE,
+                                                            buttons.get(3).operationAllowed
+                                                                    ? buttons.getFirst().active
+                                                                    ? Policy.KEYBIND_BUTTON
+                                                                    : Policy.KEYBIND
+                                                                    : Policy.NONE,
+                                                            autoOp,
+                                                            autoOpOther,
+                                                            new TreeSet<>(ignoredSlots)
+                                                    )
+                                            );
+                                            Config.save();
+                                            init();
+                                        }
+                                        Minecraft.getInstance().setScreen(this);
+                                    },
+                                    localized("title", "confirm.splitPolicyTitle"),
+                                    localized(
+                                            "message",
+                                            "confirm.splitPolicyTitle",
+                                            Component.literal(rep.activePolicyKey == null
+                                                    ? lowestPolicyClassName
+                                                    : rep.activePolicyKey
+                                            ).withStyle(ChatFormatting.GOLD),
+                                            Component.literal(invTitle.getString())
+                                                    .withStyle(ChatFormatting.GOLD)
+                                    )
+                            ));
+                        }
+                )
+                .tooltip(Tooltip.create(localized("editor", "splitPolicyTitle.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        splitPolicyTitleButton.active = rep.activePolicyKey != null
+                && !ClassPolicy.hasInvTitle(rep.activePolicyKey);
+        addRenderableWidget(splitPolicyTitleButton);
         movingY += 21;
 
         // Switch between offset types
@@ -408,7 +502,7 @@ public abstract class EditorScreen extends Screen {
                                     Object object = getObj(slot, underlay.getMenu());
                                     if (object != null && object.getClass()
                                             .getName()
-                                            .equals(lowestPolicyKey)) {
+                                            .equals(lowestPolicyClassName)) {
                                         ignoredSlots.add(((ISlot) slot).clientsort$getIndexInContainer());
                                     }
                                 }
@@ -480,7 +574,7 @@ public abstract class EditorScreen extends Screen {
         // Render disabled-slot indicators
         for (Slot slot : underlay.getMenu().slots) {
             Object object = getObj(slot, underlay.getMenu());
-            if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
+            if (object != null && object.getClass().getName().equals(lowestPolicyClassName)) {
                 if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInContainer())) {
                     // Draw lock icon, top left
                     //noinspection UnnecessaryUnicodeEscape
@@ -529,7 +623,7 @@ public abstract class EditorScreen extends Screen {
         );
         graphics.drawString(
                 font,
-                localized("editor", "policyKey.menu", lowestPolicyKey),
+                localized("editor", "policyKey.menu", lowestPolicyClassName),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
@@ -642,7 +736,8 @@ public abstract class EditorScreen extends Screen {
                 if (((AbstractContainerScreenAccessor) underlay)
                         .clientsort$isHovering(slot, mouseX, mouseY)) {
                     Object object = getObj(slot, underlay.getMenu());
-                    if (object != null && object.getClass().getName().equals(lowestPolicyKey)) {
+                    if (object != null && object.getClass().getName().equals(
+                            lowestPolicyClassName)) {
                         int slotId = ((ISlot) slot).clientsort$getIndexInContainer();
                         if (ignoredSlots.contains(slotId))
                             ignoredSlots.remove(slotId);

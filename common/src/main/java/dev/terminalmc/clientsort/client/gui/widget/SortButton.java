@@ -62,7 +62,7 @@ public class SortButton extends TriggerButton {
                 isPlayerInv,
                 SPRITES,
                 name,
-                policy == null ? null : policy.className(),
+                policy == null ? null : policy.getKey(),
                 lowestPolicyKey,
                 offset,
                 policy == null ? true : policy.offsetFromSlot(),
@@ -106,7 +106,7 @@ public class SortButton extends TriggerButton {
         if (policy == null) {
             options().classPolicies.put(
                     key,
-                    new ClassPolicy(
+                    ClassPolicy.create(
                             key,
                             offset,
                             offsetFromSlot,
@@ -124,7 +124,7 @@ public class SortButton extends TriggerButton {
         } else {
             options().classPolicies.put(
                     key,
-                    new ClassPolicy(
+                    ClassPolicy.create(
                             key,
                             offset,
                             offsetFromSlot,

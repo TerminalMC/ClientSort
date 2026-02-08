@@ -77,7 +77,7 @@ public class MatchTransferButton extends TriggerButton {
                 isPlayerInv,
                 isPlayerInv ? SPRITES_UP : SPRITES_DOWN,
                 name,
-                policy == null ? null : policy.className(),
+                policy == null ? null : policy.getKey(),
                 lowestPolicyKey,
                 offset,
                 policy == null ? true : policy.offsetFromSlot(),
@@ -110,7 +110,7 @@ public class MatchTransferButton extends TriggerButton {
         if (policy == null) {
             options().classPolicies.put(
                     key,
-                    new ClassPolicy(
+                    ClassPolicy.create(
                             key,
                             offset,
                             offsetFromSlot,
@@ -128,7 +128,7 @@ public class MatchTransferButton extends TriggerButton {
         } else {
             options().classPolicies.put(
                     key,
-                    new ClassPolicy(
+                    ClassPolicy.create(
                             key,
                             offset,
                             offsetFromSlot,

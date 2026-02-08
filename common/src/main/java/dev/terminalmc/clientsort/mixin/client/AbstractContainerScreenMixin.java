@@ -35,6 +35,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -302,7 +303,12 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 Object object = getObj(slot, getMenu());
                 if (object == null)
                     continue;
-                @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+                boolean isPlayerInv = slot.container instanceof Inventory;
+                Component invTitle = isPlayerInv
+                        ? ((AbstractContainerScreenAccessor) this).clientsort$getPlayerInventoryTitle()
+                        : this.getTitle();
+                @Nullable ClassPolicy policy =
+                        PolicyManager.getPolicy(object.getClass(), invTitle.getString());
                 if (policy != null && policy.ignoredSlots().contains(slotIdx)) {
                     //noinspection UnnecessaryUnicodeEscape
                     graphics.drawString(

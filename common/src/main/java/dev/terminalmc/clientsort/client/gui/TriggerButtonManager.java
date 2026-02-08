@@ -29,6 +29,7 @@ import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
+import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -262,8 +263,14 @@ public class TriggerButtonManager {
         if (object == null)
             return;
 
+        // Select the relevant title
+        Component invTitle = isPlayerInv
+                ? ((AbstractContainerScreenAccessor) screen).clientsort$getPlayerInventoryTitle()
+                : screen.getTitle();
+
         // Retrieve the relevant policy, if any
-        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+        @Nullable ClassPolicy policy =
+                PolicyManager.getPolicy(object.getClass(), invTitle.getString());
 
         // Evaluate display mode
         boolean create = isEditor || policy == null || opCheck.apply(policy);
@@ -288,7 +295,7 @@ public class TriggerButtonManager {
                 referenceLeft,
                 isPlayerInv,
                 policy,
-                object.getClass().getName(),
+                ClassPolicy.getKey(object.getClass().getName(), null),
                 getShiftedOffset(offset, isPlayerInv),
                 name
         );
@@ -346,8 +353,14 @@ public class TriggerButtonManager {
         if (object == null)
             return;
 
-        // Check the relevant policy, if any
-        @Nullable ClassPolicy policy = PolicyManager.getPolicy(object.getClass());
+        // Select the relevant title
+        Component invTitle = isPlayerInv
+                ? ((AbstractContainerScreenAccessor) screen).clientsort$getPlayerInventoryTitle()
+                : screen.getTitle();
+
+        // Retrieve the relevant policy, if any
+        @Nullable ClassPolicy policy =
+                PolicyManager.getPolicy(object.getClass(), invTitle.getString());
 
         // Evaluate display mode
         boolean create = isEditor || policy == null || opCheck.apply(policy);
@@ -374,8 +387,14 @@ public class TriggerButtonManager {
             if (dstObject == null)
                 return;
 
-            // Check the relevant policy, if any
-            @Nullable ClassPolicy dstPolicy = PolicyManager.getPolicy(dstObject.getClass());
+            // Select the relevant title
+            Component dstInvTitle = isPlayerInv
+                    ? screen.getTitle()
+                    : ((AbstractContainerScreenAccessor) screen).clientsort$getPlayerInventoryTitle();
+
+            // Retrieve the relevant policy, if any
+            @Nullable ClassPolicy dstPolicy =
+                    PolicyManager.getPolicy(dstObject.getClass(), dstInvTitle.getString());
 
             // Re-evaluate display mode
             create = isEditor || dstPolicy == null || opCheck.apply(dstPolicy);
@@ -396,7 +415,7 @@ public class TriggerButtonManager {
                 referenceLeft,
                 isPlayerInv,
                 policy,
-                object.getClass().getName(),
+                ClassPolicy.getKey(object.getClass().getName(), null),
                 getShiftedOffset(offset, isPlayerInv),
                 name
         );

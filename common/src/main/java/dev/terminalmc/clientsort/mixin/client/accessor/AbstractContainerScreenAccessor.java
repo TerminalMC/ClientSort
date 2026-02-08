@@ -17,6 +17,7 @@
 package dev.terminalmc.clientsort.mixin.client.accessor;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,6 +35,9 @@ public interface AbstractContainerScreenAccessor {
 
     @Accessor("imageWidth")
     int clientsort$getImageWidth();
+
+    @Accessor("playerInventoryTitle")
+    Component clientsort$getPlayerInventoryTitle();
 
     @Invoker("slotClicked")
     void clientsort$slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
