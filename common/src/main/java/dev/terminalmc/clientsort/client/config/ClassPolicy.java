@@ -34,12 +34,13 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 public record ClassPolicy(
         @NotNull String className,
         @Nullable Vec2i buttonOffset,
+        boolean offsetFromSlot,
         @NotNull Policy sortPolicy,
         @NotNull Policy stackFillPolicy,
         @NotNull Policy matchTransferPolicy,
         @NotNull Policy transferPolicy,
         @Nullable Operation autoOp,
-        boolean autoOpOther,
+        boolean autoOpOther, // better as reverseAutoOp but that requires a legacy upgrader
         @NotNull TreeSet<Integer> ignoredSlots
 ) {
 
@@ -115,9 +116,9 @@ public record ClassPolicy(
 
     // Config data-string serialization
 
-    public static final String DATA_FORMAT = "%s,(%s),%s,%s,%s,%s,%d/%d,(%s)";
+    public static final String DATA_FORMAT = "%s,(%s)/%d,%s,%s,%s,%s,%d/%d,(%s)";
     public static final String DATA_PATTERN_STRING =
-            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
+            "^(.+),\\((?:(-?\\d+),(-?\\d+))?\\)/([01]),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public String toDataString() {
@@ -125,6 +126,7 @@ public record ClassPolicy(
                 DATA_FORMAT,
                 className,
                 buttonOffset == null ? "" : buttonOffset.x() + "," + buttonOffset.y(),
+                offsetFromSlot ? 1 : 0,
                 sortPolicy.toSimpleString(),
                 stackFillPolicy.toSimpleString(),
                 matchTransferPolicy.toSimpleString(),
@@ -176,15 +178,16 @@ public record ClassPolicy(
                                 Integer.parseInt(matcher.group(2)),
                                 Integer.parseInt(matcher.group(3))
                         ),
-                Policy.fromSimpleString(matcher.group(4)),
+                matcher.group(4).equals("1"),
                 Policy.fromSimpleString(matcher.group(5)),
                 Policy.fromSimpleString(matcher.group(6)),
                 Policy.fromSimpleString(matcher.group(7)),
-                matcher.group(8).equals("0")
+                Policy.fromSimpleString(matcher.group(8)),
+                matcher.group(9).equals("0")
                         ? null
-                        : Operation.values()[Integer.parseInt(matcher.group(8)) - 1],
-                matcher.group(9).equals("1"),
-                new TreeSet<>(Arrays.stream(matcher.group(10).split(","))
+                        : Operation.values()[Integer.parseInt(matcher.group(9)) - 1],
+                matcher.group(10).equals("1"),
+                new TreeSet<>(Arrays.stream(matcher.group(11).split(","))
                         .filter((s) -> !s.isBlank())
                         .map(Integer::parseInt).sorted().toList())
         );

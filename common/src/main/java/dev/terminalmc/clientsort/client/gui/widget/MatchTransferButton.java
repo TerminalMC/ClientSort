@@ -80,6 +80,7 @@ public class MatchTransferButton extends TriggerButton {
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,
+                policy == null ? true : policy.offsetFromSlot(),
                 policy == null || policy.canMatchTransfer(),
                 policy != null && policy.showMatchTransferButton(),
                 (button) -> SingleUseOperator.transferMatching(screen, referenceSlot, false)
@@ -94,6 +95,7 @@ public class MatchTransferButton extends TriggerButton {
     @Override
     public void savePolicy(
             @Nullable Vec2i offset,
+            boolean offsetFromSlot,
             @Nullable Operation autoOp,
             boolean autoOpOther,
             Collection<Integer> slots
@@ -111,6 +113,7 @@ public class MatchTransferButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             Policy.KEYBIND,
                             Policy.KEYBIND,
                             operationAllowed
@@ -128,6 +131,7 @@ public class MatchTransferButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             policy.sortPolicy(),
                             policy.stackFillPolicy(),
                             operationAllowed

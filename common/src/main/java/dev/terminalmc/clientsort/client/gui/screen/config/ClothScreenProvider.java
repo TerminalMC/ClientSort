@@ -648,6 +648,10 @@ public class ClothScreenProvider {
                 eb.startTextDescription(localized("option", "policies.description.9")).build());
         policiesInstructions.add(
                 eb.startTextDescription(localized("option", "policies.description.10")).build());
+        policiesInstructions.add(
+                eb.startTextDescription(localized("option", "policies.description.11")).build());
+        policiesInstructions.add(
+                eb.startTextDescription(localized("option", "policies.description.12")).build());
 
         policies.addEntry(policiesInstructions.build());
 

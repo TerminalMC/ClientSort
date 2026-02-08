@@ -80,6 +80,7 @@ public class StackFillButton extends TriggerButton {
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,
+                policy == null ? true : policy.offsetFromSlot(),
                 policy == null || policy.canStackFill(),
                 policy != null && policy.showStackFillButton(),
                 (button) -> SingleUseOperator.fillStacks(screen, referenceSlot, false)
@@ -94,6 +95,7 @@ public class StackFillButton extends TriggerButton {
     @Override
     public void savePolicy(
             @Nullable Vec2i offset,
+            boolean offsetFromSlot,
             @Nullable Operation autoOp,
             boolean autoOpOther,
             Collection<Integer> slots
@@ -111,6 +113,7 @@ public class StackFillButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             Policy.KEYBIND,
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
@@ -128,6 +131,7 @@ public class StackFillButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             policy.sortPolicy(),
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND

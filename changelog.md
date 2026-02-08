@@ -1,7 +1,8 @@
 # Changelog
 
-## 2.1.8
+## 2.2.0
 
+- Added a per-policy option to anchor buttons to the reference slot instead of the GUI edge
 - Fixed detection of CTRL/CMD keys in 1.21.9-11
 
 ## 2.1.7

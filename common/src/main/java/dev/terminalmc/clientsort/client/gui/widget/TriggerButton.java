@@ -68,6 +68,7 @@ public abstract class TriggerButton extends Button {
     public final String lowestPolicyKey;
 
     public Vec2i offset;
+    public boolean offsetFromSlot;
     public boolean operationAllowed;
 
     protected TriggerButton(
@@ -81,6 +82,7 @@ public abstract class TriggerButton extends Button {
             @Nullable String activePolicyKey,
             String lowestPolicyKey,
             Vec2i offset,
+            boolean offsetFromSlot,
             boolean operationAllowed,
             boolean active,
             OnPress onPress
@@ -105,6 +107,7 @@ public abstract class TriggerButton extends Button {
         this.isPlayerInv = isPlayerInv;
         this.sprites = sprites;
         this.offset = offset;
+        this.offsetFromSlot = offsetFromSlot;
         this.activePolicyKey = activePolicyKey;
         this.lowestPolicyKey = lowestPolicyKey;
         this.operationAllowed = operationAllowed;
@@ -246,15 +249,29 @@ public abstract class TriggerButton extends Button {
 
     public abstract void savePolicy(
             @Nullable Vec2i offset,
+            boolean offsetFromSlot,
             @Nullable Operation autoOp,
             boolean autoOpOther,
             Collection<Integer> slots
     );
 
     private int getAnchorSideX(AbstractContainerScreenAccessor acs) {
-        int anchorSideX = acs.clientsort$getLeftPos();
-        if (!referenceLeft)
-            anchorSideX += acs.clientsort$getImageWidth();
+        int anchorSideX;
+        if (offsetFromSlot) {
+            anchorSideX = acs.clientsort$getLeftPos() + referenceSlot.x;
+            if (referenceLeft) {
+                // Shift left by button width
+                anchorSideX -= WIDTH;
+            } else {
+                // Shift right by slot width
+                anchorSideX += 16;
+            }
+        } else {
+            anchorSideX = acs.clientsort$getLeftPos();
+            if (!referenceLeft)
+                anchorSideX += acs.clientsort$getImageWidth();
+        }
+
         return anchorSideX;
     }
 }

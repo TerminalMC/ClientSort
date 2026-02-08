@@ -304,6 +304,7 @@ public class Config {
                 new ClassPolicy(
                         Inventory.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
@@ -315,6 +316,7 @@ public class Config {
                 new ClassPolicy(
                         ChestMenu.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -326,6 +328,7 @@ public class Config {
                 new ClassPolicy(
                         HopperMenu.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND,
                         Policy.KEYBIND,
                         Policy.KEYBIND_BUTTON,
@@ -337,6 +340,7 @@ public class Config {
                 new ClassPolicy(
                         HorseInventoryMenu.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND,
                         Policy.KEYBIND,
@@ -348,6 +352,7 @@ public class Config {
                 new ClassPolicy(
                         PlayerEnderChestContainer.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -359,6 +364,7 @@ public class Config {
                 new ClassPolicy(
                         ShulkerBoxMenu.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -370,6 +376,7 @@ public class Config {
                 new ClassPolicy(
                         RandomizableContainerBlockEntity.class.getName(),
                         null,
+                        false,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
                         Policy.KEYBIND_BUTTON,
@@ -381,6 +388,7 @@ public class Config {
                 new ClassPolicy(
                         "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
                         null,
+                        false,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -392,6 +400,7 @@ public class Config {
                 new ClassPolicy(
                         "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
                         null,
+                        false,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -403,6 +412,7 @@ public class Config {
                 new ClassPolicy(
                         "com.tom.storagemod.menu.CraftingTerminalMenu",
                         null,
+                        false,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -414,6 +424,7 @@ public class Config {
                 new ClassPolicy(
                         "com.tom.storagemod.menu.StorageTerminalMenu",
                         null,
+                        false,
                         Policy.NONE,
                         Policy.NONE,
                         Policy.NONE,
@@ -441,6 +452,7 @@ public class Config {
                             new ClassPolicy(
                                     cp.className(),
                                     cp.buttonOffset(),
+                                    cp.offsetFromSlot(),
                                     Options.policyValidator.validate(cp.sortPolicy()),
                                     Options.policyValidator.validate(cp.stackFillPolicy()),
                                     Options.policyValidator.validate(cp.matchTransferPolicy()),
@@ -554,6 +566,7 @@ public class Config {
                     new ClassPolicy(
                             bl.className(),
                             bl.offset(),
+                            false,
                             Boolean.TRUE.equals(bl.sortEnabled())
                                     ? Policy.KEYBIND_BUTTON : Policy.KEYBIND,
                             Boolean.TRUE.equals(bl.stackFillEnabled())

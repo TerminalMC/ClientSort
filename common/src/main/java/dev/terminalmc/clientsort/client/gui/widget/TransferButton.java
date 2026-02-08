@@ -77,6 +77,7 @@ public class TransferButton extends TriggerButton {
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,
+                policy == null ? true : policy.offsetFromSlot(),
                 policy == null || policy.canTransfer(),
                 policy != null && policy.showTransferButton(),
                 (button) -> SingleUseOperator.transfer(screen, referenceSlot, false)
@@ -91,6 +92,7 @@ public class TransferButton extends TriggerButton {
     @Override
     public void savePolicy(
             @Nullable Vec2i offset,
+            boolean offsetFromSlot,
             @Nullable Operation autoOp,
             boolean autoOpOther,
             Collection<Integer> slots
@@ -108,6 +110,7 @@ public class TransferButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             Policy.KEYBIND,
                             Policy.KEYBIND,
                             Policy.KEYBIND,
@@ -125,6 +128,7 @@ public class TransferButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             policy.sortPolicy(),
                             policy.stackFillPolicy(),
                             policy.matchTransferPolicy(),

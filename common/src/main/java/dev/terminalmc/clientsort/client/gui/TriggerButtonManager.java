@@ -29,7 +29,6 @@ import dev.terminalmc.clientsort.client.inventory.Scope;
 import dev.terminalmc.clientsort.client.inventory.helper.ContainerScreenHelper;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
-import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.mixin.client.accessor.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -476,16 +475,28 @@ public class TriggerButtonManager {
         Scope scope = isPlayerInv ? Scope.PLAYER_INV : Scope.CONTAINER_INV;
         for (Slot slot : helper.getLargestSlotGroup(scope)) {
             // Calculate the weighted positional score
+
+            // x factor is how far from the left side of the menu the slot is, as a fraction
+            // of the screen width
+            double xFactor = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+            // y factor is how far from the top of the menu the slot is, as a fraction of the
+            // screen height
+            double yFactor = Math.clamp(slot.y, 0, screen.height) / (double) screen.height;
+
             double x;
+            double y;
             if (anchorButtonsLeft) {
-                x = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+                // Prefer further left
+                x = 1 - xFactor;
             } else {
-                x = ((AbstractContainerScreenAccessor) screen).clientsort$getImageWidth()
-                        - Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+                // Prefer further right
+                x = xFactor;
             }
-            double y = (screen.height - Math.clamp(slot.y, 0, screen.height))
-                    / (double) screen.height;
-            double score = x * 0.8D + y * 0.2D;
+            // Prefer higher up
+            y = 1 - yFactor;
+
+            // Assign weights
+            double score = x * 0.8d + y * 0.2d;
 
             if (score > bestScore) {
                 bestSlot = slot;

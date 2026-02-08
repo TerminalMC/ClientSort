@@ -55,6 +55,7 @@ public abstract class EditorScreen extends Screen {
     private final Screen lastScreen;
     private final AbstractContainerScreen<?> underlay;
     private final LinkedList<TriggerButton> buttons = new LinkedList<>();
+    private boolean offsetFromSlot = false;
     private @Nullable Operation autoOp = null;
     private boolean autoOpOther = false;
     public final Set<Integer> ignoredSlots = new TreeSet<>();
@@ -150,6 +151,7 @@ public abstract class EditorScreen extends Screen {
         ClassPolicy policy = options().classPolicies.get(rep.activePolicyKey);
         if (policy != null) {
             buttons.forEach((button) -> button.active = button.getPolicyStatus(policy));
+            offsetFromSlot = policy.offsetFromSlot();
             autoOp = policy.autoOp();
             autoOpOther = policy.autoOpOther();
             ignoredSlots.addAll(policy.ignoredSlots());
@@ -174,10 +176,11 @@ public abstract class EditorScreen extends Screen {
     private void rebuildGui() {
         clearWidgets();
 
+        Minecraft mc = Minecraft.getInstance();
         StringWidget titleWidget = new StringWidget(0, 2, width, font.lineHeight, title, font);
         addRenderableWidget(titleWidget);
 
-        int numButtons = 12;
+        int numButtons = 13;
         int x = 2;
         int movingY = height - 21 * numButtons;
         int width = 100;
@@ -204,134 +207,17 @@ public abstract class EditorScreen extends Screen {
         addRenderableWidget(instructionsButton);
         movingY += 21;
 
-        // Disable buttons and exit
-        Button disableButtonsButton = Button.builder(
-                        localized("editor", "disableButtons").withStyle(ChatFormatting.RED),
-                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
-                                (confirm) -> {
-                                    if (confirm) {
-                                        options().showButtons = false;
-                                        Config.save();
-                                        onClose();
-                                    } else {
-                                        Minecraft.getInstance().setScreen(this);
-                                    }
-                                },
-                                localized("title", "confirm.disableButtons"),
-                                localized(
-                                        "message", "confirm.disableButtons.1",
-                                        localized("key", "edit").withStyle(ChatFormatting.GOLD),
-                                        localized("option", "buttons").withStyle(ChatFormatting.GOLD)
-                                )
-                                        .append("\n\n")
-                                        .append(localized("message", "confirm.disableButtons.2"))
-                        ))
+        Button copyPolicyKeyButton = Button.builder(
+                        localized("editor", "copyPolicyKey"),
+                        (button) -> mc.keyboardHandler.setClipboard(
+                                rep.activePolicyKey == null ? "null" : rep.activePolicyKey
+                        )
                 )
-                .tooltip(Tooltip.create(localized("editor", "disableButtons.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        addRenderableWidget(disableButtonsButton);
-        movingY += 21;
-
-        // Toggle the layout status of all buttons
-        Button toggleVisibilityButton = Button.builder(
-                        localized("editor", "toggleVisibility"), (button) -> {
-                            boolean status = buttons.stream().noneMatch((b) -> b.active);
-                            buttons.forEach((b) -> b.active = status);
-                        }
-                )
-                .tooltip(Tooltip.create(localized("editor", "toggleVisibility.tooltip")))
-                .pos(x, movingY)
-                .size(width, height)
-                .build();
-        addRenderableWidget(toggleVisibilityButton);
-        movingY += 21;
-
-        // Change the auto trigger behavior
-        CycleButton<Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
-                        Component.literal("1").withStyle(ChatFormatting.RED),
-                        Component.literal("0").withStyle(ChatFormatting.GREEN)
-                )
-                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
-                .displayOnlyValue()
-                .withInitialValue(autoOpOther)
-                .create(
-                        x + width - 10,
-                        movingY,
-                        10,
-                        height,
-                        Component.empty(),
-                        (b, v) -> autoOpOther = v
-                );
-        addRenderableWidget(autoOpOtherButton);
-        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder((v) -> v == 0
-                        ? localized("editor", "autoOp.none")
-                        : localized("key", "op." + Operation.values()[v - 1].translationKey))
-                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
-                .withValues(0, 1, 2, 3, 4)
-                .withInitialValue(autoOp == null
-                        ? 0
-                        : List.of(Operation.values()).indexOf(autoOp) + 1
-                )
-                .create(
-                        x,
-                        movingY,
-                        width - 10,
-                        height,
-                        localized("editor", "autoOp"),
-                        (b, v) -> autoOp = (v == 0 ? null : Operation.values()[v - 1])
-                );
-        addRenderableWidget(autoOpButton);
-        movingY += 21;
-
-        // Clear the ignored slots list
-        Button unignoreSlotsButton = Button.builder(
-                        localized("editor", "unignoreSlots"), (button) -> ignoredSlots.clear()
-                )
-                .tooltip(Tooltip.create(localized("editor", "unignoreSlots.tooltip")))
-                .pos(x, movingY)
-                .size(width, height)
-                .build();
-        addRenderableWidget(unignoreSlotsButton);
-        movingY += 21;
-
-        // Move the button to the default position
-        Button moveToDefaultButton = Button.builder(
-                        localized("editor", "moveToDefault"), (button) -> {
-                            Vec2i before = buttons.getFirst().offset;
-                            buttons.getFirst().offset = options().layoutOffset;
-                            repositionButtons(buttons.getFirst(), before);
-                        }
-                )
-                .tooltip(Tooltip.create(localized("editor", "moveToDefault.tooltip")))
-                .pos(x, movingY)
-                .size(width, height)
-                .build();
-        addRenderableWidget(moveToDefaultButton);
-        movingY += 21;
-
-        // Save the current position as default
-        Button saveAsDefaultButton = Button.builder(
-                        localized("editor", "saveAsDefault"),
-                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
-                                (confirm) -> {
-                                    if (confirm) {
-                                        options().layoutOffset = buttons.getFirst().offset;
-                                        Config.save();
-                                        init();
-                                    }
-                                    Minecraft.getInstance().setScreen(this);
-                                },
-                                localized("title", "confirm.saveAsDefault"),
-                                localized("message", "confirm.saveAsDefault")
-                        ))
-                )
-                .tooltip(Tooltip.create(localized("editor", "saveAsDefault.tooltip")))
-                .pos(x, movingY)
-                .size(width, height)
-                .build();
-        addRenderableWidget(saveAsDefaultButton);
+        copyPolicyKeyButton.active = rep.activePolicyKey != null;
+        addRenderableWidget(copyPolicyKeyButton);
         movingY += 21;
 
         // Split the current config off the parent class key
@@ -341,9 +227,11 @@ public abstract class EditorScreen extends Screen {
                                 (confirm) -> {
                                     if (confirm) {
                                         options().classPolicies.put(
-                                                lowestPolicyKey, new ClassPolicy(
+                                                lowestPolicyKey,
+                                                new ClassPolicy(
                                                         lowestPolicyKey,
                                                         buttons.getFirst().offset,
+                                                        offsetFromSlot,
                                                         buttons.getFirst().operationAllowed
                                                                 ? buttons.getFirst().active
                                                                 ? Policy.KEYBIND_BUTTON
@@ -394,6 +282,146 @@ public abstract class EditorScreen extends Screen {
         splitPolicyButton.active =
                 rep.activePolicyKey != null && !rep.activePolicyKey.equals(lowestPolicyKey);
         addRenderableWidget(splitPolicyButton);
+        movingY += 21;
+
+        // Switch between offset types
+        CycleButton<Boolean> switchOffsetTypeButton = CycleButton.booleanBuilder(
+                        localized("editor", "switchOffsetType.slot"),
+                        localized("editor", "switchOffsetType.edge")
+                )
+                .withInitialValue(offsetFromSlot)
+                .withTooltip((v) -> Tooltip.create(localized(
+                        "editor",
+                        "switchOffsetType.tooltip." + (v ? "slot" : "edge")
+                )))
+                .create(
+                        x,
+                        movingY,
+                        width,
+                        height,
+                        localized("editor", "switchOffsetType"),
+                        (button, v) -> {
+                            this.offsetFromSlot = v;
+                            this.buttons.forEach((b) -> b.offsetFromSlot = v);
+                        }
+                );
+        addRenderableWidget(switchOffsetTypeButton);
+        movingY += 21;
+
+        // Move the button to the default position
+        Button moveToDefaultButton = Button.builder(
+                        localized("editor", "moveToDefault"),
+                        (button) -> {
+                            Vec2i before = buttons.getFirst().offset;
+                            buttons.getFirst().offset = options().layoutOffset;
+                            repositionButtons(buttons.getFirst(), before);
+                        }
+                )
+                .tooltip(Tooltip.create(localized("editor", "moveToDefault.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(moveToDefaultButton);
+        movingY += 21;
+
+        // Save the current position as default
+        Button saveAsDefaultButton = Button.builder(
+                        localized("editor", "saveAsDefault"),
+                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
+                                (confirm) -> {
+                                    if (confirm) {
+                                        options().layoutOffset = buttons.getFirst().offset;
+                                        Config.save();
+                                        init();
+                                    }
+                                    Minecraft.getInstance().setScreen(this);
+                                },
+                                localized("title", "confirm.saveAsDefault"),
+                                localized("message", "confirm.saveAsDefault")
+                        ))
+                )
+                .tooltip(Tooltip.create(localized("editor", "saveAsDefault.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(saveAsDefaultButton);
+        movingY += 21;
+
+        // Change the auto trigger behavior
+        CycleButton<Boolean> autoOpOtherButton = CycleButton.booleanBuilder(
+                        Component.literal("1").withStyle(ChatFormatting.RED),
+                        Component.literal("0").withStyle(ChatFormatting.GREEN)
+                )
+                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
+                .displayOnlyValue()
+                .withInitialValue(autoOpOther)
+                .create(
+                        x + width - 10,
+                        movingY,
+                        10,
+                        height,
+                        Component.empty(),
+                        (b, v) -> autoOpOther = v
+                );
+        addRenderableWidget(autoOpOtherButton);
+        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder((v) -> v == 0
+                        ? localized("editor", "autoOp.none")
+                        : localized("key", "op." + Operation.values()[v - 1].translationKey))
+                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
+                .withValues(0, 1, 2, 3, 4)
+                .withInitialValue(autoOp == null
+                        ? 0
+                        : List.of(Operation.values()).indexOf(autoOp) + 1
+                )
+                .create(
+                        x,
+                        movingY,
+                        width - 10,
+                        height,
+                        localized("editor", "autoOp"),
+                        (b, v) -> autoOp = (v == 0 ? null : Operation.values()[v - 1])
+                );
+        addRenderableWidget(autoOpButton);
+        movingY += 21;
+
+        // Toggle the visibility of all buttons
+        Button toggleButtonsVisibleButton = Button.builder(
+                        localized("editor", "toggleVisibility"),
+                        (button) -> {
+                            boolean status = buttons.stream().noneMatch((b) -> b.active);
+                            buttons.forEach((b) -> b.active = status);
+                        }
+                )
+                .tooltip(Tooltip.create(localized("editor", "toggleVisibility.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(toggleButtonsVisibleButton);
+        movingY += 21;
+
+        // Ignore/unignore all slots
+        Button toggleSlotsIgnoredButton = Button.builder(
+                        localized("editor", "toggleIgnoreSlots"),
+                        (button) -> {
+                            if (ignoredSlots.isEmpty()) {
+                                for (Slot slot : underlay.getMenu().slots) {
+                                    Object object = getObj(slot, underlay.getMenu());
+                                    if (object != null && object.getClass()
+                                            .getName()
+                                            .equals(lowestPolicyKey)) {
+                                        ignoredSlots.add(((ISlot) slot).clientsort$getIndexInContainer());
+                                    }
+                                }
+                            } else {
+                                ignoredSlots.clear();
+                            }
+                        }
+                )
+                .tooltip(Tooltip.create(localized("editor", "toggleIgnoreSlots.tooltip")))
+                .pos(x, movingY)
+                .size(width, height)
+                .build();
+        addRenderableWidget(toggleSlotsIgnoredButton);
         movingY += 21;
 
         // Re-generates the screen to undo all changes made since opening
@@ -558,7 +586,13 @@ public abstract class EditorScreen extends Screen {
         @Nullable Vec2i offset = buttons.getFirst().offset.equals(options().layoutOffset)
                 ? null
                 : buttons.getFirst().offset;
-        buttons.forEach((b) -> b.savePolicy(offset, autoOp, autoOpOther, ignoredSlots));
+        buttons.forEach((b) -> b.savePolicy(
+                offset,
+                offsetFromSlot,
+                autoOp,
+                autoOpOther,
+                ignoredSlots
+        ));
         Config.save();
         onClose();
     }

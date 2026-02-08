@@ -65,6 +65,7 @@ public class SortButton extends TriggerButton {
                 policy == null ? null : policy.className(),
                 lowestPolicyKey,
                 offset,
+                policy == null ? true : policy.offsetFromSlot(),
                 policy == null || policy.canSort(),
                 policy != null && policy.showSortButton(),
                 (button) -> {
@@ -90,6 +91,7 @@ public class SortButton extends TriggerButton {
     @Override
     public void savePolicy(
             @Nullable Vec2i offset,
+            boolean offsetFromSlot,
             @Nullable Operation autoOp,
             boolean autoOpOther,
             Collection<Integer> slots
@@ -107,6 +109,7 @@ public class SortButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
@@ -124,6 +127,7 @@ public class SortButton extends TriggerButton {
                     new ClassPolicy(
                             key,
                             offset,
+                            offsetFromSlot,
                             operationAllowed
                                     ? active ? Policy.KEYBIND_BUTTON : Policy.KEYBIND
                                     : Policy.NONE,
