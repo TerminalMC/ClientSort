@@ -56,8 +56,6 @@ public class TriggerButtonManager {
     }
 
     private static final int BUTTON_SPACING = 1;
-    private static final int BUTTON_SHIFT_X = 0;
-    private static final int BUTTON_SHIFT_Y = 1;
 
     private static @Nullable AbstractContainerScreen<?> screen;
 
@@ -530,12 +528,14 @@ public class TriggerButtonManager {
      * @return the offset, shifted by a constant amount based on the number of buttons already
      * generated.
      */
-    @SuppressWarnings("ConstantValue")
     public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {
         int index = (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).size();
 
-        int x = offset.x() + BUTTON_SHIFT_X * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
-        int y = offset.y() + BUTTON_SHIFT_Y * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
+        int shiftX = options().buttonsHorizontal ? 1 : 0;
+        int shiftY = options().buttonsHorizontal ? 0 : 1;
+
+        int x = offset.x() + shiftX * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
+        int y = offset.y() + shiftY * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
 
         return new Vec2i(x, y);
     }

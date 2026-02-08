@@ -237,6 +237,9 @@ public class Config {
         public static final boolean anchorButtonsLeftDefault = false;
         public boolean anchorButtonsLeft = anchorButtonsLeftDefault;
 
+        public static final boolean buttonsHorizontalDefault = false;
+        public boolean buttonsHorizontal = buttonsHorizontalDefault;
+
         private static Operation validateUniqueOp(
                 @Nullable Operation val,
                 @Nullable Operation... others

@@ -2,6 +2,7 @@
 
 ## 2.2.0
 
+- Added an option to arrange buttons horizontally rather than vertically
 - Added support for creating separate class policies for unique inventory titles
 - Added a per-policy option to anchor buttons to the reference slot instead of the GUI edge
 - Fixed detection of CTRL/CMD keys in 1.21.9-11
