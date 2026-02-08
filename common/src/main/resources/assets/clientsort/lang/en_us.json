@@ -174,7 +174,7 @@
   "option.clientsort.policies.description.10": "    auto op: '0' to disable, '1'-'4' to trigger an operation.",
   "option.clientsort.policies.description.11": "    reverse: '0' for the normal direction (out), '1' for reversed (in).",
   "option.clientsort.policies.description.12": "    ignored slots: a list of slots that should not be affected by operations.",
-  "option.clientsort.policies.description.13": "Note: fill and transfer buttons are only shown if enabled on both the player inventory and the container.",
+  "option.clientsort.policies.description.13": "Note: fill, restock and transfer buttons are only shown if enabled on both the player inventory and the container.",
   "option.clientsort.classPolicies": "Class Policies",
   "option.clientsort.classPolicies.tooltip": "Each of the entries below corresponds to a particular type of inventory.",
 
