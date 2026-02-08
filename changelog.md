@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0
+## 2.2.0-beta.1
 
 Note: this version includes networking changes, servers and clients must be upgraded together.
 
