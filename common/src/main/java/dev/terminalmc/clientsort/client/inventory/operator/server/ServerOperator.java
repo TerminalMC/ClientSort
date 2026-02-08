@@ -133,7 +133,8 @@ public class ServerOperator extends SingleUseOperator {
         ClientPlatformServices.getInstance().sendToServer(new StackFillPayload(
                 screen.getMenu().containerId,
                 srcSlotIds,
-                dstSlotIds
+                dstSlotIds,
+                options().transferReverseOrder
         ));
     }
 
@@ -192,7 +193,8 @@ public class ServerOperator extends SingleUseOperator {
         ClientPlatformServices.getInstance().sendToServer(new TransferPayload(
                 screen.getMenu().containerId,
                 srcSlotIds,
-                dstSlotIds
+                dstSlotIds,
+                options().transferReverseOrder
         ));
     }
 

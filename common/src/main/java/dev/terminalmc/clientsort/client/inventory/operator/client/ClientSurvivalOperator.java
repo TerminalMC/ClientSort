@@ -33,6 +33,7 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayDeque;
 import java.util.BitSet;
+import java.util.function.Function;
 
 import static dev.terminalmc.clientsort.ClientSort.debug;
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -504,7 +505,11 @@ public class ClientSurvivalOperator extends ClientOperator {
 
         // Work backwards from the end of the source slot array, looking for a
         // nonempty stack
-        for (int i = originSlots.length - 1; i >= 0; i--) {
+        boolean reversed = options().transferReverseOrder;
+        int start = reversed ? originSlots.length - 1 : 0;
+        Function<Integer,Boolean> end = reversed ? (i) -> i >= 0 : (i) -> i < originSlots.length;
+        Function<Integer,Integer> step = reversed ? (i) -> i - 1 : (i) -> i + 1;
+        for (int i = start; end.apply(i); i = step.apply(i)) {
             Slot srcSlot = originSlots[i];
             ItemStack srcStack = originStacks[i];
 

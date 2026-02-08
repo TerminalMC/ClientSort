@@ -92,6 +92,8 @@
   "option.clientsort.extraSlotScope": "Extra Slot Scope",
   "option.clientsort.bundlesUseLeftClick": "Bundles use Left Click",
   "option.clientsort.bundlesUseLeftClick.tooltip": "In 1.21.2+, bundles use left-click to load, which can interfere with inventory actions. If playing on a 1.21.2+ server, enable this option.",
+  "option.clientsort.transferReverseOrder": "Transfer Reverse Order",
+  "option.clientsort.transferReverseOrder.tooltip": "Whether to scan the source inventory backwards in transfer operations.",
   "option.clientsort.showDebugInfo": "Show Debug Info",
   "option.clientsort.showDebugInfo.tooltip": "Whether to show debug info on the GUI and enable debug logging. Value will reset when you restart the game.",
 

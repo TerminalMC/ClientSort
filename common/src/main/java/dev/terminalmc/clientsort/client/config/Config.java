@@ -113,6 +113,9 @@ public class Config {
         public static final boolean bundlesUseLeftClickDefault = false;
         public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
 
+        public static final boolean transferReverseOrderDefault = true;
+        public boolean transferReverseOrder = transferReverseOrderDefault;
+
         // Matching options
 
         public static final boolean alwaysMatchByTypeDefault = false;

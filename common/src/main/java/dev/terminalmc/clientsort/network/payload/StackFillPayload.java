@@ -32,7 +32,12 @@ import org.jetbrains.annotations.NotNull;
  * @param srcSlotIds     a sub-array of slots to take items from.
  * @param dstSlotIds     a sub-array of slots to place items in.
  */
-public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSlotIds)
+public record StackFillPayload(
+        int srcContainerId,
+        int[] srcSlotIds,
+        int[] dstSlotIds,
+        boolean reversed
+)
         implements CustomPacketPayload {
 
     public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
@@ -57,6 +62,8 @@ public record StackFillPayload(int srcContainerId, int[] srcSlotIds, int[] dstSl
                     StackFillPayload::srcSlotIds,
                     VAR_INT_ARRAY,
                     StackFillPayload::dstSlotIds,
+                    ByteBufCodecs.BOOL,
+                    StackFillPayload::reversed,
                     StackFillPayload::new
             );
 

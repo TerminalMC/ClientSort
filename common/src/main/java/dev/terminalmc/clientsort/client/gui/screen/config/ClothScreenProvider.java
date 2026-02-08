@@ -183,11 +183,16 @@ public class ClothScreenProvider {
                 )
                 .setTooltip(localized("option", "bundlesUseLeftClick.tooltip"))
                 .setDefaultValue(Config.Options.bundlesUseLeftClickDefault)
-                .setSaveConsumer(val -> {
-                    options.bundlesUseLeftClick = val;
-                    if (val)
-                        CreativeSearchOrder.tryRefreshStackPositionMap();
-                })
+                .setSaveConsumer(val -> options.bundlesUseLeftClick = val)
+                .build());
+
+        general.addEntry(eb.startBooleanToggle(
+                        localized("option", "transferReverseOrder"),
+                        options.transferReverseOrder
+                )
+                .setTooltip(localized("option", "transferReverseOrder.tooltip"))
+                .setDefaultValue(Config.Options.transferReverseOrderDefault)
+                .setSaveConsumer(val -> options.transferReverseOrder = val)
                 .build());
 
         general.addEntry(eb.startBooleanToggle(

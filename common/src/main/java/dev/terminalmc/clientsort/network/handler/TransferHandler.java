@@ -30,6 +30,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.function.Function;
+
 import static dev.terminalmc.clientsort.ClientSort.getObj;
 import static dev.terminalmc.clientsort.network.handler.validate.SchemaValidator.validateSlotArray;
 
@@ -56,7 +58,13 @@ public class TransferHandler extends PayloadHandler {
                     validateSlotArray(player, menu, payload.srcSlotIds());
                     validateSlotArray(player, menu, payload.dstSlotIds());
                 },
-                (menu) -> transfer(server, menu, payload.srcSlotIds(), payload.dstSlotIds()),
+                (menu) -> transfer(
+                        server,
+                        menu,
+                        payload.srcSlotIds(),
+                        payload.dstSlotIds(),
+                        payload.reversed()
+                ),
                 TransferPayload.TYPE,
                 TransferResultPayload.TYPE,
                 (result, message) -> new TransferResultPayload(result.code, message)
@@ -67,11 +75,15 @@ public class TransferHandler extends PayloadHandler {
             MinecraftServer server,
             AbstractContainerMenu menu,
             int[] srcSlotIds,
-            int[] dstSlotIds
+            int[] dstSlotIds,
+            boolean reversed
     ) throws PayloadHandlerException {
         // Work backwards from the end of the source array, looking for a
         // nonempty stack
-        for (int i = srcSlotIds.length - 1; i >= 0; i--) {
+        int start = reversed ? srcSlotIds.length - 1 : 0;
+        Function<Integer, Boolean> end = reversed ? (i) -> i >= 0 : (i) -> i < srcSlotIds.length;
+        Function<Integer, Integer> step = reversed ? (i) -> i - 1 : (i) -> i + 1;
+        for (int i = start; end.apply(i); i = step.apply(i)) {
             int srcSlotId = srcSlotIds[i];
             Slot srcSlot = menu.slots.get(srcSlotId);
             ItemStack srcStack = srcSlot.getItem();
