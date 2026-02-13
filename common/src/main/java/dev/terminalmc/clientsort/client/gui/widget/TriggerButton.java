@@ -39,7 +39,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
@@ -158,7 +158,7 @@ public abstract class TriggerButton extends Button {
     }
 
     @Override
-    public void renderWidget(
+    public void renderContents(
             @NotNull GuiGraphics graphics,
             int mouseX,
             int mouseY,
@@ -177,7 +177,7 @@ public abstract class TriggerButton extends Button {
         setY(newY);
 
         // Draw texture
-        ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
+        Identifier texture = sprites.get(isActive(), isHoveredOrFocused());
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), width, height);
 
         // Draw policy state indicator
@@ -214,7 +214,7 @@ public abstract class TriggerButton extends Button {
     }
 
     @Override
-    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
+    protected void onDrag(@NotNull MouseButtonEvent event, double dragX, double dragY) {
         if (Minecraft.getInstance().screen instanceof EditorScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
             int newX = Math.clamp((int) event.x() - HALF_WIDTH, 0, screen.width - WIDTH);
