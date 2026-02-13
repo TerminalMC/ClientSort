@@ -23,7 +23,7 @@ import dev.terminalmc.clientsort.client.inventory.operator.SingleUseOperator;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -36,23 +36,23 @@ import static dev.terminalmc.clientsort.client.config.Config.options;
 public class StackFillButton extends TriggerButton {
 
     private static final WidgetSprites SPRITES_UP = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up"),
-            ResourceLocation.fromNamespaceAndPath(
+            Identifier.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_up"),
+            Identifier.fromNamespaceAndPath(
                     ClientSort.MOD_ID,
                     "widget/stack_fill_up_disabled"
             ),
-            ResourceLocation.fromNamespaceAndPath(
+            Identifier.fromNamespaceAndPath(
                     ClientSort.MOD_ID,
                     "widget/stack_fill_up_highlighted"
             )
     );
     private static final WidgetSprites SPRITES_DOWN = new WidgetSprites(
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down"),
-            ResourceLocation.fromNamespaceAndPath(
+            Identifier.fromNamespaceAndPath(ClientSort.MOD_ID, "widget/stack_fill_down"),
+            Identifier.fromNamespaceAndPath(
                     ClientSort.MOD_ID,
                     "widget/stack_fill_down_disabled"
             ),
-            ResourceLocation.fromNamespaceAndPath(
+            Identifier.fromNamespaceAndPath(
                     ClientSort.MOD_ID,
                     "widget/stack_fill_down_highlighted"
             )

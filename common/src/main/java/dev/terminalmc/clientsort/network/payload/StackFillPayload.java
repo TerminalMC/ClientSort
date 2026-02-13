@@ -21,7 +21,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,7 +40,7 @@ public record StackFillPayload(
 )
         implements CustomPacketPayload {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
+    public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, int @NotNull []> VAR_INT_ARRAY =
             new StreamCodec<>() {
                 public int @NotNull [] decode(@NotNull RegistryFriendlyByteBuf byteBuf) {
                     return byteBuf.readVarIntArray();
@@ -54,7 +54,7 @@ public record StackFillPayload(
                 }
             };
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, StackFillPayload> STREAM_CODEC =
+    public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull StackFillPayload> STREAM_CODEC =
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT,
                     StackFillPayload::srcContainerId,
@@ -67,13 +67,13 @@ public record StackFillPayload(
                     StackFillPayload::new
             );
 
-    public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_c2s");
+    public static final Identifier ID =
+            Identifier.fromNamespaceAndPath(ClientSort.MOD_ID, "stack_fill_c2s");
 
-    public static final Type<StackFillPayload> TYPE = new Type<>(ID);
+    public static final Type<@NotNull StackFillPayload> TYPE = new Type<>(ID);
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
         return TYPE;
     }
 }

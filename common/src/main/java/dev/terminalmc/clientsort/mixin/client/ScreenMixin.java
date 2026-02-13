@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ScreenMixin {
 
     @Inject(
-            method = "init(Lnet/minecraft/client/Minecraft;II)V",
+            method = "init(II)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/screens/Screen;init()V",

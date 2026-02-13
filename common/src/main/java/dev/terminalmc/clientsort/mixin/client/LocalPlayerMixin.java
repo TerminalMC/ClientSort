@@ -21,6 +21,7 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.interaction.InteractionManager;
 import dev.terminalmc.clientsort.client.order.CreativeSearchOrder;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.permissions.PermissionSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -43,10 +44,10 @@ public abstract class LocalPlayerMixin {
     }
 
     @Inject(
-            method = "setPermissionLevel",
+            method = "setPermissions",
             at = @At("RETURN")
     )
-    public void afterPermissionLevelChange(int level, CallbackInfo ci) {
+    public void afterPermissionLevelChange(PermissionSet permissionSet, CallbackInfo ci) {
         if (!ClientSort.searchOrderUpdated) {
             ClientSort.searchOrderUpdated = true;
             CreativeSearchOrder.tryRefreshStackPositionMap();
