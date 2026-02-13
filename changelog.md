@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.2.0
+
+Changes over latest beta:
+
+- Nil
+
+Changes over latest release:
+
+Note: this version includes networking changes, servers and clients must be upgraded together.
+
+- Renamed "Transfer Matching" to "Restock" in UIs
+- Added an option to reverse the default transfer iteration order
+- Added an option to arrange buttons horizontally rather than vertically
+- Added support for creating separate class policies for unique inventory titles
+- Added a per-policy option to anchor buttons to the reference slot instead of the GUI edge
+
 ## 2.2.0-beta.1
 
 Note: this version includes networking changes, servers and clients must be upgraded together.
