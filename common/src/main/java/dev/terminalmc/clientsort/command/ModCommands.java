@@ -23,6 +23,7 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -30,11 +31,11 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 import static net.minecraft.commands.Commands.literal;
 
 @SuppressWarnings("unchecked")
-public class Commands<S> extends CommandDispatcher<S> {
+public class ModCommands<S> extends CommandDispatcher<S> {
 
     public void register(CommandDispatcher<S> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register((LiteralArgumentBuilder<S>) literal(ClientSort.MOD_ID)
-                .requires((sourceStack) -> sourceStack.hasPermission(2))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(literal("reload")
                         .executes(ctx -> {
                             MutableComponent msg = Component.empty()

@@ -22,7 +22,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record SortPayload(int containerId, int[] slotMapping) implements CustomPacketPayload {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, int[]> VAR_INT_ARRAY =
+    public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, int @NotNull []> VAR_INT_ARRAY =
             new StreamCodec<>() {
                 public int @NotNull [] decode(@NotNull RegistryFriendlyByteBuf byteBuf) {
                     return byteBuf.readVarIntArray();
@@ -49,7 +49,7 @@ public record SortPayload(int containerId, int[] slotMapping) implements CustomP
                 }
             };
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SortPayload> STREAM_CODEC =
+    public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SortPayload> STREAM_CODEC =
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT,
                     SortPayload::containerId,
@@ -58,13 +58,13 @@ public record SortPayload(int containerId, int[] slotMapping) implements CustomP
                     SortPayload::new
             );
 
-    public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "sort_c2s");
+    public static final Identifier ID =
+            Identifier.fromNamespaceAndPath(ClientSort.MOD_ID, "sort_c2s");
 
-    public static final CustomPacketPayload.Type<SortPayload> TYPE = new Type<>(ID);
+    public static final CustomPacketPayload.Type<@NotNull SortPayload> TYPE = new Type<>(ID);
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends @NotNull CustomPacketPayload> type() {
         return TYPE;
     }
 }

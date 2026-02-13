@@ -34,7 +34,7 @@ import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.text.ParseException;
 import java.util.*;
@@ -365,8 +365,8 @@ public class ClothScreenProvider {
                 .setDefaultValue(Config.Options.interactionSoundDefault)
                 .setSaveConsumer(val -> options.interactionSound = val)
                 .setErrorSupplier(val -> {
-                    if (ResourceLocation.tryParse(val) == null)
-                        return Optional.of(localized("error", "resourceLocation.parse"));
+                    if (Identifier.tryParse(val) == null)
+                        return Optional.of(localized("error", "Identifier.parse"));
                     else
                         return Optional.empty();
                 })
