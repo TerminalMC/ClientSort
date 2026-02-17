@@ -44,6 +44,7 @@ import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static dev.terminalmc.clientsort.ClientSort.getObj;
@@ -138,23 +139,47 @@ public class TriggerButtonManager {
         }
 
         boolean left = options().anchorButtonsLeft;
+        boolean justifyLeft = options().justifyButtonsTopLeft;
+
+        List<Operation> ops = List.of(
+                options().firstButtonOp,
+                options().secondButtonOp,
+                options().thirdButtonOp,
+                options().fourthButtonOp
+        );
+        if (!justifyLeft)
+            ops = ops.reversed();
 
         // Generate container-side buttons
         Slot refSlotC = getReferenceSlot(acs, false, left);
         if (refSlotC != null) {
-            generate(acs, refSlotC, left, false, isEditorC, enabled, options().firstButtonOp);
-            generate(acs, refSlotC, left, false, isEditorC, enabled, options().secondButtonOp);
-            generate(acs, refSlotC, left, false, isEditorC, enabled, options().thirdButtonOp);
-            generate(acs, refSlotC, left, false, isEditorC, enabled, options().fourthButtonOp);
+            boolean isEditor = isEditorC;
+            ops.forEach((op) -> generate(
+                    acs,
+                    refSlotC,
+                    left,
+                    justifyLeft,
+                    false,
+                    isEditor,
+                    enabled,
+                    op
+            ));
         }
 
         // Generate player-side buttons
         Slot refSlotP = getReferenceSlot(acs, true, left);
         if (refSlotP != null) {
-            generate(acs, refSlotP, left, true, isEditorP, enabled, options().firstButtonOp);
-            generate(acs, refSlotP, left, true, isEditorP, enabled, options().secondButtonOp);
-            generate(acs, refSlotP, left, true, isEditorP, enabled, options().thirdButtonOp);
-            generate(acs, refSlotP, left, true, isEditorP, enabled, options().fourthButtonOp);
+            boolean isEditor = isEditorP;
+            ops.forEach((op) -> generate(
+                    acs,
+                    refSlotP,
+                    left,
+                    justifyLeft,
+                    true,
+                    isEditor,
+                    enabled,
+                    op
+            ));
         }
     }
 
@@ -166,6 +191,7 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean referenceLeft,
+            boolean justifyTopLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -176,6 +202,7 @@ public class TriggerButtonManager {
                     screen,
                     referenceSlot,
                     referenceLeft,
+                    justifyTopLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -189,6 +216,7 @@ public class TriggerButtonManager {
                     screen,
                     referenceSlot,
                     referenceLeft,
+                    justifyTopLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -202,6 +230,7 @@ public class TriggerButtonManager {
                     screen,
                     referenceSlot,
                     referenceLeft,
+                    justifyTopLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -215,6 +244,7 @@ public class TriggerButtonManager {
                     screen,
                     referenceSlot,
                     referenceLeft,
+                    justifyTopLeft,
                     isPlayerInv,
                     isEditor,
                     enabled,
@@ -231,6 +261,7 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean referenceLeft,
+            boolean justifyTopLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -294,12 +325,15 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 ClassPolicy.getKey(object.getClass().getName(), null),
-                getShiftedOffset(offset, isPlayerInv),
+                getShiftedOffset(offset, isPlayerInv, justifyTopLeft),
                 name
         );
-        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        BiConsumer<SequencedCollection<TriggerButton>, TriggerButton> adder = justifyTopLeft
+                ? SequencedCollection::add
+                : SequencedCollection::addFirst;
+        adder.accept(isPlayerInv ? playerButtons : containerButtons, button);
         if (add) {
-            (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
+            adder.accept(isPlayerInv ? visiblePlayerButtons : visibleContainerButtons, button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
         }
         if (autoPress) {
@@ -321,6 +355,7 @@ public class TriggerButtonManager {
             AbstractContainerScreen<?> screen,
             Slot referenceSlot,
             boolean referenceLeft,
+            boolean justifyTopLeft,
             boolean isPlayerInv,
             boolean isEditor,
             boolean enabled,
@@ -414,12 +449,15 @@ public class TriggerButtonManager {
                 isPlayerInv,
                 policy,
                 ClassPolicy.getKey(object.getClass().getName(), null),
-                getShiftedOffset(offset, isPlayerInv),
+                getShiftedOffset(offset, isPlayerInv, justifyTopLeft),
                 name
         );
-        (isPlayerInv ? playerButtons : containerButtons).add(button);
+        BiConsumer<SequencedCollection<TriggerButton>, TriggerButton> adder = justifyTopLeft
+                ? SequencedCollection::add
+                : SequencedCollection::addFirst;
+        adder.accept(isPlayerInv ? playerButtons : containerButtons, button);
         if (add) {
-            (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).add(button);
+            adder.accept(isPlayerInv ? visiblePlayerButtons : visibleContainerButtons, button);
             ((ScreenAccessor) screen).clientsort$addRenderableWidget(button);
         }
         if (autoPress) {
@@ -528,14 +566,25 @@ public class TriggerButtonManager {
      * @return the offset, shifted by a constant amount based on the number of buttons already
      * generated.
      */
-    public static Vec2i getShiftedOffset(Vec2i offset, boolean isPlayerInv) {
+    public static Vec2i getShiftedOffset(
+            Vec2i offset,
+            boolean isPlayerInv,
+            boolean justifyTopLeft
+    ) {
         int index = (isPlayerInv ? visiblePlayerButtons : visibleContainerButtons).size();
+        boolean horizontal = options().buttonsHorizontal;
 
-        int shiftX = options().buttonsHorizontal ? 1 : 0;
-        int shiftY = options().buttonsHorizontal ? 0 : 1;
+        int shiftX = horizontal ? 1 : 0;
+        int shiftY = horizontal ? 0 : 1;
 
-        int x = offset.x() + shiftX * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
-        int y = offset.y() + shiftY * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
+        int x, y;
+        if (justifyTopLeft) {
+            x = offset.x() + shiftX * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
+            y = offset.y() + shiftY * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
+        } else {
+            x = offset.x() - shiftX * (TriggerButton.WIDTH + BUTTON_SPACING) * index;
+            y = offset.y() - shiftY * (TriggerButton.HEIGHT + BUTTON_SPACING) * index;
+        }
 
         return new Vec2i(x, y);
     }

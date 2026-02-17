@@ -240,6 +240,9 @@ public class Config {
         public static final boolean anchorButtonsLeftDefault = false;
         public boolean anchorButtonsLeft = anchorButtonsLeftDefault;
 
+        public static final boolean justifyButtonsTopLeftDefault = true;
+        public boolean justifyButtonsTopLeft = justifyButtonsTopLeftDefault;
+
         public static final boolean buttonsHorizontalDefault = false;
         public boolean buttonsHorizontal = buttonsHorizontalDefault;
 

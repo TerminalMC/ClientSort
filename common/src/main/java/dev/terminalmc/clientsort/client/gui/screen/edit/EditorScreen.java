@@ -137,7 +137,7 @@ public abstract class EditorScreen extends Screen {
         ignoredSlots.clear();
 
         // Retrieve the buttons from the manager
-        buttons.addAll(getButtons());
+        buttons.addAll(options().justifyButtonsTopLeft ? getButtons() : getButtons().reversed());
 
         if (buttons.size() != 4) {
             if (debug()) {

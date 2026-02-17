@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+- Added an option to justify buttons right/bottom rather than the default left/top
+
 ## 2.2.0
 
 Changes over latest beta:
