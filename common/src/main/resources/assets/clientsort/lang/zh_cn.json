@@ -151,6 +151,8 @@
   "option.clientsort.showButtonTooltips.tooltip": "Whether to show tooltips when hovering over buttons.",
   "option.clientsort.anchorButtonsLeft": "固定在左侧",
   "option.clientsort.anchorButtonsLeft.tooltip": "是否将按钮固定在物品栏左侧",
+  "option.clientsort.justifyButtonsTopLeft": "Justify Top/Left",
+  "option.clientsort.justifyButtonsTopLeft.tooltip": "Whether to justify buttons to the top/left rather than right/bottom.",
   "option.clientsort.buttonsHorizontal": "Arrange Buttons Horizontally",
   "option.clientsort.buttonsHorizontal.tooltip": "Whether to lay out the buttons horizontally rather than vertically.",
   "option.clientsort.firstButtonOp": "第一个按钮操作",
