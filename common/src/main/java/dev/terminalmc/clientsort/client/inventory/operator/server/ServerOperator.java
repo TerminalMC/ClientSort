@@ -85,10 +85,13 @@ public class ServerOperator extends SingleUseOperator {
                 int[] slotMapping = sorter.createSlotMapping(sortOrder);
                 if (debug())
                     ClientSort.LOG.info("Sending payload for operation SORT");
-                ClientPlatformServices.getInstance().sendToServer(new SortPayload(
-                        screen.getMenu().containerId,
-                        slotMapping
-                ));
+                ClientPlatformServices.getInstance().sendToServer(
+                        SortPayload.ID,
+                        new SortPayload(
+                                screen.getMenu().containerId,
+                                slotMapping
+                        )
+                );
             } else if (collectResult.isUnknown() || !options().useClientFallback) {
                 setOverlayMessage(Component.translatable(collectResult.translationKey));
             } else {
@@ -130,12 +133,15 @@ public class ServerOperator extends SingleUseOperator {
 
         if (debug())
             ClientSort.LOG.info("Sending payload for operation STACK_FILL");
-        ClientPlatformServices.getInstance().sendToServer(new StackFillPayload(
-                screen.getMenu().containerId,
-                srcSlotIds,
-                dstSlotIds,
-                options().transferReverseOrder
-        ));
+        ClientPlatformServices.getInstance().sendToServer(
+                StackFillPayload.ID,
+                new StackFillPayload(
+                        screen.getMenu().containerId,
+                        srcSlotIds,
+                        dstSlotIds,
+                        options().transferReverseOrder
+                )
+        );
     }
 
     @Override
@@ -190,12 +196,15 @@ public class ServerOperator extends SingleUseOperator {
 
         if (debug())
             ClientSort.LOG.info("Sending payload for operation TRANSFER");
-        ClientPlatformServices.getInstance().sendToServer(new TransferPayload(
-                screen.getMenu().containerId,
-                srcSlotIds,
-                dstSlotIds,
-                options().transferReverseOrder
-        ));
+        ClientPlatformServices.getInstance().sendToServer(
+                TransferPayload.ID,
+                new TransferPayload(
+                        screen.getMenu().containerId,
+                        srcSlotIds,
+                        dstSlotIds,
+                        options().transferReverseOrder
+                )
+        );
     }
 
     private int[] createSlotIdArray(Slot[] slots) {
@@ -211,11 +220,14 @@ public class ServerOperator extends SingleUseOperator {
     private void sendCollectPayload(int[] scopeArray, String id) {
         if (debug())
             ClientSort.LOG.info("Sending payload for operation COLLECT");
-        ClientPlatformServices.getInstance().sendToServer(new CollectPayload(
-                screen.getMenu().containerId,
-                scopeArray,
-                id
-        ));
+        ClientPlatformServices.getInstance().sendToServer(
+                CollectPayload.ID,
+                new CollectPayload(
+                        screen.getMenu().containerId,
+                        scopeArray,
+                        id
+                )
+        );
     }
 
     private int[] createSlotMapping(SortOrder sortOrder) {

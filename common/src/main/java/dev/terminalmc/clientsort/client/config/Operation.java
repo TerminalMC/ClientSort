@@ -19,22 +19,19 @@ package dev.terminalmc.clientsort.client.config;
 import dev.terminalmc.clientsort.network.payload.SortPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.TransferPayload;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public enum Operation {
-    SORT(SortPayload.TYPE, "sort"),
-    STACK_FILL(StackFillPayload.TYPE, "stackFill"),
-    MATCH_TRANSFER(TransferPayload.TYPE, "matchTransfer"),
-    TRANSFER(TransferPayload.TYPE, "transfer");
+    SORT(SortPayload.ID, "sort"),
+    STACK_FILL(StackFillPayload.ID, "stackFill"),
+    MATCH_TRANSFER(TransferPayload.ID, "matchTransfer"),
+    TRANSFER(TransferPayload.ID, "transfer");
 
-    public final CustomPacketPayload.Type<?> type;
     public final ResourceLocation id;
     public final String translationKey;
 
-    Operation(CustomPacketPayload.Type<?> type, String translationKey) {
-        this.type = type;
-        this.id = type.id();
+    Operation(ResourceLocation id, String translationKey) {
+        this.id = id;
         this.translationKey = translationKey;
     }
 

@@ -20,10 +20,10 @@ import dev.terminalmc.clientsort.command.Commands;
 import dev.terminalmc.clientsort.network.Registration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 
 public class ClientSortFabric implements ModInitializer {
 
@@ -33,9 +33,8 @@ public class ClientSortFabric implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
                 new Commands<CommandSourceStack>().register(dispatcher, buildContext));
 
-        // Register all custom payloads
+        // Register all custom C2S payloads
         Registration.PAYLOADS_C2S.forEach(ClientSortFabric::registerC2S);
-        Registration.PAYLOADS_S2C.forEach(ClientSortFabric::registerPayloadS2C);
 
         // Initialize
         ClientSort.init();
@@ -44,29 +43,14 @@ public class ClientSortFabric implements ModInitializer {
     /**
      * Registers a C2S payload and its handler.
      */
-    private static <T extends CustomPacketPayload> void registerC2S(
+    private static <T extends Packet<ServerGamePacketListener>> void registerC2S(
             Registration.RegisterablePayloadC2S<T> rp
     ) {
-        PayloadTypeRegistry.playC2S().register(rp.type, rp.streamCodec);
         ServerPlayNetworking.registerGlobalReceiver(
-                rp.type,
-                (payload, context) -> rp.handler.accept(
-                        payload,
-                        context.server(),
-                        context.player()
+                rp.channel,
+                (server, player, listener, byteBuf, sender) -> rp.handler.accept(
+                        rp.decoder.apply(byteBuf), server, player
                 )
         );
-    }
-
-    /**
-     * Registers an S2C payload, but not its handler.
-     * <p>
-     * <b>Note:</b> client-side payload handlers must be registered in
-     * {@link dev.terminalmc.clientsort.client.ClientSortFabric}.
-     */
-    private static <T extends CustomPacketPayload> void registerPayloadS2C(
-            Registration.RegisterablePayloadS2C<T> rp
-    ) {
-        PayloadTypeRegistry.playS2C().register(rp.type, rp.streamCodec);
     }
 }
