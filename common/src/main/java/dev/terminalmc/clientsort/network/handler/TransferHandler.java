@@ -65,8 +65,8 @@ public class TransferHandler extends PayloadHandler {
                         payload.dstSlotIds(),
                         payload.reversed()
                 ),
-                TransferPayload.TYPE,
-                TransferResultPayload.TYPE,
+                TransferPayload.ID,
+                TransferResultPayload.ID,
                 (result, message) -> new TransferResultPayload(result.code, message)
         ));
     }
@@ -103,7 +103,7 @@ public class TransferHandler extends PayloadHandler {
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
-                if (!ItemStack.isSameItemSameComponents(srcStack, dstStack))
+                if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
 
                 // Matching partial stack found

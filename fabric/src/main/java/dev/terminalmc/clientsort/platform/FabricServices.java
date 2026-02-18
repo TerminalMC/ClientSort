@@ -17,9 +17,13 @@
 package dev.terminalmc.clientsort.platform;
 
 import dev.terminalmc.clientsort.platform.services.PlatformServices;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
@@ -52,12 +56,18 @@ public class FabricServices implements PlatformServices {
     }
 
     @Override
-    public boolean canSendToPlayer(ServerPlayer player, CustomPacketPayload.Type<?> type) {
-        return ServerPlayNetworking.canSend(player, type);
+    public boolean canSendToPlayer(ServerPlayer player, ResourceLocation channel) {
+        return ServerPlayNetworking.canSend(player, channel);
     }
 
     @Override
-    public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
-        ServerPlayNetworking.send(player, payload);
+    public void sendToPlayer(
+            ServerPlayer player,
+            ResourceLocation channel,
+            Packet<ClientGamePacketListener> packet
+    ) {
+        FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
+        packet.write(byteBuf);
+        ServerPlayNetworking.send(player, channel, byteBuf);
     }
 }

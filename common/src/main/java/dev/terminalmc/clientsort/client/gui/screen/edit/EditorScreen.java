@@ -20,6 +20,7 @@ package dev.terminalmc.clientsort.client.gui.screen.edit;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.*;
+import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
@@ -137,7 +138,11 @@ public abstract class EditorScreen extends Screen {
         ignoredSlots.clear();
 
         // Retrieve the buttons from the manager
-        buttons.addAll(options().justifyButtonsTopLeft ? getButtons() : getButtons().reversed());
+        buttons.addAll(
+                options().justifyButtonsTopLeft
+                        ? getButtons()
+                        : TriggerButtonManager.reversed(getButtons())
+        );
 
         if (buttons.size() != 4) {
             if (debug()) {
@@ -633,20 +638,6 @@ public abstract class EditorScreen extends Screen {
         for (TriggerButton cb : buttons) {
             cb.renderWidget(graphics, mouseX, mouseY, partialTick);
         }
-    }
-
-    /**
-     * Modifies the background blur to be constant irrespective of the configured value.
-     * <p>
-     * Minimal blur is used to prevent the editable widgets disappearing under underlay items on a
-     * higher render layer, while still keeping the underlay detail discernible.
-     */
-    @Override
-    protected void renderBlurredBackground(float partialTick) {
-        int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground(partialTick);
-        Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 
     /**

@@ -18,38 +18,53 @@ package dev.terminalmc.clientsort.network.payload;
 
 import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A custom S2C payload used to send feedback for an operation requested by a
  * {@link TransferPayload} to a client.
- *
- * @param result a {@link PayloadResult} code.
- * @param message an optional message describing an error.
  */
-public record TransferResultPayload(int result, String message) implements CustomPacketPayload {
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, TransferResultPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.INT,
-                    TransferResultPayload::result,
-                    ByteBufCodecs.STRING_UTF8,
-                    TransferResultPayload::message,
-                    TransferResultPayload::new
-            );
+public class TransferResultPayload implements Packet<ClientGamePacketListener> {
 
     public static final ResourceLocation ID =
-            ResourceLocation.fromNamespaceAndPath(ClientSort.MOD_ID, "transfer_result_s2c");
+            new ResourceLocation(ClientSort.MOD_ID, "transfer_result_s2c");
 
-    public static final Type<TransferResultPayload> TYPE = new Type<>(ID);
+    int result;
+    String message;
+
+    /**
+     * @param result  a {@link PayloadResult} code.
+     * @param message an optional message describing an error.
+     */
+    public TransferResultPayload(int result, String message) {
+        this.result = result;
+        this.message = message;
+    }
+
+    public int result() {
+        return result;
+    }
+
+    public String message() {
+        return message;
+    }
+
+    public static TransferResultPayload read(FriendlyByteBuf buf) {
+        return new TransferResultPayload(buf.readInt(), buf.readUtf());
+    }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(@NotNull FriendlyByteBuf buf) {
+        buf.writeInt(result);
+        buf.writeUtf(message);
+    }
+
+    @Override
+    public void handle(@NotNull ClientGamePacketListener listener) {
+
     }
 }

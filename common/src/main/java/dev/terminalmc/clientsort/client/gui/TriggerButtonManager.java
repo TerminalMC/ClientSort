@@ -37,6 +37,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -60,11 +61,10 @@ public class TriggerButtonManager {
 
     private static @Nullable AbstractContainerScreen<?> screen;
 
-    private static final LinkedHashSet<TriggerButton> containerButtons = new LinkedHashSet<>();
-    private static final LinkedHashSet<TriggerButton> visibleContainerButtons =
-            new LinkedHashSet<>();
-    private static final LinkedHashSet<TriggerButton> playerButtons = new LinkedHashSet<>();
-    private static final LinkedHashSet<TriggerButton> visiblePlayerButtons = new LinkedHashSet<>();
+    private static final LinkedList<TriggerButton> containerButtons = new LinkedList<>();
+    private static final LinkedList<TriggerButton> visibleContainerButtons = new LinkedList<>();
+    private static final LinkedList<TriggerButton> playerButtons = new LinkedList<>();
+    private static final LinkedList<TriggerButton> visiblePlayerButtons = new LinkedList<>();
 
     public static @Nullable AbstractContainerScreen<?> getScreen() {
         return screen;
@@ -86,7 +86,7 @@ public class TriggerButtonManager {
         return getRefSlot(playerButtons, op);
     }
 
-    private static @Nullable Slot getRefSlot(LinkedHashSet<TriggerButton> buttons, Operation op) {
+    private static @Nullable Slot getRefSlot(LinkedList<TriggerButton> buttons, Operation op) {
         Class<? extends TriggerButton> clazz = switch (op) {
             case SORT -> SortButton.class;
             case STACK_FILL -> StackFillButton.class;
@@ -141,14 +141,23 @@ public class TriggerButtonManager {
         boolean left = options().anchorButtonsLeft;
         boolean justifyLeft = options().justifyButtonsTopLeft;
 
-        List<Operation> ops = List.of(
-                options().firstButtonOp,
-                options().secondButtonOp,
-                options().thirdButtonOp,
-                options().fourthButtonOp
-        );
-        if (!justifyLeft)
-            ops = ops.reversed();
+
+        List<Operation> ops;
+        if (justifyLeft) {
+            ops = List.of(
+                    options().firstButtonOp,
+                    options().secondButtonOp,
+                    options().thirdButtonOp,
+                    options().fourthButtonOp
+            );
+        } else {
+            ops = List.of(
+                    options().fourthButtonOp,
+                    options().thirdButtonOp,
+                    options().secondButtonOp,
+                    options().firstButtonOp
+            );
+        }
 
         // Generate container-side buttons
         Slot refSlotC = getReferenceSlot(acs, false, left);
@@ -328,9 +337,9 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv, justifyTopLeft),
                 name
         );
-        BiConsumer<SequencedCollection<TriggerButton>, TriggerButton> adder = justifyTopLeft
-                ? SequencedCollection::add
-                : SequencedCollection::addFirst;
+        BiConsumer<LinkedList<TriggerButton>, TriggerButton> adder = justifyTopLeft
+                ? LinkedList::add
+                : LinkedList::addFirst;
         adder.accept(isPlayerInv ? playerButtons : containerButtons, button);
         if (add) {
             adder.accept(isPlayerInv ? visiblePlayerButtons : visibleContainerButtons, button);
@@ -452,9 +461,9 @@ public class TriggerButtonManager {
                 getShiftedOffset(offset, isPlayerInv, justifyTopLeft),
                 name
         );
-        BiConsumer<SequencedCollection<TriggerButton>, TriggerButton> adder = justifyTopLeft
-                ? SequencedCollection::add
-                : SequencedCollection::addFirst;
+        BiConsumer<LinkedList<TriggerButton>, TriggerButton> adder = justifyTopLeft
+                ? LinkedList::add
+                : LinkedList::addFirst;
         adder.accept(isPlayerInv ? playerButtons : containerButtons, button);
         if (add) {
             adder.accept(isPlayerInv ? visiblePlayerButtons : visibleContainerButtons, button);
@@ -533,10 +542,10 @@ public class TriggerButtonManager {
 
             // x factor is how far from the left side of the menu the slot is, as a fraction
             // of the screen width
-            double xFactor = Math.clamp(slot.x, 0, screen.width) / (double) screen.width;
+            double xFactor = Mth.clamp(slot.x, 0, screen.width) / (double) screen.width;
             // y factor is how far from the top of the menu the slot is, as a fraction of the
             // screen height
-            double yFactor = Math.clamp(slot.y, 0, screen.height) / (double) screen.height;
+            double yFactor = Mth.clamp(slot.y, 0, screen.height) / (double) screen.height;
 
             double x;
             double y;
@@ -587,6 +596,12 @@ public class TriggerButtonManager {
         }
 
         return new Vec2i(x, y);
+    }
+
+    public static LinkedList<TriggerButton> reversed(LinkedList<TriggerButton> list) {
+        LinkedList<TriggerButton> newList = new LinkedList<>();
+        list.forEach(newList::addFirst);
+        return newList;
     }
 
     @FunctionalInterface
