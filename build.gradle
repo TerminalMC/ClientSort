@@ -126,7 +126,14 @@ subprojects {
                     accessToken = env.safe("CURSEFORGE_TOKEN")
                     projectId = prop.safe("mod_curseforge_id")
                     projectSlug = prop.safe("mod_curseforge_slug")
-                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}"))
+                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}").collect { ver ->
+                        final hyphenIdx = ver.indexOf("-")
+                        if (hyphenIdx != -1) {
+                            return ver.substring(0, hyphenIdx) + "-snapshot"
+                        } else {
+                            return ver
+                        }
+                    })
                     changelog = cLog
                     prop.safeList("${sp.name}_deps").each { dep ->
                         try {
