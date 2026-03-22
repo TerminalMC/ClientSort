@@ -19,11 +19,12 @@
     "client.accessor.AbstractContainerScreenAccessor",
     "client.accessor.AbstractWidgetAccessor",
     "client.accessor.CreativeModeTabsAccessor",
-    "client.accessor.GuiGraphicsAccessor",
+    "client.accessor.GuiGraphicsExtractorAccessor",
     "client.accessor.GuiRenderStateAccessor",
     "client.accessor.KeyMappingAccessor",
     "client.accessor.ScreenAccessor",
     "client.compat.emi.ReloadWorkerMixin",
+    "client.compat.supermartijn642corelib.WidgetContainerScreenMixin",
     "client.slot.CreativeSlotMixin"
   ],
   "server": [

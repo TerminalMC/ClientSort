@@ -8,7 +8,6 @@
   "mixins": [
   ],
   "client": [
-    "client.compat.supermartijn642corelib.WidgetContainerScreenMixin"
   ],
   "server": [
   ],

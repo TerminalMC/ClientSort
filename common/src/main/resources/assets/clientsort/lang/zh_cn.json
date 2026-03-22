@@ -14,6 +14,7 @@
   "key.clientsort.op.transfer": "转移",
 
   "message.clientsort.installCloth": "请安装 Cloth Config API 以访问模组选项。",
+  "message.clientsort.configScreenDisabled": "Config screen is not available on this version.",
   "message.clientsort.viewModrinth": "在 Modrinth 上查看",
   "message.clientsort.configReloaded": "服务器配置已从 '%s' 重新加载！",
   "message.clientsort.checkLogs": "请检查游戏日志以获取更多信息。",

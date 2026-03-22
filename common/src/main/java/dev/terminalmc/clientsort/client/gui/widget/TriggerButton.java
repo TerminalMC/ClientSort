@@ -29,7 +29,7 @@ import dev.terminalmc.clientsort.mixin.client.accessor.AbstractWidgetAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -158,8 +158,8 @@ public abstract class TriggerButton extends Button {
     }
 
     @Override
-    public void renderContents(
-            @NotNull GuiGraphics graphics,
+    public void extractContents(
+            @NotNull GuiGraphicsExtractor graphics,
             int mouseX,
             int mouseY,
             float partialTick
@@ -182,7 +182,7 @@ public abstract class TriggerButton extends Button {
 
         // Draw policy state indicator
         if (!operationAllowed) {
-            graphics.hLine(getX(), getX() + width - 1, getY() + height / 2, 0xFFFF0000);
+            graphics.horizontalLine(getX(), getX() + width - 1, getY() + height / 2, 0xFFFF0000);
         }
 
         // Refresh tooltip

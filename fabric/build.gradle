@@ -2,7 +2,7 @@ import util.PropUtil
 
 plugins {
     id("multiloader-loader")
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
 }
 
 // Configure Fabric dependencies
@@ -10,22 +10,16 @@ dependencies {
     // Minecraft
     minecraft("com.mojang:minecraft:${minecraft_version}")
 
-    // Mappings
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
-    })
-
     // MixinExtras
     if (mixinextras_jij_fabric == "true") {
         include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
     }
 
     // Fabric Loader
-    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+    implementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     // Fabric API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
     // Apply property-defined dependencies
     final selector = (String type, dep) -> {
@@ -34,13 +28,13 @@ dependencies {
                 return annotationProcessor(dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return modApi(dep)
+                return api(dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return modCompileOnly(dep)
+                return compileOnly(dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return modImplementation(dep)
+                return implementation(dep)
                 break
             case "inc": //noinspection DependencyNotationArgument
                 return include(dep)
@@ -57,8 +51,8 @@ dependencies {
 
 // Configure Loom
 loom {
-    // Apply common AccessWidener if it exists
-    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    // Apply common classtweaker if it exists
+    def aw = project(":common").file("src/main/resources/${mod_id}.classtweaker")
     if (aw.exists()) accessWidenerPath.set(aw)
     if (aw.exists()) {
         validateAccessWidener { accessWidener = aw }

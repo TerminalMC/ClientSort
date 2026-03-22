@@ -12,6 +12,7 @@
   "key.clientsort.op.transfer": "Transfer",
 
   "message.clientsort.installCloth": "Install Cloth Config API to access mod options.",
+  "message.clientsort.configScreenDisabled": "Config screen is not available on this version.",
   "message.clientsort.viewModrinth": "View on Modrinth",
   "message.clientsort.configReloaded": "Server configuration reloaded from '%s'!",
   "message.clientsort.checkLogs": "Check game logs for more info.",

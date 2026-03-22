@@ -6,7 +6,7 @@ import util.StaticUtil
 import java.time.LocalDate
 
 plugins {
-    id("fabric-loom") version("${loom_version}") apply(false)
+    id("net.fabricmc.fabric-loom") version("${loom_version}") apply(false)
     id("net.neoforged.moddev") version("${moddev_version}") apply(false)
     id("net.neoforged.licenser") version("${licenser_version}") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("${mpp_version}")
@@ -63,7 +63,7 @@ subprojects {
         afterEvaluate { sp ->
             publishMods {
                 // Common configuration
-                file = sp.name == "fabric" ? remapJar.archiveFile : jar.archiveFile
+                file = jar.archiveFile
                 version = mod_version
                 type = ReleaseType.of(mod_version_type)
                 displayName = "v${mod_version}-${StaticUtil.capsLoader(sp.name)}"

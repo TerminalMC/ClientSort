@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         java: [
-          21
+          25
         ]
         os: [
           ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: ./gradlew build --stacktrace
       - name: Capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
+        if: ${{ runner.os == 'Linux' && matrix.java == '25' }}
         uses: actions/upload-artifact@v5
         with:
           name: artifacts

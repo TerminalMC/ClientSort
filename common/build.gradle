@@ -2,7 +2,7 @@ import util.PropUtil
 
 plugins {
     id("multiloader-common")
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
 }
 
 // Configure new ASM version
@@ -27,12 +27,6 @@ dependencies {
     // Minecraft
     minecraft("com.mojang:minecraft:${minecraft_version}")
 
-    // Mappings
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
-    })
-
     // Mixin
     compileOnly("org.spongepowered:mixin:${mixin_version}")
 
@@ -46,13 +40,13 @@ dependencies {
                 return annotationProcessor(dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return modApi(dep)
+                return api(dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return modCompileOnly(dep)
+                return compileOnly(dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return modImplementation(dep)
+                return implementation(dep)
                 break
             case "-":
                 return dep
@@ -66,8 +60,8 @@ dependencies {
 
 // Configure Loom
 loom {
-    // Apply common AccessWidener if it exists
-    def aw = file("src/main/resources/${mod_id}.accesswidener")
+    // Apply common classtweaker if it exists
+    def aw = file("src/main/resources/${mod_id}.classtweaker")
     if (aw.exists()) accessWidenerPath.set(aw)
     if (aw.exists()) {
         validateAccessWidener { accessWidener = aw }

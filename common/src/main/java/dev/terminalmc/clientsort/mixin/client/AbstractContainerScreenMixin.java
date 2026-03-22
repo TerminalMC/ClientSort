@@ -31,7 +31,7 @@ import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -39,7 +39,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -97,7 +97,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             Slot slot,
             int slotId,
             int mouseButton,
-            ClickType type,
+            ContainerInput input,
             CallbackInfo ci
     ) {
         if (slotId < 0 && ClientSort.operatingClient) {
@@ -259,11 +259,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
      * Renders warning and debug overlays.
      */
     @Inject(
-            method = "render",
+            method = "extractRenderState",
             at = @At("TAIL")
     )
     private void afterRender(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             int mouseX,
             int mouseY,
             float partialTick,
@@ -274,7 +274,12 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
         if (ClientSort.overlayMessage != null) {
             graphics.pose().pushMatrix();
-            ClientSort.overlayMessage.renderWidget(graphics, mouseX, mouseY, partialTick);
+            ClientSort.overlayMessage.extractWidgetRenderState(
+                    graphics,
+                    mouseX,
+                    mouseY,
+                    partialTick
+            );
             graphics.pose().popMatrix();
         }
 
@@ -305,7 +310,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                         PolicyManager.getPolicy(object.getClass(), invTitle.getString());
                 if (policy != null && policy.ignoredSlots().contains(slotIdx)) {
                     //noinspection UnnecessaryUnicodeEscape
-                    graphics.drawString(
+                    graphics.text(
                             Minecraft.getInstance().font,
                             "\u274C",
                             (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
@@ -320,7 +325,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             }
 
             // Draw slot ID, bottom left
-            graphics.drawString(
+            graphics.text(
                     Minecraft.getInstance().font,
                     String.valueOf(KeybindManager.hasShiftDown() ? slotIdx : slotId),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()
@@ -333,7 +338,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             );
 
             // Draw slot scope, bottom right
-            graphics.drawString(
+            graphics.text(
                     Minecraft.getInstance().font,
                     String.valueOf(helper.getScope(slot).ordinal()),
                     (int) ((((AbstractContainerScreenAccessor) (this)).clientsort$getLeftPos()

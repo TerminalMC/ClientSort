@@ -22,12 +22,12 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.*;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
-import dev.terminalmc.clientsort.mixin.client.accessor.GuiGraphicsAccessor;
+import dev.terminalmc.clientsort.mixin.client.accessor.GuiGraphicsExtractorAccessor;
 import dev.terminalmc.clientsort.mixin.client.accessor.GuiRenderStateAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -567,18 +567,23 @@ public abstract class EditorScreen extends Screen {
      * Renders the underlay, then this screen with its GUI.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        underlay.renderBackground(graphics, mouseX, mouseY, partialTick);
-        underlay.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(
+            @NotNull GuiGraphicsExtractor graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        underlay.extractBackground(graphics, mouseX, mouseY, partialTick);
+        underlay.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         // Workaround for other mods adding blur when rendering the underlay
-        ((GuiRenderStateAccessor) ((GuiGraphicsAccessor) graphics).clientsort$getGuiRenderState())
+        ((GuiRenderStateAccessor) ((GuiGraphicsExtractorAccessor) graphics).clientsort$getGuiRenderState())
                 .clientsort$setFirstStratumAfterBlur(Integer.MAX_VALUE);
         graphics.nextStratum();
-        renderBlurredBackground(graphics);
+        extractBlurredBackground(graphics);
 
-        super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawCenteredString(font, title, width / 2, 2, 0xFFFFFFFF);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        graphics.centeredText(font, title, width / 2, 2, 0xFFFFFFFF);
 
         // Render disabled-slot indicators
         for (Slot slot : underlay.getMenu().slots) {
@@ -587,7 +592,7 @@ public abstract class EditorScreen extends Screen {
                 if (ignoredSlots.contains(((ISlot) slot).clientsort$getIndexInContainer())) {
                     // Draw lock icon, top left
                     //noinspection UnnecessaryUnicodeEscape
-                    graphics.drawString(
+                    graphics.text(
                             Minecraft.getInstance().font,
                             "\u274C",
                             ((AbstractContainerScreenAccessor) (underlay)).clientsort$getLeftPos()
@@ -609,14 +614,14 @@ public abstract class EditorScreen extends Screen {
 
         // Render info lines
         Vec2i offset = buttons.getFirst().offset;
-        graphics.drawString(
+        graphics.text(
                 font,
                 localized("editor", "offset", offset.x(), offset.y()).getString(),
                 105,
                 height - (font.lineHeight + 1) * 3,
                 0xFFFFFFFF
         );
-        graphics.drawString(
+        graphics.text(
                 font,
                 localized(
                         "editor",
@@ -630,7 +635,7 @@ public abstract class EditorScreen extends Screen {
                 height - (font.lineHeight + 1) * 2,
                 0xFFFFFFFF
         );
-        graphics.drawString(
+        graphics.text(
                 font,
                 localized("editor", "policyKey.menu", lowestPolicyClassName),
                 105,
@@ -640,25 +645,25 @@ public abstract class EditorScreen extends Screen {
 
         // Render editable widgets again, above background blur
         for (TriggerButton cb : buttons) {
-            cb.renderContents(graphics, mouseX, mouseY, partialTick);
+            cb.extractContents(graphics, mouseX, mouseY, partialTick);
         }
     }
 
     /**
-     * Removes the call to {@link Screen#renderBlurredBackground}, since we add a call in
-     * {@link EditorScreen#render} and the method can only be called once.
+     * Removes the call to {@link Screen#extractBlurredBackground}, since we add a call in
+     * {@link EditorScreen#extractRenderState} and the method can only be called once.
      */
     @Override
-    public void renderBackground(
-            @NotNull GuiGraphics graphics,
+    public void extractBackground(
+            @NotNull GuiGraphicsExtractor graphics,
             int mouseX,
             int mouseY,
             float partialTick
     ) {
         if (Minecraft.getInstance().level == null) {
-            renderPanorama(graphics, partialTick);
+            extractPanorama(graphics, partialTick);
         }
-        renderMenuBackground(graphics);
+        extractMenuBackground(graphics);
     }
 
     /**
@@ -668,10 +673,10 @@ public abstract class EditorScreen extends Screen {
      * higher render layer, while still keeping the underlay detail discernible.
      */
     @Override
-    protected void renderBlurredBackground(@NotNull GuiGraphics graphics) {
+    protected void extractBlurredBackground(@NotNull GuiGraphicsExtractor graphics) {
         int original = Minecraft.getInstance().options.menuBackgroundBlurriness().get();
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(1);
-        super.renderBlurredBackground(graphics);
+        super.extractBlurredBackground(graphics);
         Minecraft.getInstance().options.menuBackgroundBlurriness().set(original);
     }
 
@@ -679,9 +684,14 @@ public abstract class EditorScreen extends Screen {
      * Draws a horizontal and a vertical line to trace this widget back to its positional origin
      * point.
      */
-    private void drawLineFor(GuiGraphics graphics, TriggerButton button) {
-        graphics.hLine(button.getX() - button.offset.x(), button.getX(), button.getY(), 0xFFBBBBBB);
-        graphics.vLine(
+    private void drawLineFor(GuiGraphicsExtractor graphics, TriggerButton button) {
+        graphics.horizontalLine(
+                button.getX() - button.offset.x(),
+                button.getX(),
+                button.getY(),
+                0xFFBBBBBB
+        );
+        graphics.verticalLine(
                 button.getX() - button.offset.x(),
                 button.getY() - button.offset.y(),
                 button.getY(),

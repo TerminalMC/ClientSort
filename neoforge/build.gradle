@@ -47,11 +47,6 @@ neoForge {
     def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
     if (at.exists()) accessTransformers.from(at.absolutePath)
     validateAccessTransformers = true
-    // Apply Parchment mappings
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_version
-    }
     // Configure runs
     runs {
         configureEach {

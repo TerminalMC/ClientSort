@@ -18,7 +18,7 @@ package dev.terminalmc.clientsort.mixin.client.accessor;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -40,7 +40,7 @@ public interface AbstractContainerScreenAccessor {
     Component clientsort$getPlayerInventoryTitle();
 
     @Invoker("slotClicked")
-    void clientsort$slotClicked(Slot slot, int slotId, int mouseButton, ClickType type);
+    void clientsort$slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput input);
 
     @Invoker("isHovering")
     boolean clientsort$isHovering(Slot slot, double mouseX, double mouseY);

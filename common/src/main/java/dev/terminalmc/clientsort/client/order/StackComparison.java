@@ -19,7 +19,6 @@ package dev.terminalmc.clientsort.client.order;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -101,9 +100,9 @@ public class StackComparison {
     }
 
     private static int compareEqualItems4(ItemStack a, ItemStack b, SortContext context) {
-        // Compare special item properties
+        // Compare color
         Item item = a.getItem();
-        if ((item.getDefaultInstance()).is(ItemTags.DYEABLE)) {
+        if ((item.getDefaultInstance()).has(DataComponents.DYED_COLOR)) {
             int colorA = DyedItemColor.getOrDefault(a, -6265536);
             int colorB = DyedItemColor.getOrDefault(b, -6265536);
             float[] hsbA =

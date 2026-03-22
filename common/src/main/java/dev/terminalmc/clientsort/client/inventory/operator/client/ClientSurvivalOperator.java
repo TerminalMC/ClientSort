@@ -26,7 +26,7 @@ import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAc
 import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
@@ -621,7 +621,7 @@ public class ClientSurvivalOperator extends ClientOperator {
                     slot,
                     ((ISlot) slot).clientsort$getIndexInMenu(),
                     button,
-                    ClickType.PICKUP
+                    ContainerInput.PICKUP
             );
             if (playSound)
                 SoundManager.play();

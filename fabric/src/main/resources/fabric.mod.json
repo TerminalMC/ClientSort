@@ -18,7 +18,7 @@
     "issues": "${issues_url}"
   },
 
-  "environment": "*",
+  "environment": "client",
 
   "provides": [],
 
@@ -42,7 +42,7 @@
     "${mod_id}.fabric.mixins.json"
   ],
 
-  "accessWidener": "${mod_id}.accesswidener",
+  "accessWidener": "${mod_id}.classtweaker",
 
   "depends": {
     ${fabric_depends}

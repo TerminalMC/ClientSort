@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
         targets = "dev.emi.emi.runtime.EmiReloadManager$ReloadWorker",
         remap = false
 )
-public class ReloadWorkerMixin {
+public abstract class ReloadWorkerMixin {
 
     @SuppressWarnings("UnresolvedMixinReference")
     @Inject(

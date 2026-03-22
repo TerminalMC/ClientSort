@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         java: [
-          21
+          25
         ]
         os: [
           ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
+        if: ${{ runner.os == 'Linux' && matrix.java == '25' }}
         uses: actions/upload-artifact@v5
         with:
           name: artifacts
