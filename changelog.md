@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0
+## 3.0.0-beta.2
 
 - Updated to mc26.1
 - Temporarily disabled config screen
