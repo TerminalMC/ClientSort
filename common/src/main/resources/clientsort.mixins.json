@@ -5,6 +5,9 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_${java_version}",
   "plugin": "dev.terminalmc.clientsort.util.MixinConfigPlugin",
+  "mixinextras": {
+    "minVersion": "${mixinextras_version_min}"
+  },
   "mixins": [
     "accessor.ContainerAccessor",
     "accessor.ServerCommonPacketListenerImplAccessor",

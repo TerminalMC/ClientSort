@@ -5,27 +5,17 @@ plugins {
     id("net.fabricmc.fabric-loom")
 }
 
-// Configure new ASM version
-configurations.configureEach {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == "org.ow2.asm") {
-            details.useVersion(asm_version)
-            details.because("Mixin config plugin requires new ASM")
-        }
-    }
-}
-
 // Configure common dependencies
 dependencies {
+    // Minecraft
+    minecraft("com.mojang:minecraft:${minecraft_version}")
+
     // ASM
     compileOnly("org.ow2.asm:asm:${asm_version}")
     compileOnly("org.ow2.asm:asm-analysis:${asm_version}")
     compileOnly("org.ow2.asm:asm-commons:${asm_version}")
     compileOnly("org.ow2.asm:asm-tree:${asm_version}")
     compileOnly("org.ow2.asm:asm-util:${asm_version}")
-
-    // Minecraft
-    minecraft("com.mojang:minecraft:${minecraft_version}")
 
     // Mixin
     compileOnly("org.spongepowered:mixin:${mixin_version}")
@@ -80,6 +70,14 @@ configurations {
     commonResources {
         canBeResolved = false
         canBeConsumed = true
+    }
+    configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "org.ow2.asm") {
+                details.useVersion(asm_version)
+                details.because("Mixin config plugin requires new ASM")
+            }
+        }
     }
 }
 artifacts {

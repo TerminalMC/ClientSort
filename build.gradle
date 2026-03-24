@@ -218,3 +218,11 @@ publishMods {
         }
     }
 }
+
+file(".").eachFile {
+    if (it.isFile() && it.name.endsWith(".gradle")
+            && it.name != "build.gradle"
+            && it.name != "settings.gradle") {
+        apply(from: it.name)
+    }
+}

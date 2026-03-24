@@ -121,47 +121,49 @@ if (build_sources_jar == "true") {
 processResources {
     final expandProps = [
             // Mod
-            "mod_version"            : mod_version,
-            "mod_group"              : mod_group,
-            "mod_id"                 : mod_id,
-            "mod_name"               : mod_name,
-            "mod_description_fabric" : mod_description.replace("\n", "\\n"),
-            "mod_description_neoforge": mod_description,
-            "mod_icon"               : "assets/${mod_id}/icon.png",
-            "mod_owner"              : mod_owner,
-            "mod_authors_list"       : asJsonList(mod_authors),
-            "mod_authors_string"     : mod_authors.split(",").join(", "),
-            "mod_contributors_list"  : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_contributors_string": asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_license"            : mod_license,
+            "mod_version"                : mod_version,
+            "mod_group"                  : mod_group,
+            "mod_id"                     : mod_id,
+            "mod_name"                   : mod_name,
+            "mod_description_fabric"     : mod_description.replace("\n", "\\n"),
+            "mod_description_neoforge"   : mod_description,
+            "mod_icon"                   : "assets/${mod_id}/icon.png",
+            "mod_owner"                  : mod_owner,
+            "mod_authors_list"           : asJsonList(mod_authors),
+            "mod_authors_string"         : mod_authors.split(",").join(", "),
+            "mod_contributors_list"      : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_contributors_string"    : asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_license"                : mod_license,
             // Links
-            "homepage_url"           : homepage_url,
-            "sources_url"            : sources_url,
-            "issues_url"             : issues_url,
-            "contact_url"            : contact_url,
+            "homepage_url"               : homepage_url,
+            "sources_url"                : sources_url,
+            "issues_url"                 : issues_url,
+            "contact_url"                : contact_url,
             // Java
-            "java_version"           : java_version,
-            "java_versions_fabric_list": asJsonList(java_versions_fabric),
-            "java_versions_neoforge" : java_versions_neoforge,
+            "java_version"               : java_version,
+            "java_versions_fabric_list"  : asJsonList(java_versions_fabric),
+            "java_versions_neoforge"     : java_versions_neoforge,
             // Minecraft
             "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
             "minecraft_versions_neoforge": minecraft_versions_neoforge,
+            // Mixin
+            "mixinextras_version_min"    : mixinextras_version_min,
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
-            "fabric_api_versions_list": asJsonList(fabric_api_versions),
-            "fabric_entrypoints_main"   : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_client" : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_server" : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_modmenu": asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
+            "fabric_api_versions_list"   : asJsonList(fabric_api_versions),
+            "fabric_entrypoints_main"    : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_client"  : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_server"  : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_modmenu" : asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
             // NeoForge
-            "neoforge_versions"      : neoforge_versions,
+            "neoforge_versions"          : neoforge_versions,
             // Dependencies:
-            "fabric_depends"         : "",
-            "fabric_recommends"      : "",
-            "fabric_suggests"        : "",
-            "fabric_conflicts"       : "",
-            "fabric_breaks"          : "",
-            "neoforge_all_deps"      : ""
+            "fabric_depends"             : "",
+            "fabric_recommends"          : "",
+            "fabric_suggests"            : "",
+            "fabric_conflicts"           : "",
+            "fabric_breaks"              : "",
+            "neoforge_all_deps"          : ""
     ]
 
     // Apply property-defined dependencies
