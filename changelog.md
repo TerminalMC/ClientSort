@@ -3,6 +3,7 @@
 ## 3.0.0
 
 - Re-enabled config screen
+- Fixed built-in resourcepack loading on NeoForge
 
 ## 3.0.0-beta.2
 
