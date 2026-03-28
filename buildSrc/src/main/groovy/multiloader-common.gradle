@@ -12,18 +12,6 @@ repositories {
         forRepository {
             //noinspection ForeignDelegate
             maven {
-                name = "Sponge"
-                url = uri("https://repo.spongepowered.org/repository/maven-public")
-            }
-        }
-        filter {
-            includeGroupAndSubgroups("org.spongepowered")
-        }
-    }
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
                 name = "ParchmentMC"
                 url = uri("https://maven.parchmentmc.org")
             }
@@ -147,6 +135,7 @@ processResources {
             "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
             "minecraft_versions_neoforge": minecraft_versions_neoforge,
             // Mixin
+            "mixin_version_min"          : mixin_version_min,
             "mixinextras_version_min"    : mixinextras_version_min,
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),

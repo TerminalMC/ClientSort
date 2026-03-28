@@ -7,25 +7,12 @@ pluginManagement {
             forRepository {
                 //noinspection ForeignDelegate
                 maven {
-                    name = "Sponge"
-                    url = uri("https://repo.spongepowered.org/repository/maven-public")
-                }
-            }
-            filter {
-                includeGroupAndSubgroups("org.spongepowered")
-            }
-        }
-        exclusiveContent {
-            forRepository {
-                //noinspection ForeignDelegate
-                maven {
                     name = "Fabric"
                     url = uri("https://maven.fabricmc.net")
                 }
             }
             filter {
                 includeGroupAndSubgroups("net.fabricmc")
-                includeGroup("net.fabricmc.fabric-loom")
             }
         }
         maven {

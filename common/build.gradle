@@ -18,7 +18,7 @@ dependencies {
     compileOnly("org.ow2.asm:asm-util:${asm_version}")
 
     // Mixin
-    compileOnly("org.spongepowered:mixin:${mixin_version}")
+    compileOnly("net.fabricmc:sponge-mixin:${mixin_version}")
 
     // MixinExtras
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
@@ -50,7 +50,7 @@ dependencies {
 
 // Configure Loom
 loom {
-    // Apply common classtweaker if it exists
+    // Apply common classTweaker if it exists
     def aw = file("src/main/resources/${mod_id}.classtweaker")
     if (aw.exists()) accessWidenerPath.set(aw)
     if (aw.exists()) {
