@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,16 +108,107 @@ public class ServerConfig {
             return map;
         };
         public Map<String, ServerClassPolicy> classPolicies = classPoliciesDefault.get();
+        public static final Map<String, String> classPolicyKeyUpgradeMap = new HashMap<>();
+
+        static {
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1661",
+                    "net.minecraft.world.entity.player.Inventory"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1704",
+                    "net.minecraft.world.inventory.BeaconMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1706",
+                    "net.minecraft.world.inventory.AnvilMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1707",
+                    "net.minecraft.world.inventory.ChestMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1708",
+                    "net.minecraft.world.inventory.BrewingStandMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1715",
+                    "net.minecraft.world.inventory.TransientCraftingContainer"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1716",
+                    "net.minecraft.world.inventory.DispenserMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1718",
+                    "net.minecraft.world.inventory.EnchantmentMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1722",
+                    "net.minecraft.world.inventory.HopperMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1724",
+                    "net.minecraft.world.inventory.HorseInventoryMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1726",
+                    "net.minecraft.world.inventory.LoomMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1730",
+                    "net.minecraft.world.inventory.PlayerEnderChestContainer"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_1733",
+                    "net.minecraft.world.inventory.ShulkerBoxMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_2621",
+                    "net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3705",
+                    "net.minecraft.world.inventory.BlastFurnaceMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3706",
+                    "net.minecraft.world.inventory.SmokerMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3803",
+                    "net.minecraft.world.inventory.GrindstoneMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3858",
+                    "net.minecraft.world.inventory.FurnaceMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3910",
+                    "net.minecraft.world.inventory.CartographyTableMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_3971",
+                    "net.minecraft.world.inventory.StonecutterMenu"
+            );
+            classPolicyKeyUpgradeMap.put(
+                    "net.minecraft.class_4862",
+                    "net.minecraft.world.inventory.SmithingMenu"
+            );
+        }
         public static Validator<Map<String, ServerClassPolicy>> classPoliciesValidator = (val) -> {
             Map<String, ServerClassPolicy> validPolicies = new LinkedHashMap<>();
             if (val == null)
                 return validPolicies;
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className != null && !cp.className.isBlank()) {
+                    String className = cp.className;
+                    if (classPolicyKeyUpgradeMap.containsKey(className))
+                        className = classPolicyKeyUpgradeMap.get(className);
                     validPolicies.put(
-                            cp.className,
+                            className,
                             new ServerClassPolicy(
-                                    cp.className,
+                                    className,
                                     cp.sortEnabled,
                                     cp.stackFillEnabled,
                                     cp.transferEnabled,

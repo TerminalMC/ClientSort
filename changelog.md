@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1
+
+- Added automatic conversion for intermediary class policies
+
 ## 3.0.0
 
 - Re-enabled config screen
