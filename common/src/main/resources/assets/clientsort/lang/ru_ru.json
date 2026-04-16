@@ -1,6 +1,10 @@
 {
   "clientsort.name": "ClientSort",
 
+  "modmenu.nameTranslation.clientsort": "ClientSort",
+  "modmenu.descriptionTranslation.clientsort": "Универсальная и простая сортировка инвентаря.",
+  "fml.menu.mods.info.description.clientsort": "Универсальная и простая сортировка инвентаря.",
+  
   "resourcepack.clientsort.dark-mode": "ClientSort: Тёмный режим",
 
   "key.category.clientsort.main": "ClientSort",
@@ -12,7 +16,7 @@
   "key.clientsort.op.transfer": "Переместить",
 
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
-  "message.clientsort.configScreenDisabled": "Config screen is not available on this version.",
+  "message.clientsort.configScreenDisabled": "Экран конфигурации недоступен в этой версии.",
   "message.clientsort.viewModrinth": "Посмотреть на Modrinth",
   "message.clientsort.configReloaded": "Конфигурация сервера перезагружена из '%s'!",
   "message.clientsort.checkLogs": "Проверьте логи для получения дополнительной информации.",
