@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.2
+
+- Updated Russian translation (rfin0)
+
 ## 3.1.1
 
 - Added automatic conversion for intermediary class policies
