@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2
+
+- Fixed a compatibility issue caused by removal of buttons on screen switch
+
 ## 2.2.1
 
 - Added an option to justify buttons right/bottom rather than the default left/top
