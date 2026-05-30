@@ -2,6 +2,7 @@
 
 ## 3.2.3
 
+- Fixed a potential compat issue caused by removal of action buttons from old screens
 - Removed refmap usages
 
 ## 3.2.2

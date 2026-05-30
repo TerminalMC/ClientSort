@@ -115,12 +115,6 @@ public class TriggerButtonManager {
         if (Minecraft.getInstance().player.isSpectator())
             return;
 
-        if (screen != null) {
-            TriggerButtonManager.getContainerButtons()
-                    .forEach((b) -> ((ScreenAccessor) screen).clientsort$removeWidget(b));
-            TriggerButtonManager.getPlayerButtons()
-                    .forEach((b) -> ((ScreenAccessor) screen).clientsort$removeWidget(b));
-        }
         containerButtons.clear();
         visibleContainerButtons.clear();
         playerButtons.clear();
