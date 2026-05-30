@@ -40,7 +40,7 @@ public abstract class ScreenMixin {
             )
     )
     private void afterInit(CallbackInfo ci) {
-        if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen)
+        if (Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen)
             return;
         clientsort$afterInit();
     }

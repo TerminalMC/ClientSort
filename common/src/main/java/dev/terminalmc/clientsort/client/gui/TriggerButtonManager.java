@@ -125,7 +125,7 @@ public class TriggerButtonManager {
 
         boolean isEditorC = false;
         boolean isEditorP = false;
-        Screen currentScreen = Minecraft.getInstance().screen;
+        Screen currentScreen = Minecraft.getInstance().gui.screen();
         if (currentScreen instanceof SelectorScreen) {
             isEditorC = true;
             isEditorP = true;
@@ -337,7 +337,7 @@ public class TriggerButtonManager {
             ClientSort.taskManager.schedule(
                     isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
-                        if (Minecraft.getInstance().screen == screen
+                        if (Minecraft.getInstance().gui.screen() == screen
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
                                 && (isPlayerInv ? playerButtons : containerButtons)
                                 .contains(button)) {
@@ -465,7 +465,7 @@ public class TriggerButtonManager {
             ClientSort.taskManager.schedule(
                     isPlayerInv ? options().autoOpDelayPlayer : options().autoOpDelayContainer,
                     () -> {
-                        if (Minecraft.getInstance().screen == screen
+                        if (Minecraft.getInstance().gui.screen() == screen
                                 && !KeybindManager.isDown(KeybindManager.CANCEL_AUTO_KEY)
                                 && (isPlayerInv ? playerButtons : containerButtons)
                                 .contains(button)) {

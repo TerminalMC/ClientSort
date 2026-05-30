@@ -155,7 +155,7 @@ public class SelectorScreen extends Screen {
             pes.onClose();
         } else {
             lastScreen.init(width, height);
-            Minecraft.getInstance().setScreen(lastScreen);
+            Minecraft.getInstance().gui.setScreen(lastScreen);
         }
     }
 

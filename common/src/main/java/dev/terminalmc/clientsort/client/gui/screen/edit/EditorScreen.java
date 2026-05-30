@@ -232,7 +232,7 @@ public abstract class EditorScreen extends Screen {
         // Split the current config off the parent class key
         Button splitPolicyClassButton = Button.builder(
                         localized("editor", "splitPolicyClass"),
-                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
+                        (button) -> Minecraft.getInstance().gui.setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
                                         options().classPolicies.put(
@@ -270,7 +270,7 @@ public abstract class EditorScreen extends Screen {
                                         Config.save();
                                         init();
                                     }
-                                    Minecraft.getInstance().setScreen(this);
+                                    Minecraft.getInstance().gui.setScreen(this);
                                 },
                                 localized("title", "confirm.splitPolicyClass"),
                                 localized(
@@ -303,7 +303,7 @@ public abstract class EditorScreen extends Screen {
                             Component invTitle = isPlayerInv
                                     ? ((AbstractContainerScreenAccessor) underlay).clientsort$getPlayerInventoryTitle()
                                     : underlay.getTitle();
-                            Minecraft.getInstance().setScreen(new ConfirmScreen(
+                            Minecraft.getInstance().gui.setScreen(new ConfirmScreen(
                                     (confirm) -> {
                                         if (confirm) {
                                             if (ClassPolicy.hasInvTitle(rep.activePolicyKey)) {
@@ -352,7 +352,7 @@ public abstract class EditorScreen extends Screen {
                                             Config.save();
                                             init();
                                         }
-                                        Minecraft.getInstance().setScreen(this);
+                                        Minecraft.getInstance().gui.setScreen(this);
                                     },
                                     localized("title", "confirm.splitPolicyTitle"),
                                     localized(
@@ -420,14 +420,14 @@ public abstract class EditorScreen extends Screen {
         // Save the current position as default
         Button saveAsDefaultButton = Button.builder(
                         localized("editor", "saveAsDefault"),
-                        (button) -> Minecraft.getInstance().setScreen(new ConfirmScreen(
+                        (button) -> Minecraft.getInstance().gui.setScreen(new ConfirmScreen(
                                 (confirm) -> {
                                     if (confirm) {
                                         options().layoutOffset = buttons.getFirst().offset;
                                         Config.save();
                                         init();
                                     }
-                                    Minecraft.getInstance().setScreen(this);
+                                    Minecraft.getInstance().gui.setScreen(this);
                                 },
                                 localized("title", "confirm.saveAsDefault"),
                                 localized("message", "confirm.saveAsDefault")
@@ -535,7 +535,7 @@ public abstract class EditorScreen extends Screen {
                         localized("editor", "reselect"),
                         (button) -> {
                             onClose();
-                            Minecraft.getInstance().setScreen(
+                            Minecraft.getInstance().gui.setScreen(
                                     new SelectorScreen(underlay, this)
                             );
                         }
@@ -706,7 +706,7 @@ public abstract class EditorScreen extends Screen {
     public void onClose() {
         super.onClose();
         lastScreen.init(width, height);
-        Minecraft.getInstance().setScreen(lastScreen);
+        Minecraft.getInstance().gui.setScreen(lastScreen);
     }
 
     /**

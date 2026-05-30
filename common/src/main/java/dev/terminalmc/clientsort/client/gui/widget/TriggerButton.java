@@ -121,7 +121,7 @@ public abstract class TriggerButton extends Button {
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (isMouseOver(event.x(), event.y())) {
             boolean rightClick = event.button() == InputConstants.MOUSE_BUTTON_RIGHT;
-            if (Minecraft.getInstance().screen instanceof EditorScreen) {
+            if (Minecraft.getInstance().gui.screen() instanceof EditorScreen) {
                 if (rightClick) {
                     if (event.hasShiftDown()) {
                         operationAllowed = !operationAllowed;
@@ -150,7 +150,7 @@ public abstract class TriggerButton extends Button {
     }
 
     public void openEditScreen() {
-        Minecraft.getInstance().setScreen(
+        Minecraft.getInstance().gui.setScreen(
                 isPlayerInv
                         ? new PlayerEditorScreen(screen, this)
                         : new ContainerEditorScreen(screen, this)
@@ -188,7 +188,7 @@ public abstract class TriggerButton extends Button {
         // Refresh tooltip
         if (isMouseOver(mouseX, mouseY)) {
             if (((AbstractWidgetAccessor) this).clientsort$getTooltip().get() == null) {
-                if (Minecraft.getInstance().screen instanceof EditorScreen) {
+                if (Minecraft.getInstance().gui.screen() instanceof EditorScreen) {
                     Component visibilityStatus = localized(
                             "editor", active ? "enabled" : "disabled")
                             .withStyle(active
@@ -215,7 +215,7 @@ public abstract class TriggerButton extends Button {
 
     @Override
     protected void onDrag(@NotNull MouseButtonEvent event, double dragX, double dragY) {
-        if (Minecraft.getInstance().screen instanceof EditorScreen) {
+        if (Minecraft.getInstance().gui.screen() instanceof EditorScreen) {
             AbstractContainerScreenAccessor acs = (AbstractContainerScreenAccessor) screen;
             int newX = Math.clamp((int) event.x() - HALF_WIDTH, 0, screen.width - WIDTH);
             int newY = Math.clamp((int) event.y() - HALF_HEIGHT, 0, screen.height - HEIGHT);

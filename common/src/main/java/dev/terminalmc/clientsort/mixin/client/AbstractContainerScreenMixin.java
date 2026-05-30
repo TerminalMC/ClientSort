@@ -41,7 +41,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,9 +74,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Shadow
     protected Slot hoveredSlot;
-
-    @Shadow
-    private ItemStack draggingItem;
 
     @Shadow
     public abstract T getMenu();
@@ -161,7 +157,6 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
         if (((inputMatcher.apply(options.keyPickItem)
                 && this.minecraft.player.hasInfiniteMaterials()
                 && (this.hoveredSlot.hasItem()
-                || !this.draggingItem.isEmpty()
                 || !this.menu.getCarried().isEmpty())))) {
             return null;
         }
@@ -196,7 +191,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     @Unique
     private boolean clientsort$openEditor() {
         Minecraft.getInstance()
-                .setScreen(new SelectorScreen((AbstractContainerScreen<?>) (Object) this));
+                .gui.setScreen(new SelectorScreen((AbstractContainerScreen<?>) (Object) this));
         return true;
     }
 
@@ -269,7 +264,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             float partialTick,
             CallbackInfo ci
     ) {
-        if (!this.equals(Minecraft.getInstance().screen))
+        if (!this.equals(Minecraft.getInstance().gui.screen()))
             return;
 
         if (ClientSort.overlayMessage != null) {
@@ -298,7 +293,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
 
             // Draw disabled indicator, top left
-            if (!(Minecraft.getInstance().screen instanceof EditorScreen)) {
+            if (!(Minecraft.getInstance().gui.screen() instanceof EditorScreen)) {
                 Object object = getObj(slot, getMenu());
                 if (object == null)
                     continue;

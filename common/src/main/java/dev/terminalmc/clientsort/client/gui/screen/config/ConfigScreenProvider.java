@@ -34,8 +34,8 @@ public class ConfigScreenProvider {
 
     public static Screen getConfigScreen(Screen parent) {
         try {
-            return ClothScreenProvider.getConfigScreen(parent);
-//            return new DisabledScreen(parent);
+//            return ClothScreenProvider.getConfigScreen(parent);
+            return new DisabledScreen(parent);
         } catch (NoClassDefFoundError ignored) {
             return new BackupScreen(
                     parent,
@@ -72,7 +72,7 @@ public class ConfigScreenProvider {
 
             Button openLinkButton = Button.builder(
                             localized("message", "viewModrinth"),
-                            (button) -> Minecraft.getInstance().setScreen(new ConfirmLinkScreen(
+                            (button) -> Minecraft.getInstance().gui.setScreen(new ConfirmLinkScreen(
                                     (open) -> {
                                         if (open)
                                             Util.getPlatform().openUri(modUrl);
@@ -94,7 +94,7 @@ public class ConfigScreenProvider {
 
         @Override
         public void onClose() {
-            Minecraft.getInstance().setScreen(parent);
+            Minecraft.getInstance().gui.setScreen(parent);
         }
     }
 
@@ -129,7 +129,7 @@ public class ConfigScreenProvider {
 
         @Override
         public void onClose() {
-            Minecraft.getInstance().setScreen(parent);
+            Minecraft.getInstance().gui.setScreen(parent);
         }
     }
 }
