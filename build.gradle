@@ -73,14 +73,19 @@ subprojects {
                         && !env.has("MODRINTH_TOKEN")
                         && !env.has("CURSEFORGE_TOKEN")
                 // GitHub configuration
+                //noinspection GroovyAssignabilityCheck
                 github {
-                    parent project(":").tasks.named("publishGithub")
                     accessToken = env.safe("GITHUB_TOKEN")
+                    repository = prop.safe("mod_github_repo")
+                    commitish = grgitService.service.get().grgit.branch.current().name
+                    tagName = "v${mod_version}-${sp.name}"
+                    // Link to header in changelog file
+                    changelog = "[Changelog](./changelog.md#${mod_version.replaceAll("\\.", "")})"
                     if (build_sources_jar == "true") additionalFiles.from(sourcesJar.archiveFile)
                     if (build_javadoc_jar == "true") additionalFiles.from(javadocJar.archiveFile)
-                    return void
                 }
                 // Modrinth configuration
+                //noinspection GroovyAssignabilityCheck
                 modrinth {
                     accessToken = env.safe("MODRINTH_TOKEN")
                     projectId = prop.safe("mod_modrinth_id")
@@ -113,7 +118,7 @@ subprojects {
                         }
                     }
                     // Sync Modrinth description with README
-                    if (prop.has("mod_github_repo")) {
+                    if (prop.has("mod_github_repo") && env.safe("SYNC_DESC_MODRINTH") == "true") {
                         projectDescription = rootProject.file("README.md").text.replaceAll(
                                 "src=\"\\./",
                                 "src=\"https://raw.githubusercontent.com/${prop.get("mod_github_repo")}/HEAD/"
@@ -122,10 +127,10 @@ subprojects {
                     }
                 }
                 // CurseForge configuration
+                //noinspection GroovyAssignabilityCheck
                 curseforge {
                     accessToken = env.safe("CURSEFORGE_TOKEN")
                     projectId = prop.safe("mod_curseforge_id")
-                    projectSlug = prop.safe("mod_curseforge_slug")
                     minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}").collect { ver ->
                         final hyphenIdx = ver.indexOf("-")
                         if (hyphenIdx != -1) {
@@ -134,6 +139,8 @@ subprojects {
                             return ver
                         }
                     })
+                    client = prop.list("curseforge_environments").contains("client")
+                    server = prop.list("curseforge_environments").contains("server")
                     changelog = cLog
                     prop.safeList("${sp.name}_deps").each { dep ->
                         try {
@@ -183,38 +190,9 @@ subprojects {
                 onlyIf {
                     return hasSpConf
                             && prop.has("mod_curseforge_id")
-                            && prop.has("mod_curseforge_slug")
                             && (it["dryRun"].get() || env.has("CURSEFORGE_TOKEN"))
                 }
             }
-        }
-    }
-}
-
-/*
- This configuration, combined with the subproject configuration above, allows
- multiple files to be uploaded to a single GitHub release.
- */
-publishMods {
-    final env = new EnvUtil(providers)
-    final prop = new PropUtil(project)
-    version = "${mod_version}+${minecraft_version}"
-    displayName = "v${mod_version}+${minecraft_version}"
-    type = ReleaseType.of(mod_version_type)
-    dryRun = !env.has("GITHUB_TOKEN")
-    github {
-        accessToken = env.safe("GITHUB_TOKEN")
-        repository = prop.safe("mod_github_repo")
-        commitish = grgitService.service.get().grgit.branch.current().name
-        tagName = "v${mod_version}+${minecraft_version}"
-        allowEmptyFiles = true
-        // Link to header in changelog file
-        changelog = "[Changelog](./changelog.md#${mod_version.replaceAll("\\.", "")})"
-    }
-    tasks.named("publishGithub") {
-        onlyIf {
-            return prop.has("mod_github_repo")
-                    && (it["dryRun"].get() || env.has("GITHUB_TOKEN"))
         }
     }
 }

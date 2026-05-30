@@ -16,7 +16,7 @@ class PropUtil {
      @return {@code true} if the property is set.
      */
     boolean has(String propertyName) {
-        return project.hasProperty(propertyName) && !project.property(propertyName).toString().isBlank()
+        return project.hasProperty(propertyName) && !get(propertyName).toString().isBlank()
     }
 
     /**
@@ -30,14 +30,14 @@ class PropUtil {
      @return the value of the property if it exists, an empty string otherwise.
      */
     String safe(String propertyName) {
-        return has(propertyName) ? project.property(propertyName) : ""
+        return has(propertyName) ? get(propertyName) : ""
     }
 
     /**
      @return the value of the property, CSV-split.
      */
     String[] list(String propertyName) {
-        return project.property(propertyName).toString().split(",")
+        return get(propertyName).toString().split(",")
                 .findAll { !it.isBlank() }
                 .collect { it.strip() }
     }

@@ -18,7 +18,7 @@
     "issues": "${issues_url}"
   },
 
-  "environment": "*",
+  "environment": "${fabric_environment}",
 
   "provides": [],
 

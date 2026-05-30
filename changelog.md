@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.3
+
+- Removed refmap usages
+
 ## 3.2.2
 
 - Updated Russian translation (rfin0)

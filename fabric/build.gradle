@@ -60,9 +60,6 @@ loom {
             validateAccessWidener.run()
         }
     }
-    mixin {
-        defaultRefmapName.set("${mod_id}.refmap.json")
-    }
     // Configure runs
     runs {
         client {

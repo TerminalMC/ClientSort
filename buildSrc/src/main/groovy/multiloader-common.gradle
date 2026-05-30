@@ -8,18 +8,7 @@ plugins {
 repositories {
     mavenCentral()
     mavenLocal()
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "ParchmentMC"
-                url = uri("https://maven.parchmentmc.org")
-            }
-        }
-        filter {
-            includeGroup("org.parchmentmc.data")
-        }
-    }
+
     exclusiveContent {
         forRepository {
             //noinspection ForeignDelegate
@@ -32,17 +21,75 @@ repositories {
             includeGroupAndSubgroups("net.fabricmc")
         }
     }
-    maven {
-        name = "Modrinth"
-        url = uri("https://api.modrinth.com/maven")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "ParchmentMC"
+                url = uri("https://maven.parchmentmc.org")
+            }
+        }
+        filter {
+            includeGroup("org.parchmentmc.data")
+        }
     }
-    maven {
-        name = "Shedaniel"
-        url = uri("https://maven.shedaniel.me")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "Modrinth"
+                url = uri("https://api.modrinth.com/maven")
+            }
+        }
+        filter {
+            includeGroup("maven.modrinth")
+        }
     }
-    maven {
-        name = "isXander"
-        url = uri("https://maven.isxander.dev/releases")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "CurseForge"
+                url = uri("https://cursemaven.com")
+            }
+        }
+        filter {
+            includeGroup("curse.maven")
+        }
+    }
+
+    safeList("dep_repos").each { repo ->
+        try {
+            final repoData = safe("dep_repo_${repo}").split(":")
+            final repoUrl = repoData[0]
+            final repoFilter = repoData.length > 1 ? repoData[1] : "-"
+
+            if (repoFilter == "-") {
+                maven {
+                    name = repo
+                    url = uri("https://${repoUrl}")
+                }
+            } else {
+                exclusiveContent {
+                    forRepository {
+                        //noinspection ForeignDelegate
+                        maven {
+                            name = repo
+                            url = uri("https://${repoUrl}")
+                        }
+                    }
+                    filter {
+                        includeGroupAndSubgroups(repoFilter)
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("Error processing maven repository '${repo}'. Check property format.")
+            throw ex
+        }
     }
 }
 
@@ -140,6 +187,7 @@ processResources {
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
             "fabric_api_versions_list"   : asJsonList(fabric_api_versions),
+            "fabric_environment"         : fabric_environment,
             "fabric_entrypoints_main"    : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
             "fabric_entrypoints_client"  : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
             "fabric_entrypoints_server"  : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
@@ -156,9 +204,9 @@ processResources {
     ]
 
     // Apply property-defined dependencies
-    safePropList("fabric_deps").each { dep ->
+    safeList("fabric_deps").each { dep ->
         try {
-            final depData = propList("d_fabric_${dep}")
+            final depData = list("d_fabric_${dep}")
             if (depData.length > 1 && depData[1] != "-") {
                 final loaderData = depData[1].split(":")
                 final key = "fabric_${loaderData[0]}".toString()
@@ -177,9 +225,9 @@ processResources {
     if (!expandProps["fabric_depends"].isBlank()) {
         expandProps["fabric_depends"] = "${expandProps["fabric_depends"]},".toString()
     }
-    safePropList("neoforge_deps").each { dep ->
+    safeList("neoforge_deps").each { dep ->
         try {
-            final depData = propList("d_neoforge_${dep}")
+            final depData = list("d_neoforge_${dep}")
             if (depData.length > 1 && depData[1] != "-") {
                 final loaderData = depData[1].split(":")
                 expandProps["neoforge_all_deps"] = expandProps["neoforge_all_deps"] +
@@ -245,21 +293,38 @@ static asTomlList(String csvString) {
 }
 
 /**
+ @return {@code true} if the property is set.
+ */
+boolean has(String propertyName) {
+    return project.hasProperty(propertyName) && !get(propertyName).toString().isBlank()
+}
+
+/**
+ @return the value of the property.
+ */
+String get(String propertyName) {
+    return project.property(propertyName)
+}
+
+/**
+ @return the value of the property if it exists, an empty string otherwise.
+ */
+String safe(String propertyName) {
+    return has(propertyName) ? get(propertyName) : ""
+}
+
+/**
  @return the value of the property, CSV-split.
  */
-String[] propList(String propertyName) {
-    final list = project.property(propertyName).toString().split(",")
-    for (int i = 0; i < list.length; i++) {
-        list[i] = list[i].strip()
-    }
-    return list
+String[] list(String propertyName) {
+    return get(propertyName).toString().split(",")
+            .findAll { !it.isBlank() }
+            .collect { it.strip() }
 }
 
 /**
  @return the value of the property CSV-split if it is set, an empty array otherwise.
  */
-String[] safePropList(String propertyName) {
-    return project.hasProperty(propertyName) && !project.property(propertyName).toString().isBlank()
-            ? propList(propertyName)
-            : []
+String[] safeList(String propertyName) {
+    return has(propertyName) ? list(propertyName) : []
 }

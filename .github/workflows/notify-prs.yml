@@ -1,0 +1,32 @@
+# When a release is created, adds a comment to each PR with commits first included in the release.
+name: Notify PRs
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  tag-notification:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository under $GITHUB_WORKSPACE, so the workflow can access it.
+      # https://github.com/actions/checkout
+      - name: Checkout sources
+        uses: actions/checkout@v6
+
+      # Run the JS script.
+      # https://github.com/actions/github-script
+      - name: Run script notify-prs
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/notify-prs.js')
+            )
+            await script({ github, context, core })

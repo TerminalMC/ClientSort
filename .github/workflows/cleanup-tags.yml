@@ -1,0 +1,31 @@
+# When a release is deleted, deletes the associated tag if it no longer has any associated releases.
+name: Cleanup Tags
+permissions:
+  contents: write
+
+on:
+  release:
+    types: [ deleted ]
+
+jobs:
+  cleanup-tags:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository under $GITHUB_WORKSPACE, so the workflow can access it.
+      # https://github.com/actions/checkout
+      - name: Checkout sources
+        uses: actions/checkout@v6
+
+      # Run the JS script.
+      # https://github.com/actions/github-script
+      - name: Run script cleanup-tags
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/cleanup-tags.js')
+            )
+            await script({ github, context, core })
