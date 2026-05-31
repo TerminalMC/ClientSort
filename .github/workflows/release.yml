@@ -63,7 +63,7 @@ on:
         type: boolean
         description: Sync Modrinth Description
         required: true
-        default: true
+        default: false
 
 jobs:
   release:
