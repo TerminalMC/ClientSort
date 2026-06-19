@@ -43,6 +43,10 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClothScreenProvider {
 
+    private ClothScreenProvider() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
+
     // Mild shenanigans to allow cross-validation between selectors
 
     private static EnumListEntry<?> firstSelector = null;

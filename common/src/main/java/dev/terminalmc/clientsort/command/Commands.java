@@ -23,19 +23,23 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.config.ServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
-import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.Commands.*;
 
 @SuppressWarnings("unchecked")
-public class ModCommands<S> extends CommandDispatcher<S> {
+public class Commands {
 
-    public void register(CommandDispatcher<S> dispatcher, CommandBuildContext buildContext) {
+    private Commands() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
+
+    public static <S> void register(CommandDispatcher<S> dispatcher, CommandBuildContext buildCtx) {
+        //noinspection unchecked
         dispatcher.register((LiteralArgumentBuilder<S>) literal(ClientSort.MOD_ID)
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(hasPermission(LEVEL_GAMEMASTERS))
                 .then(literal("reload")
                         .executes(ctx -> {
                             MutableComponent msg = Component.empty()

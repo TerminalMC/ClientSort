@@ -131,16 +131,11 @@ subprojects {
                 curseforge {
                     accessToken = env.safe("CURSEFORGE_TOKEN")
                     projectId = prop.safe("mod_curseforge_id")
-                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}").collect { ver ->
-                        final hyphenIdx = ver.indexOf("-")
-                        if (hyphenIdx != -1) {
-                            return ver.substring(0, hyphenIdx) + "-snapshot"
-                        } else {
-                            return ver
-                        }
+                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}").findAll {
+                        !it.contains("-")
                     })
-                    client = prop.list("curseforge_environments").contains("client")
-                    server = prop.list("curseforge_environments").contains("server")
+                    client = prop.safeList("curseforge_environments").contains("client")
+                    server = prop.safeList("curseforge_environments").contains("server")
                     changelog = cLog
                     prop.safeList("${sp.name}_deps").each { dep ->
                         try {
@@ -174,23 +169,18 @@ subprojects {
             final hasSpConf = prop.has("mod_loaders_${name}") && prop.has("mc_versions_${name}")
             tasks.named("publishGithub") {
                 onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_github_repo")
-                            && (it["dryRun"].get() || env.has("GITHUB_TOKEN"))
+                    return hasSpConf && (it["dryRun"].get() || env.has("GITHUB_TOKEN"))
                 }
             }
             tasks.named("publishModrinth") {
                 onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_modrinth_id")
-                            && (it["dryRun"].get() || env.has("MODRINTH_TOKEN"))
+                    return hasSpConf && (it["dryRun"].get() || env.has("MODRINTH_TOKEN"))
                 }
             }
             tasks.named("publishCurseforge") {
                 onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_curseforge_id")
-                            && (it["dryRun"].get() || env.has("CURSEFORGE_TOKEN"))
+                    return hasSpConf && (it["dryRun"].get() || env.has("CURSEFORGE_TOKEN"))
+                            && prop.safeList("mc_versions_${sp.name}").any { !it.contains("-") }
                 }
             }
         }

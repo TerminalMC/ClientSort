@@ -16,6 +16,7 @@
 
 package dev.terminalmc.clientsort.client;
 
+import dev.terminalmc.clientsort.client.command.Commands;
 import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
@@ -32,6 +33,7 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -96,7 +98,15 @@ public class ClientSortNeoForge {
     static class ClientEventHandler {
 
         /**
-         * Registers after-tick event.
+         * Registers all client-side commands.
+         */
+        @SubscribeEvent
+        static void registerClientCommands(RegisterClientCommandsEvent event) {
+            Commands.register(event.getDispatcher(), event.getBuildContext());
+        }
+
+        /**
+         * Registers client after-tick event.
          */
         @SubscribeEvent
         public static void afterClientTick(ClientTickEvent.Post event) {
