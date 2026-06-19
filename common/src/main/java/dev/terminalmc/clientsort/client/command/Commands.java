@@ -40,7 +40,7 @@ public class Commands {
         //noinspection unchecked
         dispatcher.register((LiteralArgumentBuilder<S>) literal(ClientSort.MOD_ID)
                 .executes((ctx) -> {
-                    mc.schedule(() -> mc.setScreen(ConfigScreenProvider.getConfigScreen(null)));
+                    mc.schedule(() -> mc.gui.setScreen(ConfigScreenProvider.getConfigScreen(null)));
                     return Command.SINGLE_SUCCESS;
                 })
                 // fall-through to server commands
