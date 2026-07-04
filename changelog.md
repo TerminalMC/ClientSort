@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.102.5
+
+- Fixed creative sort order sporadically misplacing items
+- Fixed creative search order not working when optimization was switched off
+
 ## 3.102.4
 
 - Reset `mc` version counter to 1 at mc1.0.0

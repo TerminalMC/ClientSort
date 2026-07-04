@@ -118,6 +118,8 @@ public class ClothScreenProvider {
                     options.optimizeCreativeSorting = val;
                     if (val)
                         CreativeSearchOrder.tryRefreshStackPositionMap();
+                    else
+                        ClientSort.searchOrderUpdated = false;
                 })
                 .build());
 
@@ -187,11 +189,7 @@ public class ClothScreenProvider {
                 )
                 .setTooltip(localized("option", "bundlesUseRightClick.tooltip"))
                 .setDefaultValue(Config.Options.bundlesUseRightClickDefault)
-                .setSaveConsumer(val -> {
-                    options.bundlesUseRightClick = val;
-                    if (val)
-                        CreativeSearchOrder.tryRefreshStackPositionMap();
-                })
+                .setSaveConsumer(val -> options.bundlesUseRightClick = val)
                 .build());
 
         general.addEntry(eb.startBooleanToggle(
