@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.103.1
+
+- Fixed creative sort order sporadically misplacing items
+- Fixed creative search order not working when optimization was switched off
+
 ## 3.103.0
 
 - Updated to mc26.2
