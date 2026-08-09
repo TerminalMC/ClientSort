@@ -19,6 +19,7 @@ package dev.terminalmc.clientsort.client.inventory.operator;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.compat.itemlocks.ItemLocksCompat;
+import dev.terminalmc.clientsort.client.compat.lockedinslots.LockedInSlotsCompat;
 import dev.terminalmc.clientsort.client.compat.stacktnc.StackTncCompat;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
 import dev.terminalmc.clientsort.client.config.Operation;
@@ -188,6 +189,8 @@ public abstract class SingleUseOperator {
             if (ItemLocksCompat.isLocked(slot))
                 continue;
             if (StackTncCompat.isLocked(slot))
+                continue;
+            if (LockedInSlotsCompat.isLocked(slot))
                 continue;
             // Ignore ignored slots
             Object object = getObj(slot, screen.getMenu());
