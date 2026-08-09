@@ -76,6 +76,7 @@
   "editor.clientsort.policyKey.current": "Policy Key: %s",
   "editor.clientsort.policyKey.menu": "Active Menu: %s",
   "editor.clientsort.policyKey.unset": "Not set",
+  "editor.clientsort.policyKey.screen": "Screen: %s",
 
   "option.clientsort.general": "General",
   "option.clientsort.interactionInterval": "Interaction Interval",
@@ -179,6 +180,8 @@
   "option.clientsort.policies.description.13": "Note: fill, restock and transfer buttons are only shown if enabled on both the player inventory and the container.",
   "option.clientsort.classPolicies": "Class Policies",
   "option.clientsort.classPolicies.tooltip": "Each of the entries below corresponds to a particular type of inventory.",
+  "option.clientsort.screenClassBlacklist": "Screen Class Blacklist",
+  "option.clientsort.screenClassBlacklist.tooltip": "The policies above are based on the inventory or menu class. If you want to disable buttons and sorting for a particular type of screen that doesn't have a unique inventory or menu class, add it here.",
 
   "hotbarScope.clientsort.HOTBAR": "Hotbar",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Hotbar will be processed as a separate inventory.",
