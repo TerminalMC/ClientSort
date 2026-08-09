@@ -129,6 +129,6 @@ public class StackMatcher {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(item, components);
+        return Objects.hashCode(item);
     }
 }
