@@ -8,6 +8,8 @@ name: Release
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
+  attestations: write
 
 on:
   workflow_dispatch:
@@ -115,11 +117,49 @@ jobs:
 
       # Upload build artifacts to the workflow report.
       # https://github.com/actions/upload-artifact
-      - name: Capture build artifacts
+      # - name: Capture build artifacts
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+      #     path: |
+      #       **/build/libs/*.jar
+      #       !buildSrc/**
+      #       !common/**
+
+      # Upload build artifacts to the workflow report.
+      # This is fail-soft if no matching file exists.
+      # https://github.com/actions/upload-artifact
+      - name: Upload Fabric jar
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+          archive: false
           path: |
+            fabric/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload Fabric sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: fabric/build/libs/*-sources.jar
+      - name: Upload NeoForge jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |
+            neoforge/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload NeoForge sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: neoforge/build/libs/*-sources.jar
+
+      # Attest artifacts
+      # https://github.com/actions/attest
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: |
             **/build/libs/*.jar
             !buildSrc/**
             !common/**
@@ -145,7 +185,7 @@ jobs:
           script: |
             const path = require('path')
             const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/notify-prs.js')
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
             )
             await script({ github, context, core })
 

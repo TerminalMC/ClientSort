@@ -27,6 +27,6 @@ jobs:
           script: |
             const path = require('path')
             const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/notify-prs.js')
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
             )
             await script({ github, context, core })

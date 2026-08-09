@@ -5,36 +5,36 @@ plugins {
     id("net.neoforged.moddev")
 }
 
-// Configure NeoForge dependencies
+// configure NeoForge dependencies
 dependencies {
     // MixinExtras
     if (mixinextras_jij_neoforge == "true") {
         implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}"))
     }
 
-    // Apply property-defined dependencies
-    final selector = (String type, dep) -> {
-        switch (type) {
+    // apply property-defined dependencies
+    final selector = (String $type, $dep) -> {
+        switch ($type) {
             case "anp": //noinspection DependencyNotationArgument
-                return annotationProcessor(dep)
+                return annotationProcessor($dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return api(dep)
+                return api($dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return compileOnly(dep)
+                return compileOnly($dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return implementation(dep)
+                return implementation($dep)
                 break
             case "jar": //noinspection DependencyNotationArgument
-                return jarJar(dep)
+                return jarJar($dep)
                 break
             case "-":
-                return dep
+                return $dep
                 break
             default:
-                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+                throw new IllegalArgumentException("Unrecognized dependency type: ${$type}")
         }
     }
     new PropUtil(project).applyDependencies(project.name, selector)
@@ -44,15 +44,15 @@ dependencies {
 neoForge {
     version = neoforge_version
     // Apply common AccessTransformer if it exists
-    def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
+    final File $at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    if ($at.exists()) {
+        accessTransformers.from($at.absolutePath)
+    }
     validateAccessTransformers = true
     // Configure runs
     runs {
         configureEach {
             systemProperty("neoforge.enabledGameTestNamespaces", "${mod_id}")
-            // Unify the run config names with Fabric
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})"
         }
         client {
             //noinspection GroovyImplicitNullArgumentCall

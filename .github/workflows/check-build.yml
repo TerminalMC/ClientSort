@@ -1,5 +1,8 @@
 # Builds the project, as a first line of defense against bad commits.
 name: Check Build
+permissions:
+  id-token: write
+  attestations: write
 
 on:
   push:
@@ -60,12 +63,39 @@ jobs:
         run: ./gradlew build --stacktrace
 
       # Upload build artifacts to the workflow report.
+      # This is fail-soft if no matching file exists.
       # https://github.com/actions/upload-artifact
-      - name: Capture build artifacts
+      - name: Upload Fabric jar
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+          archive: false
           path: |
+            fabric/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload Fabric sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: fabric/build/libs/*-sources.jar
+      - name: Upload NeoForge jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |
+            neoforge/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload NeoForge sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: neoforge/build/libs/*-sources.jar
+
+      # Attest artifacts
+      # https://github.com/actions/attest
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: |
             **/build/libs/*.jar
             !buildSrc/**
             !common/**
