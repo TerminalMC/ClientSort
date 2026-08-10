@@ -20,7 +20,6 @@ import dev.terminalmc.clientsort.ClientSort;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InvalidDataException;
-import dev.terminalmc.clientsort.mixin.accessor.ContainerAccessor;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
 import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -110,9 +109,8 @@ public abstract class PayloadHandler {
         } finally {
             if (menu != null) {
                 menu.resumeRemoteUpdates();
-                menu.broadcastChanges();
-                ((ContainerAccessor) menu.slots.getFirst().container).clientsort$setChanged();
-                ((ContainerAccessor) menu.slots.getLast().container).clientsort$setChanged();
+                menu.slotsChanged(menu.slots.getFirst().container);
+                menu.slotsChanged(menu.slots.getLast().container);
             }
             if (PlatformServices.getInstance().canSendToPlayer(player, responseType)) {
                 PlatformServices.getInstance()

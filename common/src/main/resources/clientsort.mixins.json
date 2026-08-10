@@ -8,7 +8,6 @@
     "minVersion": "${mixinextras_version_min}"
   },
   "mixins": [
-    "accessor.ContainerAccessor",
     "accessor.ServerCommonPacketListenerImplAccessor",
     "slot.SlotMixin"
   ],
