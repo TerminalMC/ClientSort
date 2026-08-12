@@ -53,6 +53,7 @@ ___
 - Fixed an issue causing certain items with data to always be sorted to the end.
 - Fixed a crash when pressing `Open Editor` key if also bound to `Drop Selected Item`.
 - Fixed an issue causing server-accelerated ops to not trigger refresh events.
+- Fixed an issue causing sorting to include dedicated slots.
 
 ## 3.102.5 [2026-07-04]
 

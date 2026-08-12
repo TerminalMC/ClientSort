@@ -34,10 +34,6 @@ public enum PayloadResult {
         this.translationKey = translationKey;
     }
 
-    public static boolean isSuccess(int code) {
-        return code == SUCCESS.code;
-    }
-
     public boolean isSuccess() {
         return code == SUCCESS.code;
     }

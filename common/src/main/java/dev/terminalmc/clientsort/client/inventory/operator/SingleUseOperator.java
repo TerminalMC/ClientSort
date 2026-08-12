@@ -167,7 +167,7 @@ public abstract class SingleUseOperator {
      */
     private Slot[] collectSlots(Slot refSlot, Scope scope) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (scope == Scope.INVALID)
+        if (scope == Scope.INVALID || player == null)
             return new Slot[0];
 
         ItemStack testItem = Items.LIGHT.getDefaultInstance();
@@ -176,13 +176,18 @@ public abstract class SingleUseOperator {
             int slotId = ((ISlot) slot).clientsort$getIndexInMenu();
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
             // Ignore inaccessible slots
+            if (!slot.mayPlace(testItem)) {
+                // Implementations of this method don't seem to care about
+                // the current contents of the slot, so always check it.
+                continue;
+            }
             if (slot.hasItem()) {
                 // Nonempty slot; check pickup
-                if (player != null && !slot.mayPickup(player))
+                if (!slot.mayPickup(player))
                     continue;
             } else {
-                // Empty slot; check arbitrary item placement
-                if (!slot.container.canPlaceItem(slotId, testItem) || !slot.mayPlace(testItem))
+                // Empty slot; check content-aware arbitrary item placement
+                if (!slot.container.canPlaceItem(slotId, testItem))
                     continue;
             }
             // Ignore mod-locked slots
