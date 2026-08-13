@@ -80,7 +80,7 @@
   "editor.clientsort.policyKey.current": "Ключ макета: %s",
   "editor.clientsort.policyKey.menu": "Активное меню: %s",
   "editor.clientsort.policyKey.unset": "Не установлено",
-  "editor.clientsort.policyKey.screen": "Screen: %s",
+  "editor.clientsort.policyKey.screen": "Экран: %s",
 
   "option.clientsort.general": "Общие",
   "option.clientsort.interactionInterval": "Интервал взаимодействия",
@@ -184,8 +184,8 @@
   "option.clientsort.policies.description.13": "Примечание: кнопки заполнения, пополнения и переноса отображаются только в том случае, если они включены как в инвентаре игрока, так и в контейнере.",
   "option.clientsort.classPolicies": "Политики классов",
   "option.clientsort.classPolicies.tooltip": "Каждая из приведённых ниже записей соответствует определенному типу инвентаря.",
-  "option.clientsort.screenClassBlacklist": "Screen Class Blacklist",
-  "option.clientsort.screenClassBlacklist.tooltip": "The policies above are based on the inventory or menu class. If you want to disable buttons and sorting for a particular type of screen that doesn't have a unique inventory or menu class, add it here.",
+  "option.clientsort.screenClassBlacklist": "Чёрный список классов экранов",
+  "option.clientsort.screenClassBlacklist.tooltip": "Приведённые выше политики основаны на классе инвентаря или меню. Если вы хотите отключить кнопки и сортировку для определённого типа экрана, у которого нет собственного класса инвентаря или меню, добавьте его сюда.",
 
   "hotbarScope.clientsort.HOTBAR": "Панель быстрого доступа",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Панель быстрого доступа будет сортироваться как отдельный инвентарь",
