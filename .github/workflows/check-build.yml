@@ -93,6 +93,7 @@ jobs:
       # Attest artifacts
       # https://github.com/actions/attest
       - name: Generate artifact attestation
+        if: github.event_name != 'pull_request'
         uses: actions/attest@v4
         with:
           subject-path: |
