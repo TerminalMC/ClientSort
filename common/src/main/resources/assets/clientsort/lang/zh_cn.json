@@ -223,7 +223,7 @@
 
   "error.clientsort.low": "过低",
   "error.clientsort.high": "过高",
-  "error.clientsort.identifier.parse": "无效的资源定位符",
+  "error.clientsort.resourceLocation.parse": "无效的资源定位符",
   "error.clientsort.classPolicy.parse": "条目 %d 处的按钮布局无效：%s",
   "error.clientsort.classPolicy.pattern": "数据不符合要求的模式：%s",
   "error.clientsort.classPolicy.classNotFound": "找不到与名称匹配的类：%s",

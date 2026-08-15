@@ -225,7 +225,7 @@
 
   "error.clientsort.low": "Слишком низкое значение",
   "error.clientsort.high": "Слишком высокое значение",
-  "error.clientsort.identifier.parse": "Недопустимый идентификатор ресурса",
+  "error.clientsort.resourceLocation.parse": "Недопустимый идентификатор ресурса",
   "error.clientsort.classPolicy.parse": "Недопустимый макет кнопок в записи %d: %s",
   "error.clientsort.classPolicy.pattern": "Данные не соответствуют требуемому шаблону: %s",
   "error.clientsort.classPolicy.classNotFound": "Класс с именем %s не найден",
