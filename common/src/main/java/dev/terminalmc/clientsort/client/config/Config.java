@@ -21,7 +21,6 @@ import com.google.gson.GsonBuilder;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.legacy.ButtonLayout;
 import dev.terminalmc.clientsort.client.order.SortOrder;
-import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.platform.services.PlatformServices;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -474,8 +473,6 @@ public class Config {
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className() != null && !cp.className().isBlank()) {
                     String className = cp.className();
-                    if (ServerConfig.Options.classPolicyKeyUpgradeMap.containsKey(className))
-                        className = ServerConfig.Options.classPolicyKeyUpgradeMap.get(className);
                     validPolicies.put(
                             className,
                             new ClassPolicy(
