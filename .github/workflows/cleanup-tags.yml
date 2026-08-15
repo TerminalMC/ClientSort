@@ -26,6 +26,6 @@ jobs:
           script: |
             const path = require('path')
             const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/cleanup-tags.js')
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/cleanup-tags.js')
             )
             await script({ github, context, core })

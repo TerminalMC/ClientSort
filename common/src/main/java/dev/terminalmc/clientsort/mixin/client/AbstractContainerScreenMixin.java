@@ -146,10 +146,11 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
     private @Nullable Supplier<Boolean> clientsort$getOperation(
             Function<KeyMapping, Boolean> inputMatcher
     ) {
-        // If key is not edit key, check that we're hovering a slot
+        // If no hovered slot, edit or nothing
         boolean isEditKey = inputMatcher.apply(KeybindManager.EDIT_KEY);
-        if (!isEditKey && hoveredSlot == null)
-            return null;
+        if (hoveredSlot == null) {
+            return isEditKey ? this::clientsort$openEditor : null;
+        }
 
         // Check that the input will not trigger a vanilla operation
         Options options = this.minecraft.options;

@@ -275,8 +275,12 @@ public class ClothScreenProvider {
                                         ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Options.startOverrideItemsDefault.get())
-                .setSaveConsumer(val -> options.startOverrideItems =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.startOverrideItems.clear();
+                    options.startOverrideItems.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(options.useStartOverrides)
                 .build());
@@ -302,8 +306,12 @@ public class ClothScreenProvider {
                                         ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Options.endOverrideItemsDefault.get())
-                .setSaveConsumer(val -> options.endOverrideItems =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.endOverrideItems.clear();
+                    options.endOverrideItems.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(options.useEndOverrides)
                 .build());
@@ -334,8 +342,12 @@ public class ClothScreenProvider {
                                         .withStyle(ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Config.Options.typeMatchTagsDefault.get())
-                .setSaveConsumer(val -> options.typeMatchTags =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.typeMatchTags.clear();
+                    options.typeMatchTags.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(!options.alwaysMatchByType)
                 .build());
@@ -722,6 +734,22 @@ public class ClothScreenProvider {
                             policy
                     ));
                 })
+                .build());
+
+        policies.addEntry(eb.startStrList(
+                        localized("option", "screenClassBlacklist"),
+                        options.screenClassBlacklist
+                )
+                .setTooltip(localized("option", "screenClassBlacklist.tooltip"))
+                .setDefaultValue(Options.screenClassBlacklistDefault.get())
+                .setSaveConsumer(val -> {
+                    options.screenClassBlacklist.clear();
+                    options.screenClassBlacklist.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
+                .setInsertInFront(true)
+                .setExpanded(true)
                 .build());
 
         return builder.build();

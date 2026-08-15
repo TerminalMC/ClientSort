@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.terminalmc.clientsort.client.compat.stacktnc;
+package dev.terminalmc.clientsort.client.compat.lockedinslots;
 
 import dev.terminalmc.clientsort.client.ClientSort;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,13 +22,13 @@ import net.minecraft.world.inventory.Slot;
 
 import java.lang.reflect.Method;
 
-public class StackTncCompat {
+public class LockedInSlotsCompat {
 
-    public static final String MOD_NAME = "Stack to Nearby Chests";
+    public static final String MOD_NAME = "Locked In Slots";
 
     public static final String LOCKED_SLOTS_CLASS =
-            "io.github.xiaocihua.stacktonearbychests.LockedSlots";
-    public static final String IS_LOCKED_METHOD = "isLocked";
+            "fuzs.lockedinslots.common.config.WorldSlotsStorage";
+    public static final String IS_LOCKED_METHOD = "isSlotLocked";
     public static final Class<?>[] IS_LOCKED_PARAMS = {Slot.class};
 
     private static boolean hasFailed = false;
@@ -57,7 +57,10 @@ public class StackTncCompat {
                         false,
                         Thread.currentThread().getContextClassLoader()
                 );
-                isLockedMethod = clazz.getMethod(IS_LOCKED_METHOD, IS_LOCKED_PARAMS);
+                isLockedMethod = clazz.getMethod(
+                        IS_LOCKED_METHOD,
+                        IS_LOCKED_PARAMS
+                );
             }
 
             // Invoke static

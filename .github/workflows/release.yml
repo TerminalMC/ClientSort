@@ -8,6 +8,8 @@ name: Release
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
+  attestations: write
 
 on:
   workflow_dispatch:
@@ -115,11 +117,49 @@ jobs:
 
       # Upload build artifacts to the workflow report.
       # https://github.com/actions/upload-artifact
-      - name: Capture build artifacts
+      # - name: Capture build artifacts
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+      #     path: |
+      #       **/build/libs/*.jar
+      #       !buildSrc/**
+      #       !common/**
+
+      # Upload build artifacts to the workflow report.
+      # This is fail-soft if no matching file exists.
+      # https://github.com/actions/upload-artifact
+      - name: Upload Fabric jar
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+          archive: false
           path: |
+            fabric/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload Fabric sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: fabric/build/libs/*-sources.jar
+      - name: Upload NeoForge jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |
+            neoforge/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload NeoForge sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: neoforge/build/libs/*-sources.jar
+
+      # Attest artifacts
+      # https://github.com/actions/attest
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: |
             **/build/libs/*.jar
             !buildSrc/**
             !common/**
@@ -135,19 +175,6 @@ jobs:
           FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishGithub' || '' }}
           NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishGithub' || '' }}
         run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
-
-      - name: Notify PRs
-        uses: actions/github-script@v9
-        if: inputs.notify-prs && steps.github.outcome == 'success'
-        continue-on-error: true
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const path = require('path')
-            const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/notify-prs.js')
-            )
-            await script({ github, context, core })
 
       - name: Modrinth
         id: modrinth
@@ -171,6 +198,23 @@ jobs:
           FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishCurseforge' || '' }}
           NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishCurseforge' || '' }}
         run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
+
+      # Wait a few seconds to make sure the tag(s) are available.
+      - name: Wait 7 seconds
+        run: sleep 7
+
+      - name: Notify PRs
+        uses: actions/github-script@v9
+        if: inputs.notify-prs && steps.github.outcome == 'success'
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
+            )
+            await script({ github, context, core })
 
       # Finally, check for publishing errors and fail the task if one was found.
       - name: Check publishing errors

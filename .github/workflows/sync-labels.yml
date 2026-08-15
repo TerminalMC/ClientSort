@@ -56,6 +56,6 @@ jobs:
           script: |
             const path = require('path')
             const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/sync-labels.js')
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/sync-labels.js')
             )
             await script({ github, context, core })

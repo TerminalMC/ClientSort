@@ -125,11 +125,12 @@ public class Config {
         public static final boolean alwaysMatchByTypeDefault = false;
         public boolean alwaysMatchByType = alwaysMatchByTypeDefault;
 
-        public static final Supplier<List<String>> typeMatchTagsDefault = () -> List.of(
+        public static final Supplier<List<String>> typeMatchTagsDefault =
+                () -> new ArrayList<>(List.of(
                 "enchantable/weapon",
                 "enchantable/mining",
                 "enchantable/armor"
-        );
+                ));
         public List<String> typeMatchTags = typeMatchTagsDefault.get();
         public static Validator<List<String>> typeMatchTagsValidator = (val) -> val != null
                 ? val : typeMatchTagsDefault.get();
@@ -308,7 +309,8 @@ public class Config {
 
         // Policy options
 
-        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = () -> List.of(
+        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList =
+                () -> new ArrayList<>(List.of(
                 new ClassPolicy(
                         Inventory.class.getName(),
                         null,
@@ -452,7 +454,7 @@ public class Config {
                         false,
                         new TreeSet<>()
                 )
-        );
+                ));
         public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((policy) -> map.put(policy.getKey(), policy));
@@ -496,6 +498,21 @@ public class Config {
         public static Validator<Policy> policyValidator = (val) ->
                 val != null && Arrays.stream(Policy.values()).toList().contains(val)
                         ? val : Policy.NONE;
+
+        public static final Supplier<List<String>> screenClassBlacklistDefault =
+                () -> new ArrayList<>(List.of(
+                        "com.simibubi.create.content.logistics.stockTicker.StockKeeperCategoryScreen"
+                ));
+        public List<String> screenClassBlacklist = screenClassBlacklistDefault.get();
+        public static final Validator<List<String>> screenClassBlacklistValidator = (val) -> {
+            if (val == null)
+                return new ArrayList<>();
+
+            val.removeIf(String::isBlank);
+            val.sort(String::compareTo);
+
+            return val;
+        };
 
         // Legacy from pre v2.0.0-beta.11
         public @Nullable Map<String, ButtonLayout> buttonLayouts;
@@ -575,6 +592,8 @@ public class Config {
                 Options.layoutOffsetValidator.validate(options.layoutOffset);
         options.classPolicies =
                 Options.classPoliciesValidator.validate(options.classPolicies);
+        options.screenClassBlacklist =
+                Options.screenClassBlacklistValidator.validate(options.screenClassBlacklist);
     }
 
     /**

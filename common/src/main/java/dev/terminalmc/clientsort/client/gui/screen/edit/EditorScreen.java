@@ -618,7 +618,7 @@ public abstract class EditorScreen extends Screen {
                 font,
                 localized("editor", "offset", offset.x(), offset.y()).getString(),
                 105,
-                height - (font.lineHeight + 1) * 3,
+                height - (font.lineHeight + 1) * 4,
                 0xFFFFFFFF
         );
         graphics.text(
@@ -632,12 +632,19 @@ public abstract class EditorScreen extends Screen {
                                 : rep.activePolicyKey
                 ),
                 105,
-                height - (font.lineHeight + 1) * 2,
+                height - (font.lineHeight + 1) * 3,
                 0xFFFFFFFF
         );
         graphics.text(
                 font,
                 localized("editor", "policyKey.menu", lowestPolicyClassName),
+                105,
+                height - (font.lineHeight + 1) * 2,
+                0xFFFFFFFF
+        );
+        graphics.text(
+                font,
+                localized("editor", "policyKey.screen", underlay.getClass().getName()),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
@@ -782,6 +789,7 @@ public abstract class EditorScreen extends Screen {
                     }
                 }
             }
+
             return false;
         }
     }

@@ -12,7 +12,7 @@ modId = "${mod_id}"
 version = "${mod_version}" #optional:"1"
 displayName = "${mod_name}" #optional:modId
 description = '''${mod_description_neoforge}''' #optional:'''MISSING DESCRIPTION'''
-logoFile = "${mod_icon}" #optional:none
+iconFile = "${mod_icon}" #optional:none
 #logoBlur = false #optional:true
 #updateJSONURL = "" #optional:none
 features = { java_version = "${java_versions_neoforge}" } #optional:none

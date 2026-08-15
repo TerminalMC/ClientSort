@@ -114,6 +114,11 @@ public class TriggerButtonManager {
             return;
         if (Minecraft.getInstance().player.isSpectator())
             return;
+        String initScreenClass = initScreen.getClass().getName();
+        for (String screenClass : options().screenClassBlacklist) {
+            if (screenClass.equalsIgnoreCase(initScreenClass))
+                return;
+        }
 
         containerButtons.clear();
         visibleContainerButtons.clear();
