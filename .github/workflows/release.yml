@@ -176,19 +176,6 @@ jobs:
           NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishGithub' || '' }}
         run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
 
-      - name: Notify PRs
-        uses: actions/github-script@v9
-        if: inputs.notify-prs && steps.github.outcome == 'success'
-        continue-on-error: true
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const path = require('path')
-            const script = require(
-              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
-            )
-            await script({ github, context, core })
-
       - name: Modrinth
         id: modrinth
         shell: bash
@@ -211,6 +198,23 @@ jobs:
           FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishCurseforge' || '' }}
           NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishCurseforge' || '' }}
         run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
+
+      # Wait a few seconds to make sure the tag(s) are available.
+      - name: Wait 7 seconds
+        run: sleep 7
+
+      - name: Notify PRs
+        uses: actions/github-script@v9
+        if: inputs.notify-prs && steps.github.outcome == 'success'
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
+            )
+            await script({ github, context, core })
 
       # Finally, check for publishing errors and fail the task if one was found.
       - name: Check publishing errors

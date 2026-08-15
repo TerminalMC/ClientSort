@@ -58,10 +58,10 @@ ___
 
 ## 3.102.5 [2026-07-04]
 
-Fixed creative sort order sporadically misplacing items Fixed creative search order not working when
-optimization was switched off
+- Fixed an issue causing creative sort order to sporadically misplace items.
+- Fixed an issue causing creative search order to not work when optimization was switched off.
 
 ## 3.102.4 [2026-06-19]
 
-Fixed ratelimit executor preventing shutdown (TauCu)
-Added a command to open the config screen
+- Added a command to open the config screen
+- Fixed an issue causing ratelimit executor to prevent game shutdown (TauCu) (#81)

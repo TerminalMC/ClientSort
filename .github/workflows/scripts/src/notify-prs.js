@@ -116,23 +116,27 @@ module.exports = async ({github, context, core}) => {
     }
 
     /**
-     * @param {Set<number>} pullNumbers
-     * @param {string} releaseTagName
+     * @param {number} pullNumber
+     * @param {Set<string>} releaseTagNames
      * @returns {Promise<void>}
      */
-    async function commentOnPulls(pullNumbers, releaseTagName) {
-        const encodedName = encodeURIComponent(releaseTagName);
-        const url = `https://github.com/${owner}/${repo}/releases/tag/${encodedName}`;
-        for (const pullNumber of pullNumbers) {
-            // https://docs.github.com/rest/issues/comments#create-an-issue-comment
-            await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pullNumber,
-                body: `This PR has been released in version [\`${releaseTagName}\`](${url})`
-            });
-            console.log(`Commented on PR #${pullNumber}`);
+    async function commentOnPulls(pullNumber, releaseTagNames) {
+        const plural = releaseTagNames.size > 1 ? 's' : '';
+        let body = `This PR has been released in the following version${plural}:`;
+        for (const releaseTagName of releaseTagNames) {
+            const encodedName = encodeURIComponent(releaseTagName);
+            const url = `https://github.com/${owner}/${repo}/releases/tag/${encodedName}`;
+            body += `\n- [\`${releaseTagName}\`](${url})`;
         }
+
+        // https://docs.github.com/rest/issues/comments#create-an-issue-comment
+        await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: pullNumber,
+            body: body
+        });
+        console.log(`Commented on PR #${pullNumber}`);
     }
 
     /**
@@ -172,6 +176,9 @@ module.exports = async ({github, context, core}) => {
         return;
     }
 
+    /** @type {Map<number,Set<string>>} */
+    const pullTags = new Map();
+
     for (const releaseTagName of releaseTagNames) {
         console.log(`Found release tag name: ${releaseTagName}`);
 
@@ -193,11 +200,22 @@ module.exports = async ({github, context, core}) => {
         } else {
             console.log(`Could not find a previous tag for loader ${loaderName} and release tag name ${releaseTagName}`);
 
-            pullNumbers = getAllClosedPullNumbers();
+            pullNumbers = await getAllClosedPullNumbers();
             console.log(`Found ${pullNumbers.size} closed PRs: ${[...pullNumbers]}`);
         }
 
-        await commentOnPulls(pullNumbers, releaseTagName);
+        for (const pullNumber of pullNumbers) {
+            let tags = pullTags.get(pullNumber);
+            if (!tags) {
+                tags = new Set();
+                pullTags.set(pullNumber, tags);
+            }
+            tags.add(releaseTagName)
+        }
+    }
+
+    for (const [pullNumber, tagNames] of pullTags) {
+        await commentOnPulls(pullNumber, tagNames)
     }
 
     console.log(`Finished`);

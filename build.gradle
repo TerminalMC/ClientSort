@@ -25,7 +25,7 @@ subprojects { Project $subproject ->
     if ($prop.has("dep_ext_${name}")) {
         final $data = $prop.get("dep_ext_${name}").split(":")
         final $depAbbrev = $data[0]
-        // Strip meta from dependency version
+        // strip meta from dependency version
         final $depVer = $prop.get($data[1]).split("\\+")[0]
         $mod_version = "${$mod_version}+${$depAbbrev}${$depVer}"
     }
@@ -87,7 +87,7 @@ subprojects { Project $subproject ->
             //noinspection GroovyAssignabilityCheck
             github {
                 final String $urlHeader = URLEncoder.encode(
-                        "${mod_version}-[${$date}]".replaceAll("\\.", ""),
+                        "${mod_version}-${$date}".replaceAll("\\.", ""),
                         StandardCharsets.UTF_8
                 )
                 accessToken = $env.safe("GITHUB_TOKEN")
