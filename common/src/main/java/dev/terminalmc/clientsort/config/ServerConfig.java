@@ -72,32 +72,33 @@ public class ServerConfig {
         public static final boolean alwaysLogUnexpectedResultsDefault = true;
         public boolean alwaysLogUnexpectedResults = alwaysLogUnexpectedResultsDefault;
 
-        public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList = () -> new ArrayList<>(List.of(
-                new ServerClassPolicy(
-                        "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
-                        false,
-                        false,
-                        false
-                ),
-                new ServerClassPolicy(
-                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
-                        false,
-                        false,
-                        false
-                ),
-                new ServerClassPolicy(
-                        "com.tom.storagemod.menu.CraftingTerminalMenu",
-                        false,
-                        false,
-                        false
-                ),
-                new ServerClassPolicy(
-                        "com.tom.storagemod.menu.StorageTerminalMenu",
-                        false,
-                        false,
-                        false
-                )
-        ));
+        public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
+                () -> new ArrayList<>(List.of(
+                        new ServerClassPolicy(
+                                "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tom.storagemod.menu.CraftingTerminalMenu",
+                                false,
+                                false,
+                                false
+                        ),
+                        new ServerClassPolicy(
+                                "com.tom.storagemod.menu.StorageTerminalMenu",
+                                false,
+                                false,
+                                false
+                        )
+                ));
         public static final Supplier<Map<String, ServerClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ServerClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((item) -> map.put(item.className, item));

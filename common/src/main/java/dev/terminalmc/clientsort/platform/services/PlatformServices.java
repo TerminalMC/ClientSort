@@ -19,7 +19,7 @@ package dev.terminalmc.clientsort.platform.services;
 import dev.terminalmc.clientsort.platform.Services;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 

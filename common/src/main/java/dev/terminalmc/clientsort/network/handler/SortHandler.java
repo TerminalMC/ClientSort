@@ -17,8 +17,6 @@
 
 package dev.terminalmc.clientsort.network.handler;
 
-import dev.terminalmc.clientsort.ClientSort;
-import dev.terminalmc.clientsort.config.ServerClassPolicy;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.InconsistentStateException;
 import dev.terminalmc.clientsort.exception.PayloadHandlerException.UnsupportedOpException;
@@ -170,34 +168,5 @@ public class SortHandler extends PayloadHandler {
         if (container != player.getInventory()) {
             PolicyManager.checkPolicy(object.getClass(), (bl) -> bl.sortEnabled);
         }
-    }
-
-    /**
-     * Creates or updates a policy for this context to disallow this operation.
-     */
-    private static void setPolicy(AbstractContainerMenu menu, int[] slotIds, String message) {
-        Container container = slotIds.length > 0
-                ? menu.slots.get(slotIds[0]).container
-                : null;
-        Object object = getObj(container, menu);
-        if (object == null) {
-            ClientSort.LOG.warn(
-                    "Could not set policy: reference object is null for inputs '{}', '{}'!",
-                    container == null ? "null" : container.getClass().getName(),
-                    menu == null ? "null" : menu.getClass().getName()
-            );
-            return;
-        }
-
-        PolicyManager.setPolicy(
-                new ServerClassPolicy(
-                        object.getClass().getName(),
-                        false,
-                        true,
-                        true
-                ),
-                SortPayload.ID.toString(),
-                message
-        );
     }
 }

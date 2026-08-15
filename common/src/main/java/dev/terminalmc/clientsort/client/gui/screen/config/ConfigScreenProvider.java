@@ -43,7 +43,7 @@ public class ConfigScreenProvider {
         } catch (NoClassDefFoundError ignored) {
             return new BackupScreen(
                     parent,
-                    "noConfig",
+                    "installCloth",
                     "https://modrinth.com/project/9s6osm5g"
             );
         }
