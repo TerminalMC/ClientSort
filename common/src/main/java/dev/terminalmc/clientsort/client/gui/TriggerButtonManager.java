@@ -20,7 +20,6 @@ package dev.terminalmc.clientsort.client.gui;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.ClassPolicy;
-import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.client.config.Operation;
 import dev.terminalmc.clientsort.client.config.Vec2i;
 import dev.terminalmc.clientsort.client.gui.screen.edit.ContainerEditorScreen;
@@ -113,7 +112,7 @@ public class TriggerButtonManager {
     public static void afterScreenInit(Screen initScreen) {
         if (!(initScreen instanceof AbstractContainerScreen<?> acs))
             return;
-        if (Minecraft.getInstance().player.isSpectator())
+        if (Minecraft.getInstance().player == null || Minecraft.getInstance().player.isSpectator())
             return;
         String initScreenClass = initScreen.getClass().getName();
         for (String screenClass : options().screenClassBlacklist) {
