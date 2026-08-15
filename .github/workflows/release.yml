@@ -47,7 +47,7 @@ on:
           - '25'
           - '21'
           - '17'
-        default: '25'
+        default: '21'
       os:
         type: choice
         description: Operating System

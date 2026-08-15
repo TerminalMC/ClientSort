@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         java: [
-          25
+          21
         ]
         os: [
           ubuntu-latest
