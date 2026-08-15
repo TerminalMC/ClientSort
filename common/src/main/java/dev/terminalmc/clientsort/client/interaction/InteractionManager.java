@@ -42,7 +42,10 @@ public class InteractionManager {
     public static final Waiter TICK_WAITER = (TriggerType type) -> type == TriggerType.TICK;
 
     private static final ArrayDeque<InteractionEvent> eventQueue = new ArrayDeque<>();
-    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    private static final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
+            1,
+            Thread.ofVirtual().name("clientsort-interaction-scheduler").factory()
+    );
 
     private static ScheduledFuture<?> tickFuture;
     private static Waiter waiter = null;

@@ -3,51 +3,226 @@
 #   Will skip without error if not present.
 # CurseForge publishing requires a CurseForge API token `CURSEFORGE_TOKEN`
 #   Will skip without error if not present.
-# Preference using the root gradle.properties file to configure releases.
+# Release version and other properties are set via the root `gradle.properties` file.
 name: Release
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+  attestations: write
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: write
+    inputs:
+      fabric:
+        type: boolean
+        description: Publish Fabric Version
+        required: true
+        default: true
+      neoforge:
+        type: boolean
+        description: Publish NeoForge Version
+        required: true
+        default: true
+      github:
+        type: boolean
+        description: Publish to GitHub
+        required: true
+        default: true
+      modrinth:
+        type: boolean
+        description: Publish to Modrinth
+        required: true
+        default: true
+      curseforge:
+        type: boolean
+        description: Publish to CurseForge
+        required: true
+        default: true
+      java:
+        type: choice
+        description: Java Version
+        required: true
+        options:
+          - '25'
+          - '21'
+          - '17'
+        default: '25'
+      os:
+        type: choice
+        description: Operating System
+        required: true
+        options:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+        default: 'ubuntu-latest'
+      notify-prs:
+        type: boolean
+        description: Notify Included PRs
+        required: true
+        default: true
+      sync-desc-modrinth:
+        type: boolean
+        description: Sync Modrinth Description
+        required: true
+        default: false
 
 jobs:
   release:
-    strategy:
-      matrix:
-        java: [
-          21
-        ]
-        os: [
-          ubuntu-latest
-        ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ inputs.os }}
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      # Log the workflow input values for future reference.
+      - name: Log workflow inputs
+        run: |
+          echo '${{ toJson(inputs) }}' | jq .
+
+      # Retrieve and store the current Git branch name for future use.
+      - name: Extract branch name
+        id: ref
+        shell: bash
+        # bash pattern expansion to grab branch name without slashes
+        run: ref="${GITHUB_REF#refs/heads/}" && echo "branch=${ref////-}" >> $GITHUB_OUTPUT
+
+      # Checkout the repository under $GITHUB_WORKSPACE, so the workflow can access it.
+      # https://github.com/actions/checkout
+      - name: Checkout sources
+        uses: actions/checkout@v6
         with:
+          # Number of commits to fetch. 0 indicates all history for all branches and tags.
+          # Default: 1
           fetch-depth: 0
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v5
-      - name: Setup JDK ${{ matrix.java }}
+
+      # Setup Java for the build.
+      # https://github.com/actions/setup-java
+      - name: Setup JDK ${{ inputs.java }}
         uses: actions/setup-java@v5
         with:
-          distribution: zulu
-          java-version: ${{ matrix.java }}
+          distribution: temurin
+          java-version: ${{ inputs.java }}
+
+      # Setup Gradle for the build.
+      # https://github.com/gradle/actions/blob/main/setup-gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
       - name: Make Gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
+        if: runner.os != 'Windows'
         run: chmod +x ./gradlew
-      - name: Build
-        run: ./gradlew build neoforge:publishGithub neoforge:publishCurseforge neoforge:publishModrinth fabric:publishGithub fabric:publishCurseforge fabric:publishModrinth --stacktrace
+
+      # Build the project; subsequent publish tasks will reuse this compilation.
+      - name: Build project
+        shell: bash
+        run: ./gradlew build --stacktrace
+
+      # Upload build artifacts to the workflow report.
+      # https://github.com/actions/upload-artifact
+      # - name: Capture build artifacts
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: ${{ github.event.repository.name }}-artifacts-${{ steps.ref.outputs.branch }}
+      #     path: |
+      #       **/build/libs/*.jar
+      #       !buildSrc/**
+      #       !common/**
+
+      # Upload build artifacts to the workflow report.
+      # This is fail-soft if no matching file exists.
+      # https://github.com/actions/upload-artifact
+      - name: Upload Fabric jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |
+            fabric/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload Fabric sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: fabric/build/libs/*-sources.jar
+      - name: Upload NeoForge jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: |
+            neoforge/build/libs/*.jar
+            !**/**-sources.jar
+      - name: Upload NeoForge sources jar
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: neoforge/build/libs/*-sources.jar
+
+      # Attest artifacts
+      # https://github.com/actions/attest
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            **/build/libs/*.jar
+            !buildSrc/**
+            !common/**
+
+      # Publish artifacts, continuing on error. Incurs reconfiguration overhead.
+      - name: GitHub
+        id: github
+        shell: bash
+        if: inputs.github && (inputs.fabric || inputs.neoforge)
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishGithub' || '' }}
+          NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishGithub' || '' }}
+        run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
+
+      - name: Modrinth
+        id: modrinth
+        shell: bash
+        if: inputs.modrinth && (inputs.fabric || inputs.neoforge)
+        continue-on-error: true
+        env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishModrinth' || '' }}
+          NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishModrinth' || '' }}
+          SYNC_DESC_MODRINTH: ${{ github.event.inputs.sync-desc-modrinth }}
+        run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
+
+      - name: CurseForge
+        id: curseforge
+        shell: bash
+        if: inputs.curseforge && (inputs.fabric || inputs.neoforge)
+        continue-on-error: true
+        env:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-      - name: Capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '21' }}
-        uses: actions/upload-artifact@v5
+          FABRIC_TASK: ${{ inputs.fabric && 'fabric:publishCurseforge' || '' }}
+          NEOFORGE_TASK: ${{ inputs.neoforge && 'neoforge:publishCurseforge' || '' }}
+        run: ./gradlew $FABRIC_TASK $NEOFORGE_TASK --stacktrace
+
+      # Wait a few seconds to make sure the tag(s) are available.
+      - name: Wait 7 seconds
+        run: sleep 7
+
+      - name: Notify PRs
+        uses: actions/github-script@v9
+        if: inputs.notify-prs && steps.github.outcome == 'success'
+        continue-on-error: true
         with:
-          name: artifacts
-          path: |
-            **/build/libs/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path')
+            const script = require(
+              path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/scripts/src/notify-prs.js')
+            )
+            await script({ github, context, core })
+
+      # Finally, check for publishing errors and fail the task if one was found.
+      - name: Check publishing errors
+        shell: bash
+        if: |
+          steps.github.outcome == 'failure'
+          || steps.modrinth.outcome == 'failure'
+          || steps.curseforge.outcome == 'failure'
+        run: |
+          echo "Detected an error in a publish task: check the Summary for details"
+          exit 1

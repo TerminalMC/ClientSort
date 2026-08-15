@@ -148,6 +148,18 @@ public class SchemaValidator {
     }
 
     /**
+     * For a slot mapping list to be valid, it must meet the following conditions:
+     * <ol>
+     *     <li>The list must be of even length, and at least 2.
+     *     <li>Every slot must be from the same container as the first slot.
+     *     <li>Every slot must be valid in the menu.
+     *     <li>No slot may appear more than one time as a source slot.
+     *     <li>No slot may appear more than one time as a destination slot.
+     *     <li>Every slot that appears as a source slot must appear as a destination slot.
+     *     <li>If a source slot has an item, it must allow the player to pick it up.
+     *     <li>Every destination slot must allow placement of a test item.
+     * </ol>
+     *
      * @throws InvalidDataException if the slot mapping does not represent a valid reordering for
      *                              the slots in the menu.
      */
@@ -179,6 +191,8 @@ public class SchemaValidator {
         Container container = menu.slots.get(slotMapping[0]).container;
         IntSet checkedSlots = new IntAVLTreeSet();
 
+        ItemStack testItem = Items.LIGHT.getDefaultInstance();
+
         // For each pair of slot IDs
         for (int i = 0; i < slotMapping.length; i += 2) {
             int srcId = slotMapping[i];
@@ -206,9 +220,19 @@ public class SchemaValidator {
             Slot srcSlot = menu.slots.get(srcId);
             if (srcSlot.hasItem() && !srcSlot.mayPickup(player)) {
                 throw new InvalidDataException(String.format(
-                        "Slot mapping contains inaccessible slot %d with item '%s'!",
+                        "Slot mapping contains inaccessible source slot %d with item '%s'!",
                         srcId,
                         srcSlot.getItem()
+                ));
+            }
+
+            // Check that the destination slot is accessible
+            Slot dstSlot = menu.slots.get(dstId);
+            if (!dstSlot.mayPlace(testItem)) {
+                throw new InvalidDataException(String.format(
+                        "Slot mapping contains inaccessible destination slot %d with item '%s'!",
+                        srcId,
+                        dstSlot.getItem()
                 ));
             }
         }

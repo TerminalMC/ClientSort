@@ -20,14 +20,14 @@ import dev.terminalmc.clientsort.client.ClientSort;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class StackTncCompat {
 
     public static final String MOD_NAME = "Stack to Nearby Chests";
 
-    public static final String LOCKED_SLOTS_CLASS = "io.github.xiaocihua.stacktonearbychests.LockedSlots";
+    public static final String LOCKED_SLOTS_CLASS =
+            "io.github.xiaocihua.stacktonearbychests.LockedSlots";
     public static final String IS_LOCKED_METHOD = "isLocked";
     public static final Class<?>[] IS_LOCKED_PARAMS = {Slot.class};
 
@@ -37,7 +37,7 @@ public class StackTncCompat {
 
     /**
      * @param slot the slot to check.
-     * @return {@code true} if the slot is valid, locked, and the bypass is not active.
+     * @return {@code true} if the slot is valid and locked.
      */
     public static boolean isLocked(Slot slot) {
         if (hasFailed)
@@ -91,7 +91,7 @@ public class StackTncCompat {
                     MOD_NAME,
                     e.getMessage()
             );
-        } catch (InvocationTargetException e) {
+        } catch (Throwable e) {
             ClientSort.LOG.info(
                     "{} threw an exception - compat is now disabled: {}",
                     MOD_NAME,

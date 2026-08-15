@@ -26,7 +26,10 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import static dev.terminalmc.clientsort.client.config.Config.options;
@@ -223,49 +226,53 @@ public abstract class SortOrder {
                 // Create a reference array based on item positions
                 int[] sortValues = new int[slotIds.length];
 
-                // If using optimized sorting, read the stored search order
                 if (options().optimizeCreativeSorting && ClientSort.searchOrderUpdated) {
-                    Lock lock = CreativeSearchOrder.getReadLock();
-                    lock.lock();
-                    for (int i = 0; i < stacks.length; i++) {
-                        sortValues[i] = CreativeSearchOrder.getPosition(stacks[i]);
+                    // Cached order available; use it
+                    Lock readLock = CreativeSearchOrder.getReadLock();
+                    readLock.lock();
+                    try {
+                        for (int i = 0; i < stacks.length; i++) {
+                            sortValues[i] = CreativeSearchOrder.getPositionUnsafe(stacks[i]);
+                        }
+                    } finally {
+                        readLock.unlock();
                     }
-                    lock.unlock();
                 } else {
-                    if (options().optimizeCreativeSorting) {
-                        // Cache rebuild was missed, start it now
-                        CreativeSearchOrder.tryRefreshStackPositionMap();
-                    }
-                    // Compare the items manually
-                    Collection<ItemStack> displayStacks =
-                            CreativeModeTabs.searchTab().getDisplayItems();
-                    List<ItemStack> displayStackList;
-                    if (displayStacks instanceof List) {
-                        displayStackList = (List<ItemStack>) displayStacks;
-                    } else {
-                        displayStackList = new ArrayList<>(displayStacks);
-                    }
+                    // No cached order or not configured to use it; compare manually
+                    Collection<ItemStack> creativeStacks =
+                            CreativeModeTabs.searchTab().getSearchTabDisplayItems();
                     Object2IntMap<StackMatcher> lookup = new Object2IntOpenHashMap<>(stacks.length);
+                    // Roughly O(m*n) where m is the number of unique stack types in `stacks` and
+                    // n is the size of `creativeStacks`. In other words, slow.
                     for (int i = 0; i < stacks.length; i++) {
                         final ItemStack stack = stacks[i];
+                        // If we've already cached this matcher, use that
                         sortValues[i] = lookup.computeIfAbsent(
-                                StackMatcher.of(stack), matcher -> {
-                                    @SuppressWarnings("SuspiciousMethodCalls") int index =
-                                            displayStackList.indexOf(matcher);
-                                    if (index != -1)
-                                        return index;
-                                    return lookup.computeIfAbsent(
-                                            StackMatcher.ignoreNbt(stack), altMatcher -> {
-                                                @SuppressWarnings("SuspiciousMethodCalls") int
-                                                        plainIndex =
-                                                        displayStackList.indexOf(altMatcher);
-                                                if (plainIndex == -1)
-                                                    return Integer.MAX_VALUE;
-                                                return plainIndex;
-                                            }
-                                    );
+                                StackMatcher.of(stack),
+                                matcher -> {
+                                    // No cached position; iterate to find a matching creative item
+                                    int j = 0;
+                                    int jPlain = Integer.MAX_VALUE;
+                                    StackMatcher plainMatcher = StackMatcher.plain(stack);
+                                    for (ItemStack creativeStack : creativeStacks) {
+                                        if (matcher.equals(creativeStack)) {
+                                            // preference full match
+                                            return j;
+                                        } else if (plainMatcher.equals(creativeStack)) {
+                                            // fallback to plain match
+                                            jPlain = j;
+                                        }
+                                        j++;
+                                    }
+                                    return jPlain;
                                 }
                         );
+                    }
+                    // If we wanted a cache build but didn't have it, start it now so it should
+                    // be ready next time
+                    if (options().optimizeCreativeSorting) {
+                        ClientSort.searchOrderUpdated = true;
+                        CreativeSearchOrder.tryRefreshStackPositionMap();
                     }
                 }
 

@@ -3,35 +3,12 @@ plugins {
     id("maven-publish")
 }
 
-// Configure project dependency repos, except for mod loader repos provided by
-// their respective plugins
+// configure project dependency repos
+// mod loader plugins may automatically provide others
 repositories {
     mavenCentral()
     mavenLocal()
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "Sponge"
-                url = uri("https://repo.spongepowered.org/repository/maven-public")
-            }
-        }
-        filter {
-            includeGroupAndSubgroups("org.spongepowered")
-        }
-    }
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "ParchmentMC"
-                url = uri("https://maven.parchmentmc.org")
-            }
-        }
-        filter {
-            includeGroup("org.parchmentmc.data")
-        }
-    }
+
     exclusiveContent {
         forRepository {
             //noinspection ForeignDelegate
@@ -44,49 +21,107 @@ repositories {
             includeGroupAndSubgroups("net.fabricmc")
         }
     }
-    maven {
-        name = "Modrinth"
-        url = uri("https://api.modrinth.com/maven")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "ParchmentMC"
+                url = uri("https://maven.parchmentmc.org")
+            }
+        }
+        filter {
+            includeGroup("org.parchmentmc.data")
+        }
     }
-    maven {
-        name = "Shedaniel"
-        url = uri("https://maven.shedaniel.me")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "Modrinth"
+                url = uri("https://api.modrinth.com/maven")
+            }
+        }
+        filter {
+            includeGroup("maven.modrinth")
+        }
     }
-    maven {
-        name = "isXander"
-        url = uri("https://maven.isxander.dev/releases")
+
+    exclusiveContent {
+        forRepository {
+            //noinspection ForeignDelegate
+            maven {
+                name = "CurseForge"
+                url = uri("https://cursemaven.com")
+            }
+        }
+        filter {
+            includeGroup("curse.maven")
+        }
+    }
+
+    // add property-defined repos
+    safeList("dep_repos").each { String $repo ->
+        try {
+            final String[] $repoData = get("dep_repo_${$repo}").split(":")
+            final String $repoUrl = $repoData[0]
+            final String $repoFilter = $repoData.length > 1 ? $repoData[1] : "-"
+
+            if ($repoFilter == "-") {
+                // unfiltered
+                maven {
+                    name = $repo
+                    url = uri("https://${$repoUrl}")
+                }
+            } else {
+                // filtered
+                exclusiveContent {
+                    forRepository {
+                        //noinspection ForeignDelegate
+                        maven {
+                            name = $repo
+                            url = uri("https://${$repoUrl}")
+                        }
+                    }
+                    filter {
+                        includeGroupAndSubgroups($repoFilter)
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            logger.error("Error processing maven repository '${$repo}'. Check property format.")
+            throw $e
+        }
     }
 }
 
-// Set output file name
+// set output file name
 base {
-    archivesName.set("${mod_id}-${project.name}")
+    archivesName = "${mod_id}-${project.name}"
 }
 
-// Configure Java build
+// configure Java build
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(java_version))
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
     if (build_sources_jar == "true") withSourcesJar()
     if (build_javadoc_jar == "true") withJavadocJar()
 }
 
-// Declare capabilities on the outgoing configurations
-final capabilityVariants = ["apiElements", "runtimeElements"]
-if (build_sources_jar == "true") capabilityVariants.add("sourcesElements")
-if (build_javadoc_jar == "true") capabilityVariants.add("javadocElements")
-capabilityVariants.each { variant ->
-    configurations.named(variant).configure {
+// declare capabilities on the outgoing configurations
+final List<String> $capabilityVariants = ["apiElements", "runtimeElements"]
+if (build_sources_jar == "true") $capabilityVariants.add("sourcesElements")
+if (build_javadoc_jar == "true") $capabilityVariants.add("javadocElements")
+$capabilityVariants.each { String $variant ->
+    configurations.named($variant).configure {
         outgoing {
             capability("$group:${base.archivesName.get()}:$version")
             capability("$group:$mod_id:$version")
         }
     }
-    publishing.publications.configureEach {
-        suppressPomMetadataWarningsFor(variant)
-    }
 }
 
-// Configure main file
+// configure main jar
 jar {
     from(rootProject.file("LICENSE.txt")) {
         rename { "LICENSE_${mod_id}.txt" }
@@ -108,7 +143,7 @@ jar {
     }
 }
 
-// Configure sources file
+// configure sources jar
 if (build_sources_jar == "true") {
     sourcesJar {
         from(rootProject.file("LICENSE.txt")) {
@@ -117,102 +152,107 @@ if (build_sources_jar == "true") {
     }
 }
 
-// Process Gradle property expansion for metadata files
+// process Gradle property expansion for metadata files
 processResources {
-    final expandProps = [
+    final LinkedHashMap<String, String> $expandProps = [
             // Mod
-            "mod_version"            : mod_version,
-            "mod_group"              : mod_group,
-            "mod_id"                 : mod_id,
-            "mod_name"               : mod_name,
-            "mod_description_fabric" : mod_description.replace("\n", "\\n"),
-            "mod_description_neoforge": mod_description,
-            "mod_icon"               : "assets/${mod_id}/icon.png",
-            "mod_owner"              : mod_owner,
-            "mod_authors_list"       : asJsonList(mod_authors),
-            "mod_authors_string"     : mod_authors.split(",").join(", "),
-            "mod_contributors_list"  : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_contributors_string": asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
-            "mod_license"            : mod_license,
+            "mod_version"                : mod_version,
+            "mod_group"                  : mod_group,
+            "mod_id"                     : mod_id,
+            "mod_name"                   : mod_name,
+            "mod_description_fabric"     : mod_description.replace("\n", "\\n"),
+            "mod_description_neoforge"   : mod_description,
+            "mod_icon"                   : "assets/${mod_id}/icon.png",
+            "mod_owner"                  : mod_owner,
+            "mod_authors_list"           : asJsonList(mod_authors),
+            "mod_authors_string"         : mod_authors.split(",").join(", "),
+            "mod_contributors_list"      : asJsonList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_contributors_string"    : asTomlList("${mod_contributors},${mod_translators},${mod_credits}"),
+            "mod_license"                : mod_license,
             // Links
-            "homepage_url"           : homepage_url,
-            "sources_url"            : sources_url,
-            "issues_url"             : issues_url,
-            "contact_url"            : contact_url,
+            "homepage_url"               : homepage_url,
+            "sources_url"                : sources_url,
+            "issues_url"                 : issues_url,
+            "contact_url"                : contact_url,
             // Java
-            "java_version"           : java_version,
-            "java_versions_fabric_list": asJsonList(java_versions_fabric),
-            "java_versions_neoforge" : java_versions_neoforge,
+            "java_version"               : java_version,
+            "java_versions_fabric_list"  : asJsonList(java_versions_fabric),
+            "java_versions_neoforge"     : java_versions_neoforge,
             // Minecraft
             "minecraft_versions_fabric_list": asJsonList(minecraft_versions_fabric),
             "minecraft_versions_neoforge": minecraft_versions_neoforge,
+            // Mixin
+            "mixin_version_min"          : mixin_version_min,
+            "mixinextras_version_min"    : mixinextras_version_min,
             // Fabric
             "fabric_loader_versions_list": asJsonList(fabric_loader_versions),
-            "fabric_api_versions_list": asJsonList(fabric_api_versions),
-            "fabric_entrypoints_main"   : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_client" : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_server" : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
-            "fabric_entrypoints_modmenu": asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
+            "fabric_api_versions_list"   : asJsonList(fabric_api_versions),
+            "fabric_environment"         : fabric_environment,
+            "fabric_entrypoints_main"    : asJsonListPrefixed(fabric_entrypoints_main, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_client"  : asJsonListPrefixed(fabric_entrypoints_client, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_server"  : asJsonListPrefixed(fabric_entrypoints_server, "${mod_group}.${mod_id}."),
+            "fabric_entrypoints_modmenu" : asJsonListPrefixed(fabric_entrypoints_modmenu, "${mod_group}.${mod_id}."),
             // NeoForge
-            "neoforge_versions"      : neoforge_versions,
+            "neoforge_versions"          : neoforge_versions,
             // Dependencies:
-            "fabric_depends"         : "",
-            "fabric_recommends"      : "",
-            "fabric_suggests"        : "",
-            "fabric_conflicts"       : "",
-            "fabric_breaks"          : "",
-            "neoforge_all_deps"      : ""
+            "fabric_depends"             : "",
+            "fabric_recommends"          : "",
+            "fabric_suggests"            : "",
+            "fabric_conflicts"           : "",
+            "fabric_breaks"              : "",
+            "neoforge_all_deps"          : ""
     ]
 
-    // Apply property-defined dependencies
-    safePropList("fabric_deps").each { dep ->
+    // add Fabric-specific property expansions
+    safeList("fabric_deps").each { $dep ->
         try {
-            final depData = propList("d_fabric_${dep}")
-            if (depData.length > 1 && depData[1] != "-") {
-                final loaderData = depData[1].split(":")
-                final key = "fabric_${loaderData[0]}".toString()
-                final prefix = expandProps[key] == "" ? "" : ",\n    "
-                final depList = "[${asJsonList(project.property("vr_fabric_${dep}").toString())}]"
-                final value = "${expandProps[key]}${prefix}\"${loaderData[1]}\": ${depList}"
-                expandProps[key] = value.toString()
-//                logger.info("Fabric metadata '${key}': ${expandProps[key]}")
+            final String[] $depData = list("d_fabric_${$dep}")
+            if ($depData.length > 1 && $depData[1] != "-") {
+                final String[] $loaderData = $depData[1].split(":")
+                final String $key = "fabric_${$loaderData[0]}".toString()
+                final String $prefix = $expandProps[$key] == "" ? "" : ",\n    "
+                final String $depList = "[${asJsonList(project.property("vr_fabric_${$dep}").toString())}]"
+                final String $value = "${$expandProps[$key]}${$prefix}\"${$loaderData[1]}\": ${$depList}"
+                $expandProps[$key] = $value.toString()
+                logger.trace("Fabric metadata '${$key}': ${$expandProps[$key]}")
             }
-        } catch (Exception ex) {
-            logger.error("Error processing Fabric dependency metadata for '${dep}'. "
-                    + "Check dependency property format.")
-            throw ex
+        } catch (Exception $e) {
+            logger.error("Error processing Fabric dependency metadata for '${$dep}'. Check dependency property format.")
+            throw $e
         }
     }
-    if (!expandProps["fabric_depends"].isBlank()) {
-        expandProps["fabric_depends"] = "${expandProps["fabric_depends"]},".toString()
+    if (!$expandProps["fabric_depends"].isBlank()) {
+        $expandProps["fabric_depends"] = "${$expandProps["fabric_depends"]},".toString()
     }
-    safePropList("neoforge_deps").each { dep ->
-        try {
-            final depData = propList("d_neoforge_${dep}")
-            if (depData.length > 1 && depData[1] != "-") {
-                final loaderData = depData[1].split(":")
-                expandProps["neoforge_all_deps"] = expandProps["neoforge_all_deps"] +
-                        "[[dependencies.${mod_id}]]\n" +
-                        "modId=\"${loaderData[1]}\"\n" +
-                        "type=\"${loaderData[0]}\"\n" +
-                        "versionRange=\"${project.property("vr_neoforge_${dep}")}\"\n" +
-                        "side=\"CLIENT\"\n\n"
-            }
-        } catch (Exception ex) {
-            logger.error("Error processing NeoForge dependency metadata for '${dep}'. "
-                    + "Check dependency property format.")
-            throw ex
-        }
-    }
-//    logger.info("NeoForge metadata 'neoforge_all_deps': ${expandProps["neoforge_all_deps"]}")
 
-    filesMatching(["pack.mcmeta", "*.mod.json", "*.mixins.json", "META-INF/*.toml"]) {
-        expand(expandProps)
+    // add NeoForge-specific property expansions
+    safeList("neoforge_deps").each { String $dep ->
+        try {
+            final String[] $depData = list("d_neoforge_${$dep}")
+            if ($depData.length > 1 && $depData[1] != "-") {
+                final String[] $loaderData = $depData[1].split(":")
+                $expandProps["neoforge_all_deps"] = $expandProps["neoforge_all_deps"] +
+                        "[[dependencies.${mod_id}]]\n" +
+                        "modId=\"${$loaderData[1]}\"\n" +
+                        "type=\"${$loaderData[0]}\"\n" +
+                        "versionRange=\"${project.property("vr_neoforge_${$dep}")}\"\n" +
+                        "side=\"BOTH\"\n\n"
+            }
+        } catch (Exception $e) {
+            logger.error("Error processing NeoForge dependency metadata for '${$dep}'. Check dependency property format.")
+            throw $e
+        }
     }
-    inputs.properties(expandProps)
+    logger.trace("NeoForge metadata 'neoforge_all_deps': ${$expandProps["neoforge_all_deps"]}")
+
+    // apply expansion to metadata files
+    filesMatching(["pack.mcmeta", "*.mod.json", "*.mixins.json", "META-INF/*.toml"]) {
+        expand($expandProps)
+    }
+    inputs.properties($expandProps)
 }
 
-// Configure publication
+// configure maven publishing
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -225,8 +265,8 @@ publishing {
 /**
  * Converts a CSV list into an FMJ-usable format.
  */
-static asJsonList(String csvString) {
-    return csvString.split(",")
+static asJsonList(String $csvString) {
+    return $csvString.split(",")
             .findAll { !it.isBlank() }
             .collect { "\"${it.strip()}\"" }
             .join(",")
@@ -236,39 +276,56 @@ static asJsonList(String csvString) {
  * Converts a CSV list into an FMJ-usable list format, prefixing each element with the source
  * package (${mod_group}.${mod_id}).
  */
-static asJsonListPrefixed(String csvString, String prefix) {
-    return csvString.split(",")
+static asJsonListPrefixed(String $csvString, String $prefix) {
+    return $csvString.split(",")
             .findAll { !it.isBlank() }
-            .collect { "\"${prefix}${it.strip()}\"" }
+            .collect { "\"${$prefix}${it.strip()}\"" }
             .join(",")
 }
 
 /**
  * Converts a CSV list into an NMT-usable format.
  */
-static asTomlList(String csvString) {
-    return csvString.split(",")
+static asTomlList(String $csvString) {
+    return $csvString.split(",")
             .findAll { !it.isBlank() }
             .collect { it.strip() }
             .join(", ")
 }
 
 /**
+ @return {@code true} if the property is set.
+ */
+boolean has(String $propertyName) {
+    return project.hasProperty($propertyName) && !get($propertyName).toString().isBlank()
+}
+
+/**
+ @return the value of the property.
+ */
+String get(String $propertyName) {
+    return project.property($propertyName)
+}
+
+/**
+ @return the value of the property if it exists, an empty string otherwise.
+ */
+String safe(String $propertyName) {
+    return has($propertyName) ? get($propertyName) : ""
+}
+
+/**
  @return the value of the property, CSV-split.
  */
-String[] propList(String propertyName) {
-    final list = project.property(propertyName).toString().split(",")
-    for (int i = 0; i < list.length; i++) {
-        list[i] = list[i].strip()
-    }
-    return list
+String[] list(String $propertyName) {
+    return get($propertyName).toString().split(",")
+            .findAll { !it.isBlank() }
+            .collect { it.strip() }
 }
 
 /**
  @return the value of the property CSV-split if it is set, an empty array otherwise.
  */
-String[] safePropList(String propertyName) {
-    return project.hasProperty(propertyName) && !project.property(propertyName).toString().isBlank()
-            ? propList(propertyName)
-            : []
+String[] safeList(String $propertyName) {
+    return has($propertyName) ? list($propertyName) : []
 }

@@ -62,8 +62,7 @@ public abstract class EditorScreen extends Screen {
     public final Set<Integer> ignoredSlots = new TreeSet<>();
 
     /**
-     * An element of {@link EditorScreen#buttons} which 'represents' the whole set of
-     * buttons.
+     * An element of {@link EditorScreen#buttons} which 'represents' the whole set of buttons.
      * <p>
      * This can be any element, and the specific choice is only relevant when repositioning via
      * mouse drag.
@@ -72,8 +71,8 @@ public abstract class EditorScreen extends Screen {
 
     /**
      * The class name of either {@link EditorScreen#rep}'s {@link TriggerButton#container}, or
-     * {@link EditorScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former
-     * is {@code null}.
+     * {@link EditorScreen#underlay}'s {@link AbstractContainerScreen#getMenu} if the former is
+     * {@code null}.
      * <p>
      * This value represents the lowest-level key on which a {@link ClassPolicy} can be created, and
      * may differ from {@link EditorScreen#rep}'s {@link TriggerButton#activePolicyKey}.
@@ -446,9 +445,9 @@ public abstract class EditorScreen extends Screen {
                         Component.literal("1").withStyle(ChatFormatting.RED),
                         Component.literal("0").withStyle(ChatFormatting.GREEN)
                 )
+                .withInitialValue(autoOpOther)
                 .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.other.tooltip")))
                 .displayOnlyValue()
-                .withInitialValue(autoOpOther)
                 .create(
                         x + width - 10,
                         movingY,
@@ -458,15 +457,16 @@ public abstract class EditorScreen extends Screen {
                         (b, v) -> autoOpOther = v
                 );
         addRenderableWidget(autoOpOtherButton);
-        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder((v) -> v == 0
-                        ? localized("editor", "autoOp.none")
-                        : localized("key", "op." + Operation.values()[v - 1].translationKey))
-                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
-                .withValues(0, 1, 2, 3, 4)
+        CycleButton<Integer> autoOpButton = CycleButton.<Integer>builder(
+                        (v) -> v == 0
+                                ? localized("editor", "autoOp.none")
+                                : localized("key", "op." + Operation.values()[v - 1].translationKey)
+                )
                 .withInitialValue(autoOp == null
                         ? 0
-                        : List.of(Operation.values()).indexOf(autoOp) + 1
-                )
+                        : List.of(Operation.values()).indexOf(autoOp) + 1)
+                .withTooltip((v) -> Tooltip.create(localized("editor", "autoOp.tooltip")))
+                .withValues(0, 1, 2, 3, 4)
                 .create(
                         x,
                         movingY,
@@ -604,7 +604,7 @@ public abstract class EditorScreen extends Screen {
                 font,
                 localized("editor", "offset", offset.x(), offset.y()).getString(),
                 105,
-                height - (font.lineHeight + 1) * 3,
+                height - (font.lineHeight + 1) * 4,
                 0xFFFFFFFF
         );
         graphics.drawString(
@@ -618,12 +618,19 @@ public abstract class EditorScreen extends Screen {
                                 : rep.activePolicyKey
                 ),
                 105,
-                height - (font.lineHeight + 1) * 2,
+                height - (font.lineHeight + 1) * 3,
                 0xFFFFFFFF
         );
         graphics.drawString(
                 font,
                 localized("editor", "policyKey.menu", lowestPolicyClassName),
+                105,
+                height - (font.lineHeight + 1) * 2,
+                0xFFFFFFFF
+        );
+        graphics.drawString(
+                font,
+                localized("editor", "policyKey.screen", underlay.getClass().getName()),
                 105,
                 height - (font.lineHeight + 1),
                 0xFFFFFFFF
@@ -654,7 +661,12 @@ public abstract class EditorScreen extends Screen {
      * point.
      */
     private void drawLineFor(GuiGraphics graphics, TriggerButton button) {
-        graphics.hLine(button.getX() - button.offset.x(), button.getX(), button.getY(), 0xFFBBBBBB);
+        graphics.hLine(
+                button.getX() - button.offset.x(),
+                button.getX(),
+                button.getY(),
+                0xFFBBBBBB
+        );
         graphics.vLine(
                 button.getX() - button.offset.x(),
                 button.getY() - button.offset.y(),
@@ -746,6 +758,7 @@ public abstract class EditorScreen extends Screen {
                     }
                 }
             }
+
             return false;
         }
     }

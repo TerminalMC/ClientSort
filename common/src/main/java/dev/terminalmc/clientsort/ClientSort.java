@@ -18,19 +18,20 @@ package dev.terminalmc.clientsort;
 
 import dev.terminalmc.clientsort.config.ServerConfig;
 import dev.terminalmc.clientsort.network.handler.validate.PolicyManager;
-import dev.terminalmc.clientsort.util.ModLogger;
+import dev.terminalmc.clientsort.util.Logging;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.ticks.ContainerSingleItem;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientSort {
 
     public static final String MOD_ID = "clientsort";
     public static final String MOD_NAME = "ClientSort";
-    public static final ModLogger LOG = new ModLogger(MOD_NAME);
+    public static final Logger LOG = Logging.getLogger(MOD_ID);
 
     /**
      * Whether to show debug info on the GUI and write debug logs.
@@ -38,6 +39,10 @@ public class ClientSort {
      * While this value can be set via the config menu, it is intentionally non-persistent.
      */
     public static boolean debugEnabled;
+
+    private ClientSort() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
 
     public static boolean debug() {
         return debugEnabled;

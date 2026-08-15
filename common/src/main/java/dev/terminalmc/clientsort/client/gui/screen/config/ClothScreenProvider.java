@@ -43,6 +43,10 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 
 public class ClothScreenProvider {
 
+    private ClothScreenProvider() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
+
     // Mild shenanigans to allow cross-validation between selectors
 
     private static EnumListEntry<?> firstSelector = null;
@@ -114,6 +118,8 @@ public class ClothScreenProvider {
                     options.optimizeCreativeSorting = val;
                     if (val)
                         CreativeSearchOrder.tryRefreshStackPositionMap();
+                    else
+                        ClientSort.searchOrderUpdated = false;
                 })
                 .build());
 
@@ -269,8 +275,12 @@ public class ClothScreenProvider {
                                         ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Options.startOverrideItemsDefault.get())
-                .setSaveConsumer(val -> options.startOverrideItems =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.startOverrideItems.clear();
+                    options.startOverrideItems.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(options.useStartOverrides)
                 .build());
@@ -296,8 +306,12 @@ public class ClothScreenProvider {
                                         ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Options.endOverrideItemsDefault.get())
-                .setSaveConsumer(val -> options.endOverrideItems =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.endOverrideItems.clear();
+                    options.endOverrideItems.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(options.useEndOverrides)
                 .build());
@@ -328,8 +342,12 @@ public class ClothScreenProvider {
                                         .withStyle(ChatFormatting.GOLD)
                         )))
                 .setDefaultValue(Config.Options.typeMatchTagsDefault.get())
-                .setSaveConsumer(val -> options.typeMatchTags =
-                        val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList())
+                .setSaveConsumer(val -> {
+                    options.typeMatchTags.clear();
+                    options.typeMatchTags.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
                 .setInsertInFront(true)
                 .setExpanded(!options.alwaysMatchByType)
                 .build());
@@ -442,15 +460,6 @@ public class ClothScreenProvider {
                 .build());
 
         ConfigCategory keybinds = builder.getOrCreateCategory(localized("option", "keybinds"));
-
-        keybinds.addEntry(eb.startBooleanToggle(
-                        localized("option", "isolateKeybinds"),
-                        options.isolateKeybinds
-                )
-                .setTooltip(localized("option", "isolateKeybinds.tooltip"))
-                .setDefaultValue(Config.Options.isolateKeybindsDefault)
-                .setSaveConsumer(val -> options.isolateKeybinds = val)
-                .build());
 
         keybinds.addEntry((eb.startKeyCodeField(
                         localized("key", "edit"),
@@ -725,6 +734,22 @@ public class ClothScreenProvider {
                             policy
                     ));
                 })
+                .build());
+
+        policies.addEntry(eb.startStrList(
+                        localized("option", "screenClassBlacklist"),
+                        options.screenClassBlacklist
+                )
+                .setTooltip(localized("option", "screenClassBlacklist.tooltip"))
+                .setDefaultValue(Options.screenClassBlacklistDefault.get())
+                .setSaveConsumer(val -> {
+                    options.screenClassBlacklist.clear();
+                    options.screenClassBlacklist.addAll(
+                            val.stream().map(String::strip).filter((s) -> !s.isBlank()).toList()
+                    );
+                })
+                .setInsertInFront(true)
+                .setExpanded(true)
                 .build());
 
         return builder.build();

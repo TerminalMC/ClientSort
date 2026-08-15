@@ -16,9 +16,11 @@
 
 package dev.terminalmc.clientsort.client;
 
+import dev.terminalmc.clientsort.client.command.Commands;
 import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import dev.terminalmc.clientsort.client.util.KeybindManager;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -37,7 +39,10 @@ public class ClientSortFabric implements ClientModInitializer {
         // Register all keybinds
         KeybindManager.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
-        // Register after-tick event
+        // Register client commands
+        ClientCommandRegistrationCallback.EVENT.register(Commands::register);
+
+        // Register client after-tick event
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);
 
         // Register all custom S2C payload handlers

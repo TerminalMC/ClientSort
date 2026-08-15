@@ -18,7 +18,6 @@
 package dev.terminalmc.clientsort.client.order;
 
 import dev.terminalmc.clientsort.client.ClientSort;
-import dev.terminalmc.clientsort.client.config.Config;
 import dev.terminalmc.clientsort.mixin.client.accessor.CreativeModeTabsAccessor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -54,12 +53,15 @@ public class CreativeSearchOrder {
     }
 
     /**
+     * <b>Note:</b> this method is NOT synchronized, callers MUST first acquire
+     * {@link #getReadLock}.
+     *
      * @return the creative inventory search order position of the specified item.
      */
-    public static int getPosition(ItemStack stack) {
-        int pos = stackPositionMap.getInt(StackMatcher.of(stack));
+    public static int getPositionUnsafe(ItemStack stack) {
+        int pos = stackPositionMap.getOrDefault(StackMatcher.of(stack), Integer.MAX_VALUE);
         if (pos == Integer.MAX_VALUE) {
-            pos = stackPositionMap.getInt(StackMatcher.ignoreNbt(stack));
+            pos = stackPositionMap.getOrDefault(StackMatcher.plain(stack), Integer.MAX_VALUE);
         }
         return pos;
     }
@@ -69,18 +71,11 @@ public class CreativeSearchOrder {
      * configured to do so.
      */
     public static void tryRefreshStackPositionMap() {
-        if (Config.options().optimizeCreativeSorting) {
-            if (ClientSort.emiReloading) {
-                ClientSort.updateBlockedByEmi = true;
-                ClientSort.LOG.info("Search order update blocked by EMI reload, waiting...");
-            } else {
-                refreshStackPositionMap();
-            }
+        if (ClientSort.emiReloading) {
+            ClientSort.updateBlockedByEmi = true;
+            ClientSort.LOG.info("Search order update blocked by EMI reload, waiting...");
         } else {
-            Lock lock = stackPositionMapLock.writeLock();
-            lock.lock();
-            stackPositionMap.clear();
-            lock.unlock();
+            refreshStackPositionMap();
         }
     }
 
@@ -103,35 +98,29 @@ public class CreativeSearchOrder {
                     mc.level.registryAccess()
             );
 
-            // Other mods might modify these items while our thread is evaluating them, so copy
+            // Other mods might modify these items while our thread is evaluating them,
+            // so make a copy
             displayStacks = CreativeModeTabs.searchTab().getDisplayItems()
                     .stream().map(ItemStack::copy).toList();
         } finally {
             CreativeModeTabsAccessor.clientsort$setCachedParameters(null);
         }
 
-        new Thread(
+        Thread.ofVirtual().name(ClientSort.MOD_ID + "-creative-sort-builder").start(
                 () -> {
-                    Lock lock = stackPositionMapLock.writeLock();
+                    Lock writeLock = stackPositionMapLock.writeLock();
                     try {
-                        lock.lock();
-
+                        writeLock.lock();
                         stackPositionMap.clear();
                         int i = 0;
                         for (ItemStack stack : displayStacks) {
-                            StackMatcher plainMatcher = StackMatcher.ignoreNbt(stack);
-                            if (!stack.hasFoil() || !stackPositionMap.containsKey(plainMatcher)) {
-                                stackPositionMap.put(plainMatcher, i);
-                                i++;
-                            }
                             stackPositionMap.put(StackMatcher.of(stack), i);
                             i++;
                         }
-
                     } finally {
-                        lock.unlock();
+                        writeLock.unlock();
                     }
-                }, ClientSort.MOD_NAME + ": creative sort builder"
-        ).start();
+                }
+        );
     }
 }

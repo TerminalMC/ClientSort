@@ -30,9 +30,14 @@ import static dev.terminalmc.clientsort.util.Localization.localized;
 import static net.minecraft.commands.Commands.literal;
 
 @SuppressWarnings("unchecked")
-public class Commands<S> extends CommandDispatcher<S> {
+public class Commands {
 
-    public void register(CommandDispatcher<S> dispatcher, CommandBuildContext buildContext) {
+    private Commands() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
+
+    public static <S> void register(CommandDispatcher<S> dispatcher, CommandBuildContext buildCtx) {
+        //noinspection unchecked
         dispatcher.register((LiteralArgumentBuilder<S>) literal(ClientSort.MOD_ID)
                 .requires((sourceStack) -> sourceStack.hasPermission(2))
                 .then(literal("reload")

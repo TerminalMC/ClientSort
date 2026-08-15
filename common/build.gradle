@@ -2,21 +2,20 @@ import util.PropUtil
 
 plugins {
     id("multiloader-common")
-    id("net.neoforged.moddev")
+    id("net.fabricmc.fabric-loom-remap")
 }
 
-// Configure new ASM version
-configurations.configureEach {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == "org.ow2.asm") {
-            details.useVersion(asm_version)
-            details.because("Mixin config plugin requires new ASM")
-        }
-    }
-}
-
-// Configure common dependencies
+// configure common dependencies
 dependencies {
+    // Minecraft
+    minecraft("com.mojang:minecraft:${minecraft_version}")
+
+    // Mappings
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
+    })
+
     // ASM
     compileOnly("org.ow2.asm:asm:${asm_version}")
     compileOnly("org.ow2.asm:asm-analysis:${asm_version}")
@@ -25,51 +24,52 @@ dependencies {
     compileOnly("org.ow2.asm:asm-util:${asm_version}")
 
     // Mixin
-    compileOnly("org.spongepowered:mixin:${mixin_version}")
+    compileOnly("net.fabricmc:sponge-mixin:${mixin_version}")
 
     // MixinExtras
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
-    // Apply property-defined dependencies
-    final selector = (String type, dep) -> {
-        switch (type) {
+    // apply property-defined dependencies
+    final $selector = (String $type, $dep) -> {
+        switch ($type) {
             case "anp": //noinspection DependencyNotationArgument
-                return annotationProcessor(dep)
+                return annotationProcessor($dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return api(dep)
+                return modApi($dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return compileOnly(dep)
+                return modCompileOnly($dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return implementation(dep)
+                return modImplementation($dep)
                 break
             case "-":
-                return dep
+                return $dep
                 break
             default:
-                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+                throw new IllegalArgumentException("Unrecognized dependency type: ${$type}")
         }
     }
-    new PropUtil(project).applyDependencies(project.name, selector)
+    new PropUtil(project).applyDependencies(project.name, $selector)
 }
 
-// Configure ModDevGradle
-neoForge {
-    neoFormVersion = neoform_version
-    // Apply common AccessTransformer if it exists
-    def at = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
-    validateAccessTransformers = true
-    // Apply Parchment mappings
-    parchment {
-        minecraftVersion = parchment_minecraft_version
-        mappingsVersion = parchment_version
+// configure Loom
+loom {
+    // apply common ClassTweaker if it exists
+    final File $aw = file("src/main/resources/${mod_id}.classtweaker")
+    if ($aw.exists()) {
+        accessWidenerPath = $aw
+        validateAccessWidener {
+            accessWidener = $aw
+        }
+        afterEvaluate {
+            validateAccessWidener.run()
+        }
     }
 }
 
-// Set up access to common files
+// set up access to common files
 configurations {
     commonJava {
         canBeResolved = false
@@ -79,8 +79,16 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
     }
+    configureEach { Configuration $cfg ->
+        $cfg.getResolutionStrategy().eachDependency { DependencyResolveDetails $dep ->
+            if ($dep.getRequested().getGroup() == "org.ow2.asm") {
+                $dep.useVersion("${asm_version}")
+                $dep.because("Mixin config plugin requires new ASM")
+            }
+        }
+    }
 }
 artifacts {
-    commonJava sourceSets.main.java.sourceDirectories.singleFile
-    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+    commonJava(sourceSets.main.java.sourceDirectories.singleFile)
+    commonResources(sourceSets.main.resources.sourceDirectories.singleFile)
 }

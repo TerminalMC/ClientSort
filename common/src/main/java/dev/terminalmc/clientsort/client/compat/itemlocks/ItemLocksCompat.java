@@ -21,7 +21,6 @@ import dev.terminalmc.clientsort.util.inject.ISlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ItemLocksCompat {
@@ -158,7 +157,7 @@ public class ItemLocksCompat {
                     MOD_NAME,
                     e.getMessage()
             );
-        } catch (InvocationTargetException e) {
+        } catch (Throwable e) {
             ClientSort.LOG.info(
                     "{} threw an exception - compat is now disabled: {}",
                     MOD_NAME,
