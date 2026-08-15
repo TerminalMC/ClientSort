@@ -221,7 +221,7 @@
 
   "error.clientsort.low": "Too low",
   "error.clientsort.high": "Too high",
-  "error.clientsort.resourceLocation.parse": "Invalid resource location",
+  "error.clientsort.identifier.parse": "Invalid identifier",
   "error.clientsort.classPolicy.parse": "Invalid class policy entry %d: %s",
   "error.clientsort.classPolicy.pattern": "Data does not match required pattern: %s",
   "error.clientsort.classPolicy.classNotFound": "Could not find a class matching name: %s",
