@@ -153,7 +153,14 @@ module.exports = async ({github, context, core}) => {
     //
 
     const allTags = await getAllTags();
+    allTags.reverse();
     console.log(`Found ${allTags.length} total tags`);
+    if (allTags.length >= 1) {
+        console.log(`First tag is ${allTags[0].name}`);
+    }
+    if (allTags.length >= 2) {
+        console.log(`Last tag is ${allTags[allTags.length - 1].name}`);
+    }
 
     const releaseTagNames = [];
     if (context.payload && context.payload.release) {
