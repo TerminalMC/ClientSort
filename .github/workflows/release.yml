@@ -56,11 +56,11 @@ on:
           - 'ubuntu-latest'
           - 'windows-latest'
         default: 'ubuntu-latest'
-      notify-prs:
-        type: boolean
-        description: Notify Included PRs
+      notify-pr-months:
+        type: number
+        description: Notify PRs (Months)
         required: true
-        default: true
+        default: 2
       sync-desc-modrinth:
         type: boolean
         description: Sync Modrinth Description
@@ -206,8 +206,10 @@ jobs:
 
       - name: Notify PRs
         uses: actions/github-script@v9
-        if: inputs.notify-prs && steps.github.outcome == 'success'
+        if: inputs.notify-pr-months > 0 && steps.github.outcome == 'success'
         continue-on-error: true
+        env:
+          SCAN_MONTHS: ${{ github.event.inputs.notify-pr-months }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

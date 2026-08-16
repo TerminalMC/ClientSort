@@ -2,6 +2,7 @@
  * @typedef {import('@octokit/rest').Octokit} Octokit
  * @typedef {import('@actions/github').context} Context
  * @typedef {import('@actions/core')} Core
+ * @typedef {import('@octokit/openapi-types').components['schemas']['release']} Release
  * @typedef {import('@octokit/openapi-types').components['schemas']['tag']} Tag
  * @typedef {import('@octokit/openapi-types').components['schemas']['pull-request']} PullRequest
  * @typedef {import('@octokit/openapi-types').components['schemas']['commit-comparison']} CommitComparison
@@ -33,6 +34,18 @@ module.exports = async ({github, context, core}) => {
     //
     // Functions
     //
+
+    /**
+     * @returns {Promise<Release[]>}
+     */
+    async function getAllReleases() {
+        // https://docs.github.com/en/rest/releases/releases#list-releases
+        return await github.paginate(github.rest.repos.listReleases, {
+            owner,
+            repo,
+            per_page: 100,
+        });
+    }
 
     /**
      * @returns {Promise<Tag[]>}
@@ -80,7 +93,7 @@ module.exports = async ({github, context, core}) => {
      * @returns {Set<number>}
      */
     function getPullNumbers(comparison) {
-        const mergeRegex = /Merge pull request #(\d+) from/i;
+        const mergeRegex = /Merge pull request #(\d+)/i;
         /** @type {Set<number>} */
         const pullNumbers = new Set();
 
@@ -152,14 +165,47 @@ module.exports = async ({github, context, core}) => {
     // Control flow
     //
 
-    const allTags = await getAllTags();
-    allTags.reverse();
-    console.log(`Found ${allTags.length} total tags`);
-    if (allTags.length >= 1) {
-        console.log(`First tag is ${allTags[0].name}`);
+    const scanMonths = Number(process.env.SCAN_MONTHS ?? `0`)
+    if (!Number.isInteger(scanMonths)) {
+        console.log(`Env SCAN_MONTHS (${process.env.SCAN_MONTHS}) is not an integer: aborting`);
+        return;
+    } else if (scanMonths < 1) {
+        console.log(`Env SCAN_MONTHS (${scanMonths}) is less than one: aborting)`)
+        return;
     }
-    if (allTags.length >= 2) {
-        console.log(`Last tag is ${allTags[allTags.length - 1].name}`);
+
+    const allReleases = await getAllReleases();
+    console.log(`Found ${allReleases.length} total releases`);
+    if (allReleases.length > 0) {
+        console.log(`Newest release tag is ${allReleases[0].tag_name}`);
+    }
+
+    const allTags = await getAllTags();
+    console.log(`Found ${allTags.length} total tags`);
+
+    const cutoff = new Date(new Date().setMonth(new Date().getMonth() - scanMonths));
+
+    const recentReleases = new Map(allReleases
+            .filter((release) => release.published_at && new Date(release.published_at).getTime() >= cutoff)
+            .map((release) => [release.tag_name, release])
+    );
+    console.log(`Filtered ${recentReleases.size} recent releases from the last ${scanMonths} months`);
+    if (recentReleases.length > 0) {
+        console.log(`Oldest recent release tag is ${recentReleases[recentReleases.length - 1].tag_name}`);
+    }
+
+    let recentTags = allTags
+            .filter((tag) => recentReleases.has(tag.name))
+            .sort((a, b) => {
+                // newest first
+                const releaseA = recentReleases.get(a.name);
+                const releaseB = recentReleases.get(b.name);
+                return (new Date(releaseB.published_at).getTime() - new Date(releaseA.published_at).getTime());
+            });
+    console.log(`Filtered ${recentTags.length} recent tags`);
+    if (recentTags.length > 0) {
+        console.log(`Newest recent tag is ${recentTags[0].name}`);
+        console.log(`Oldest recent tag is ${recentTags[recentTags.length - 1].name}`);
     }
 
     const releaseTagNames = [];
@@ -170,12 +216,18 @@ module.exports = async ({github, context, core}) => {
     } else {
         // other context; iterate all tags with matching SHA
         console.log(`No release context; searching tags`)
-        for (const tag of allTags) {
+        for (const tag of recentTags) {
             if (tag.commit.sha === process.env.GITHUB_SHA) {
                 console.log(`Found tag with matching SHA: ${tag.name}`);
                 releaseTagNames.push(tag.name);
             }
         }
+    }
+    recentTags = recentTags.filter((tag) => !releaseTagNames.includes(tag.name));
+    console.log(`Refined ${recentTags.length} recent tags`);
+    if (recentTags.length > 0) {
+        console.log(`Newest recent tag is ${recentTags[0].name}`);
+        console.log(`Oldest recent tag is ${recentTags[recentTags.length - 1].name}`);
     }
 
     if (releaseTagNames.length === 0) {
@@ -195,7 +247,7 @@ module.exports = async ({github, context, core}) => {
         /** @type {Set<number>} */
         let pullNumbers;
 
-        const previousTag = await getPreviousTag(allTags, loaderName, releaseTagName);
+        const previousTag = await getPreviousTag(recentTags, loaderName, releaseTagName);
         if (previousTag) {
             console.log(`Found previous tag: ${previousTag.name}`);
 
