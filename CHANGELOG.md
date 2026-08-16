@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+## 3.89.0-beta.1 [2026-08-16]
+
 - Added support for Locked in Slots.
 - Added a screen-class blacklist to allow disabling buttons on certain modded screens.
 - Fixed a crash when pressing `Open Editor` key if also bound to `Drop Selected Item`.
