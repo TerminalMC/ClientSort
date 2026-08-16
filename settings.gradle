@@ -1,8 +1,9 @@
 // Configure Gradle plugin repos
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         mavenCentral()
+        gradlePluginPortal()
+
         exclusiveContent {
             forRepository {
                 //noinspection ForeignDelegate
@@ -15,6 +16,7 @@ pluginManagement {
                 includeGroupAndSubgroups("org.spongepowered")
             }
         }
+
         exclusiveContent {
             forRepository {
                 //noinspection ForeignDelegate
@@ -28,9 +30,18 @@ pluginManagement {
                 includeGroup("fabric-loom")
             }
         }
-        maven {
-            name = "NeoForge"
-            url = uri("https://maven.neoforged.net/releases")
+
+        exclusiveContent {
+            forRepository {
+                //noinspection ForeignDelegate
+                maven {
+                    name = "NeoForge"
+                    url = uri("https://maven.neoforged.net/releases")
+                }
+            }
+            filter {
+                includeGroupAndSubgroups("net.neoforged")
+            }
         }
         maven {
             name = "Forge"

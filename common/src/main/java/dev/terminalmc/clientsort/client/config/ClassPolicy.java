@@ -124,7 +124,7 @@ public record ClassPolicy(
 
     public static final String DATA_FORMAT = "%s/%s,(%s)/%d,%s,%s,%s,%s,%d/%d,(%s)";
     public static final String DATA_PATTERN_STRING =
-            "^([^/]+)/(.+?)?,\\((?:(-?\\d+),(-?\\d+))?\\)/([01]),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d+(?:,\\d+)*)?)\\)$";
+            "^([^/]+)/(.+?)?,\\((?:(-?\\d{1,9}),(-?\\d{1,9}))?\\)/([01]),([012]),([012]),([012]),([012]),([01234])/([01]),\\(((?:\\d{1,9}(?:,\\d{1,9})*)?)\\)$";
     public static final Pattern DATA_PATTERN = Pattern.compile(DATA_PATTERN_STRING);
 
     public String toDataString() {

@@ -21,7 +21,6 @@ import dev.terminalmc.clientsort.network.Registration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 
@@ -31,7 +30,7 @@ public class ClientSortFabric implements ModInitializer {
     public void onInitialize() {
         // Register all commands
         CommandRegistrationCallback.EVENT.register((dispatcher, buildContext, selection) ->
-                new Commands<CommandSourceStack>().register(dispatcher, buildContext));
+                Commands.register(dispatcher, buildContext));
 
         // Register all custom C2S payloads
         Registration.PAYLOADS_C2S.forEach(ClientSortFabric::registerC2S);

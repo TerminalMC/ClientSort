@@ -25,6 +25,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -38,6 +39,19 @@ public class FabricServices implements PlatformServices {
     @Override
     public boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
+    }
+
+    @Override
+    public boolean hasNamedLogger() {
+        return false;
+    }
+
+    @Override
+    public @Nullable String getModVersion(String modId) {
+        return FabricLoader.getInstance()
+                .getModContainer(modId)
+                .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
+                .orElse(null);
     }
 
     @Override

@@ -20,7 +20,6 @@ import dev.terminalmc.clientsort.client.network.ClientRegistration;
 import dev.terminalmc.clientsort.command.Commands;
 import dev.terminalmc.clientsort.network.Registration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
@@ -86,10 +85,7 @@ public class ClientSortForge {
          */
         @SubscribeEvent
         static void registerCommands(RegisterCommandsEvent event) {
-            new Commands<CommandSourceStack>().register(
-                    event.getDispatcher(),
-                    event.getBuildContext()
-            );
+            Commands.register(event.getDispatcher(), event.getBuildContext());
         }
     }
 

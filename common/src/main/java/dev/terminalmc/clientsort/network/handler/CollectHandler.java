@@ -71,6 +71,8 @@ public class CollectHandler extends PayloadHandler {
 
             if (srcStack.isEmpty())
                 continue;
+            if (!srcSlot.mayPlace(srcStack))
+                continue;
             if (srcStack.getCount() >= srcStack.getItem().getMaxStackSize())
                 continue;
 
@@ -83,6 +85,8 @@ public class CollectHandler extends PayloadHandler {
                 ItemStack dstStackCopy = dstStack.copy();
 
                 if (dstStack.isEmpty())
+                    continue;
+                if (!dstSlot.mayPlace(srcStack))
                     continue;
                 if (dstStack.getCount() >= dstStack.getItem().getMaxStackSize())
                     continue;

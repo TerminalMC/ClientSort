@@ -109,8 +109,13 @@ public class TriggerButtonManager {
     public static void afterScreenInit(Screen initScreen) {
         if (!(initScreen instanceof AbstractContainerScreen<?> acs))
             return;
-        if (Minecraft.getInstance().player.isSpectator())
+        if (Minecraft.getInstance().player == null || Minecraft.getInstance().player.isSpectator())
             return;
+        String initScreenClass = initScreen.getClass().getName();
+        for (String screenClass : options().screenClassBlacklist) {
+            if (screenClass.equalsIgnoreCase(initScreenClass))
+                return;
+        }
 
         containerButtons.clear();
         visibleContainerButtons.clear();

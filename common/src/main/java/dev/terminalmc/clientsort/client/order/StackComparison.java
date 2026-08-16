@@ -93,7 +93,7 @@ public class StackComparison {
     }
 
     private static int compareEqualItems4(ItemStack a, ItemStack b, SortContext context) {
-        // Compare special item properties
+        // Compare color
         Item item = a.getItem();
         if (item instanceof DyeableLeatherItem) {
             int colorA = ((DyeableLeatherItem) item).getColor(a);

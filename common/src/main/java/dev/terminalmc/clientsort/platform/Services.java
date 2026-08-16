@@ -27,6 +27,10 @@ public class Services {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ClientSort (Service)");
 
+    private Services() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
+
     public static <T> T load(Class<T> clazz) {
         final T loadedService = ServiceLoader.load(clazz, clazz.getClassLoader())
                 .findFirst()

@@ -5,7 +5,7 @@ plugins {
     id("fabric-loom")
 }
 
-// Configure Fabric dependencies
+// configure Fabric dependencies
 dependencies {
     // Minecraft
     minecraft("com.mojang:minecraft:${minecraft_version}")
@@ -16,52 +16,54 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
     })
 
-    // MixinExtras
-    if (mixinextras_jij_fabric == "true") {
-        include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
-    }
-
     // Fabric Loader
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     // Fabric API
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
-    // Apply property-defined dependencies
-    final selector = (String type, dep) -> {
-        switch (type) {
+    // MixinExtras
+    if (mixinextras_jij_fabric == "true") {
+        include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
+    }
+
+    // apply property-defined dependencies
+    final selector = (String $type, $dep) -> {
+        switch ($type) {
             case "anp": //noinspection DependencyNotationArgument
-                return annotationProcessor(dep)
+                return annotationProcessor($dep)
                 break
             case "api": //noinspection DependencyNotationArgument
-                return modApi(dep)
+                return modApi($dep)
                 break
             case "con": //noinspection DependencyNotationArgument
-                return modCompileOnly(dep)
+                return modCompileOnly($dep)
                 break
             case "imp": //noinspection DependencyNotationArgument
-                return modImplementation(dep)
+                return modImplementation($dep)
                 break
             case "inc": //noinspection DependencyNotationArgument
-                return include(dep)
+                return include($dep)
                 break
             case "-":
-                return dep
+                return $dep
                 break
             default:
-                throw new IllegalArgumentException("Unrecognized dependency type: ${type}")
+                throw new IllegalArgumentException("Unrecognized dependency type: ${$type}")
         }
     }
     new PropUtil(project).applyDependencies(project.name, selector)
 }
 
-// Configure Loom
+// configure Loom
 loom {
-    // Apply common AccessWidener if it exists
-    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
-    if (aw.exists()) accessWidenerPath.set(aw)
-    if (aw.exists()) {
-        validateAccessWidener { accessWidener = aw }
+    // apply common AccessWidener if it exists
+    final File $aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if ($aw.exists()) {
+        accessWidenerPath = $aw
+        validateAccessWidener {
+            accessWidener = $aw
+        }
         afterEvaluate {
             validateAccessWidener.run()
         }
@@ -69,19 +71,19 @@ loom {
     mixin {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
-    // Configure runs
+    // configure runs
     runs {
         client {
             client()
-            setConfigName("Fabric Client")
-            ideConfigGenerated(true)
-            runDir("runs/client")
+            configName = "Fabric Client"
+            ideConfigGenerated = true
+            runDir = "runs/client"
         }
         server {
             server()
-            setConfigName("Fabric Server")
-            ideConfigGenerated(true)
-            runDir("runs/server")
+            configName = "Fabric Server"
+            ideConfigGenerated = true
+            runDir = "runs/server"
         }
     }
 }

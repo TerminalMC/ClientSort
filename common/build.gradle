@@ -5,16 +5,6 @@ plugins {
     id("org.spongepowered.gradle.vanilla")
 }
 
-// Configure new ASM version
-configurations.configureEach {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == "org.ow2.asm") {
-            details.useVersion(asm_version)
-            details.because("Mixin config plugin requires new ASM")
-        }
-    }
-}
-
 // Configure common dependencies
 dependencies {
     // ASM
@@ -55,15 +45,17 @@ dependencies {
     new PropUtil(project).applyDependencies(project.name, selector)
 }
 
-// Configure VanillaGradle
+// configure VanillaGradle
 minecraft {
     version(minecraft_version)
-    // Apply common AccessWidener if it exists
+    // apply common AccessWidener if it exists
     def aw = file("src/main/resources/${mod_id}.accesswidener")
-    if (aw.exists()) accessWideners(aw)
+    if (aw.exists()) {
+        accessWideners(aw)
+    }
 }
 
-// Set up access to common files
+// set up access to common files
 configurations {
     commonJava {
         canBeResolved = false
@@ -73,8 +65,16 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
     }
+    configureEach { Configuration $cfg ->
+        $cfg.getResolutionStrategy().eachDependency { DependencyResolveDetails $dep ->
+            if ($dep.getRequested().getGroup() == "org.ow2.asm") {
+                $dep.useVersion("${asm_version}")
+                $dep.because("Mixin config plugin requires new ASM")
+            }
+        }
+    }
 }
 artifacts {
-    commonJava sourceSets.main.java.sourceDirectories.singleFile
-    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+    commonJava(sourceSets.main.java.sourceDirectories.singleFile)
+    commonResources(sourceSets.main.resources.sourceDirectories.singleFile)
 }

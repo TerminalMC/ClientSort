@@ -1,4 +1,4 @@
-{
+﻿{
   "modmenu.descriptionTranslation.clientsort": "功能全面、操作便捷的物品栏整理。",
 
   "clientsort.name": "ClientSort",
@@ -13,6 +13,7 @@
   "key.clientsort.op.transfer": "转移",
 
   "message.clientsort.installCloth": "请安装 Cloth Config API 以访问模组选项。",
+  "message.clientsort.configScreenDisabled": "Config screen is not available on this version.",
   "message.clientsort.viewModrinth": "在 Modrinth 上查看",
   "message.clientsort.configReloaded": "服务器配置已从 '%s' 重新加载！",
   "message.clientsort.checkLogs": "请检查游戏日志以获取更多信息。",
@@ -76,6 +77,7 @@
   "editor.clientsort.policyKey.current": "策略键：%s",
   "editor.clientsort.policyKey.menu": "活动菜单：%s",
   "editor.clientsort.policyKey.unset": "未设置",
+  "editor.clientsort.policyKey.screen": "Screen: %s",
 
   "option.clientsort.general": "通用",
   "option.clientsort.interactionInterval": "交互间隔",
@@ -181,6 +183,8 @@
   "option.clientsort.policies.description.13": "注意：填充和转移按钮仅在玩家物品栏和容器上都启用时显示。",
   "option.clientsort.classPolicies": "类策略",
   "option.clientsort.classPolicies.tooltip": "下面的每个条目对应一种特定类型的物品栏。",
+  "option.clientsort.screenClassBlacklist": "Screen Class Blacklist",
+  "option.clientsort.screenClassBlacklist.tooltip": "The policies above are based on the inventory or menu class. If you want to disable buttons and sorting for a particular type of screen that doesn't have a unique inventory or menu class, add it here.",
 
   "hotbarScope.clientsort.HOTBAR": "快捷栏",
   "hotbarScope.clientsort.HOTBAR.tooltip": "快捷栏将作为单独的容器处理。",

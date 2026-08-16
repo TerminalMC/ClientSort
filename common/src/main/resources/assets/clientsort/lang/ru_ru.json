@@ -1,6 +1,10 @@
 {
   "clientsort.name": "ClientSort",
 
+  "modmenu.nameTranslation.clientsort": "ClientSort",
+  "modmenu.descriptionTranslation.clientsort": "Универсальная и простая сортировка инвентаря.",
+  "fml.menu.mods.info.description.clientsort": "Универсальная и простая сортировка инвентаря.",
+
   "resourcepack.clientsort.dark-mode": "ClientSort: Тёмный режим",
 
   "key.clientsort.edit": "Открыть редактор интерфейса",
@@ -11,6 +15,7 @@
   "key.clientsort.op.transfer": "Переместить",
 
   "message.clientsort.installCloth": "Установите Cloth Config API для доступа к параметрам мода.",
+  "message.clientsort.configScreenDisabled": "Экран конфигурации недоступен в этой версии.",
   "message.clientsort.viewModrinth": "Посмотреть на Modrinth",
   "message.clientsort.configReloaded": "Конфигурация сервера перезагружена из '%s'!",
   "message.clientsort.checkLogs": "Проверьте логи для получения дополнительной информации.",
@@ -74,6 +79,7 @@
   "editor.clientsort.policyKey.current": "Ключ макета: %s",
   "editor.clientsort.policyKey.menu": "Активное меню: %s",
   "editor.clientsort.policyKey.unset": "Не установлено",
+  "editor.clientsort.policyKey.screen": "Экран: %s",
 
   "option.clientsort.general": "Общие",
   "option.clientsort.interactionInterval": "Интервал взаимодействия",
@@ -179,6 +185,8 @@
   "option.clientsort.policies.description.13": "Примечание: кнопки заполнения, пополнения и переноса отображаются только в том случае, если они включены как в инвентаре игрока, так и в контейнере.",
   "option.clientsort.classPolicies": "Политики классов",
   "option.clientsort.classPolicies.tooltip": "Каждая из приведённых ниже записей соответствует определенному типу инвентаря.",
+  "option.clientsort.screenClassBlacklist": "Чёрный список классов экранов",
+  "option.clientsort.screenClassBlacklist.tooltip": "Приведённые выше политики основаны на классе инвентаря или меню. Если вы хотите отключить кнопки и сортировку для определённого типа экрана, у которого нет собственного класса инвентаря или меню, добавьте его сюда.",
 
   "hotbarScope.clientsort.HOTBAR": "Панель быстрого доступа",
   "hotbarScope.clientsort.HOTBAR.tooltip": "Панель быстрого доступа будет сортироваться как отдельный инвентарь",

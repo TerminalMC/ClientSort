@@ -114,9 +114,8 @@ public abstract class PayloadHandler {
         } finally {
             if (menu != null) {
                 menu.resumeRemoteUpdates();
-                menu.broadcastChanges();
-                menu.slots.get(0).container.setChanged();
-                menu.slots.get(menu.slots.size() - 1).container.setChanged();
+                menu.slotsChanged(menu.slots.get(0).container);
+                menu.slotsChanged(menu.slots.get(menu.slots.size() - 1).container);
             }
             if (PlatformServices.getInstance().canSendToPlayer(player, responseChannel)) {
                 PlatformServices.getInstance().sendToPlayer(

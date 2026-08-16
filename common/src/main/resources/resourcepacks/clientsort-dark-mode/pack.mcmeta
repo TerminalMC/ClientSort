@@ -1,6 +1,6 @@
 {
-    "pack": {
-      "pack_format": 15,
-        "description": "Dark-mode trigger buttons"
-    }
+  "pack": {
+    "description": "Dark-mode trigger buttons",
+    "pack_format": 15
+  }
 }

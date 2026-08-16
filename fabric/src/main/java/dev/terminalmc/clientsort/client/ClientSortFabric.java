@@ -38,7 +38,7 @@ public class ClientSortFabric implements ClientModInitializer {
         // Register all keybinds
         KeybindManager.KEYBINDS.forEach(KeyBindingHelper::registerKeyBinding);
 
-        // Register after-tick event
+        // Register client after-tick event
         ClientTickEvents.END_CLIENT_TICK.register(ClientSort::afterClientTick);
 
         // Register all custom S2C payload handlers

@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CreativeModeInventoryScreen.class)
-public class CreativeModeInventoryScreenMixin extends Screen {
+public abstract class CreativeModeInventoryScreenMixin extends Screen {
 
     protected CreativeModeInventoryScreenMixin(Component title) {
         super(title);

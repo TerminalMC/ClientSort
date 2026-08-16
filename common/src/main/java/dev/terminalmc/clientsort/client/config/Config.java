@@ -46,6 +46,10 @@ public class Config {
     private static final String BACKUP_FILE_NAME = ClientSort.MOD_ID + ".unreadable.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    private Config() {
+        // Deserializer and self-instantiation only.
+    }
+
     // Options
 
     public final Options options = new Options();
@@ -110,7 +114,6 @@ public class Config {
                 val != null && Arrays.stream(ExtraSlotScope.values()).toList().contains(val)
                         ? val : extraSlotScopeDefault;
 
-
         public static final boolean bundlesUseLeftClickDefault = false;
         public boolean bundlesUseLeftClick = bundlesUseLeftClickDefault;
 
@@ -122,11 +125,12 @@ public class Config {
         public static final boolean alwaysMatchByTypeDefault = false;
         public boolean alwaysMatchByType = alwaysMatchByTypeDefault;
 
-        public static final Supplier<List<String>> typeMatchTagsDefault = () -> List.of(
-                "enchantable/weapon",
-                "enchantable/mining",
-                "enchantable/armor"
-        );
+        public static final Supplier<List<String>> typeMatchTagsDefault =
+                () -> new ArrayList<>(List.of(
+                        "enchantable/weapon",
+                        "enchantable/mining",
+                        "enchantable/armor"
+                ));
         public List<String> typeMatchTags = typeMatchTagsDefault.get();
         public static Validator<List<String>> typeMatchTagsValidator = (val) -> val != null
                 ? val : typeMatchTagsDefault.get();
@@ -310,151 +314,152 @@ public class Config {
 
         // Policy options
 
-        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList = () -> List.of(
-                new ClassPolicy(
-                        Inventory.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        ChestMenu.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        HopperMenu.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND,
-                        Policy.KEYBIND,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        HorseInventoryMenu.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND,
-                        Policy.KEYBIND,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>(List.of(0))
-                ),
-                new ClassPolicy(
-                        PlayerEnderChestContainer.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        ShulkerBoxMenu.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        RandomizableContainerBlockEntity.class.getName(),
-                        null,
-                        null,
-                        false,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        Policy.KEYBIND_BUTTON,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
-                        null,
-                        null,
-                        false,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
-                        null,
-                        null,
-                        false,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.tom.storagemod.menu.CraftingTerminalMenu",
-                        null,
-                        null,
-                        false,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        null,
-                        false,
-                        new TreeSet<>()
-                ),
-                new ClassPolicy(
-                        "com.tom.storagemod.menu.StorageTerminalMenu",
-                        null,
-                        null,
-                        false,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        Policy.NONE,
-                        null,
-                        false,
-                        new TreeSet<>()
-                )
-        );
+        public static final Supplier<List<ClassPolicy>> classPoliciesDefaultList =
+                () -> new ArrayList<>(List.of(
+                        new ClassPolicy(
+                                Inventory.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                ChestMenu.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                HopperMenu.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND,
+                                Policy.KEYBIND,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                HorseInventoryMenu.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND,
+                                Policy.KEYBIND,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                PlayerEnderChestContainer.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                ShulkerBoxMenu.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                RandomizableContainerBlockEntity.class.getName(),
+                                null,
+                                null,
+                                false,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                Policy.KEYBIND_BUTTON,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
+                                null,
+                                null,
+                                false,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                "com.tiviacz.travelersbackpack.inventory.menu.BackpackSettingsMenu",
+                                null,
+                                null,
+                                false,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                "com.tom.storagemod.menu.CraftingTerminalMenu",
+                                null,
+                                null,
+                                false,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        ),
+                        new ClassPolicy(
+                                "com.tom.storagemod.menu.StorageTerminalMenu",
+                                null,
+                                null,
+                                false,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                Policy.NONE,
+                                null,
+                                false,
+                                new TreeSet<>()
+                        )
+                ));
         public static final Supplier<Map<String, ClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((policy) -> map.put(policy.getKey(), policy));
@@ -468,10 +473,11 @@ public class Config {
                 return validPolicies;
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className() != null && !cp.className().isBlank()) {
+                    String className = cp.className();
                     validPolicies.put(
-                            cp.getKey(),
+                            className,
                             new ClassPolicy(
-                                    cp.className(),
+                                    className,
                                     cp.invTitle(),
                                     cp.buttonOffset(),
                                     cp.offsetFromSlot(),
@@ -495,6 +501,21 @@ public class Config {
         public static Validator<Policy> policyValidator = (val) ->
                 val != null && Arrays.stream(Policy.values()).toList().contains(val)
                         ? val : Policy.NONE;
+
+        public static final Supplier<List<String>> screenClassBlacklistDefault =
+                () -> new ArrayList<>(List.of(
+                        "com.simibubi.create.content.logistics.stockTicker.StockKeeperCategoryScreen"
+                ));
+        public List<String> screenClassBlacklist = screenClassBlacklistDefault.get();
+        public static final Validator<List<String>> screenClassBlacklistValidator = (val) -> {
+            if (val == null)
+                return new ArrayList<>();
+
+            val.removeIf(String::isBlank);
+            val.sort(String::compareTo);
+
+            return val;
+        };
 
         // Legacy from pre v2.0.0-beta.11
         public @Nullable Map<String, ButtonLayout> buttonLayouts;
@@ -574,6 +595,8 @@ public class Config {
                 Options.layoutOffsetValidator.validate(options.layoutOffset);
         options.classPolicies =
                 Options.classPoliciesValidator.validate(options.classPolicies);
+        options.screenClassBlacklist =
+                Options.screenClassBlacklistValidator.validate(options.screenClassBlacklist);
     }
 
     /**

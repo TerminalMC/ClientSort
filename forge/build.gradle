@@ -6,9 +6,12 @@ plugins {
     id("org.spongepowered.mixin")
 }
 
-// Configure Forge dependencies
+// configure Forge dependencies
 dependencies {
+    // Minecraft
     minecraft("net.minecraftforge:forge:${minecraft_version}-${forge_version}".toString())
+
+    // Mixin annotations (see also mixin closure below)
     annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
@@ -19,7 +22,7 @@ dependencies {
         }
     }
 
-    // Apply property-defined dependencies
+    // apply property-defined dependencies
     final selector = (String type, dep) -> {
         switch (type) {
             case "anp": //noinspection DependencyNotationArgument
@@ -47,23 +50,25 @@ dependencies {
     new PropUtil(project).applyDependencies(project.name, selector)
 }
 
-// Configure Mixin
+// configure Mixin
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
 }
 
-// Configure ForgeGradle
+// configure ForgeGradle
 minecraft {
-    mappings channel: "official", version: minecraft_version
-    copyIdeResources = true // Calls processResources when in dev
+    mappings(channel: "official", version: minecraft_version)
+    copyIdeResources = true // calls processResources when in dev
 
-    // Apply AccessTransformer if it exists
+    // apply AccessTransformer if it exists
     def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (at.exists()) accessTransformers.from(at.absolutePath)
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+    }
 
-    // Configure runs
+    // configure runs
     runs {
         client {
             workingDirectory project.file("run")
@@ -96,7 +101,7 @@ minecraft {
 }
 
 afterEvaluate {
-    // Required due to direct reference to fat jar file in root build.gradle publishMods task
+    // required due to direct reference to fat jar file in root build.gradle publishMods task
     tasks.named("publishGithub").configure { it.dependsOn(tasks.named("jarJar")) }
     tasks.named("publishModrinth").configure { it.dependsOn(tasks.named("jarJar")) }
     tasks.named("publishCurseforge").configure { it.dependsOn(tasks.named("jarJar")) }

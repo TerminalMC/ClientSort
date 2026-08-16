@@ -28,9 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class ServerConfig {
@@ -75,7 +73,7 @@ public class ServerConfig {
         public boolean alwaysLogUnexpectedResults = alwaysLogUnexpectedResultsDefault;
 
         public static final Supplier<List<ServerClassPolicy>> classPoliciesDefaultList =
-                () -> List.of(
+                () -> new ArrayList<>(List.of(
                         new ServerClassPolicy(
                                 "com.simibubi.create.content.equipment.toolbox.ToolboxMenu",
                                 false,
@@ -100,7 +98,7 @@ public class ServerConfig {
                                 false,
                                 false
                         )
-                );
+                ));
         public static final Supplier<Map<String, ServerClassPolicy>> classPoliciesDefault = () -> {
             Map<String, ServerClassPolicy> map = new LinkedHashMap<>();
             classPoliciesDefaultList.get().forEach((item) -> map.put(item.className, item));
@@ -113,10 +111,11 @@ public class ServerConfig {
                 return validPolicies;
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className != null && !cp.className.isBlank()) {
+                    String className = cp.className;
                     validPolicies.put(
-                            cp.className,
+                            className,
                             new ServerClassPolicy(
-                                    cp.className,
+                                    className,
                                     cp.sortEnabled,
                                     cp.stackFillEnabled,
                                     cp.transferEnabled,

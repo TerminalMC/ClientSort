@@ -85,6 +85,8 @@ public class StackFillHandler extends PayloadHandler {
 
             if (srcStack.isEmpty())
                 continue;
+            if (!srcSlot.mayPlace(srcStack))
+                continue;
 
             // Nonempty stack found; work forwards from the start of the
             // destination array, looking for a partial stack of the same item
@@ -94,6 +96,8 @@ public class StackFillHandler extends PayloadHandler {
                 ItemStack dstStackCopy = dstSlot.getItem().copy();
 
                 if (dstStack.isEmpty())
+                    continue;
+                if (!dstSlot.mayPlace(srcStack))
                     continue;
                 if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;

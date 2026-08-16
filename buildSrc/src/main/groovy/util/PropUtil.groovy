@@ -16,7 +16,7 @@ class PropUtil {
      @return {@code true} if the property is set.
      */
     boolean has(String propertyName) {
-        return project.hasProperty(propertyName) && !project.property(propertyName).toString().isBlank()
+        return project.hasProperty(propertyName) && !get(propertyName).toString().isBlank()
     }
 
     /**
@@ -30,14 +30,14 @@ class PropUtil {
      @return the value of the property if it exists, an empty string otherwise.
      */
     String safe(String propertyName) {
-        return has(propertyName) ? project.property(propertyName) : ""
+        return has(propertyName) ? get(propertyName) : ""
     }
 
     /**
      @return the value of the property, CSV-split.
      */
     String[] list(String propertyName) {
-        return project.property(propertyName).toString().split(",")
+        return get(propertyName).toString().split(",")
                 .findAll { !it.isBlank() }
                 .collect { it.strip() }
     }
@@ -50,34 +50,34 @@ class PropUtil {
     }
 
     /**
-     * Applies configured dependencies for a subproject.
-     * @param pName the subproject name.
-     * @param selector the dependency configuration selector.
+     Applies configured dependencies for a subproject.
+     @param subprojectName the subproject name.
+     @param selector the dependency configuration selector.
      */
     void applyDependencies(
-            String pName,
+            String subprojectName,
             BiFunction<String, Object, Closure<ExternalModuleDependency>> selector
     ) {
-        safeList("${pName}_deps").each { dep ->
+        safeList("${subprojectName}_deps").each { String dep ->
             try {
-                final depData = list("d_${pName}_${dep}")
+                final String[] depData = list("d_${subprojectName}_${dep}")
                 if (depData[0] != "-") {
-                    final mavenData = depData[0].split(":")
-                    final mavenGroup = mavenData[3]
-                    final mavenProject = mavenData[4]
-                    final subVersion = ((mavenData.length > 6 && mavenData[6] != "-")
+                    final String[] mavenData = depData[0].split(":")
+                    final String mavenGroup = mavenData[3]
+                    final String mavenProject = mavenData[4]
+                    final String subVersion = ((mavenData.length > 6 && mavenData[6] != "-")
                             ? project.property(mavenData[6])
                             : project.property("v_${dep}")).toString()
-                    final mavenVersion = "${mavenData[5]}".replace("\$v", subVersion)
-                    def gradleDep = "${mavenGroup}:${mavenProject}:${mavenVersion}"
+                    final String mavenVersion = "${mavenData[5]}".replace("\$v", subVersion)
+                    String gradleDep = "${mavenGroup}:${mavenProject}:${mavenVersion}"
                     for (int i = 2; i >= 0; i--) {
                         gradleDep = selector.apply(mavenData[i], gradleDep)
                     }
                 }
-            } catch (Exception ex) {
+            } catch (Exception e) {
                 logger.error("Error processing Gradle dependency '${dep}' for subproject "
-                        + "'${pName}'. Check dependency property format.")
-                throw ex
+                        + "'${subprojectName}'. Check dependency property format.")
+                throw e
             }
         }
     }

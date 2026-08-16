@@ -3,7 +3,9 @@ import util.EnvUtil
 import util.PropUtil
 import util.StaticUtil
 
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 plugins {
     id("fabric-loom") version("${loom_version}") apply(false)
@@ -15,202 +17,216 @@ plugins {
     id("org.ajoberstar.grgit.service") version("${grgitservice_version}")
 }
 
-subprojects {
-    final env = new EnvUtil(providers)
-    final prop = new PropUtil(project)
-    final cLog = StaticUtil.versionChangelog(rootProject.file("changelog.md"), mod_version)
+subprojects { Project $subproject ->
+    final EnvUtil $env = new EnvUtil(providers)
+    final PropUtil $prop = new PropUtil(project)
 
-    // Append Minecraft version extension
-    mod_version = "${mod_version}+${minecraft_version}"
-    // Append dependency version extension, if configured
-    if (prop.has("dep_ext_${name}")) {
-        final data = prop.get("dep_ext_${name}").split(":")
-        final dep_abbrev = data[0]
-        // Strip meta from dependency version
-        final dep_ver = prop.get(data[1]).split("\\+")[0]
-        mod_version = "${mod_version}+${dep_abbrev}${dep_ver}"
+    // append Minecraft version extension
+    String $mod_version = "${mod_version}+${minecraft_version}"
+    // append dependency version extension, if configured
+    if ($prop.has("dep_ext_${name}")) {
+        final $data = $prop.get("dep_ext_${name}").split(":")
+        final $depAbbrev = $data[0]
+        // strip meta from dependency version
+        final $depVer = $prop.get($data[1]).split("\\+")[0]
+        $mod_version = "${$mod_version}+${$depAbbrev}${$depVer}"
     }
-    version = mod_version
-    group = mod_group
+    $subproject.version = $mod_version
+    $subproject.group = mod_group
 
-    // Configure license headers
+    // configure license headers
     apply(plugin: "net.neoforged.licenser")
-    final licenseDir = "src/main/resources/assets/${mod_id}/license/"
+    final String $licenseDir = "src/main/resources/assets/${mod_id}/license/"
     license {
-        include("**/*.java") // Java files only
-        // Apply main license header
-        header = rootProject.project("common").file("${licenseDir}HEADER.txt")
+        include("**/*.java")
+        // apply main license header
+        header = rootProject.project("common").file("${$licenseDir}HEADER.txt")
         properties {
             project_name = mod_name
             owner_name = mod_owner
             year = LocalDate.now().getYear().toString()
         }
-        // Apply attribution license headers, if configured
+        // apply attribution license headers, if configured
         if (att_license_mods != "") {
-            att_license_mods.split(",").each { String modId ->
+            att_license_mods.split(",").each { String $modId ->
                 //noinspection GroovyAssignabilityCheck
-                matching({ include(prop.list("att_license_files_${modId}")) }) {
-                    header = rootProject.project("common").file("${licenseDir}${modId}/HEADER.txt")
+                matching({ include($prop.list("att_license_files_${$modId}")) }) {
+                    header = rootProject.project("common").file("${$licenseDir}${$modId}/HEADER.txt")
                     it
                 }
             }
         }
     }
 
-    // Configure multi-site publishing
-    if (name != "common") {
-        apply(plugin: "me.modmuss50.mod-publish-plugin")
-        apply(plugin: "org.ajoberstar.grgit.service")
+    if ($subproject.name == "common")
+        return
 
-        afterEvaluate { sp ->
-            publishMods {
-                // Common configuration
-                file = project.name == "fabric" ? remapJar.archiveFile : name == "forge"
-                        ? project.file("build/libs/${mod_id}-${name}-${mod_version}.jar") : jar.archiveFile
-                version = mod_version
-                type = ReleaseType.of(mod_version_type)
-                displayName = "v${mod_version}-${StaticUtil.capsLoader(sp.name)}"
-                modLoaders.addAll(prop.safeList("mod_loaders_${sp.name}"))
-                maxRetries = 5
-                dryRun = !env.has("GITHUB_TOKEN")
-                        && !env.has("MODRINTH_TOKEN")
-                        && !env.has("CURSEFORGE_TOKEN")
-                // GitHub configuration
-                github {
-                    parent project(":").tasks.named("publishGithub")
-                    accessToken = env.safe("GITHUB_TOKEN")
-                    if (build_sources_jar == "true") additionalFiles.from(sourcesJar.archiveFile)
-                    if (build_javadoc_jar == "true") additionalFiles.from(javadocJar.archiveFile)
-                    return void
-                }
-                // Modrinth configuration
-                modrinth {
-                    accessToken = env.safe("MODRINTH_TOKEN")
-                    projectId = prop.safe("mod_modrinth_id")
-                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}"))
-                    changelog = cLog
-                    prop.safeList("${sp.name}_deps").each { dep ->
-                        try {
-                            final depData = prop.list("d_${sp.name}_${dep}")
-                            if (depData.length > 2 && depData[2] != "-") {
-                                final mrDepData = depData[2].split(":")
-                                final type = mrDepData[0]
-                                if (type == "req") {
-                                    requires { id = mrDepData[1] }
-                                } else if (type == "opt") {
-                                    optional { id = mrDepData[1] }
-                                } else if (type == "inc") {
-                                    incompatible { id = mrDepData[1] }
-                                } else if (type == "emb") {
-                                    embeds { id = mrDepData[1] }
-                                } else {
-                                    throw new IllegalArgumentException(
-                                            "Unrecognized dependency type: ${mrDepData[0]}"
-                                    )
-                                }
+    // configure multi-site publishing
+    apply(plugin: "me.modmuss50.mod-publish-plugin")
+    apply(plugin: "org.ajoberstar.grgit.service")
+
+    afterEvaluate {
+        final StaticUtil.Changelog $changelog = StaticUtil.versionChangelog(
+                rootProject.file("CHANGELOG.md"),
+                mod_version
+        )
+        final String $date = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+        publishMods {
+
+            // common configuration
+            file = $subproject.name == "fabric" ? remapJar.archiveFile : $subproject.name == "forge"
+                    ? $subproject.file("build/libs/${mod_id}-${$subproject.name}-${$mod_version}.jar")
+                    : jar.archiveFile
+            version = $mod_version
+            type = ReleaseType.valueOf(mod_version_type)
+            displayName = "v${$mod_version}-${StaticUtil.capsLoader($subproject.name)}"
+            modLoaders.addAll($prop.safeList("mod_loaders_${$subproject.name}"))
+            maxRetries = 5
+            dryRun = !$env.has("GITHUB_TOKEN")
+                    && !$env.has("MODRINTH_TOKEN")
+                    && !$env.has("CURSEFORGE_TOKEN")
+
+            // GitHub configuration
+            //noinspection GroovyAssignabilityCheck
+            github {
+                final String $urlHeader = URLEncoder.encode(
+                        "${mod_version}-${$date}".replaceAll("\\.", ""),
+                        StandardCharsets.UTF_8
+                )
+                accessToken = $env.safe("GITHUB_TOKEN")
+                repository = $prop.safe("mod_github_repo")
+                commitish = grgitService.service.get().grgit.branch.current().name
+                tagName = "v${$mod_version}-${$subproject.name}"
+                changelog = "[Changelog](./CHANGELOG.md#${$urlHeader})"
+                if (build_sources_jar == "true")
+                    additionalFiles.from(provider { sourcesJar.archiveFile })
+                if (build_javadoc_jar == "true")
+                    additionalFiles.from(provider { javadocJar.archiveFile })
+            }
+
+            // Modrinth configuration
+            //noinspection GroovyAssignabilityCheck
+            modrinth {
+                accessToken = $env.safe("MODRINTH_TOKEN")
+                projectId = $prop.safe("mod_modrinth_id")
+                minecraftVersions.addAll($prop.safeList("mc_versions_${$subproject.name}"))
+                changelog = $changelog.changelist
+                $prop.safeList("${$subproject.name}_deps").each { $dep ->
+                    try {
+                        final String[] $depData = $prop.list("d_${$subproject.name}_${$dep}")
+                        if ($depData.length > 2 && $depData[2] != "-") {
+                            final String[] $mrDepData = $depData[2].split(":")
+                            final String $type = $mrDepData[0]
+                            if ($type == "req") {
+                                requires { id = $mrDepData[1] }
+                            } else if ($type == "opt") {
+                                optional { id = $mrDepData[1] }
+                            } else if ($type == "inc") {
+                                incompatible { id = $mrDepData[1] }
+                            } else if ($type == "emb") {
+                                embeds { id = $mrDepData[1] }
+                            } else {
+                                throw new IllegalArgumentException("Unrecognized dependency type: ${$mrDepData[0]}")
                             }
-                        } catch (Exception ex) {
-                            logger.error("Error processing Modrinth dependency '${dep}' for "
-                                    + "subproject '${sp.name}'. Check dependency property format.")
-                            throw ex
                         }
-                    }
-                    // Sync Modrinth description with README
-                    if (prop.has("mod_github_repo")) {
-                        projectDescription = rootProject.file("README.md").text.replaceAll(
-                                "src=\"\\./",
-                                "src=\"https://raw.githubusercontent.com/${prop.get("mod_github_repo")}/HEAD/"
-                        )
-                        return
+                    } catch (Exception ex) {
+                        logger.error("Error processing Modrinth dependency '${$dep}' for "
+                                + "subproject '${$subproject.name}'. Check dependency property format.")
+                        throw ex
                     }
                 }
-                // CurseForge configuration
-                curseforge {
-                    accessToken = env.safe("CURSEFORGE_TOKEN")
-                    projectId = prop.safe("mod_curseforge_id")
-                    projectSlug = prop.safe("mod_curseforge_slug")
-                    minecraftVersions.addAll(prop.safeList("mc_versions_${sp.name}"))
-                    changelog = cLog
-                    prop.safeList("${sp.name}_deps").each { dep ->
-                        try {
-                            final depData = prop.list("d_${sp.name}_${dep}")
-                            if (depData.length > 3 && depData[3] != "-") {
-                                final cfDepData = depData[3].split(":")
-                                final type = cfDepData[0]
-                                if (type == "req") {
-                                    requires(cfDepData[1])
-                                } else if (type == "opt") {
-                                    optional(cfDepData[1])
-                                } else if (type == "inc") {
-                                    incompatible(cfDepData[1])
-                                } else if (type == "emb") {
-                                    embeds(cfDepData[1])
-                                } else {
-                                    throw new IllegalArgumentException(
-                                            "Unrecognized dependency type: ${cfDepData[0]}"
-                                    )
-                                }
+                // sync Modrinth description with README
+                if ($prop.has("mod_github_repo") && $env.safe("SYNC_DESC_MODRINTH") == "true") {
+                    projectDescription = rootProject.file("README.md").text.replaceAll(
+                            "src=\"\\./",
+                            "src=\"https://raw.githubusercontent.com/${$prop.get("mod_github_repo")}/HEAD/"
+                    )
+                    return
+                }
+            }
+
+            // CurseForge configuration
+            //noinspection GroovyAssignabilityCheck
+            curseforge {
+                final String $cfEnvs = $prop.list("curseforge_environments")
+                if (!$cfEnvs.contains("client") && !$cfEnvs.contains("server")) {
+                    throw new Exception("Property [curseforge_environments] must contain at least one of [client, server]")
+                }
+                accessToken = $env.safe("CURSEFORGE_TOKEN")
+                projectId = $prop.safe("mod_curseforge_id")
+                minecraftVersions.addAll($prop.safeList("mc_versions_${$subproject.name}").findAll {
+                    !it.contains("-")
+                })
+                client = $cfEnvs.contains("client")
+                server = $cfEnvs.contains("server")
+                changelog = $changelog.changelist
+                $prop.safeList("${$subproject.name}_deps").each { $dep ->
+                    try {
+                        final $depData = $prop.list("d_${$subproject.name}_${$dep}")
+                        if ($depData.length > 3 && $depData[3] != "-") {
+                            final $cfDepData = $depData[3].split(":")
+                            final $type = $cfDepData[0]
+                            if ($type == "req") {
+                                requires($cfDepData[1])
+                            } else if ($type == "opt") {
+                                optional($cfDepData[1])
+                            } else if ($type == "inc") {
+                                incompatible($cfDepData[1])
+                            } else if ($type == "emb") {
+                                embeds($cfDepData[1])
+                            } else {
+                                throw new IllegalArgumentException(
+                                        "Unrecognized dependency type: ${$cfDepData[0]}"
+                                )
                             }
-                        } catch (Exception ex) {
-                            logger.error("Error processing CurseForge dependency '${dep}' for "
-                                    + "subproject '${sp.name}'. Check dependency property format.")
-                            throw ex
                         }
+                    } catch (Exception ex) {
+                        logger.error("Error processing CurseForge dependency '${$dep}' for "
+                                + "subproject '${$subproject.name}'. Check dependency property format.")
+                        throw ex
                     }
-                    return void
                 }
+                return void
             }
-            final hasSpConf = prop.has("mod_loaders_${name}") && prop.has("mc_versions_${name}")
-            tasks.named("publishGithub") {
-                onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_github_repo")
-                            && (it["dryRun"].get() || env.has("GITHUB_TOKEN"))
-                }
+        }
+
+        // execution conditions
+        final boolean $hasReleaseProps = $prop.has("mod_loaders_${$subproject.name}")
+                && $prop.has("mc_versions_${$subproject.name}")
+        tasks.named("publishGithub") { Task $task ->
+            onlyIf {
+                return $hasReleaseProps && ($task["dryRun"].get() || $env.has("GITHUB_TOKEN"))
             }
-            tasks.named("publishModrinth") {
-                onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_modrinth_id")
-                            && (it["dryRun"].get() || env.has("MODRINTH_TOKEN"))
-                }
+            doFirst {
+                StaticUtil.validateChangelogDate($changelog.date)
             }
-            tasks.named("publishCurseforge") {
-                onlyIf {
-                    return hasSpConf
-                            && prop.has("mod_curseforge_id")
-                            && prop.has("mod_curseforge_slug")
-                            && (it["dryRun"].get() || env.has("CURSEFORGE_TOKEN"))
-                }
+        }
+        tasks.named("publishModrinth") { Task $task ->
+            onlyIf {
+                return $hasReleaseProps && ($task["dryRun"].get() || $env.has("MODRINTH_TOKEN"))
+            }
+            doFirst {
+                StaticUtil.validateChangelogDate($changelog.date)
+            }
+        }
+        tasks.named("publishCurseforge") { Task $task ->
+            onlyIf {
+                return $hasReleaseProps && ($task["dryRun"].get() || $env.has("CURSEFORGE_TOKEN"))
+                        && $prop.safeList("mc_versions_${$subproject.name}").any { !it.contains("-") }
+            }
+            doFirst {
+                StaticUtil.validateChangelogDate($changelog.date)
             }
         }
     }
 }
 
-/*
- This configuration, combined with the subproject configuration above, allows
- multiple files to be uploaded to a single GitHub release.
- */
-publishMods {
-    final env = new EnvUtil(providers)
-    final prop = new PropUtil(project)
-    version = "${mod_version}+${minecraft_version}"
-    displayName = "v${mod_version}+${minecraft_version}"
-    type = ReleaseType.of(mod_version_type)
-    dryRun = !env.has("GITHUB_TOKEN")
-    github {
-        accessToken = env.safe("GITHUB_TOKEN")
-        repository = prop.safe("mod_github_repo")
-        commitish = grgitService.service.get().grgit.branch.current().name
-        tagName = "v${mod_version}+${minecraft_version}"
-        allowEmptyFiles = true
-        // Link to header in changelog file
-        changelog = "[Changelog](./changelog.md#${mod_version.replaceAll("\\.", "")})"
-    }
-    tasks.named("publishGithub") {
-        onlyIf {
-            return prop.has("mod_github_repo")
-                    && (it["dryRun"].get() || env.has("GITHUB_TOKEN"))
-        }
+// apply from other .gradle files
+file(".").eachFile {
+    if (it.isFile() && it.name.endsWith(".gradle")
+            && it.name != "build.gradle"
+            && it.name != "settings.gradle") {
+        apply(from: it.name)
     }
 }

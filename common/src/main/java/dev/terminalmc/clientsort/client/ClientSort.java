@@ -23,13 +23,13 @@ import dev.terminalmc.clientsort.client.util.KeybindManager;
 import dev.terminalmc.clientsort.client.util.PolicyManager;
 import dev.terminalmc.clientsort.client.util.TaskManager;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
-import dev.terminalmc.clientsort.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -41,7 +41,7 @@ public class ClientSort {
 
     public static final String MOD_ID = dev.terminalmc.clientsort.ClientSort.MOD_ID;
     public static final String MOD_NAME = dev.terminalmc.clientsort.ClientSort.MOD_NAME;
-    public static final ModLogger LOG = dev.terminalmc.clientsort.ClientSort.LOG;
+    public static final Logger LOG = dev.terminalmc.clientsort.ClientSort.LOG;
 
     public static final TaskManager taskManager = new TaskManager();
 
@@ -55,6 +55,10 @@ public class ClientSort {
 
     public static volatile boolean operatingClient = false;
     public static BlockingQueue<Runnable> clientOpQueue = new ArrayBlockingQueue<>(2);
+
+    private ClientSort() {
+        throw new UnsupportedOperationException("This class cannot be instantiated.");
+    }
 
     public static boolean debug() {
         return dev.terminalmc.clientsort.ClientSort.debug();

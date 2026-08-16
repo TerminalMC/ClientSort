@@ -21,6 +21,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -42,6 +43,16 @@ public interface PlatformServices {
      * @return {@code true} if the mod is loaded, false otherwise.
      */
     boolean isModLoaded(String modId);
+
+    /**
+     * @return {@code true} if the platform uses a mod-named logger in production environments.
+     */
+    boolean hasNamedLogger();
+
+    /**
+     * @return the version of the mod if it is loaded, {@code null} otherwise.
+     */
+    @Nullable String getModVersion(String modId);
 
     /**
      * @return the name of the current platform.

@@ -24,9 +24,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.LoadingModList;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 
 public class ForgeServices implements PlatformServices {
@@ -38,12 +39,27 @@ public class ForgeServices implements PlatformServices {
 
     @Override
     public boolean isModLoaded(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
+        return FMLLoader.getLoadingModList().getModFileById(modId) != null;
+    }
+
+    @Override
+    public boolean hasNamedLogger() {
+        return true;
+    }
+
+    @Override
+    public @Nullable String getModVersion(String modId) {
+        for (ModInfo mod : FMLLoader.getLoadingModList().getMods()) {
+            if (mod.getModId().equals(modId)) {
+                return mod.getVersion().toString();
+            }
+        }
+        return null;
     }
 
     @Override
     public String getPlatformName() {
-        return "NeoForge";
+        return "Forge";
     }
 
     @Override
