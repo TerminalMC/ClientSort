@@ -187,7 +187,7 @@ public abstract class SingleUseOperator {
                     continue;
             } else {
                 // Empty slot; check content-aware arbitrary item placement
-                if (!slot.container.canPlaceItem(slotId, testItem))
+                if (!slot.container.canPlaceItem(slotIdx, testItem))
                     continue;
             }
             // Ignore mod-locked slots
