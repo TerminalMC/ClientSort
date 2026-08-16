@@ -93,7 +93,7 @@ module.exports = async ({github, context, core}) => {
      * @returns {Set<number>}
      */
     function getPullNumbers(comparison) {
-        const mergeRegex = /Merge pull request #(\d+) from/i;
+        const mergeRegex = /Merge pull request #(\d+)/i;
         /** @type {Set<number>} */
         const pullNumbers = new Set();
 
@@ -189,12 +189,12 @@ module.exports = async ({github, context, core}) => {
             .filter((release) => release.published_at && new Date(release.published_at).getTime() >= cutoff)
             .map((release) => [release.tag_name, release])
     );
-    console.log(`Filtered ${recentReleases.length} recent releases`);
+    console.log(`Filtered ${recentReleases.size} recent releases from the last ${scanMonths} months`);
     if (recentReleases.length > 0) {
         console.log(`Oldest recent release tag is ${recentReleases[recentReleases.length - 1].tag_name}`);
     }
 
-    const recentTags = allTags
+    let recentTags = allTags
             .filter((tag) => recentReleases.has(tag.name))
             .sort((a, b) => {
                 // newest first
@@ -222,6 +222,12 @@ module.exports = async ({github, context, core}) => {
                 releaseTagNames.push(tag.name);
             }
         }
+    }
+    recentTags = recentTags.filter((tag) => !releaseTagNames.includes(tag.name));
+    console.log(`Refined ${recentTags.length} recent tags`);
+    if (recentTags.length > 0) {
+        console.log(`Newest recent tag is ${recentTags[0].name}`);
+        console.log(`Oldest recent tag is ${recentTags[recentTags.length - 1].name}`);
     }
 
     if (releaseTagNames.length === 0) {

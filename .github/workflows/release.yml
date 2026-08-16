@@ -47,7 +47,7 @@ on:
           - '25'
           - '21'
           - '17'
-        default: '25'
+        default: '21'
       os:
         type: choice
         description: Operating System
@@ -205,7 +205,7 @@ jobs:
 
       - name: Notify PRs
         uses: actions/github-script@v9
-        if: inputs.notify-prs && steps.github.outcome == 'success'
+        if: inputs.notify-pr-months > 0 && steps.github.outcome == 'success'
         continue-on-error: true
         env:
           SCAN_MONTHS: ${{ github.event.inputs.notify-pr-months }}
