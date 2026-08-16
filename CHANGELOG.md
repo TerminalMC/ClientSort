@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+- Fixed an issue causing server-side sorting to sometimes misplace the last item.
+
 ## 3.102.6-beta.1 [2026-08-15]
 
 - Added support for Locked in Slots.
