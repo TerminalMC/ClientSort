@@ -101,12 +101,12 @@ public class SortHandler extends PayloadHandler {
 
             // iterate backwards along the chain until we reach the end,
             // signified by seeing an ID that we've previously removed
-            while (map.containsKey(srcSlotId)) {
+            while (map.containsKey(map.getOrDefault(srcSlotId, Integer.MIN_VALUE))) {
                 // new dest is old source
                 dstSlot = srcSlot;
                 // new source is old source's source
-                srcSlotId = map.remove(srcSlotId);
                 srcSlot = menu.slots.get(srcSlotId);
+                srcSlotId = map.remove(srcSlotId);
 
                 // At this point, though we should have already validated it, we need to
                 // confirm that it's valid to place the source item in the dest slot.
