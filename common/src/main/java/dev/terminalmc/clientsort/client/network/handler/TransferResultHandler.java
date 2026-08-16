@@ -50,7 +50,7 @@ public class TransferResultHandler {
             PayloadResult result = ResultHandlerUtil.interpretResult(
                     payload.result(),
                     payload.message(),
-                    CollectPayload.ID
+                    TransferPayload.ID
             );
 
             if (onCompletion != null) {
