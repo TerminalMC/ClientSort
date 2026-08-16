@@ -50,7 +50,7 @@ public class StackFillResultHandler {
             PayloadResult result = ResultHandlerUtil.interpretResult(
                     payload.result(),
                     payload.message(),
-                    CollectPayload.ID
+                    StackFillPayload.ID
             );
 
             if (onCompletion != null) {
