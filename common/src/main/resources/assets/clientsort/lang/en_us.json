@@ -70,6 +70,8 @@
   "editor.clientsort.undoChanges.tooltip": "Undo all unsaved changes made on this screen. Does not undo confirmed changes.",
   "editor.clientsort.reselect": "Reselect",
   "editor.clientsort.reselect.tooltip": "Select a different set of buttons.",
+  "editor.clientsort.openConfig": "Open Config",
+  "editor.clientsort.openConfig.tooltip": "Open the main configuration menu. Cancels any unsaved changes made on this screen.",
   "editor.clientsort.visibility": "Visibility: %s",
   "editor.clientsort.operation": "Operation: %s",
   "editor.clientsort.offset": "Offset: (%d, %d)",
