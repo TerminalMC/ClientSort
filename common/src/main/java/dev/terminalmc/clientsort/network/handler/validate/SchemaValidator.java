@@ -134,7 +134,8 @@ public class SchemaValidator {
                     accessible = false;
             } else {
                 // Empty slot; check arbitrary item placement
-                if (!slot.container.canPlaceItem(slotId, testItem) || !slot.mayPlace(testItem))
+                if (!slot.container.canPlaceItem(slot.getContainerSlot(), testItem)
+                        || !slot.mayPlace(testItem))
                     accessible = false;
             }
             if (!accessible) {
