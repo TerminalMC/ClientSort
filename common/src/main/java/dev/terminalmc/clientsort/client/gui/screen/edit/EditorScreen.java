@@ -253,17 +253,17 @@ public abstract class EditorScreen extends Screen {
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
                                                         buttons.get(1).operationAllowed
-                                                                ? buttons.getFirst().active
+                                                                ? buttons.get(1).active
                                                                 ? Policy.KEYBIND_BUTTON
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
                                                         buttons.get(2).operationAllowed
-                                                                ? buttons.getFirst().active
+                                                                ? buttons.get(2).active
                                                                 ? Policy.KEYBIND_BUTTON
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
                                                         buttons.get(3).operationAllowed
-                                                                ? buttons.getFirst().active
+                                                                ? buttons.get(3).active
                                                                 ? Policy.KEYBIND_BUTTON
                                                                 : Policy.KEYBIND
                                                                 : Policy.NONE,
@@ -335,17 +335,17 @@ public abstract class EditorScreen extends Screen {
                                                                     : Policy.KEYBIND
                                                                     : Policy.NONE,
                                                             buttons.get(1).operationAllowed
-                                                                    ? buttons.getFirst().active
+                                                                    ? buttons.get(1).active
                                                                     ? Policy.KEYBIND_BUTTON
                                                                     : Policy.KEYBIND
                                                                     : Policy.NONE,
                                                             buttons.get(2).operationAllowed
-                                                                    ? buttons.getFirst().active
+                                                                    ? buttons.get(2).active
                                                                     ? Policy.KEYBIND_BUTTON
                                                                     : Policy.KEYBIND
                                                                     : Policy.NONE,
                                                             buttons.get(3).operationAllowed
-                                                                    ? buttons.getFirst().active
+                                                                    ? buttons.get(3).active
                                                                     ? Policy.KEYBIND_BUTTON
                                                                     : Policy.KEYBIND
                                                                     : Policy.NONE,

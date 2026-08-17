@@ -220,7 +220,8 @@ public class ContainerScreenHelper<T extends AbstractContainerScreen<?>> {
 
             int slotIdx = ((ISlot) slot).clientsort$getIndexInContainer();
             if (slotIdx <= lastIdx || slot.container != lastContainer) {
-                slotGroups.add(currentGroup);
+                if (!currentGroup.isEmpty())
+                    slotGroups.add(currentGroup);
                 currentGroup = new ArrayList<>();
             }
             currentGroup.add(slot);

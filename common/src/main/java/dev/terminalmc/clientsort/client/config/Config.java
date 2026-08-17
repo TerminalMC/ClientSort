@@ -474,22 +474,20 @@ public class Config {
             val.values().forEach((cp) -> {
                 if (cp != null && cp.className() != null && !cp.className().isBlank()) {
                     String className = cp.className();
-                    validPolicies.put(
+                    ClassPolicy newCp = new ClassPolicy(
                             className,
-                            new ClassPolicy(
-                                    className,
-                                    cp.invTitle(),
-                                    cp.buttonOffset(),
-                                    cp.offsetFromSlot(),
-                                    Options.policyValidator.validate(cp.sortPolicy()),
-                                    Options.policyValidator.validate(cp.stackFillPolicy()),
-                                    Options.policyValidator.validate(cp.matchTransferPolicy()),
-                                    Options.policyValidator.validate(cp.transferPolicy()),
-                                    cp.autoOp(),
-                                    cp.autoOpOther(),
-                                    cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
-                            )
+                            cp.invTitle(),
+                            cp.buttonOffset(),
+                            cp.offsetFromSlot(),
+                            Options.policyValidator.validate(cp.sortPolicy()),
+                            Options.policyValidator.validate(cp.stackFillPolicy()),
+                            Options.policyValidator.validate(cp.matchTransferPolicy()),
+                            Options.policyValidator.validate(cp.transferPolicy()),
+                            cp.autoOp(),
+                            cp.autoOpOther(),
+                            cp.ignoredSlots() == null ? new TreeSet<>() : cp.ignoredSlots()
                     );
+                    validPolicies.put(newCp.getKey(), newCp);
                 }
             });
             // Sort the policies by key for better UX

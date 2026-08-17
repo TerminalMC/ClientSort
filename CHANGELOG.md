@@ -49,6 +49,9 @@ ___
 ## Unreleased
 
 - Fixed an issue causing server-side sorting to sometimes misplace the last item.
+- Fixed an issue causing the ItemLocks bypass key to not function.
+- Fixed an issue causing titled policies to be removed on config save.
+- Fixed some minor issues with policy splitting and slot testing.
 
 ## 3.82.0-beta.1 [2026-08-16]
 

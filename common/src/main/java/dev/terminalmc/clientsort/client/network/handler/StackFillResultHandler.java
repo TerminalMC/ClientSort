@@ -19,7 +19,6 @@ package dev.terminalmc.clientsort.client.network.handler;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.network.handler.util.ResultHandlerUtil;
 import dev.terminalmc.clientsort.network.handler.validate.PayloadResult;
-import dev.terminalmc.clientsort.network.payload.CollectPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillPayload;
 import dev.terminalmc.clientsort.network.payload.StackFillResultPayload;
 import net.minecraft.client.Minecraft;
@@ -50,7 +49,7 @@ public class StackFillResultHandler {
             PayloadResult result = ResultHandlerUtil.interpretResult(
                     payload.result(),
                     payload.message(),
-                    CollectPayload.ID
+                    StackFillPayload.ID
             );
 
             if (onCompletion != null) {
