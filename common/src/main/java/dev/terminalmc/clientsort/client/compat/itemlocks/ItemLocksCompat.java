@@ -90,7 +90,7 @@ public class ItemLocksCompat {
             Object isBypassResult = isBypassMethod.invoke(null);
             if (isBypassResult instanceof Boolean bypass) {
                 if (bypass)
-                    return true;
+                    return false;
             } else {
                 throw new ClassCastException();
             }
