@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.terminalmc.clientsort.client.ClientSort;
 import dev.terminalmc.clientsort.client.config.*;
 import dev.terminalmc.clientsort.client.gui.TriggerButtonManager;
+import dev.terminalmc.clientsort.client.gui.screen.config.ConfigScreenProvider;
 import dev.terminalmc.clientsort.client.gui.widget.TriggerButton;
 import dev.terminalmc.clientsort.mixin.client.accessor.AbstractContainerScreenAccessor;
 import dev.terminalmc.clientsort.util.inject.ISlot;
@@ -552,18 +553,30 @@ public abstract class EditorScreen extends Screen {
         addRenderableWidget(reselectButton);
         movingY += 21;
 
-        // Close this screen without saving
-        Button cancelButton = Button.builder(CommonComponents.GUI_CANCEL, (button) -> onClose())
+        // Open the main config screen
+        Button configButton = Button.builder(
+                        localized("editor", "openConfig"),
+                        (button) -> Minecraft.getInstance().setScreen(
+                                ConfigScreenProvider.getConfigScreen(this)
+                        )
+                )
+                .tooltip(Tooltip.create(localized("editor", "openConfig.tooltip")))
                 .pos(x, movingY)
                 .size(width, height)
                 .build();
-        addRenderableWidget(cancelButton);
+        addRenderableWidget(configButton);
         movingY += 21;
 
+        // Close this screen without saving
+        Button cancelButton = Button.builder(CommonComponents.GUI_CANCEL, (button) -> onClose())
+                .pos(x, movingY)
+                .size(width / 2, height)
+                .build();
+        addRenderableWidget(cancelButton);
         // Save all changes then close this screen
         Button doneButton = Button.builder(CommonComponents.GUI_DONE, (button) -> saveAndClose())
-                .pos(x, movingY)
-                .size(width, height)
+                .pos(x + cancelButton.getWidth(), movingY)
+                .size(width - cancelButton.getWidth(), height)
                 .build();
         addRenderableWidget(doneButton);
     }
