@@ -74,6 +74,8 @@
   "editor.clientsort.undoChanges.tooltip": "Отменить все несохранённые изменения, сделанные на этом экране. Не отменяет подтверждённые изменения.",
   "editor.clientsort.reselect": "Перевыбрать",
   "editor.clientsort.reselect.tooltip": "Выбрать другой набор кнопок.",
+  "editor.clientsort.openConfig": "Open Config",
+  "editor.clientsort.openConfig.tooltip": "Open the main configuration menu. Cancels any unsaved changes made on this screen.",
   "editor.clientsort.visibility": "Макет: %s",
   "editor.clientsort.operation": "Политика: %s",
   "editor.clientsort.offset": "Смещение: (%d, %d)",
