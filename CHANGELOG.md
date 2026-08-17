@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+## 3.82.0-beta.2 [2026-08-17]
+
 - Added a button to the editor screen to open the main config menu.
 - Fixed an issue causing server-side sorting to sometimes misplace the last item.
 - Fixed an issue causing the ItemLocks bypass key to not function.
