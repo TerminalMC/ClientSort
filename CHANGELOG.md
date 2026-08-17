@@ -48,6 +48,7 @@ ___
 
 ## Unreleased
 
+- Added a button to the editor screen to open the main config menu.
 - Fixed an issue causing server-side sorting to sometimes misplace the last item.
 - Fixed an issue causing the ItemLocks bypass key to not function.
 - Fixed an issue causing titled policies to be removed on config save.
