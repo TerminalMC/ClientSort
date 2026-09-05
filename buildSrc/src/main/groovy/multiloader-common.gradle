@@ -6,21 +6,8 @@ plugins {
 // configure project dependency repos
 // mod loader plugins may automatically provide others
 repositories {
-    mavenCentral()
     mavenLocal()
-
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "Fabric"
-                url = uri("https://maven.fabricmc.net")
-            }
-        }
-        filter {
-            includeGroupAndSubgroups("net.fabricmc")
-        }
-    }
+    mavenCentral()
 
     exclusiveContent {
         forRepository {
@@ -35,30 +22,14 @@ repositories {
         }
     }
 
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "Modrinth"
-                url = uri("https://api.modrinth.com/maven")
-            }
-        }
-        filter {
-            includeGroup("maven.modrinth")
-        }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
     }
 
-    exclusiveContent {
-        forRepository {
-            //noinspection ForeignDelegate
-            maven {
-                name = "CurseForge"
-                url = uri("https://cursemaven.com")
-            }
-        }
-        filter {
-            includeGroup("curse.maven")
-        }
+    maven {
+        name = "CurseForge"
+        url = uri("https://cursemaven.com")
     }
 
     // add property-defined repos

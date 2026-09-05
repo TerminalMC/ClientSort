@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+- Updated to mc26.3-pre-2.
+
 ## 3.103.2-beta.2 [2026-08-17]
 
 - Added a button to the editor screen to open the main config menu.
