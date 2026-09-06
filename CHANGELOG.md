@@ -48,6 +48,26 @@ ___
 
 ## Unreleased
 
+## 3.82.0 [2026-09-06]
+
+- Changes since last beta:
+  - Updated Russian translation (rfin0).
+- Changes since last full release:
+  - Added support for Locked in Slots.
+  - Added a screen-class blacklist to allow disabling buttons on certain modded screens.
+  - Added a button to the editor screen to open the main config menu.
+  - Fixed a crash when pressing `Open Editor` key if also bound to `Drop Selected Item`.
+  - Fixed a crash when parsing a class policy containing a number over the integer limit.
+  - Fixed some minor issues with policy splitting and slot testing.
+  - Fixed an issue causing server-side sorting to sometimes misplace the last item.
+  - Fixed an issue causing the ItemLocks bypass key to not function.
+  - Fixed an issue causing titled policies to be removed on config save.
+  - Fixed an issue causing creative sort order to sporadically misplace items.
+  - Fixed an issue causing creative search order to not work when optimization was switched off.
+  - Fixed an issue causing certain items with data to always be sorted to the end.
+  - Fixed an issue causing server-accelerated ops to not trigger refresh events.
+  - Fixed an issue causing sorting to include dedicated slots.
+
 ## 3.82.0-beta.2 [2026-08-17]
 
 - Added a button to the editor screen to open the main config menu.
