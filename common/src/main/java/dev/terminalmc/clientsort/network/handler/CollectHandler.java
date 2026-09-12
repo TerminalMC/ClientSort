@@ -73,7 +73,7 @@ public class CollectHandler extends PayloadHandler {
                 continue;
             if (!srcSlot.mayPlace(srcStack))
                 continue;
-            if (srcStack.getCount() >= srcStack.getItem().getMaxStackSize())
+            if (srcStack.getCount() >= srcSlot.getMaxStackSize(srcStack))
                 continue;
 
             // Partial stack found; work forwards from the start, looking for
@@ -88,7 +88,7 @@ public class CollectHandler extends PayloadHandler {
                     continue;
                 if (!dstSlot.mayPlace(srcStack))
                     continue;
-                if (dstStack.getCount() >= dstStack.getItem().getMaxStackSize())
+                if (dstStack.getCount() >= dstSlot.getMaxStackSize(dstStack))
                     continue;
                 if (!ItemStack.isSameItemSameTags(srcStack, dstStack))
                     continue;
