@@ -31,6 +31,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,8 +79,25 @@ public class SortHandler extends PayloadHandler {
         }
 
         // create a temporary slot to hold the overflow
-        Container tmpContainer = new SimpleContainer(1);
-        Slot tmpSlot = new Slot(tmpContainer, 0, 0, 0);
+        Container tmpContainer = new SimpleContainer(1) {
+
+            @Override
+            public int getMaxStackSize() {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack ignored) {
+                return getMaxStackSize();
+            }
+        };
+        Slot tmpSlot = new Slot(tmpContainer, 0, 0, 0) {
+
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack ignored) {
+                return getMaxStackSize();
+            }
+        };
         List<Slot> undoChain = new ArrayList<>();
 
         // iterate over the whole mapping to ensure we cover all isolated chains
