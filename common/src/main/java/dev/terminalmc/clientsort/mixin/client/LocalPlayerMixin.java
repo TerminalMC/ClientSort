@@ -47,7 +47,7 @@ public abstract class LocalPlayerMixin {
             method = "setPermissions",
             at = @At("RETURN")
     )
-    public void afterPermissionLevelChange(PermissionSet permissionSet, CallbackInfo ci) {
+    public void afterPermissionLevelChange(PermissionSet newPermissions, CallbackInfo ci) {
         if (!ClientSort.searchOrderUpdated) {
             ClientSort.searchOrderUpdated = true;
             CreativeSearchOrder.tryRefreshStackPositionMap();

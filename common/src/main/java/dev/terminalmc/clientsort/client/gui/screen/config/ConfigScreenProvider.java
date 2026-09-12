@@ -22,7 +22,8 @@ import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.util.Util;
+
+import java.net.URI;
 
 import static dev.terminalmc.clientsort.util.Localization.localized;
 
@@ -76,13 +77,7 @@ public class ConfigScreenProvider {
 
             Button openLinkButton = Button.builder(
                             localized("message", "viewModrinth"),
-                            (button) -> Minecraft.getInstance().gui.setScreen(new ConfirmLinkScreen(
-                                    (open) -> {
-                                        if (open)
-                                            Util.getPlatform().openUri(modUrl);
-                                        onClose();
-                                    }, modUrl, true
-                            ))
+                            ConfirmLinkScreen.confirmLink(this.parent, URI.create(modUrl), true)
                     )
                     .pos(width / 2 - 120, height / 2)
                     .size(115, 20)

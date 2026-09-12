@@ -66,15 +66,16 @@ loom {
     runs {
         client {
             client()
-            configName = "Fabric Client"
-            ideConfigGenerated = true
-            runDir = "runs/client"
+            jvmArguments = ["-XX:StackShadowPages=32"]
+            displayName = "Fabric Client"
+            generateRunConfig = true
+            runDirectory = project.file("runs/client")
         }
         server {
             server()
-            configName = "Fabric Server"
-            ideConfigGenerated = true
-            runDir = "runs/server"
+            displayName = "Fabric Server"
+            generateRunConfig = true
+            runDirectory = project.file("runs/server")
         }
     }
 }

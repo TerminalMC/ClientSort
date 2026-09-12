@@ -23,8 +23,11 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLKeyboard;
+import org.lwjgl.sdl.SDLMouse;
+import org.lwjgl.sdl.SDLScancode;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import static dev.terminalmc.clientsort.util.Localization.translationKey;
@@ -37,13 +40,13 @@ public class KeybindManager {
 
     public static final KeyMapping EDIT_KEY = new KeyMapping(
             translationKey("key", "edit"),
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             CATEGORY
     );
     public static final KeyMapping CANCEL_AUTO_KEY = new KeyMapping(
             translationKey("key", "cancelAuto"),
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             CATEGORY
     );
@@ -55,19 +58,19 @@ public class KeybindManager {
     );
     public static final KeyMapping STACK_FILL_KEY = new KeyMapping(
             translationKey("key", "op.stackFill"),
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             CATEGORY
     );
     public static final KeyMapping MATCH_TRANSFER_KEY = new KeyMapping(
             translationKey("key", "op.matchTransfer"),
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             CATEGORY
     );
     public static final KeyMapping TRANSFER_KEY = new KeyMapping(
             translationKey("key", "op.transfer"),
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             CATEGORY
     );
@@ -97,33 +100,41 @@ public class KeybindManager {
     }
 
     public static boolean isKeyDown(InputConstants.Key key) {
-        long window = Minecraft.getInstance().getWindow().handle();
         if (key.equals(InputConstants.UNKNOWN))
             return false;
         if (key.getType().equals(InputConstants.Type.MOUSE)) {
-            return GLFW.glfwGetMouseButton(window, key.getValue()) == 1;
+            int state = SDLMouse.SDL_GetMouseState(null, null);
+            return switch (key.getValue()) {
+                case SDLMouse.SDL_BUTTON_LEFT -> (state & SDLMouse.SDL_BUTTON_LMASK) != 0;
+                case SDLMouse.SDL_BUTTON_MIDDLE -> (state & SDLMouse.SDL_BUTTON_MMASK) != 0;
+                case SDLMouse.SDL_BUTTON_RIGHT -> (state & SDLMouse.SDL_BUTTON_RMASK) != 0;
+                case SDLMouse.SDL_BUTTON_X1 -> (state & SDLMouse.SDL_BUTTON_X1MASK) != 0;
+                case SDLMouse.SDL_BUTTON_X2 -> (state & SDLMouse.SDL_BUTTON_X2MASK) != 0;
+                default -> false;
+            };
         } else {
-            return GLFW.glfwGetKey(window, key.getValue()) == 1;
+            ByteBuffer keyboardState = SDLKeyboard.SDL_GetKeyboardState();
+            return keyboardState != null && keyboardState.get(key.getValue()) != 0;
         }
     }
 
     public static boolean hasControlDown() {
         if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 343)
-                    || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 347);
+            return InputConstants.isKeyDown(SDLScancode.SDL_SCANCODE_LGUI)
+                    || InputConstants.isKeyDown(SDLScancode.SDL_SCANCODE_RGUI);
         } else {
-            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 341)
-                    || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 345);
+            return InputConstants.isKeyDown(InputConstants.KEY_LCONTROL)
+                    || InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
         }
     }
 
     public static boolean hasShiftDown() {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340)
-                || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344);
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
     }
 
     public static boolean hasAltDown() {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 342)
-                || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 346);
+        return InputConstants.isKeyDown(InputConstants.KEY_LALT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RALT);
     }
 }
