@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+## 3.103.3 [2026-09-12]
+
 - Fixed an issue causing item deletion when sorting containers with stack size limits over 64.
 
 ## 3.103.2 [2026-09-06]
