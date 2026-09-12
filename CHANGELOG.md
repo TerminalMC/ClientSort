@@ -48,31 +48,6 @@ ___
 
 ## Unreleased
 
+## 3.104.0-beta.1 [2026-09-12]
+
 - Updated to mc26.3-rc-2.
-
-## 3.103.2-beta.2 [2026-08-17]
-
-- Added a button to the editor screen to open the main config menu.
-- Fixed an issue causing server-side sorting to sometimes misplace the last item.
-- Fixed an issue causing the ItemLocks bypass key to not function.
-- Fixed an issue causing titled policies to be removed on config save.
-- Fixed some minor issues with policy splitting and slot testing.
-
-## 3.103.2-beta.1 [2026-08-15]
-
-- Added support for Locked in Slots.
-- Added a screen-class blacklist to allow disabling buttons on certain modded screens.
-- Fixed a crash when pressing `Open Editor` key if also bound to `Drop Selected Item`.
-- Fixed a crash when parsing a class policy containing a number over the integer limit.
-- Fixed an issue causing certain items with data to always be sorted to the end.
-- Fixed an issue causing server-accelerated ops to not trigger refresh events.
-- Fixed an issue causing sorting to include dedicated slots.
-
-## 3.103.1 [2026-07-04]
-
-- Fixed an issue causing creative sort order to sporadically misplace items.
-- Fixed an issue causing creative search order to not work when optimization was switched off.
-
-## 3.103.0 [2026-06-19]
-
-- Updated to mc26.2
