@@ -48,6 +48,10 @@ ___
 
 ## Unreleased
 
+## 3.104.0 [2026-09-15]
+
+- Updated to mc26.3.
+
 ## 3.104.0-beta.1 [2026-09-12]
 
 - Updated to mc26.3-rc-2.
