@@ -164,7 +164,7 @@ public class Config {
         public static final boolean useStartOverridesDefault = true;
         public boolean useStartOverrides = useStartOverridesDefault;
 
-        public static final Supplier<List<String>> startOverrideItemsDefault = List::of;
+        public static final Supplier<List<String>> startOverrideItemsDefault = ArrayList::new;
         public List<String> startOverrideItems = startOverrideItemsDefault.get();
         public static Validator<List<String>> startOverrideItemsValidator = (val) -> val != null
                 ? val : startOverrideItemsDefault.get();
@@ -173,7 +173,7 @@ public class Config {
         public static final boolean useEndOverridesDefault = true;
         public boolean useEndOverrides = useEndOverridesDefault;
 
-        public static final Supplier<List<String>> endOverrideItemsDefault = List::of;
+        public static final Supplier<List<String>> endOverrideItemsDefault = ArrayList::new;
         public List<String> endOverrideItems = endOverrideItemsDefault.get();
         public static Validator<List<String>> endOverrideItemsValidator = (val) -> val != null
                 ? val : endOverrideItemsDefault.get();
