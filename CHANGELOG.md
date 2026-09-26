@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+## 3.104.1 [2026-09-26]
+
 - Fixed an issue preventing config from being saved.
 
 ## 3.104.0 [2026-09-15]
