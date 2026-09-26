@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+## 3.102.8 [2026-09-26]
+
 - Fixed an issue preventing config from being saved.
 
 ## 3.102.7 [2026-09-12]
