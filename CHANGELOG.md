@@ -48,6 +48,8 @@ ___
 
 ## Unreleased
 
+- Fixed an issue preventing config from being saved.
+
 ## 3.104.0 [2026-09-15]
 
 - Updated to mc26.3.
